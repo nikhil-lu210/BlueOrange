@@ -1,0 +1,18 @@
+a:focus,
+a:active,
+button:focus,
+button:active {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.btn-sm {
+    padding: 2px 5px;
+}
+
+.text-bold {
+    font-weight: bold !important;
+}
+.text-bolder {
+    font-weight: bolder !important;
+}
