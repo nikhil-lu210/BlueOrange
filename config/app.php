@@ -195,6 +195,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        // laravel-ide-helper (https://github.com/barryvdh/laravel-ide-helper)
+        Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
+
         // RealRashid SweetAlertServiceProvider (https://realrashid.github.io/sweet-alert/install)
         RealRashid\SweetAlert\SweetAlertServiceProvider::class,
 
