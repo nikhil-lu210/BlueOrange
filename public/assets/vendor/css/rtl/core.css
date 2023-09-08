@@ -18056,7 +18056,7 @@ html:not(.layout-menu-fixed) .menu-inner-shadow {
 .menu-toggle::after {
   content: "";
   position: absolute;
-  top: 48%;
+  top: 55%;
   display: block;
   width: 0.42em;
   height: 0.42em;

@@ -1,27 +1,23 @@
-<!-- Start js -->
-<script src="{{ asset('assets/js/jquery.min.js') }}"></script>
-<script src="{{ asset('assets/js/popper.min.js') }}"></script>
-<script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
-<script src="{{ asset('assets/js/jquery.slimscroll.js') }}"></script>
-<script src="{{ asset('assets/js/vertical-menu.js') }}"></script>
-<!-- Switchery js -->
-{{-- <script src="{{ asset('assets/plugins/switchery/switchery.min.js') }}"></script> --}}
-<!-- Select2 js -->
-<script src="{{ asset('assets/plugins/select2/select2.min.js') }}"></script>
+<!-- Core JS -->
+<!-- build:js assets/vendor/js/core.js -->
 
-<script>
-    $('#selectRoleNavbar').select2();
-</script>
+<script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
+<script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/node-waves/node-waves.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
+<script src="{{ asset('assets/vendor/libs/hammer/hammer.js') }}"></script>
 
+<script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
 
-@yield('script_links')
+<!-- endbuild -->
 
-<!-- Core js -->
-<script src="{{ asset('assets/js/core.js') }}"></script>
+<!-- Vendors JS -->
 
-{{-- Custom Main JS --}}
+<!-- Main JS -->
 <script src="{{ asset('assets/js/main.js') }}"></script>
 
+<!-- Page JS -->
+@yield('script_links')
 
 @yield('custom_script')
-<!-- End js -->

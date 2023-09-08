@@ -1,11 +1,8 @@
-{{-- CSRF Token--}}
-<meta name="csrf-token" content="{{ csrf_token() }}">
-
-<meta charset="UTF-8" />
+<meta charset="utf-8" />
+<!-- CSRF Token -->
+<meta name="csrf-token" content="{{ csrf_token() }}" />
 <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="description" content="" />
-<meta name="keywords" content="" />
-<meta name="author" content="" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />        
+<meta name="description" content="Blue Orange Web Application | Staff-India" />
 
 @yield('meta_tags')
