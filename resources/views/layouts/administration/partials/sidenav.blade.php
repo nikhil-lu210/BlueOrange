@@ -23,22 +23,23 @@
             </a>
         </li>
 
-        <!-- Apps & Pages -->
+        <!-- Settings -->
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Apps & Pages</span>
+            <span class="menu-header-text">Settings</span>
         </li>
         
         <!-- Menu start -->
-        <li class="menu-item {{ request()->is('administration/menus*') ? 'active open' : '' }}">
+        <li class="menu-item {{ request()->is('administration/shortcuts*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons ti ti-book"></i>
-                <div data-i18n="Menu">Menu</div>
+                <i class="menu-icon tf-icons ti ti-layout-grid-add"></i>
+                <div data-i18n="Shortcuts">Shortcuts</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item {{ request()->is('administration/menus/menu1*') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">
-                        <div data-i18n="Menu1">Menu1</div>
-                    </a>
+                <li class="menu-item {{ request()->is('administration/shortcut/all*') ? 'active' : '' }}">
+                    <a href="#" class="menu-link">My Shortcuts</a>
+                </li>
+                <li class="menu-item {{ request()->is('administration/shortcuts/create*') ? 'active' : '' }}">
+                    <a href="#" class="menu-link">Add Shortcut</a>
                 </li>
             </ul>
         </li>
