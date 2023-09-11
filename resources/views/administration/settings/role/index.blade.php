@@ -9,6 +9,9 @@
 
 @section('css_links')
     {{--  External CSS  --}}
+    <!-- DataTables css -->
+    <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('custom_css')
@@ -48,7 +51,28 @@
                 </div>
             </div>
             <div class="card-body">
-                
+                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Sl.</th>
+                            <th>Avatar</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Contact No</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>Sl.</th>
+                            <td>Avatar</td>
+                            <td>Name</td>
+                            <td>Email</td>
+                            <td>Contact No</td>
+                            <td>Status</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>        
     </div>
@@ -60,6 +84,10 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
+    <!-- Datatable js -->
+    <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 @endsection
 
 @section('custom_script')

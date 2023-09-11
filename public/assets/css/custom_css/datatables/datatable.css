@@ -1,0 +1,10 @@
+.dataTables_wrapper.container-fluid.dt-bootstrap4.no-footer {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+.table:not(.table-dark) thead:not(.table-dark) th,
+.table-bordered thead tr th {
+    border-top: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+}
