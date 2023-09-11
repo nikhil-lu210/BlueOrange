@@ -36,15 +36,6 @@
 @endsection
 
 
-@section('breadcrumb_buttons')
-    <a href="{{ route('administration.settings.role.create') }}" class="btn btn-outline-dark btn-outline-custom fw-bolder">
-        <i class="feather icon-plus"></i>
-        <b>Create Role</b>
-    </a>
-@endsection
-
-
-
 @section('content')
 
 <!-- Start row -->

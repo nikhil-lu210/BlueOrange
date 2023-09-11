@@ -13,7 +13,4 @@ Route::controller(PermissionController::class)
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/create', 'create')->name('create');
-
-            // Permission Group
-            include_once 'group/group.php';
         });

@@ -28,25 +28,25 @@
             <span class="menu-header-text">Settings</span>
         </li>
         
-        <!-- Roles & Permissions -->
-        <li class="menu-item {{ request()->is('administration/rolepemissions*') ? 'active open' : '' }}">
+        <!-- Role & Permission -->
+        <li class="menu-item {{ request()->is('administration/settings/rolepemissions*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-lock"></i>
-                <div data-i18n="Roles & Permissions">Roles & Permissions</div>
+                <div data-i18n="Role & Permission">Role & Permission</div>
             </a>
             <ul class="menu-sub">
                 <li class="menu-item">
                     <a href="javascript:void(0);" class="menu-link menu-toggle">
-                        <div data-i18n="Roles">Roles</div>
+                        <div data-i18n="Role">Role</div>
                     </a>
                     <ul class="menu-sub">
                         <li class="menu-item">
-                            <a href="#" class="menu-link">
+                            <a href="{{ route('administration.settings.rolepermission.role.index') }}" class="menu-link">
                                 <div data-i18n="All Roles">All Roles</div>
                             </a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="menu-link">
+                            <a href="{{ route('administration.settings.rolepermission.role.create') }}" class="menu-link">
                                 <div data-i18n="Create Role">Create Role</div>
                             </a>
                         </li>
@@ -58,12 +58,12 @@
                     </a>
                     <ul class="menu-sub">
                         <li class="menu-item">
-                            <a href="#" class="menu-link">
-                                <div data-i18n="All Permissions">All Permissions</div>
+                            <a href="{{ route('administration.settings.rolepermission.permission.index') }}" class="menu-link">
+                                <div data-i18n="All Permission">All Permission</div>
                             </a>
                         </li>
                         <li class="menu-item">
-                            <a href="#" class="menu-link">
+                            <a href="{{ route('administration.settings.rolepermission.permission.create') }}" class="menu-link">
                                 <div data-i18n="Create Permission">Create Permission</div>
                             </a>
                         </li>

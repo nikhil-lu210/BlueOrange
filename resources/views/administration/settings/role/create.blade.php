@@ -55,15 +55,6 @@
 @endsection
 
 
-@section('breadcrumb_buttons')
-    <a href="{{ route('administration.settings.role.index') }}" class="btn btn-outline-dark btn-outline-custom fw-bolder">
-        <i class="feather icon-arrow-left"></i>
-        <b>Back</b>
-    </a>
-@endsection
-
-
-
 @section('content')
 
 <!-- Start row -->
