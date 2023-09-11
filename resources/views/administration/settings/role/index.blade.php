@@ -9,17 +9,12 @@
 
 @section('css_links')
     {{--  External CSS  --}}
-    <link href="{{ asset('assets/plugins/switchery/switchery.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('assets/plugins/vertical-timeline/vertical-timeline.css') }}" rel="stylesheet" type="text/css">
 @endsection
 
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
     /* Custom CSS Here */
-    .timeline-date {
-        width: auto !important;
-    }
     </style>
 @endsection
 
@@ -30,9 +25,9 @@
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item text-capitalize">{{ __('Settings') }}</li>
-    <li class="breadcrumb-item text-capitalize">{{ __('Role') }}</li>
-    <li class="breadcrumb-item text-capitalize active">{{ __('All Roles') }}</li>
+    <li class="breadcrumb-item">{{ __('Role & Permission') }}</li>
+    <li class="breadcrumb-item">{{ __('Role') }}</li>
+    <li class="breadcrumb-item active">{{ __('All Roles') }}</li>
 @endsection
 
 
@@ -40,48 +35,22 @@
 
 <!-- Start row -->
 <div class="row">
-    <div class="col-md-4">
-        <div class="card m-b-30">
-            <div class="card-header">
-                <div class="row align-items-center">
-                    <div class="col-7">
-                        <h5 class="card-title mb-0 text-bold">Role Name</h5>
-                    </div>
-                    <div class="col-5">
-                        <button class="btn btn-outline-primary btn-sm float-right font-13">
-                            <i class="la la-pencil"></i>
-                            Edit
-                        </button>
-                    </div>
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header header-elements">
+                <h5 class="mb-0">All Roles</h5>
+        
+                <div class="card-header-elements ms-auto">
+                    <a href="{{ route('administration.settings.rolepermission.role.create') }}" class="btn btn-sm btn-primary">
+                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
+                        Create Role
+                    </a>
                 </div>
             </div>
             <div class="card-body">
-                <div class="activities-history">
-                    <div class="activities-history-list">
-                        <div class="activities-history-item">
-                            <h6>Permission_Group_Name</h6>
-                            <p class="mb-0">
-                                <span class="badge badge-dark p-2">Create</span>
-                                <span class="badge badge-info p-2">Read</span>
-                                <span class="badge badge-primary p-2">Update</span>
-                                <span class="badge badge-danger p-2">Delete</span>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="activities-history-list">
-                        <div class="activities-history-item">
-                            <h6>Permission_Group_Name</h6>
-                            <p class="mb-0">
-                                <span class="badge badge-dark p-2">Create</span>
-                                <span class="badge badge-info p-2">Read</span>
-                                <span class="badge badge-primary p-2">Update</span>
-                                <span class="badge badge-danger p-2">Delete</span>
-                            </p>
-                        </div>
-                    </div>
-                </div>
+                
             </div>
-        </div>
+        </div>        
     </div>
 </div>
 <!-- End row -->
@@ -91,8 +60,6 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <!-- Timeline js -->
-    <script src="{{ asset('assets/plugins/vertical-timeline/vertical-timeline.js') }}"></script>
 @endsection
 
 @section('custom_script')
