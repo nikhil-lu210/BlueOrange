@@ -1,0 +1,12 @@
+.menu-vertical .menu-sub {
+    margin-left: 10px;
+}
+
+.breadcrumb-item + .breadcrumb-item {
+    padding-left: 0px !important;
+}
+
+.breadcrumb-style1 .breadcrumb-item + .breadcrumb-item::before {
+    width: 10px !important;
+    margin-left: 5px !important;
+}
