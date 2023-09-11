@@ -5,7 +5,8 @@ use Illuminate\Support\Facades\Route;
 /* ==============================================
 ============< Administration Routes >============
 ===============================================*/
-Route::prefix('administration')
+// Route::prefix('administration')
+Route::prefix('')
         ->name('administration.')
         ->group(function () {
             // Dashboard

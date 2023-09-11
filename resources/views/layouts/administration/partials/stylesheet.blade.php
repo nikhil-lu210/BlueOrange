@@ -16,6 +16,9 @@
 <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
 <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
 
+{{-- custom css --}}
+<link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}" />
+
 <!-- Page CSS -->
 @yield('css_links')
 
