@@ -8,7 +8,7 @@
         
         <title>{{ config('app.name') }} || @yield('page_title')</title>
         <!-- Favicon -->
-        <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+        <link rel="icon" type="image/x-icon" href="{{ asset('Logo/logo_white_01.png') }}" />
 
         <!-- Start css -->
         @include('layouts.administration.partials.stylesheet')
