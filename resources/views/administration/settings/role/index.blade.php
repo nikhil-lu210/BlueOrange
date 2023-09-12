@@ -55,21 +55,53 @@
                     <thead>
                         <tr>
                             <th>Sl.</th>
-                            <th>Avatar</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Contact No</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <th>Sl.</th>
-                            <td>Avatar</td>
-                            <td>Name</td>
-                            <td>Email</td>
-                            <td>Contact No</td>
-                            <td>Status</td>
+                            <th>#01</th>
+                            <td>
+                                <div class="d-flex justify-content-start align-items-center user-name">
+                                    <div class="avatar-wrapper">
+                                        <div class="avatar me-2">
+                                            <img src="https://picsum.photos/200/300.jpg" alt="Avatar" class="rounded-circle">
+                                        </div>
+                                    </div>
+                                    <div class="d-flex flex-column">
+                                        <a href="#" class="emp_name text-truncate">Evangelina Carnock</a>
+                                        <small class="emp_post text-truncate text-muted">Cost Accountant</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>demomail@email.com</td>
+                            <td>
+                                <span class="badge bg-label-success">Active</span>
+                            </td>
+                            <td>
+                                <div class="d-inline-block">
+                                    <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="text-primary ti ti-dots-vertical"></i>
+                                    </a>
+                                    <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                                        <a href="javascript:void(0);" class="dropdown-item">
+                                            <i class="text-primary ti ti-pencil"></i> 
+                                            Edit
+                                        </a>
+                                        <div class="dropdown-divider"></div>
+                                        <a href="javascript:void(0);" class="dropdown-item text-danger delete-record">
+                                            <i class="ti ti-trash"></i> 
+                                            Delete
+                                        </a>
+                                    </div>
+                                </div>
+                                <a href="javascript:void(0);" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                    <i class="text-primary ti ti-info-hexagon"></i>
+                                </a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -84,7 +116,7 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <!-- Datatable js -->
+    <!-- Datatable js -->    
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
