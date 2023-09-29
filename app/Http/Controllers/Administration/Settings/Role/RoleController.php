@@ -21,7 +21,9 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('administration.settings.role.create');
+        $permissionGroups = PermissionGroup::with(['permissions'])->get();
+        // dd($permissionGroups);
+        return view('administration.settings.role.create', compact(['permissionGroups']));
     }
 
     /**

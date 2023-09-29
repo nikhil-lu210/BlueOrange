@@ -38,18 +38,67 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Create New Permission</h5>
+                <h5 class="mb-0">Create New Role</h5>
         
                 <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.settings.rolepermission.permission.index') }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                        All Permissions
+                    <a href="{{ route('administration.settings.rolepermission.role.index') }}" class="btn btn-sm btn-primary">
+                        <span class="tf-icon ti ti-circle ti-xs me-1"></span>
+                        All Roles
                     </a>
                 </div>
             </div>
             <div class="card-body">
-                
-            </div>
+                <form id="addRoleForm" class="row g-3" onsubmit="return false">
+                    <div class="col-12 mb-4">
+                        <label class="form-label" for="name">Role Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="Enter a role name" tabindex="-1" />
+                    </div>
+                    <div class="col-12">
+                        <h5>Role Permissions</h5>
+                        <!-- Permission table -->
+                        <div class="table-responsive">
+                            <table class="table table-flush-spacing">
+                                <tbody>
+                                    <tr>
+                                        <td class="text-nowrap fw-medium">Superadmin Access <i class="ti ti-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Allows a full access to the system"></i></td>
+                                        <td>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="selectAllPermissions" />
+                                                <label class="form-check-label" for="selectAllPermissions">
+                                                    Select All Permissions
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    @foreach ($permissionGroups as $key => $group) 
+                                        <tr>
+                                            <td class="text-nowrap fw-medium">{{ $group->name }}</td>
+                                            <td>
+                                                <div class="d-flex">
+                                                    @foreach ($group->permissions as $sl => $permission) 
+                                                        <div class="form-check me-3 me-lg-5">
+                                                            <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" />
+                                                            <label class="form-check-label" for="permission{{ $permission->id }}">
+                                                                {{ $permission->name }}
+                                                            </label>
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Permission table -->
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary float-end">Add New Role</button>
+                    </div>
+                </form>
+                <!--/ Add role form -->
+            </div>            
         </div>        
     </div>
 </div>
@@ -65,6 +114,24 @@
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Custom Script Here
-    </script>
+        $(document).ready(function () {
+            // When the "Select All Permissions" checkbox is clicked
+            $("#selectAllPermissions").click(function () {
+                // Get the state of the "Select All Permissions" checkbox
+                var selectAllChecked = $(this).prop("checked");
+    
+                // Set the state of all other permission checkboxes to match
+                $("input[name='permissions[]']").prop("checked", selectAllChecked);
+            });
+    
+            // When any permission checkbox is clicked
+            $("input[name='permissions[]']").click(function () {
+                // Check if any permission checkbox is unchecked
+                var anyUnchecked = $("input[name='permissions[]']:not(:checked)").length > 0;
+    
+                // Update the state of "Select All Permissions" accordingly
+                $("#selectAllPermissions").prop("checked", !anyUnchecked);
+            });
+        });
+    </script>    
 @endsection
