@@ -55,22 +55,44 @@
                     <thead>
                         <tr>
                             <th>Sl.</th>
-                            <th>Avatar</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Contact No</th>
-                            <th>Status</th>
+                            <th>Module</th>
+                            <th>Permissions</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th>Sl.</th>
-                            <td>Avatar</td>
-                            <td>Name</td>
-                            <td>Email</td>
-                            <td>Contact No</td>
-                            <td>Status</td>
-                        </tr>
+                        @foreach ($modules as $key => $module) 
+                            <tr>
+                                <th>{{ serial($modules, $key) }}</th>
+                                <td>{{ $module->name }}</td>
+                                <td>
+                                    @foreach ($module->permissions as $permission)
+                                        <span class="badge bg-label-primary">{{ $permission->name }}</span>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    <div class="d-inline-block">
+                                        <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="text-primary ti ti-dots-vertical"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                                            <a href="javascript:void(0);" class="dropdown-item">
+                                                <i class="text-primary ti ti-pencil"></i> 
+                                                Edit
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a href="javascript:void(0);" class="dropdown-item text-danger delete-record">
+                                                <i class="ti ti-trash"></i> 
+                                                Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <a href="{{ route('administration.settings.rolepermission.permission.module.show', ['module' => $module]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                        <i class="text-primary ti ti-info-hexagon"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

@@ -11,6 +11,8 @@ class PermissionModule extends Model
 {
     use HasFactory;
 
+    protected $fillable = ['name'];
+
 
     /**
      * Get the permissions for the module.
