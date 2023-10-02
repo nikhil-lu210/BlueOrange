@@ -7,13 +7,13 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class PermissionGroup extends Model
+class PermissionModule extends Model
 {
     use HasFactory;
 
 
     /**
-     * Get the permissions for the blog post.
+     * Get the permissions for the module.
      */
     public function permissions(): HasMany
     {

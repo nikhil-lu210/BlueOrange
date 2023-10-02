@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Administration\Settings\Role;
 
 use App\Http\Controllers\Controller;
-use App\Models\PermissionGroup;
+use App\Models\PermissionModule;
 use Illuminate\Http\Request;
 
 class RoleController extends Controller
@@ -21,9 +21,9 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $permissionGroups = PermissionGroup::with(['permissions'])->get();
-        // dd($permissionGroups);
-        return view('administration.settings.role.create', compact(['permissionGroups']));
+        $modules = PermissionModule::with(['permissions'])->get();
+        // dd($modules);
+        return view('administration.settings.role.create', compact(['modules']));
     }
 
     /**

@@ -59,10 +59,13 @@
                         <!-- Permission table -->
                         <div class="table-responsive">
                             <table class="table table-flush-spacing">
-                                <tbody>
+                                <thead>
                                     <tr>
-                                        <td class="text-nowrap fw-medium">Superadmin Access <i class="ti ti-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Allows a full access to the system"></i></td>
-                                        <td>
+                                        <td class="bg-white text-nowrap fw-medium">
+                                            Superadmin Access 
+                                            <i class="ti ti-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Allows a full access to the system"></i>
+                                        </td>
+                                        <td class="bg-white" colspan="4">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="selectAllPermissions" />
                                                 <label class="form-check-label" for="selectAllPermissions">
@@ -71,22 +74,23 @@
                                             </div>
                                         </td>
                                     </tr>
-
-                                    @foreach ($permissionGroups as $key => $group) 
+                                </thead>
+                                <tbody>
+                                    @foreach ($modules as $key => $module) 
                                         <tr>
-                                            <td class="text-nowrap fw-medium">{{ $group->name }}</td>
+                                            <td class="text-nowrap fw-medium">{{ $module->name }}</td>
+                                            @foreach ($module->permissions as $sl => $permission) 
                                             <td>
                                                 <div class="d-flex">
-                                                    @foreach ($group->permissions as $sl => $permission) 
-                                                        <div class="form-check me-3 me-lg-5">
-                                                            <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" />
-                                                            <label class="form-check-label" for="permission{{ $permission->id }}">
-                                                                {{ $permission->name }}
-                                                            </label>
-                                                        </div>
-                                                    @endforeach
+                                                    <div class="form-check me-3 me-lg-5">
+                                                        <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" />
+                                                        <label class="form-check-label" for="permission{{ $permission->id }}">
+                                                            {{ $permission->name }}
+                                                        </label>
+                                                    </div>
                                                 </div>
                                             </td>
+                                            @endforeach
                                         </tr>
                                     @endforeach
                                 </tbody>
