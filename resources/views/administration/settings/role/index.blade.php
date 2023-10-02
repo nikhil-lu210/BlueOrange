@@ -37,76 +37,61 @@
 @section('content')
 
 <!-- Start row -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="card mb-4">
-            <div class="card-header header-elements">
-                <h5 class="mb-0">All Roles</h5>
-        
-                <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.settings.rolepermission.role.create') }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                        Create Role
-                    </a>
+<div class="row g-4">
+    @foreach ($roles as $role) 
+        <div class="col-xl-4 col-lg-6 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="fw-normal mb-2">Total <strong>{{ $role->users->count() }}</strong> Users</h6>
+                        <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
+                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Vinnie Mostowy" class="avatar avatar-sm pull-up">
+                                <img class="rounded-circle" src="{{ asset('assets/img/avatars/5.png') }}" alt="Avatar"/>
+                            </li>
+                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Allen Rieske" class="avatar avatar-sm pull-up">
+                                <img class="rounded-circle" src="{{ asset('assets/img/avatars/12.png') }}" alt="Avatar"/>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-end mt-1">
+                        <div class="role-heading">
+                            <h4 class="mb-1">{{ $role->name }}</h4>
+                            <span class="role-edit-modal">
+                                <span>Total Permissions: <strong>{{ $role->permissions->count() }}</strong></span>
+                            </span>
+                        </div>
+                        <div>
+                            <a href="{{ route('administration.settings.rolepermission.role.edit', ['role' => $role]) }}" class="text-muted" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Edit Role">
+                                <i class="ti ti-edit ti-md text-info"></i>
+                            </a>
+                            <a href="{{ route('administration.settings.rolepermission.role.show', ['role' => $role]) }}" class="text-muted" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Show Role Details">
+                                <i class="ti ti-info-hexagon ti-md text-primary"></i>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th>#01</th>
-                            <td>
-                                <div class="d-flex justify-content-start align-items-center user-name">
-                                    <div class="avatar-wrapper">
-                                        <div class="avatar me-2">
-                                            <img src="https://picsum.photos/200/300.jpg" alt="Avatar" class="rounded-circle">
-                                        </div>
-                                    </div>
-                                    <div class="d-flex flex-column">
-                                        <a href="#" class="emp_name text-truncate">Evangelina Carnock</a>
-                                        <small class="emp_post text-truncate text-muted">Cost Accountant</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>demomail@email.com</td>
-                            <td>
-                                <span class="badge bg-label-success">Active</span>
-                            </td>
-                            <td>
-                                <div class="d-inline-block">
-                                    <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="text-primary ti ti-dots-vertical"></i>
-                                    </a>
-                                    <div class="dropdown-menu dropdown-menu-end m-0" style="">
-                                        <a href="javascript:void(0);" class="dropdown-item">
-                                            <i class="text-primary ti ti-pencil"></i> 
-                                            Edit
-                                        </a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="javascript:void(0);" class="dropdown-item text-danger delete-record">
-                                            <i class="ti ti-trash"></i> 
-                                            Delete
-                                        </a>
-                                    </div>
-                                </div>
-                                <a href="javascript:void(0);" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                    <i class="text-primary ti ti-info-hexagon"></i>
-                                </a>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+        </div>
+    @endforeach
+
+    <div class="col-xl-4 col-lg-6 col-md-6">
+        <div class="card h-100">
+            <div class="row h-100">
+                <div class="col-sm-5">
+                    <div class="d-flex align-items-end h-100 justify-content-center mt-sm-0 mt-3">
+                        <img src="{{ asset('assets/img/illustrations/add-new-roles.png') }}" class="img-fluid mt-sm-4 mt-md-0" alt="add-new-roles" width="83" />
+                    </div>
+                </div>
+                <div class="col-sm-7">
+                    <div class="card-body text-sm-end text-center ps-sm-0">
+                        <a href="{{ route('administration.settings.rolepermission.role.create') }}" class="btn btn-primary mb-2 text-nowrap add-new-role">
+                            Add New Role
+                        </a>
+                        <p class="mb-0 mt-1">Add role, if it does not exist</p>
+                    </div>
+                </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->

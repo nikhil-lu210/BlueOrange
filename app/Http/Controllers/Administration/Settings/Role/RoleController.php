@@ -18,7 +18,9 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return view('administration.settings.role.index');
+        $roles = Role::with(['permissions'])->get();
+        // dd($roles);
+        return view('administration.settings.role.index', compact(['roles']));
     }
 
     /**
@@ -60,32 +62,32 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Role $role)
     {
-        //
+        dd($role);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Role $role)
     {
-        //
+        dd($role);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Role $role)
     {
-        //
+        dd($request->all(), $role);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Role $role)
     {
-        //
+        dd($role);
     }
 }
