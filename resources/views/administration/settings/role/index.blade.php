@@ -19,13 +19,16 @@
     <style>
     /* Custom CSS Here */
     .more-user-avatar {
-        background-color: #333333;
+        background-color: #dddddd;
         border-radius: 50px;
         text-align: center;
         padding-top: 5px;
+        border: 1px solid #333333;
     }
     .more-user-avatar small {
         font-size: 12px;
+        color: #333333;
+        font-weight: bold;
     }
     </style>
 @endsection
@@ -58,7 +61,7 @@
                                 <img class="rounded-circle" src="{{ asset('assets/img/avatars/5.png') }}" alt="Avatar"/>
                             </li>
                             <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Allen Rieske" class="avatar avatar-sm pull-up more-user-avatar">
-                                <small class="text-white">30+</small>
+                                <small>30+</small>
                             </li>
                         </ul>
                     </div>
