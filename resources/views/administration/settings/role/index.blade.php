@@ -18,6 +18,15 @@
     {{--  External CSS  --}}
     <style>
     /* Custom CSS Here */
+    .more-user-avatar {
+        background-color: #333333;
+        border-radius: 50px;
+        text-align: center;
+        padding-top: 5px;
+    }
+    .more-user-avatar small {
+        font-size: 12px;
+    }
     </style>
 @endsection
 
@@ -48,8 +57,8 @@
                             <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Vinnie Mostowy" class="avatar avatar-sm pull-up">
                                 <img class="rounded-circle" src="{{ asset('assets/img/avatars/5.png') }}" alt="Avatar"/>
                             </li>
-                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Allen Rieske" class="avatar avatar-sm pull-up">
-                                <img class="rounded-circle" src="{{ asset('assets/img/avatars/12.png') }}" alt="Avatar"/>
+                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Allen Rieske" class="avatar avatar-sm pull-up more-user-avatar">
+                                <small class="text-white">30+</small>
                             </li>
                         </ul>
                     </div>
