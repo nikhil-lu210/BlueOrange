@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers\Administration\Settings\Role;
 
-use App\Http\Controllers\Controller;
-use App\Models\PermissionModule;
+use Exception;
 use Illuminate\Http\Request;
+use App\Models\PermissionModule;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
+use Spatie\Permission\Models\Permission;
+use App\Http\Requests\Administration\Settings\Role\RoleStoreRequest;
 
 class RoleController extends Controller
 {
@@ -29,9 +34,27 @@ class RoleController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RoleStoreRequest $request)
     {
-        //
+        // dd($request->all());
+        try {
+            DB::transaction(function() use ($request) {
+                $role = Role::create([
+                    'name' => $request->name,
+                ]);
+                
+                $permissionIds = $request->input('permissions', []);
+                
+                $permissions = Permission::whereIn('id', $permissionIds)->get();
+                $role->syncPermissions($permissions);
+            }, 5);
+
+            toast('Role Has Been Created.','success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            toast($e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
 
     /**

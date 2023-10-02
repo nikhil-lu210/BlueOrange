@@ -48,7 +48,7 @@
                 </div>
             </div>
             <div class="card-body">
-                <form action="#" method="post" autocomplete="off">
+                <form action="{{ route('administration.settings.rolepermission.role.store') }}" method="post" autocomplete="off">
                     @csrf
                     <div class="col-12 mb-4">
                         <label class="form-label" for="name">Role Name</label>
@@ -80,16 +80,16 @@
                                         <tr>
                                             <td class="text-nowrap fw-medium">{{ $module->name }}</td>
                                             @foreach ($module->permissions as $sl => $permission) 
-                                            <td>
-                                                <div class="d-flex">
-                                                    <div class="form-check me-3 me-lg-5">
-                                                        <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" />
-                                                        <label class="form-check-label" for="permission{{ $permission->id }}">
-                                                            {{ $permission->name }}
-                                                        </label>
+                                                <td>
+                                                    <div class="d-flex">
+                                                        <div class="form-check me-3 me-lg-5">
+                                                            <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" value="{{ $permission->id }}" />
+                                                            <label class="form-check-label" for="permission{{ $permission->id }}">
+                                                                {{ $permission->name }}
+                                                            </label>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            </td>
+                                                </td>
                                             @endforeach
                                         </tr>
                                     @endforeach
