@@ -48,7 +48,8 @@
                 </div>
             </div>
             <div class="card-body">
-                <form id="addRoleForm" class="row g-3" onsubmit="return false">
+                <form action="#" method="post" autocomplete="off">
+                    @csrf
                     <div class="col-12 mb-4">
                         <label class="form-label" for="name">Role Name</label>
                         <input type="text" id="name" name="name" class="form-control" placeholder="Enter a role name" tabindex="-1" />
