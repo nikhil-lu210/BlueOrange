@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Create New Permission'))
+@section('page_title', __('Create New Role'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -20,21 +20,21 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Create New Permission') }}</b>
+    <b class="text-uppercase">{{ __('Create New Role') }}</b>
 @endsection
 
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Role & Permission') }}</li>
-    <li class="breadcrumb-item">{{ __('Permission') }}</li>
-    <li class="breadcrumb-item active">{{ __('Create New Permission') }}</li>
+    <li class="breadcrumb-item">{{ __('Role') }}</li>
+    <li class="breadcrumb-item active">{{ __('Create New Role') }}</li>
 @endsection
 
 
 @section('content')
 
 <!-- Start row -->
-<div class="row">
+<div class="row justify-content-center">
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">

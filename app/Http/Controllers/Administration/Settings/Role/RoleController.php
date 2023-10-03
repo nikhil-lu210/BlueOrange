@@ -64,7 +64,19 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
-        dd($role);
+        $permissionModules = PermissionModule::whereHas('permissions', function ($query) use ($role) {
+                $query->whereHas('roles', function ($roleQuery) use ($role) {
+                    $roleQuery->where('name', $role->name);
+                });
+            })
+            ->with(['permissions' => function ($query) use ($role) {
+                $query->whereHas('roles', function ($roleQuery) use ($role) {
+                    $roleQuery->where('name', $role->name);
+                });
+            }])
+        ->get();
+        // dd($permissions[0]->permissions);
+        return view('administration.settings.role.show', compact(['role', 'permissionModules']));
     }
 
     /**

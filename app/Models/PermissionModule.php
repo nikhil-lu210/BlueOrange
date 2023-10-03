@@ -19,6 +19,6 @@ class PermissionModule extends Model
      */
     public function permissions(): HasMany
     {
-        return $this->hasMany(Permission::class);
+        return $this->hasMany(Permission::class, 'permission_module_id');
     }
 }
