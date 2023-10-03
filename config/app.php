@@ -185,16 +185,6 @@ return [
         /*
          * Package Service Providers...
          */
-
-        /*
-         * Application Service Providers...
-         */
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
-
         // laravel-ide-helper (https://github.com/barryvdh/laravel-ide-helper)
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
@@ -204,6 +194,17 @@ return [
         // browner12/helpers (https://github.com/browner12/helpers)
         browner12\helpers\HelperServiceProvider::class,
 
+        // Spatie Permission (https://spatie.be/docs/laravel-permission/v5/installation-laravel)
+        Spatie\Permission\PermissionServiceProvider::class,
+
+        /*
+         * Application Service Providers...
+         */
+        App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
+        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\EventServiceProvider::class,
+        App\Providers\RouteServiceProvider::class,
     ],
 
     /*

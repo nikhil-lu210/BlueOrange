@@ -10,3 +10,8 @@
     width: 10px !important;
     margin-left: 5px !important;
 }
+
+body.swal2-toast-shown .swal2-container.swal2-top-end, 
+body.swal2-toast-shown .swal2-container.swal2-top-right {
+    z-index: 9999999 !important;
+}

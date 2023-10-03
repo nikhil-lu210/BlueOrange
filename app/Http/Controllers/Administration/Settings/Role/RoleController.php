@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers\Administration\Settings\Role;
 
-use App\Http\Controllers\Controller;
-use App\Models\PermissionGroup;
+use Exception;
 use Illuminate\Http\Request;
+use App\Models\PermissionModule;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
+use Spatie\Permission\Models\Permission;
+use App\Http\Requests\Administration\Settings\Role\RoleStoreRequest;
+use App\Http\Requests\Administration\Settings\Role\RoleUpdateRequest;
 
 class RoleController extends Controller
 {
@@ -13,7 +19,9 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return view('administration.settings.role.index');
+        $roles = Role::with(['permissions'])->get();
+        // dd($roles);
+        return view('administration.settings.role.index', compact(['roles']));
     }
 
     /**
@@ -21,46 +29,100 @@ class RoleController extends Controller
      */
     public function create()
     {
-        return view('administration.settings.role.create');
+        $modules = PermissionModule::with(['permissions'])->get();
+        // dd($modules);
+        return view('administration.settings.role.create', compact(['modules']));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RoleStoreRequest $request)
     {
-        //
+        // dd($request->all());
+        try {
+            DB::transaction(function() use ($request) {
+                $role = Role::create([
+                    'name' => $request->name,
+                ]);
+                
+                $permissionIds = $request->input('permissions', []);
+                
+                $permissions = Permission::whereIn('id', $permissionIds)->get();
+                $role->syncPermissions($permissions);
+            }, 5);
+
+            toast('Role Has Been Created.','success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            toast($e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Role $role)
     {
-        //
+        $permissionModules = PermissionModule::whereHas('permissions', function ($query) use ($role) {
+                $query->whereHas('roles', function ($roleQuery) use ($role) {
+                    $roleQuery->where('name', $role->name);
+                });
+            })
+            ->with(['permissions' => function ($query) use ($role) {
+                $query->whereHas('roles', function ($roleQuery) use ($role) {
+                    $roleQuery->where('name', $role->name);
+                });
+            }])
+        ->get();
+        // dd($permissions[0]->permissions);
+        return view('administration.settings.role.show', compact(['role', 'permissionModules']));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Role $role)
     {
-        //
+        $modules = PermissionModule::with(['permissions'])->get();
+        // dd($modules);
+        return view('administration.settings.role.edit', compact(['modules', 'role']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(RoleUpdateRequest $request, Role $role)
     {
-        //
+        // dd($request->all(), $role);
+        try {
+            DB::transaction(function() use ($request, $role) {
+                $role->update([
+                    'name' => $request->name,
+                    'updated_at' => now()
+                ]);
+                
+                $permissionIds = $request->input('permissions', []);
+                
+                $permissions = Permission::whereIn('id', $permissionIds)->get();
+                
+                $role->syncPermissions($permissions);
+            }, 5);
+        
+            toast('Role Has Been Updated.','success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            toast($e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }        
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Role $role)
     {
-        //
+        dd($role);
     }
 }

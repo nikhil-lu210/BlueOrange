@@ -27,6 +27,22 @@
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Settings</span>
         </li>
+
+        <!-- User Management -->
+        <li class="menu-item {{ request()->is('users*') ? 'active open' : '' }}">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons ti ti-user-shield"></i>
+                <div data-i18n="User Management">User Management</div>
+            </a>
+            <ul class="menu-sub">
+                <li class="menu-item {{ request()->is('users/all*') ? 'active' : '' }}">
+                    <a href="#" class="menu-link">All Users</a>
+                </li>
+                <li class="menu-item {{ request()->is('users/create*') ? 'active' : '' }}">
+                    <a href="#" class="menu-link">Add New User</a>
+                </li>
+            </ul>
+        </li>
         
         <!-- Role & Permission -->
         <li class="menu-item {{ request()->is('settings/rolepermission*') ? 'active open' : '' }}">
