@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Create New Role'))
+@section('page_title', __('Update Role'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -20,14 +20,20 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Create New Role') }}</b>
+    <b class="text-uppercase">{{ __('Update Role') }}</b>
 @endsection
 
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Role & Permission') }}</li>
     <li class="breadcrumb-item">{{ __('Role') }}</li>
-    <li class="breadcrumb-item active">{{ __('Create New Role') }}</li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('administration.settings.rolepermission.role.index') }}">{{ __('All Roles') }}</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('administration.settings.rolepermission.role.show', ['role' => $role]) }}">{{ $role->name }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ __('Update Role') }}</li>
 @endsection
 
 
@@ -38,21 +44,34 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Create New Role</h5>
+                <h5 class="mb-0">Update Role</h5>
         
                 <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.settings.rolepermission.role.index') }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-circle ti-xs me-1"></span>
-                        All Roles
+                    <a href="{{ route('administration.settings.rolepermission.role.show', ['role' => $role]) }}" class="btn btn-sm btn-primary">
+                        <span class="tf-icon ti ti-arrow-left ti-xs me-1"></span>
+                        Back
                     </a>
                 </div>
             </div>
             <div class="card-body">
-                <form action="{{ route('administration.settings.rolepermission.role.store') }}" method="post" autocomplete="off">
+                <form action="{{ route('administration.settings.rolepermission.role.update', ['role' => $role]) }}" method="post" autocomplete="off">
                     @csrf
+                    <div class="row">
+                        <div class="col-12">
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
                     <div class="col-12 mb-4">
-                        <label class="form-label" for="name">Role Name</label>
-                        <input type="text" id="name" name="name" class="form-control" placeholder="Enter a role name" tabindex="-1" />
+                        <label class="form-label" for="name">Role Name <strong class="text-danger">*</strong></label>
+                        <input type="text" name="name" value="{{ $role->name }}" class="form-control" placeholder="Enter a role name" tabindex="-1" required />
                     </div>
                     <div class="col-12">
                         <h5>Role Permissions</h5>
@@ -83,7 +102,7 @@
                                                 <td>
                                                     <div class="d-flex">
                                                         <div class="form-check me-3 me-lg-5">
-                                                            <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" value="{{ $permission->id }}" />
+                                                            <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" value="{{ $permission->id }}" {{ $role->hasPermissionTo($permission) ? 'checked' : '' }} />
                                                             <label class="form-check-label" for="permission{{ $permission->id }}">
                                                                 {{ $permission->name }}
                                                             </label>
@@ -99,11 +118,11 @@
                         <!-- Permission table -->
                     </div>
                     <div class="col-12 mt-4">
-                        <button type="submit" class="btn btn-primary float-end">Add New Role</button>
+                        <button type="submit" class="btn btn-primary float-end">Update Role</button>
                     </div>
                 </form>
                 <!--/ Add role form -->
-            </div>
+            </div>            
         </div>        
     </div>
 </div>

@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Administration\Settings\Role;
 
+use Illuminate\Validation\Rule;
 use Illuminate\Foundation\Http\FormRequest;
 
 class RoleUpdateRequest extends FormRequest
@@ -11,7 +12,7 @@ class RoleUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +22,24 @@ class RoleUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $roleId = $this->route('role')->id;
         return [
-            //
+            'name' => [
+                'required',
+                'string',
+                Rule::unique('roles')->ignore($roleId)
+                // Rule::unique('roles')->ignore($roleId)->where(function ($query) {
+                //     $query->whereNull('deleted_at');
+                // }),
+            ],
+            'permissions' => ['required', 'array'],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'permissions.required' => 'You did not select any permission. Please select any permission.'
         ];
     }
 }

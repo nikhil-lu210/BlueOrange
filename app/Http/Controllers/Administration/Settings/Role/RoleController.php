@@ -10,6 +10,7 @@ use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Spatie\Permission\Models\Permission;
 use App\Http\Requests\Administration\Settings\Role\RoleStoreRequest;
+use App\Http\Requests\Administration\Settings\Role\RoleUpdateRequest;
 
 class RoleController extends Controller
 {
@@ -84,15 +85,36 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        dd($role);
+        $modules = PermissionModule::with(['permissions'])->get();
+        // dd($modules);
+        return view('administration.settings.role.edit', compact(['modules', 'role']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Role $role)
+    public function update(RoleUpdateRequest $request, Role $role)
     {
-        dd($request->all(), $role);
+        // dd($request->all(), $role);
+        try {
+            DB::transaction(function() use ($request, $role) {
+                $role->update([
+                    'name' => $request->name,
+                ]);
+                
+                $permissionIds = $request->input('permissions', []);
+                
+                $permissions = Permission::whereIn('id', $permissionIds)->get();
+                
+                $role->syncPermissions($permissions);
+            }, 5);
+        
+            toast('Role Has Been Updated.','success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            toast($e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }        
     }
 
     /**

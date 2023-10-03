@@ -15,5 +15,5 @@ Route::controller(RoleController::class)
             Route::post('/store', 'store')->name('store');
             Route::get('/show/{role}', 'show')->name('show');
             Route::get('/edit/{role}', 'edit')->name('edit');
-            Route::post('/update', 'update')->name('update');
+            Route::post('/update/{role}', 'update')->name('update');
         });
