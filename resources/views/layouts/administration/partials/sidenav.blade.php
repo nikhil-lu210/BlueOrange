@@ -36,10 +36,10 @@
             </a>
             <ul class="menu-sub">
                 <li class="menu-item {{ request()->is('users/all*') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">All Users</a>
+                    <a href="{{ route('administration.settings.user.index') }}" class="menu-link">All Users</a>
                 </li>
                 <li class="menu-item {{ request()->is('users/create*') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">Add New User</a>
+                    <a href="{{ route('administration.settings.user.create') }}" class="menu-link">Add New User</a>
                 </li>
             </ul>
         </li>
