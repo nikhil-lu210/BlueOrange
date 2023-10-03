@@ -35,7 +35,9 @@ class PermissionModuleController extends Controller
      */
     public function show(PermissionModule $module)
     {
-        dd($module->permissions);
+        $modules = PermissionModule::orderBy('name', 'asc')->get();
+
+        return view('administration.settings.permission.show', compact(['modules', 'module']));
     }
 
     /**
