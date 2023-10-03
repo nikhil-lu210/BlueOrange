@@ -100,6 +100,7 @@ class RoleController extends Controller
             DB::transaction(function() use ($request, $role) {
                 $role->update([
                     'name' => $request->name,
+                    'updated_at' => now()
                 ]);
                 
                 $permissionIds = $request->input('permissions', []);

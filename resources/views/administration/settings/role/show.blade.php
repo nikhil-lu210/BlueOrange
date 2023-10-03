@@ -53,23 +53,28 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="col-12 mb-4">
+                <div class="col-md-12 mb-4">
                     <div class="row">
                         <div class="col-xl-7 col-12">
                             <dl class="row mb-0">
-                                <dt class="col-sm-4 mb-2 fw-medium text-nowrap">Role Name:</dt>
+                                <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Role Name:</dt>
                                 <dd class="col-sm-8">{{ $role->name }}</dd>
                     
-                                <dt class="col-sm-4 mb-2 fw-medium text-nowrap">Role Assigned:</dt>
+                                <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Role Assigned:</dt>
                                 <dd class="col-sm-8">{{ date_time_ago($role->created_at) }}</dd>
+                    
+                                @if ($role->created_at != $role->updated_at) 
+                                    <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Last Update:</dt>
+                                    <dd class="col-sm-8">{{ date_time_ago($role->updated_at) }}</dd>
+                                @endif
                             </dl>
                         </div>
                         <div class="col-xl-5 col-12">
                             <dl class="row mb-0">
-                                <dt class="col-sm-4 mb-2 fw-medium text-nowrap">Total Permissions:</dt>
+                                <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Total Permissions:</dt>
                                 <dd class="col-sm-8">{{ $role->permissions->count() }}</dd>
                                 
-                                <dt class="col-sm-4 mb-2 fw-medium text-nowrap">Total Users:</dt>
+                                <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Total Users:</dt>
                                 <dd class="col-sm-8">{{ $role->users->count() }}</dd>
                             </dl>
                         </div>
@@ -83,7 +88,7 @@
                             <div class="col-md-8">
                                 <dl class="row mb-0">
                                     @foreach ($permissionModules as $module) 
-                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">{{ $module->name }}:</dt>
+                                        <dt class="col-sm-4 mb-2 fw-bold text-nowrap">{{ $module->name }}:</dt>
                                         <dd class="col-sm-8">
                                             @foreach ($module->permissions as $permission)
                                                 <span class="badge bg-label-primary">{{ $permission->name }}</span>
