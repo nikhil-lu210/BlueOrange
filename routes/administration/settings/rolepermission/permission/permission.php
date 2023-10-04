@@ -11,10 +11,10 @@ Route::controller(PermissionController::class)
         ->prefix('permission')
         ->name('permission.')
         ->group(function () {
-            Route::get('/all', 'index')->name('index');
-            Route::get('/create', 'create')->name('create');
-            Route::post('/store', 'store')->name('store');
-            Route::post('/update', 'update')->name('update');
+            Route::get('/all', 'index')->name('index')->can('Permission Read');
+            Route::get('/create', 'create')->name('create')->can('Permission Create');
+            Route::post('/store', 'store')->name('store')->can('Permission Create');
+            Route::post('/update', 'update')->name('update')->can('Permission Update');
         });
 
 /* ==============================================

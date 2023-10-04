@@ -6,6 +6,9 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
+use Database\Seeders\Role\RolesTableSeeder;
+use Database\Seeders\User\UsersTableSeeder;
+use Database\Seeders\Permission\PermissionsTableSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,14 +17,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        User::create([
-            'name' => 'Demo Admin',
-            'email' => 'admin@mail.com',
-            'email_verified_at' => now(),
-            'password' => '$2y$10$RTQm7niLQVWD8W0CuSezJObIQN2uwi4/2a4ClXQz9mfWXbDBMzViO', // 12345678
-            'remember_token' => Str::random(10),
-        ]);
+        $this->call(PermissionsTableSeeder::class);
+        $this->call(RolesTableSeeder::class);
+        $this->call(UsersTableSeeder::class);
     }
 }
