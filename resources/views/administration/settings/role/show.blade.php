@@ -118,7 +118,6 @@
                             <th>Sl.</th>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -134,33 +133,30 @@
                                             </div>
                                         </div>
                                         <div class="d-flex flex-column">
-                                            <a href="#" class="emp_name text-truncate">Evangelina Carnock</a>
-                                            <small class="emp_post text-truncate text-muted">Cost Accountant</small>
+                                            <a href="#" class="emp_name text-truncate">{{ $user->name }}</a>
+                                            <small class="emp_post text-truncate text-muted">{{ $user->roles[0]->name }}</small>
                                         </div>
                                     </div>
                                 </td>
-                                <td>demomail@email.com</td>
-                                <td>
-                                    <span class="badge bg-label-success">Active</span>
-                                </td>
+                                <td>{{ $user->email }}</td>
                                 <td>
                                     <div class="d-inline-block">
                                         <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="text-primary ti ti-dots-vertical"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end m-0" style="">
-                                            <a href="javascript:void(0);" class="dropdown-item">
+                                            <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="dropdown-item">
                                                 <i class="text-primary ti ti-pencil"></i> 
                                                 Edit
                                             </a>
                                             <div class="dropdown-divider"></div>
-                                            <a href="javascript:void(0);" class="dropdown-item text-danger delete-record">
+                                            <a href="{{ route('administration.settings.user.destroy', ['user' => $user]) }}" class="dropdown-item text-danger delete-record">
                                                 <i class="ti ti-trash"></i> 
                                                 Delete
                                             </a>
                                         </div>
                                     </div>
-                                    <a href="javascript:void(0);" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="{{ route('administration.settings.user.show', ['user' => $user]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>

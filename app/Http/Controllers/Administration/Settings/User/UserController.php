@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Administration\Settings\User;
 
-use App\Http\Controllers\Controller;
+use Hash;
+use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 
 class UserController extends Controller
 {
@@ -32,9 +36,35 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        dd($request->all());
+        // dd($request->all());
+        try {
+            DB::transaction(function() use ($request) {
+                $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
+                $user = User::create([
+                    'userid' => $request->userid,
+                    'first_name' => $request->first_name,
+                    'middle_name' => $request->middle_name,
+                    'last_name' => $request->last_name,
+                    'name' => $fullName,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password)
+                ]);
+
+                // Assign the provided role to the user
+                $role = Role::whereId($request->role_id)->firstOrFail();
+                if ($role) {
+                    $user->assignRole($role);
+                }
+            }, 5);
+
+            toast('A New User Has Been Created.','success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            toast($e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
 
     /**

@@ -77,7 +77,7 @@
                     
                     <div class="row">
                         <div class="mb-3 col-md-6">
-                            <label class="form-label d-block" for="user_id">
+                            <label class="form-label d-block" for="userid">
                                 <span class="float-start">
                                     User ID <strong class="text-danger">*</strong>
                                 </span>
@@ -92,9 +92,9 @@
                             </label>
                             <div class="input-group input-group-merge mt-4 editable-input" id="editableInput">
                                 <span class="input-group-text" style="padding-right: 2px;">UID</span>
-                                <input type="text" id="user_id" name="user_id" class="form-control @error('user_id') is-invalid @enderror" value="{{ old('user_id', '20230201') }}" placeholder="20230201" readonly required/>
+                                <input type="text" id="userid" name="userid" class="form-control @error('userid') is-invalid @enderror" value="{{ old('userid', date('Ymd')) }}" placeholder="20230201" readonly required/>
                             </div>
-                            @error('user_id')
+                            @error('userid')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
@@ -205,7 +205,7 @@
                 $("#doneEditID").removeClass("d-none");
                 $("#editableInput").removeClass("editable-input");
                 
-                $("#user_id").prop("readonly", false);
+                $("#userid").prop("readonly", false);
             });
             
             $("#doneEditID").on("click", function () {
@@ -213,7 +213,7 @@
                 $("#editID").removeClass("d-none");
                 $("#editableInput").addClass("editable-input");
                 
-                $("#user_id").prop("readonly", true);
+                $("#userid").prop("readonly", true);
             });
         });
     </script>
