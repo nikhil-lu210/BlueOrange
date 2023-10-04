@@ -38,10 +38,10 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-        // dd($request->all());
         try {
             DB::transaction(function() use ($request) {
                 $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
+                
                 $user = User::create([
                     'userid' => $request->userid,
                     'first_name' => $request->first_name,
@@ -52,19 +52,18 @@ class UserController extends Controller
                     'password' => Hash::make($request->password)
                 ]);
 
-                // Assign the provided role to the user
-                $role = Role::whereId($request->role_id)->firstOrFail();
-                if ($role) {
-                    $user->assignRole($role);
-                }
+                $role = Role::findOrFail($request->role_id);
+                $user->assignRole($role);
             }, 5);
 
             toast('A New User Has Been Created.','success');
             return redirect()->back();
         } catch (Exception $e) {
-            toast($e->getMessage(), 'error');
+            alert('Opps! Error.', $e->getMessage(), 'error');
             return redirect()->back()->withInput();
         }
+
+        return redirect()->back();
     }
 
     /**

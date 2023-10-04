@@ -3,6 +3,8 @@
 namespace App\Http\Requests\Administration\Settings\User;
 
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UserStoreRequest extends FormRequest
@@ -22,14 +24,22 @@ class UserStoreRequest extends FormRequest
      */
     public function rules()
     {
+        Validator::extend('unique_userid', function ($attribute, $value, $parameters, $validator) {
+            $userIdWithPrefix = 'UID' . $value;
+            $existingUserId = DB::table($parameters[0])
+                ->where($parameters[1], $userIdWithPrefix)
+                ->first();
+
+            return $existingUserId === null;
+        });
+        
         return [
-            'avatar' => [
-                'nullable',
-                'image',
-                'mimes:jpeg,png,jpg,gif',
-                'max:2048',
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'userid' => [
+                'required',
+                'string',
+                'unique_userid:users,userid', // Custom validation rule
             ],
-            'userid' => ['required', 'unique:users'],
             'first_name' => ['required', 'string'],
             'middle_name' => ['nullable', 'string'],
             'last_name' => ['required', 'string'],
@@ -41,8 +51,7 @@ class UserStoreRequest extends FormRequest
     public function messages()
     {
         return [
-            'role_id.exists' => 'The selected role does not exist.',
-            'user_id.unique' => 'The User ID already exists in database. It should be Unique.',
+            'userid.unique_userid' => 'The User ID already exists in database. It should be Unique.',
         ];
     }
 }
