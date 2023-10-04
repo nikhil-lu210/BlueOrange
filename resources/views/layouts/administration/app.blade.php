@@ -40,6 +40,20 @@
                             @include('layouts.administration.partials.breadcrumb')
                             <!-- End Breadcrumbbar -->
                             
+                            @if ($errors->any())
+                                <div class="row justify-content-center">
+                                    <div class="col-md-8">
+                                        @foreach ($errors->all() as $error) 
+                                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                                <i class="ti ti-ban mr-3" style="margin-top: -3px;"></i>
+                                                {{ $error }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
                             <!-- Start row -->
                             @yield('content')
                             <!-- End row -->

@@ -29,17 +29,17 @@
         </li>
 
         <!-- User Management -->
-        <li class="menu-item {{ request()->is('users*') ? 'active open' : '' }}">
+        <li class="menu-item {{ request()->is('settings/user*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-user-shield"></i>
                 <div data-i18n="User Management">User Management</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item {{ request()->is('users/all*') ? 'active' : '' }}">
+                <li class="menu-item {{ request()->is('settings/user/all*') ? 'active' : '' }}">
                     <a href="{{ route('administration.settings.user.index') }}" class="menu-link">All Users</a>
                 </li>
-                <li class="menu-item {{ request()->is('users/create*') ? 'active' : '' }}">
-                    <a href="{{ route('administration.settings.user.create') }}" class="menu-link">Add New User</a>
+                <li class="menu-item {{ request()->is('settings/user/create*') ? 'active' : '' }}">
+                    <a href="{{ route('administration.settings.user.create') }}" class="menu-link">Create New User</a>
                 </li>
             </ul>
         </li>
