@@ -11,11 +11,11 @@ Route::controller(UserController::class)
         ->prefix('user')
         ->name('user.')
         ->group(function () {
-            Route::get('/all', 'index')->name('index');
-            Route::get('/create', 'create')->name('create');
-            Route::post('/store', 'store')->name('store');
-            Route::get('/show/{user}', 'show')->name('show');
-            Route::get('/edit/{user}', 'edit')->name('edit');
-            Route::post('/update/{user}', 'update')->name('update');
-            Route::get('/destroy/{user}', 'destroy')->name('destroy');
+            Route::get('/all', 'index')->name('index')->can('User Read');
+            Route::get('/create', 'create')->name('create')->can('User Create');
+            Route::post('/store', 'store')->name('store')->can('User Create');
+            Route::get('/show/{user}', 'show')->name('show')->can('User Read');
+            Route::get('/edit/{user}', 'edit')->name('edit')->can('User Update');
+            Route::post('/update/{user}', 'update')->name('update')->can('User Update');
+            Route::get('/destroy/{user}', 'destroy')->name('destroy')->can('User Delete');
         });

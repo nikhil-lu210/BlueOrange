@@ -11,7 +11,7 @@ Route::controller(PermissionModuleController::class)
         ->prefix('module')
         ->name('module.')
         ->group(function () {
-            Route::post('/store', 'store')->name('store');
-            Route::get('/show/{module}', 'show')->name('show');
-            Route::get('/edit/{module}', 'edit')->name('edit');
+            Route::post('/store', 'store')->name('store')->can('Permission Create');
+            Route::get('/show/{module}', 'show')->name('show')->can('Permission Read');
+            Route::get('/edit/{module}', 'edit')->name('edit')->can('Permission Update');
         });
