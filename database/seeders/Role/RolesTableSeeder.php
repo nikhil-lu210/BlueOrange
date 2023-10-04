@@ -62,15 +62,9 @@ class RolesTableSeeder extends Seeder
                 ];
             } elseif ($role === 'Admin') {
                 $permissions = [
-                    'Permission Create',
                     'Permission Read',
-                    'Permission Update',
-                    'Permission Delete',
                     
-                    'Role Create',
                     'Role Read',
-                    'Role Update',
-                    'Role Delete',
                     
                     'User Create',
                     'User Read',
@@ -79,71 +73,25 @@ class RolesTableSeeder extends Seeder
                 ];
             } elseif ($role === 'HR Manager') {
                 $permissions = [
-                    'Permission Create',
                     'Permission Read',
-                    'Permission Update',
-                    'Permission Delete',
                     
-                    'Role Create',
                     'Role Read',
-                    'Role Update',
-                    'Role Delete',
                     
                     'User Create',
                     'User Read',
                     'User Update',
-                    'User Delete',
                 ];
             } elseif ($role === 'Team Leader') {
                 $permissions = [
-                    'Permission Create',
-                    'Permission Read',
-                    'Permission Update',
-                    'Permission Delete',
-                    
-                    'Role Create',
-                    'Role Read',
-                    'Role Update',
-                    'Role Delete',
-                    
-                    'User Create',
                     'User Read',
-                    'User Update',
-                    'User Delete',
                 ];
             } elseif ($role === 'Employee') {
                 $permissions = [
-                    'Permission Create',
-                    'Permission Read',
-                    'Permission Update',
-                    'Permission Delete',
-                    
-                    'Role Create',
-                    'Role Read',
-                    'Role Update',
-                    'Role Delete',
-                    
-                    'User Create',
                     'User Read',
-                    'User Update',
-                    'User Delete',
                 ];
             } else {
                 $permissions = [
-                    'Permission Create',
-                    'Permission Read',
-                    'Permission Update',
-                    'Permission Delete',
-                    
-                    'Role Create',
-                    'Role Read',
-                    'Role Update',
-                    'Role Delete',
-                    
-                    'User Create',
                     'User Read',
-                    'User Update',
-                    'User Delete',
                 ];
             }
 

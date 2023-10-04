@@ -32,6 +32,22 @@ class UsersTableSeeder extends Seeder
         $developer->assignRole($developerRole);
         
         
+        // Create a superAdmin
+        $superAdmin = User::create([
+            'userid' => strtoupper(Str::random(8)),
+            'first_name' => 'Demo',
+            'last_name' => 'Super Admin',
+            'name' => 'Demo Super Admin',
+            'email' => 'superadmin@mail.com',
+            'password' => Hash::make('12345678'),
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10),
+        ]);
+        // Assign a role to the superAdmin
+        $superAdminRole = Role::findByName('Super Admin');
+        $superAdmin->assignRole($superAdminRole);
+        
+        
         // Create a admin
         $admin = User::create([
             'userid' => strtoupper(Str::random(8)),
