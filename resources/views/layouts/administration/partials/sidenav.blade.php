@@ -91,7 +91,7 @@
         <!-- Shortcuts -->
         <li class="menu-item {{ request()->is('shortcuts*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
-                <i class="menu-icon tf-icons ti ti-layout-grid-add"></i>
+                <i class="menu-icon tf-icons ti ti-share-3"></i>
                 <div data-i18n="Shortcuts">Shortcuts</div>
             </a>
             <ul class="menu-sub">
