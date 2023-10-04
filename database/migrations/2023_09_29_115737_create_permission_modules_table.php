@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 125);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -24,5 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('permission_modules');
+        Schema::table("permission_modules", function ($table) {
+            $table->dropSoftDeletes();
+        });
     }
 };

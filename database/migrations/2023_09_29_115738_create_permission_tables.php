@@ -34,6 +34,7 @@ class CreatePermissionTables extends Migration
             $table->string('name', 125);       // For MySQL 8.0 use string('name', 125);
             $table->string('guard_name', 125); // For MySQL 8.0 use string('guard_name', 125);
             $table->timestamps();
+            $table->softDeletes();
             
             $table->unique(['permission_module_id', 'name'], 'permission_module_id_name_unique');
             $table->unique(['name', 'guard_name']);
@@ -48,6 +49,7 @@ class CreatePermissionTables extends Migration
             $table->string('name');       // For MySQL 8.0 use string('name', 125);
             $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
             $table->timestamps();
+            $table->softDeletes();
             if ($teams || config('permission.testing')) {
                 $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
             } else {
@@ -142,5 +144,13 @@ class CreatePermissionTables extends Migration
         Schema::drop($tableNames['model_has_permissions']);
         Schema::drop($tableNames['roles']);
         Schema::drop($tableNames['permissions']);
+
+        Schema::table("roles", function ($table) {
+            $table->dropSoftDeletes();
+        });
+
+        Schema::table("permissions", function ($table) {
+            $table->dropSoftDeletes();
+        });
     }
 }
