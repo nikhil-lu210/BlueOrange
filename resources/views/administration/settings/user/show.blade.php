@@ -64,7 +64,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <a href="javascript:void(0)" class="btn btn-primary waves-effect waves-light">
+                        <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="btn btn-primary waves-effect waves-light">
                             <i class="ti ti-pencil me-1"></i>
                             Edit User 
                         </a>
