@@ -4,13 +4,14 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('Role Details'))
+@section('page_title', __('User Details'))
 
 @section('css_links')
     {{--  External CSS  --}}
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-profile.css')}}" />
 @endsection
 
 @section('custom_css')
@@ -22,156 +23,95 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Role Details') }}</b>
+    <b class="text-uppercase">{{ __('User Details') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Role & Permission') }}</li>
-    <li class="breadcrumb-item">{{ __('Role') }}</li>
+    <li class="breadcrumb-item">{{ __('User Management') }}</li>
+    <li class="breadcrumb-item">{{ __('Users') }}</li>
     <li class="breadcrumb-item">
-        <a href="{{ route('administration.settings.rolepermission.role.index') }}">{{ __('All Roles') }}</a>
+        <a href="{{ route('administration.settings.user.index') }}">{{ __('All Users') }}</a>
     </li>
-    <li class="breadcrumb-item active">{{ __('Role Details') }}</li>
+    <li class="breadcrumb-item active">{{ __('User Details') }}</li>
 @endsection
 
 
 @section('content')
 
 <!-- Start row -->
-<div class="row justify-content-center">
-    <div class="col-md-12">
+<!-- Header -->
+<div class="row justify-content-center mt-5">
+    <div class="col-md-12 mt-4">
         <div class="card mb-4">
-            <div class="card-header header-elements">
-                <h5 class="mb-0"><strong>{{ $role->name }}</strong> Role's Details</h5>
-        
-                <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.settings.rolepermission.role.edit', ['role' => $role]) }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-edit ti-xs me-1"></span>
-                        Edit Role
-                    </a>
+            <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
+                <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">
+                    <img src="https://demos.pixinvent.com/vuexy-html-laravel-admin-template/demo/assets/img/avatars/14.png" alt="user image" class="d-block h-auto ms-0 ms-sm-4 rounded user-profile-img" />
+                </div>
+                <div class="flex-grow-1 mt-3 mt-sm-5">
+                    <div class="d-flex align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
+                        <div class="user-profile-info">
+                            <h4 class="mb-0">{{ $user->name }}</h4>
+                            <p class="fw-bold text-dark mb-1">ID: <span class="text-primary">{{ $user->userid }}</span></p>
+                            <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
+                                <li class="list-inline-item d-flex gap-1">
+                                    <i class="ti ti-crown"></i> 
+                                    {{ $user->roles[0]->name }}
+                                </li>
+                                <li class="list-inline-item d-flex gap-1">
+                                    <i class="ti ti-calendar"></i> 
+                                    {{ show_date($user->created_at) }}
+                                </li>
+                            </ul>
+                        </div>
+                        <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="btn btn-primary waves-effect waves-light">
+                            <i class="ti ti-pencil me-1"></i>
+                            Edit User 
+                        </a>
+                    </div>
                 </div>
             </div>
-            <div class="card-body">
-                <div class="col-md-12 mb-4">
-                    <div class="row">
-                        <div class="col-xl-7 col-12">
-                            <dl class="row mb-0">
-                                <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Role Name:</dt>
-                                <dd class="col-sm-8">{{ $role->name }}</dd>
-                    
-                                <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Role Assigned:</dt>
-                                <dd class="col-sm-8">{{ date_time_ago($role->created_at) }}</dd>
-                    
-                                @if ($role->created_at != $role->updated_at) 
-                                    <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Last Update:</dt>
-                                    <dd class="col-sm-8">{{ date_time_ago($role->updated_at) }}</dd>
-                                @endif
-                            </dl>
-                        </div>
-                        <div class="col-xl-5 col-12">
-                            <dl class="row mb-0">
-                                <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Total Permissions:</dt>
-                                <dd class="col-sm-8">{{ $role->permissions->count() }}</dd>
-                                
-                                <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Total Users:</dt>
-                                <dd class="col-sm-8">{{ $role->users->count() }}</dd>
-                            </dl>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-12 mt-5">
-                    <h5 class="text-center"><strong>{{ $role->name }}</strong> Role's Permissions</h5>
-                    
-                    <div class="col-md-12 mb-4">
-                        <div class="row justify-content-center">
-                            <div class="col-md-8">
-                                <dl class="row mb-0">
-                                    @foreach ($permissionModules as $module) 
-                                        <dt class="col-sm-4 mb-2 fw-bold text-nowrap">{{ $module->name }}:</dt>
-                                        <dd class="col-sm-8">
-                                            @foreach ($module->permissions as $permission)
-                                                <span class="badge bg-label-primary">{{ $permission->name }}</span>
-                                            @endforeach    
-                                        </dd>
-                                    @endforeach
-                                </dl>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>            
-        </div>        
+        </div>
     </div>
 </div>
+<!--/ Header -->
 
-<div class="row justify-content-center">
+<!-- Navbar pills -->
+<div class="row">
     <div class="col-md-12">
-        <div class="card mb-4">
-            <div class="card-header header-elements">
-                <h5 class="mb-0">All Users of <strong>{{ $role->name }}</strong> Role's</h5>
-            </div>
-            <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($role->users as $key => $user) 
-                            <tr>
-                                <th>#{{ serial($role->users, $key) }}</th>
-                                <td>
-                                    <div class="d-flex justify-content-start align-items-center user-name">
-                                        <div class="avatar-wrapper">
-                                            <div class="avatar me-2">
-                                                <img src="https://picsum.photos/200/300.jpg" alt="Avatar" class="rounded-circle">
-                                            </div>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <a href="#" class="emp_name text-truncate">Evangelina Carnock</a>
-                                            <small class="emp_post text-truncate text-muted">Cost Accountant</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>demomail@email.com</td>
-                                <td>
-                                    <span class="badge bg-label-success">Active</span>
-                                </td>
-                                <td>
-                                    <div class="d-inline-block">
-                                        <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="text-primary ti ti-dots-vertical"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-end m-0" style="">
-                                            <a href="javascript:void(0);" class="dropdown-item">
-                                                <i class="text-primary ti ti-pencil"></i> 
-                                                Edit
-                                            </a>
-                                            <div class="dropdown-divider"></div>
-                                            <a href="javascript:void(0);" class="dropdown-item text-danger delete-record">
-                                                <i class="ti ti-trash"></i> 
-                                                Delete
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <a href="javascript:void(0);" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                        <i class="text-primary ti ti-info-hexagon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>        
+        <ul class="nav nav-pills flex-column flex-sm-row mb-4">
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('settings/user/show/profile*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">
+                    <i class="ti-xs ti ti-user-check me-1"></i> 
+                    Profile
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('settings/user/show/attendance*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.attendance', ['user' => $user]) }}">
+                    <i class="ti-xs ti ti-clock-dollar me-1"></i> 
+                    Attendance
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('settings/user/show/break*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.break', ['user' => $user]) }}">
+                    <i class="ti-xs ti ti-hourglass-empty me-1"></i> 
+                    Breaks
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {{ request()->is('settings/user/show/task*') ? 'active' : '' }}" href="#">
+                    <i class="ti-xs ti ti-subtask me-1"></i> 
+                    Tasks
+                </a>
+            </li>
+        </ul>
     </div>
 </div>
+<!--/ Navbar pills -->
+
+<!-- User Profile Content -->
+@yield('profile_content')
+<!--/ User Profile Content -->
 <!-- End row -->
 
 @endsection
@@ -183,6 +123,7 @@
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
+    <script src="{{asset('assets/js/pages-profile.js')}}"></script>
 @endsection
 
 @section('custom_script')

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
+use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
 
 class UserController extends Controller
 {
@@ -69,9 +70,28 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function showProfile(User $user)
     {
-        dd($user);
+        // dd($user);
+        return view('administration.settings.user.includes.profile', compact(['user']));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function showAttendance(User $user)
+    {
+        // dd($user);
+        return view('administration.settings.user.includes.attendance', compact(['user']));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function showBreak(User $user)
+    {
+        // dd($user);
+        return view('administration.settings.user.includes.break', compact(['user']));
     }
 
     /**
@@ -79,16 +99,41 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        dd($user);
+        $roles = Role::all();
+
+        return view('administration.settings.user.edit', compact(['roles', 'user']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        dd($user);
+        try {
+            DB::transaction(function() use ($request, $user) {
+                $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
+                
+                $user->update([
+                    'first_name' => $request->first_name,
+                    'middle_name' => $request->middle_name,
+                    'last_name' => $request->last_name,
+                    'name' => $fullName,
+                    'email' => $request->email,
+                ]);
+
+                // Sync the user's role
+                $role = Role::findOrFail($request->role_id);
+                $user->syncRoles([$role]);
+            }, 5);
+
+            toast('User information has been updated.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
+
 
     /**
      * Remove the specified resource from storage.
