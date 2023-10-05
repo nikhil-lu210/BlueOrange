@@ -69,9 +69,28 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function showProfile(User $user)
     {
-        dd($user);
+        // dd($user);
+        return view('administration.settings.user.includes.profile', compact(['user']));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function showAttendance(User $user)
+    {
+        // dd($user);
+        return view('administration.settings.user.includes.attendance', compact(['user']));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function showBreak(User $user)
+    {
+        // dd($user);
+        return view('administration.settings.user.includes.break', compact(['user']));
     }
 
     /**
