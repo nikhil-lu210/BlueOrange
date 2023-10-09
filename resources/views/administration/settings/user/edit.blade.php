@@ -57,7 +57,11 @@
                 <form action="{{ route('administration.settings.user.update', ['user' => $user]) }}" method="post" enctype="multipart/form-data" autocomplete="off">
                     @csrf
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
-                        <img src="{{ asset('assets/img/avatars/14.png') }}" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar" />
+                        @if ($user->hasMedia('avatar'))
+                            <img src="{{ $user->getFirstMediaUrl('avatar') }}" alt="{{ $user->name }} Avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
+                        @else
+                            <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ $user->name }} No Avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
+                        @endif
                         <div class="button-wrapper">
                             <label for="upload" class="btn btn-primary me-2 mb-3" tabindex="0">
                                 <span class="d-none d-sm-block">Upload Avatar</span>
@@ -69,7 +73,10 @@
                                 <span class="d-none d-sm-block">Reset</span>
                             </button>
 
-                            <div class="text-muted">Allowed JPG, JPEG or PNG. Max size of 800K</div>
+                            <div class="text-muted">Allowed JPG, JPEG or PNG. Max size of 2MB</div>
+                            @error('avatar')
+                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
+                            @enderror
                         </div>
                     </div>
 

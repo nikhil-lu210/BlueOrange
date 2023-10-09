@@ -34,7 +34,7 @@ class UserStoreRequest extends FormRequest
         });
         
         return [
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'userid' => [
                 'required',
                 'string',
@@ -52,6 +52,8 @@ class UserStoreRequest extends FormRequest
     {
         return [
             'userid.unique_userid' => 'The User ID already exists in database. It should be Unique.',
+            'avatar.mimes' => 'The avatar must be a JPEG, JPG or PNG image file.',
+            'avatar.max' => 'The avatar size should not more then 2MB.',
         ];
     }
 }

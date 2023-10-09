@@ -24,7 +24,7 @@ class UserUpdateRequest extends FormRequest
     {
         $id = $this->route('user')->id;
         return [
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'first_name' => ['required', 'string'],
             'middle_name' => ['nullable', 'string'],
             'last_name' => ['required', 'string'],
@@ -39,7 +39,8 @@ class UserUpdateRequest extends FormRequest
     public function messages()
     {
         return [
-            // 
+            'avatar.mimes' => 'The avatar must be a JPEG, JPG or PNG image file.',
+            'avatar.max' => 'The avatar size should not more then 2MB.',
         ];
     }
 }

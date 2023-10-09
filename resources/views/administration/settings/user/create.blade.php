@@ -69,7 +69,10 @@
                                 <span class="d-none d-sm-block">Reset</span>
                             </button>
 
-                            <div class="text-muted">Allowed JPG, JPEG or PNG. Max size of 800K</div>
+                            <div class="text-muted">Allowed JPG, JPEG or PNG. Max size of 2MB</div>
+                            @error('avatar')
+                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
+                            @enderror
                         </div>
                     </div>
 
