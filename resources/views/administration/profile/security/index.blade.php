@@ -52,7 +52,7 @@
                         <div class="mb-3 col-md-12 form-password-toggle">
                             <label class="form-label" for="old_password">{{ __('Old Password') }} <strong class="text-danger">*</strong></label>
                             <div class="input-group input-group-merge">
-                                <input type="password" minlength="8" id="old_password" name="old_password" value="{{ old('old_password', '12345678') }}" class="form-control @error('old_password') is-invalid @enderror" placeholder="**********" required />
+                                <input type="password" minlength="8" id="old_password" name="old_password" value="{{ old('old_password') }}" class="form-control @error('old_password') is-invalid @enderror" placeholder="**********" required />
                                 <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
                             </div>
                             @error('old_password')
@@ -62,7 +62,7 @@
                         <div class="mb-3 col-md-12 form-password-toggle">
                             <label class="form-label" for="new_password">{{ __('Password') }} <strong class="text-danger">*</strong></label>
                             <div class="input-group input-group-merge">
-                                <input type="password" minlength="8" id="new_password" name="new_password" value="{{ old('new_password', '12345678') }}" class="form-control @error('new_password') is-invalid @enderror" placeholder="**********" required />
+                                <input type="password" minlength="8" id="new_password" name="new_password" value="{{ old('new_password') }}" class="form-control @error('new_password') is-invalid @enderror" placeholder="**********" required />
                                 <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
                             </div>
                             @error('new_password')
@@ -72,7 +72,7 @@
                         <div class="mb-3 col-md-12 form-password-toggle">
                             <label class="form-label" for="new_password_confirmation">{{ __('Password Confirmation') }} <strong class="text-danger">*</strong></label>
                             <div class="input-group input-group-merge">
-                                <input type="password" minlength="8" id="new_password_confirmation" name="new_password_confirmation" value="{{ old('new_password_confirmation', '12345678') }}" class="form-control @error('new_password_confirmation') is-invalid @enderror" placeholder="**********" required/>
+                                <input type="password" minlength="8" id="new_password_confirmation" name="new_password_confirmation" value="{{ old('new_password_confirmation') }}" class="form-control @error('new_password_confirmation') is-invalid @enderror" placeholder="**********" required/>
                                 <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
                             </div>
                             @error('new_password_confirmation')
