@@ -76,7 +76,7 @@
                                             </div>
                                         </div>
                                         <div class="d-flex flex-column">
-                                            <a href="#" class="emp_name text-truncate">{{ $user->name }}</a>
+                                            <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="emp_name text-truncate">{{ $user->name }}</a>
                                             <small class="emp_post text-truncate text-muted">{{ $user->roles[0]->name }}</small>
                                         </div>
                                     </div>
