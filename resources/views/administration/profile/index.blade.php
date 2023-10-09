@@ -4,7 +4,7 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('User Details'))
+@section('page_title', __('My Profile'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -23,17 +23,12 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('User Details') }}</b>
+    <b class="text-uppercase">{{ __('My Profile') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('User Management') }}</li>
-    <li class="breadcrumb-item">{{ __('Users') }}</li>
-    <li class="breadcrumb-item">
-        <a href="{{ route('administration.settings.user.index') }}">{{ __('All Users') }}</a>
-    </li>
-    <li class="breadcrumb-item active">{{ __('User Details') }}</li>
+    <li class="breadcrumb-item active">{{ __('My Profile') }}</li>
 @endsection
 
 
@@ -68,9 +63,9 @@
                                 </li>
                             </ul>
                         </div>
-                        <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="btn btn-primary waves-effect waves-light">
+                        <a href="{{ route('administration.my.profile.edit') }}" class="btn btn-primary waves-effect waves-light">
                             <i class="ti ti-pencil me-1"></i>
-                            Edit User 
+                            Edit Profile 
                         </a>
                     </div>
                 </div>
@@ -85,25 +80,25 @@
     <div class="col-md-12">
         <ul class="nav nav-pills flex-column flex-sm-row mb-4">
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/profile*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">
+                <a class="nav-link {{ request()->is('my/profile*') ? 'active' : '' }}" href="{{ route('administration.my.profile') }}">
                     <i class="ti-xs ti ti-user-check me-1"></i> 
                     Profile
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/attendance*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.attendance', ['user' => $user]) }}">
+                <a class="nav-link {{ request()->is('my/attendance*') ? 'active' : '' }}" href="{{ route('administration.my.attendance') }}">
                     <i class="ti-xs ti ti-clock-dollar me-1"></i> 
                     Attendance
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/break*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.break', ['user' => $user]) }}">
+                <a class="nav-link {{ request()->is('my/break*') ? 'active' : '' }}" href="{{ route('administration.my.break') }}">
                     <i class="ti-xs ti ti-hourglass-empty me-1"></i> 
                     Breaks
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/task*') ? 'active' : '' }}" href="#">
+                <a class="nav-link {{ request()->is('my/task*') ? 'active' : '' }}" href="#">
                     <i class="ti-xs ti ti-subtask me-1"></i> 
                     Tasks
                 </a>

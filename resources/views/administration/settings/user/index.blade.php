@@ -68,11 +68,15 @@
                                     <div class="d-flex justify-content-start align-items-center user-name">
                                         <div class="avatar-wrapper">
                                             <div class="avatar me-2">
-                                                <img src="https://picsum.photos/200/300.jpg" alt="Avatar" class="rounded-circle">
+                                                @if ($user->hasMedia('avatar'))
+                                                    <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $user->name }} Avatar" class="rounded-circle">
+                                                @else
+                                                    <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ $user->name }} No Avatar" class="rounded-circle">
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="d-flex flex-column">
-                                            <a href="#" class="emp_name text-truncate">{{ $user->name }}</a>
+                                            <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="emp_name text-truncate">{{ $user->name }}</a>
                                             <small class="emp_post text-truncate text-muted">{{ $user->roles[0]->name }}</small>
                                         </div>
                                     </div>

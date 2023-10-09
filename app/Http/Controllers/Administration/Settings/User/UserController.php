@@ -39,8 +39,10 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
+        // dd($request->all());
+        $user = NULL;
         try {
-            DB::transaction(function() use ($request) {
+            DB::transaction(function() use ($request, &$user) {
                 $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
                 
                 $user = User::create([
@@ -52,13 +54,19 @@ class UserController extends Controller
                     'email' => $request->email,
                     'password' => Hash::make($request->password)
                 ]);
+                
+                // Upload and associate the avatar with the user
+                if ($request->hasFile('avatar')) {
+                    $user->addMedia($request->avatar)->toMediaCollection('avatar');
+                }
 
                 $role = Role::findOrFail($request->role_id);
                 $user->assignRole($role);
+
             }, 5);
 
             toast('A New User Has Been Created.','success');
-            return redirect()->back();
+            return redirect()->route('administration.settings.user.show.profile', ['user' => $user]);
         } catch (Exception $e) {
             alert('Opps! Error.', $e->getMessage(), 'error');
             return redirect()->back()->withInput();
@@ -121,13 +129,18 @@ class UserController extends Controller
                     'email' => $request->email,
                 ]);
 
+                // Upload and associate the avatar with the user
+                if ($request->hasFile('avatar')) {
+                    $user->addMedia($request->avatar)->toMediaCollection('avatar');
+                }
+
                 // Sync the user's role
                 $role = Role::findOrFail($request->role_id);
                 $user->syncRoles([$role]);
             }, 5);
 
             toast('User information has been updated.', 'success');
-            return redirect()->back();
+            return redirect()->route('administration.settings.user.show.profile', ['user' => $user]);
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back()->withInput();

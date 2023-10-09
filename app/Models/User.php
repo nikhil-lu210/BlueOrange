@@ -4,16 +4,20 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\MediaLibrary\HasMedia;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\MediaCollections\File;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, SoftDeletes, CascadeSoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia, SoftDeletes, CascadeSoftDeletes;
     
     protected $cascadeDeletes = [];
     protected $dates = ['deleted_at'];
@@ -26,6 +30,28 @@ class User extends Authenticatable
             // Prefix 'UID' to the 'userid' attribute
             $user->userid = 'UID' . $user->userid;
         });
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png'])
+            ->registerMediaConversions(function (Media $media) {
+                $this->addMediaConversion('thumb')
+                    ->width(50)
+                    ->height(50);
+                $this->addMediaConversion('profile')
+                    ->width(100)
+                    ->height(100);
+                $this->addMediaConversion('profile_view')
+                    ->width(500)
+                    ->height(500);
+                $this->addMediaConversion('black_and_white')
+                    ->greyscale()
+                    ->quality(100);
+                    // ->withResponsiveImages();
+            });
     }
 
     /**
