@@ -57,12 +57,24 @@
                     <div class="d-flex justify-content-between">
                         <h6 class="fw-normal mb-2">Total <strong>{{ $role->users->count() }}</strong> Users</h6>
                         <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
-                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Vinnie Mostowy" class="avatar avatar-sm pull-up">
-                                <img class="rounded-circle" src="{{ asset('assets/img/avatars/5.png') }}" alt="Avatar"/>
-                            </li>
-                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Allen Rieske" class="avatar avatar-sm pull-up more-user-avatar">
-                                <small>30+</small>
-                            </li>
+                            @php $count = 0; @endphp
+                            @foreach ($role->users as $user)
+                                @if ($count < 5)
+                                    <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
+                                        @if ($user->hasMedia('avatar'))
+                                            <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
+                                        @else
+                                            <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="No Avatar" class="rounded-circle">
+                                        @endif
+                                    </li>
+                                @endif
+                                @php $count++; @endphp
+                            @endforeach
+                            @if ($role->users->count() > 5)
+                                <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $role->users->count() - 5 }} More" class="avatar avatar-sm pull-up more-user-avatar">
+                                    <small>{{ $role->users->count() - 5 }}+</small>
+                                </li>
+                            @endif
                         </ul>
                     </div>
                     <div class="d-flex justify-content-between align-items-end mt-1">
