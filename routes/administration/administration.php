@@ -11,6 +11,9 @@ Route::prefix('')
         ->group(function () {
             // Dashboard
             include_once 'dashboard/dashboard.php';
+            
+            // Profile
+            include_once 'profile/profile.php';
 
             // settings
             include_once 'settings/settings.php';
