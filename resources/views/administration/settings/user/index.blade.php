@@ -68,7 +68,11 @@
                                     <div class="d-flex justify-content-start align-items-center user-name">
                                         <div class="avatar-wrapper">
                                             <div class="avatar me-2">
-                                                <img src="https://picsum.photos/200/300.jpg" alt="Avatar" class="rounded-circle">
+                                                @if ($user->hasMedia('avatar'))
+                                                    <img src="{{ $user->getFirstMediaUrl('avatar') }}" alt="{{ $user->name }} Avatar" class="rounded-circle">
+                                                @else
+                                                    <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ $user->name }} No Avatar" class="rounded-circle">
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="d-flex flex-column">

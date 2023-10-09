@@ -39,6 +39,7 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
+        // dd($request->all());
         try {
             DB::transaction(function() use ($request) {
                 $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
@@ -52,6 +53,11 @@ class UserController extends Controller
                     'email' => $request->email,
                     'password' => Hash::make($request->password)
                 ]);
+                
+                // Upload and associate the avatar with the user
+                if ($request->hasFile('avatar')) {
+                    $user->addMedia($request->avatar)->toMediaCollection('avatar');
+                }
 
                 $role = Role::findOrFail($request->role_id);
                 $user->assignRole($role);
