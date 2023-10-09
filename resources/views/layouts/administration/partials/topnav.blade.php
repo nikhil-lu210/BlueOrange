@@ -218,9 +218,9 @@
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="#">
-                            <i class="ti ti-settings me-2 ti-sm"></i>
-                            <span class="align-middle">Settings</span>
+                        <a class="dropdown-item" href="{{ route('administration.my.profile.security') }}">
+                            <i class="ti ti-lock-cog me-2 ti-sm"></i>
+                            <span class="align-middle">Security</span>
                         </a>
                     </li>
                     <li>

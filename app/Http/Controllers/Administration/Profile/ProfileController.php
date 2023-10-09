@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\Administration\Profile\ProfileUpdateRequest;
+use App\Http\Requests\Administration\Profile\Security\PasswordUpdateRequest;
 
 class ProfileController extends Controller
 {
@@ -26,6 +28,26 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         return view('administration.profile.includes.profile', compact(['user']));
+    }
+
+    public function security() {
+        $user = Auth::user();
+
+        return view('administration.profile.security.index', compact(['user']));
+    }
+
+    public function updatePassword(PasswordUpdateRequest $request) {
+        $user = Auth::user();
+        try{
+            $user->update([
+                'password' => Hash::make($request->input('new_password')),
+            ]);
+
+            toast('Password Has Been Updated.', 'success');
+            return redirect()->back();
+        } catch (Exception $e){
+            throw new Exception('Password Didn\'t Update.');
+        }
     }
 
     public function edit() {
