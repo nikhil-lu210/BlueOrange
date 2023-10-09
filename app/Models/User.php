@@ -13,6 +13,7 @@ use Spatie\MediaLibrary\MediaCollections\File;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class User extends Authenticatable implements HasMedia
 {
@@ -34,8 +35,23 @@ class User extends Authenticatable implements HasMedia
     public function registerMediaCollections(): void
     {
         $this->addMediaCollection('avatar')
-             ->singleFile()
-             ->acceptsMimeTypes(['image/jpeg', 'image/png']);
+            ->singleFile()
+            ->acceptsMimeTypes(['image/jpeg', 'image/png'])
+            ->registerMediaConversions(function (Media $media) {
+                $this->addMediaConversion('thumb')
+                    ->width(50)
+                    ->height(50);
+                $this->addMediaConversion('profile')
+                    ->width(100)
+                    ->height(100);
+                $this->addMediaConversion('profile_view')
+                    ->width(500)
+                    ->height(500);
+                $this->addMediaConversion('black_and_white')
+                    ->greyscale()
+                    ->quality(100);
+                    // ->withResponsiveImages();
+            });
     }
 
     /**

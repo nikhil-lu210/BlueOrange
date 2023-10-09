@@ -181,16 +181,24 @@
             <li class="nav-item navbar-dropdown dropdown-user dropdown">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
-                        <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="h-auto rounded-circle" />
+                        @if (auth()->user()->hasMedia('avatar'))
+                            <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="h-auto rounded-circle">
+                        @else
+                            <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ auth()->user()->name }} No Avatar" class="h-auto rounded-circle">
+                        @endif
                     </div>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item" href="pages-account-settings-account.html">
+                        <a class="dropdown-item" href="#">
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online">
-                                        <img src="{{ asset('assets/img/avatars/1.png') }}" alt class="h-auto rounded-circle" />
+                                        @if (auth()->user()->hasMedia('avatar'))
+                                            <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="h-auto rounded-circle">
+                                        @else
+                                            <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ auth()->user()->name }} No Avatar" class="h-auto rounded-circle">
+                                        @endif
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
