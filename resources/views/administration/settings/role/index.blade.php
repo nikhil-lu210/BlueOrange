@@ -55,20 +55,16 @@
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <h6 class="fw-normal mb-2">Total <strong>{{ $role->users->count() }}</strong> Users</h6>
+                        <h6 class="fw-normal mb-2">Total <strong>{{ $role->users()->count() }}</strong> Users</h6>
                         <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
-                            @php $count = 0; @endphp
-                            @foreach ($role->users as $user)
-                                @if ($count < 5)
-                                    <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
-                                        @if ($user->hasMedia('avatar'))
-                                            <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
-                                        @else
-                                            <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="No Avatar" class="rounded-circle">
-                                        @endif
-                                    </li>
-                                @endif
-                                @php $count++; @endphp
+                            @foreach ($role->users->take(5) as $user)
+                                <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
+                                    @if ($user->hasMedia('avatar'))
+                                        <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
+                                    @else
+                                        <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="No Avatar" class="rounded-circle">
+                                    @endif
+                                </li>
                             @endforeach
                             @if ($role->users->count() > 5)
                                 <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $role->users->count() - 5 }} More" class="avatar avatar-sm pull-up more-user-avatar">

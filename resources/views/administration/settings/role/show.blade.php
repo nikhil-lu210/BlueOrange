@@ -72,10 +72,10 @@
                         <div class="col-xl-5 col-12">
                             <dl class="row mb-0">
                                 <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Total Permissions:</dt>
-                                <dd class="col-sm-8">{{ $role->permissions->count() }}</dd>
+                                <dd class="col-sm-8">{{ $role->permissions()->count() }}</dd>
                                 
                                 <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Total Users:</dt>
-                                <dd class="col-sm-8">{{ $role->users->count() }}</dd>
+                                <dd class="col-sm-8">{{ $role->users()->count() }}</dd>
                             </dl>
                         </div>
                     </div>

@@ -19,8 +19,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::with(['permissions'])->get();
-        // dd($roles);
+        $roles = Role::with(['users', 'permissions'])->get();
         return view('administration.settings.role.index', compact(['roles']));
     }
 
@@ -65,20 +64,17 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
-        $permissionModules = PermissionModule::whereHas('permissions', function ($query) use ($role) {
-                $query->whereHas('roles', function ($roleQuery) use ($role) {
-                    $roleQuery->where('name', $role->name);
-                });
-            })
-            ->with(['permissions' => function ($query) use ($role) {
-                $query->whereHas('roles', function ($roleQuery) use ($role) {
-                    $roleQuery->where('name', $role->name);
-                });
-            }])
-        ->get();
-        // dd($permissions[0]->permissions);
-        return view('administration.settings.role.show', compact(['role', 'permissionModules']));
+        $permissionModules = PermissionModule::whereHas('permissions.roles', function ($query) use ($role) {
+            $query->where('name', $role->name);
+        })->with(['permissions' => function ($query) use ($role) {
+            $query->whereHas('roles', function ($roleQuery) use ($role) {
+                $roleQuery->where('name', $role->name);
+            });
+        }])->get();
+
+        return view('administration.settings.role.show', compact('role', 'permissionModules'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
