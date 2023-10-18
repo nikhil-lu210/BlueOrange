@@ -11,6 +11,7 @@ use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
+use App\Notifications\Administration\NewUserRegistrationNotification;
 
 class UserController extends Controller
 {
@@ -63,11 +64,21 @@ class UserController extends Controller
                 $role = Role::findOrFail($request->role_id);
                 $user->assignRole($role);
 
+                $admins = User::whereHas('roles', function ($query) {
+                    $query->where('name', 'Super Admin');
+                })->orWhereHas('roles', function ($query) {
+                    $query->where('name', 'Admin');
+                })->get();
+                
+                foreach ($admins as $key => $admin) {
+                    $admin->notify(new NewUserRegistrationNotification($user));
+                }
             }, 5);
 
             toast('A New User Has Been Created.','success');
             return redirect()->route('administration.settings.user.show.profile', ['user' => $user]);
         } catch (Exception $e) {
+            dd($e);
             alert('Opps! Error.', $e->getMessage(), 'error');
             return redirect()->back()->withInput();
         }
