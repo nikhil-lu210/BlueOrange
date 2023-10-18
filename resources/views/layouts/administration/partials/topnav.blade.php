@@ -113,59 +113,56 @@
             <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <i class="ti ti-bell ti-md"></i>
-                    <span class="badge bg-danger rounded-pill badge-notifications">5</span>
+                    <span class="badge bg-danger rounded-pill badge-notifications">
+                        {{ Auth::user()->unreadNotifications->count() }}
+                    </span>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end py-0">
                     <li class="dropdown-menu-header border-bottom">
                         <div class="dropdown-header d-flex align-items-center py-3">
                             <h5 class="text-body mb-0 me-auto">Notification</h5>
-                            <a href="javascript:void(0)" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read"><i class="ti ti-mail-opened fs-4"></i></a>
+                            @if (Auth::user()->unreadNotifications->count() > 0) 
+                                <a href="{{ route('administration.notification.mark_all_as_read') }}" onclick="return confirm('Are You Sure?');" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read">
+                                    <i class="ti ti-mail-opened fs-4"></i>
+                                </a>
+                            @endif
                         </div>
                     </li>
                     <li class="dropdown-notifications-list scrollable-container">
                         <ul class="list-group list-group-flush">
-                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0 me-3">
-                                        <div class="avatar">
-                                            <span class="avatar-initial rounded-circle bg-label-primary">
-                                                <i class="ti ti-bell ti-md"></i>
-                                            </span>
+                            @forelse (Auth::user()->unreadNotifications as $notification)
+                                <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                                    <div class="d-flex">
+                                        <div class="flex-shrink-0 me-3">
+                                            <div class="avatar">
+                                                <span class="avatar-initial rounded-circle bg-label-primary">
+                                                    @if (isset($notification->data['icon'])) 
+                                                        <i class="ti ti-{{ $notification->data['icon'] }} ti-md"></i>
+                                                    @else 
+                                                        <i class="ti ti-bell ti-md"></i>
+                                                    @endif
+                                                </span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">Charles Franklin</h6>
-                                        <p class="mb-0">Accepted your connection</p>
-                                        <small class="text-muted">12hr ago</small>
-                                    </div>
-                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                        <a href="javascript:void(0)" class="dropdown-notifications-archive">
-                                            <span class="ti ti-x"></span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                <div class="d-flex">
-                                    <div class="flex-shrink-0 me-3">
-                                        <div class="avatar">
-                                            <span class="avatar-initial rounded-circle bg-label-dark">
-                                                <i class="ti ti-bell ti-md"></i>
-                                            </span>
+                                        <div class="flex-grow-1">
+                                            <a href="{{ route('administration.notification.mark_as_read', ['notification_id' => $notification->id]) }}">
+                                                <h6 class="mb-1 text-primary">{{ $notification->data['title'] }}</h6>
+                                                <p class="mb-0 text-dark">{{ $notification->data['message'] }}</p>
+                                            </a>
+                                            <small class="text-muted">{{ date_time_ago($notification->created_at) }}</small>
                                         </div>
+                                        {{-- <div class="flex-shrink-0 dropdown-notifications-actions">
+                                            <a href="javascript:void(0)" class="dropdown-notifications-archive">
+                                                <span class="ti ti-x"></span>
+                                            </a>
+                                        </div> --}}
                                     </div>
-                                    <div class="flex-grow-1">
-                                        <h6 class="mb-1">Charles Franklin</h6>
-                                        <p class="mb-0">Accepted your connection</p>
-                                        <small class="text-muted">12hr ago</small>
-                                    </div>
-                                    <div class="flex-shrink-0 dropdown-notifications-actions">
-                                        <a href="javascript:void(0)" class="dropdown-notifications-archive">
-                                            <span class="ti ti-x"></span>
-                                        </a>
-                                    </div>
-                                </div>
-                            </li>
+                                </li>
+                            @empty
+                                <li class="list-group-item list-group-item-action dropdown-notifications-item">
+                                    No Unread Notification
+                                </li>
+                            @endforelse
                         </ul>
                     </li>
                     <li class="dropdown-menu-footer border-top">
