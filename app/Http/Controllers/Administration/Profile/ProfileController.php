@@ -68,17 +68,23 @@ class ProfileController extends Controller
                     'middle_name' => $request->middle_name,
                     'last_name' => $request->last_name,
                     'name' => $fullName,
-                    'email' => $request->email,
                 ]);
+
+                if(isset($request->email)) {
+                    $user->email = $request->email;
+                    $user->save();
+                }
 
                 // Upload and associate the avatar with the user
                 if ($request->hasFile('avatar')) {
                     $user->addMedia($request->avatar)->toMediaCollection('avatar');
                 }
 
-                // Sync the user's role
-                $role = Role::findOrFail($request->role_id);
-                $user->syncRoles([$role]);
+                if(isset($request->role_id)) {
+                    // Sync the user's role
+                    $role = Role::findOrFail($request->role_id);
+                    $user->syncRoles([$role]);
+                }
             }, 5);
 
             toast('Your profile has been updated.', 'success');

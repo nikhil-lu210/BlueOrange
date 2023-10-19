@@ -29,7 +29,7 @@ class ProfileUpdateRequest extends FormRequest
             'middle_name' => ['nullable', 'string'],
             'last_name' => ['required', 'string'],
             'email' => [
-                'required', 
+                'nullable', 
                 'email',
                 Rule::unique('users')->ignore($id)
             ],
