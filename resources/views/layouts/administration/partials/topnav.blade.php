@@ -113,9 +113,11 @@
             <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <i class="ti ti-bell ti-md"></i>
-                    <span class="badge bg-danger rounded-pill badge-notifications">
-                        {{ Auth::user()->unreadNotifications->count() }}
-                    </span>
+                    @if (Auth::user()->unreadNotifications->count() > 0) 
+                        <span class="badge bg-danger rounded-pill badge-notifications">
+                            {{ Auth::user()->unreadNotifications->count() }}
+                        </span>
+                    @endif
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end py-0">
                     <li class="dropdown-menu-header border-bottom">
