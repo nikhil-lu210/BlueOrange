@@ -16,6 +16,8 @@
 <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
 <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
 
+<link rel="stylesheet" href="{{ asset('assets/css/custom_css/jquery-confirm/jquery-confirm.min.css') }}">
+
 {{-- custom css --}}
 <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}" />
 

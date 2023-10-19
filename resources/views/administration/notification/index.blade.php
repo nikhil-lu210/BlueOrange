@@ -44,11 +44,11 @@
         
                 @if (Auth::user()->notifications->count() > 0) 
                     <div class="card-header-elements ms-auto">
-                        <a href="{{ route('administration.notification.destroy.all') }}" onclick="return confirm('Are You Sure?');" class="btn btn-sm btn-danger">
+                        <a href="{{ route('administration.notification.destroy.all') }}" class="btn btn-sm btn-danger confirm-danger">
                             <span class="tf-icon ti ti-trash ti-xs me-1"></span>
                             Delete All
                         </a>
-                        <a href="{{ route('administration.notification.mark_all_as_read') }}" onclick="return confirm('Are You Sure?');" class="btn btn-sm btn-primary">
+                        <a href="{{ route('administration.notification.mark_all_as_read') }}" class="btn btn-sm btn-primary confirm-success">
                             <span class="tf-icon ti ti-check ti-xs me-1"></span>
                             Mark All As Read
                         </a>
@@ -80,7 +80,7 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('administration.notification.destroy', ['notification_id' => $notification->id]) }}" onclick="return confirm('Are You Sure?');" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Delete Notification?">
+                                    <a href="{{ route('administration.notification.destroy', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon item-edit confirm-danger" data-bs-toggle="tooltip" title="Delete Notification?">
                                         <i class="text-danger ti ti-trash"></i>
                                     </a>
                                     <a href="{{ route('administration.notification.mark_as_read', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Notification">

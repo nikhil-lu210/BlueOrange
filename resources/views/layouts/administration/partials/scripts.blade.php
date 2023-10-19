@@ -8,6 +8,9 @@
 <script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
 <script src="{{ asset('assets/vendor/libs/hammer/hammer.js') }}"></script>
 
+<script src="{{ asset('assets/js/custom_js/jquery-confirm/jquery-confirm.min.js') }}"></script>
+<script src="{{ asset('assets/js/custom_js/jquery-confirm/confirm.js') }}"></script>
+
 <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
 
 <!-- endbuild -->

@@ -162,7 +162,7 @@
                     </div>
                     <div class="mt-2 float-end">
                         <button type="reset" onclick="return confirm('Sure Want To Reset?');" class="btn btn-outline-danger me-2">Reset Form</button>
-                        <button type="submit" class="btn btn-primary">Create User</button>
+                        <button type="submit" class="btn btn-primary confirm-form-success">Create User</button>
                     </div>
                 </form>
             </div>

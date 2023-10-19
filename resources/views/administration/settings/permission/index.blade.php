@@ -81,7 +81,7 @@
                                                 Edit
                                             </a>
                                             <div class="dropdown-divider"></div>
-                                            <a href="javascript:void(0);" class="dropdown-item text-danger delete-record">
+                                            <a href="javascript:void(0);" class="dropdown-item text-danger delete-record confirm-danger">
                                                 <i class="ti ti-trash"></i> 
                                                 Delete
                                             </a>
