@@ -19,9 +19,11 @@ return new class extends Migration
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
 
-            $table->timestampTz('clock_in');
-            $table->timestampTz('clock_out')->nullable();
-            $table->string('ip_address')->nullable();
+            $table->date('clock_in_date')->default(now()->toDateString());
+            $table->time('clock_in');
+            $table->time('clock_out')->nullable();
+            $table->time('total_time')->nullable();
+            $table->ipAddress('ip_address')->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
             $table->string('zip_code')->nullable();
@@ -32,8 +34,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->unique(['user_id', 'clock_in'], 'user_id_clock_in_unique');
-            $table->index('clock_in');
+            $table->unique(['user_id', 'clock_in_date'], 'user_id_clock_in_date_unique');
         });
     }
 

@@ -23,6 +23,33 @@
             </a>
         </li>
 
+        <!-- Attendance Management -->
+        @canany(['Attendance Create', 'Attendance Read']) 
+            <li class="menu-item {{ request()->is('attendance*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-clock-2"></i>
+                    <div data-i18n="Attendance">Attendance</div>
+                </a>
+                <ul class="menu-sub">
+                    @hasanyrole ('Developer|Super Admin') 
+                        <li class="menu-item {{ request()->is('attendance/all*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.attendance.index') }}" class="menu-link">All Attendances</a>
+                        </li>
+                    @endhasanyrole
+                    @can('User Read') 
+                        <li class="menu-item {{ request()->is('attendance/my*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.attendance.index') }}" class="menu-link">My Attendances</a>
+                        </li>
+                    @endcan
+                    @can('User Create')
+                        <li class="menu-item {{ request()->is('attendance/create*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.attendance.create') }}" class="menu-link">Assign Attendance</a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcanany
+
         <!-- Settings -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">Settings</span>

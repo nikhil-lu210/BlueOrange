@@ -28,6 +28,11 @@ class RolesTableSeeder extends Seeder
             // Assign permissions to roles based on the module
             if ($role === 'Developer') {
                 $permissions = [
+                    'Attendance Create',
+                    'Attendance Read',
+                    'Attendance Update',
+                    'Attendance Delete',
+                    
                     'Permission Create',
                     'Permission Read',
                     'Permission Update',
@@ -45,6 +50,11 @@ class RolesTableSeeder extends Seeder
                 ];
             } elseif ($role === 'Super Admin') {
                 $permissions = [
+                    'Attendance Create',
+                    'Attendance Read',
+                    'Attendance Update',
+                    'Attendance Delete',
+                    
                     'Permission Create',
                     'Permission Read',
                     'Permission Update',
@@ -62,6 +72,8 @@ class RolesTableSeeder extends Seeder
                 ];
             } elseif ($role === 'Admin') {
                 $permissions = [
+                    'Attendance Read',
+                    
                     'Permission Read',
                     
                     'Role Read',
@@ -73,6 +85,8 @@ class RolesTableSeeder extends Seeder
                 ];
             } elseif ($role === 'HR Manager') {
                 $permissions = [
+                    'Attendance Read',
+                    
                     'Permission Read',
                     
                     'Role Read',

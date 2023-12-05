@@ -15,6 +15,7 @@ class PermissionsTableSeeder extends Seeder
     public function run(): void
     {
         $modules = [
+            'Attendance',
             'Permission',
             'Role',
             'User',

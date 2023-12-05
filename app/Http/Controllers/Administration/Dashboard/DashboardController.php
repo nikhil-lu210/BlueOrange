@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Administration\Dashboard;
 
-use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Stevebauman\Location\Facades\Location;
@@ -14,23 +13,9 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $publicIpAddress = $this->getPublicIpAddress();
-        $location = Location::get($publicIpAddress);
-        dd($publicIpAddress, $location, config('app.timezone'));
-
+        $location = Location::get(get_public_ip());
+        // dd($location);
         return view('administration.dashboard.index');
-    }
-
-    public function getPublicIpAddress()
-    {
-        $client = new Client();
-        $response = $client->get('https://api64.ipify.org?format=json');
-
-        $ipData = json_decode($response->getBody(), true);
-
-        $publicIpAddress = $ipData['ip'] ?? null;
-
-        return $publicIpAddress;
     }
 
     /**

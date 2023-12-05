@@ -15,6 +15,10 @@ class Attendance extends Model
     
     protected $cascadeDeletes = [];
     protected $dates = ['clock_in', 'clock_out', 'deleted_at'];
+    protected $casts = [
+        'clock_in' => 'datetime',
+        'clock_out' => 'datetime',
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -23,8 +27,10 @@ class Attendance extends Model
      */
     protected $fillable = [
         'user_id',
+        'clock_in_date',
         'clock_in',
         'clock_out',
+        'total_time',
         'ip_address',
         'country',
         'city',
