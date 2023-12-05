@@ -16,7 +16,7 @@ class DashboardController extends Controller
     {
         $publicIpAddress = $this->getPublicIpAddress();
         $location = Location::get($publicIpAddress);
-        dd($publicIpAddress, $location);
+        dd($publicIpAddress, $location, config('app.timezone'));
 
         return view('administration.dashboard.index');
     }

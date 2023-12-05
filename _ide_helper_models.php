@@ -10,6 +10,22 @@
  */
 
 
+namespace App\Models\Attendance{
+/**
+ * App\Models\Attendance\Attendance
+ *
+ * @property-write mixed $clock_in
+ * @property-write mixed $clock_out
+ * @method static \Illuminate\Database\Eloquent\Builder|Attendance newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Attendance newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Attendance onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Attendance query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Attendance withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Attendance withoutTrashed()
+ */
+	class Attendance extends \Eloquent {}
+}
+
 namespace App\Models{
 /**
  * App\Models\PermissionModule
@@ -54,6 +70,8 @@ namespace App\Models{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Attendance> $attendances
+ * @property-read int|null $attendances_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @property-read \Illuminate\Notifications\DatabaseNotificationCollection<int, \Illuminate\Notifications\DatabaseNotification> $notifications
