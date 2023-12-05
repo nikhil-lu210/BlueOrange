@@ -2,6 +2,7 @@
 
 namespace App\Models\Attendance;
 
+use App\Models\Attendance\Traits\Relations;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Attendance extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes;
+    use HasFactory, Relations, SoftDeletes, CascadeSoftDeletes;
     
     protected $cascadeDeletes = [];
     protected $dates = ['clock_in', 'clock_out', 'deleted_at'];
