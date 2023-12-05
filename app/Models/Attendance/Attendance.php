@@ -28,7 +28,9 @@ class Attendance extends Model
         'country',
         'city',
         'zip_code',
-        'time_zone'
+        'time_zone',
+        'latitude',
+        'longitude'
     ];
 
     public function setClockInAttribute($value)
