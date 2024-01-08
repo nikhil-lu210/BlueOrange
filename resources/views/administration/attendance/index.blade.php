@@ -71,6 +71,7 @@
                             <th>Name</th>
                             <th>Clocked IN</th>
                             <th>Clock Out</th>
+                            <th>Total</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
@@ -84,6 +85,13 @@
                                 <td>
                                     @isset($attendance->clock_out)
                                         {{ show_time($attendance->clock_out) }}
+                                    @else
+                                        <b class="text-success text-uppercase">Running</b>
+                                    @endisset
+                                </td>
+                                <td>
+                                    @isset($attendance->total_time)
+                                        {{ $attendance->total_time }}
                                     @else
                                         <b class="text-success text-uppercase">Running</b>
                                     @endisset

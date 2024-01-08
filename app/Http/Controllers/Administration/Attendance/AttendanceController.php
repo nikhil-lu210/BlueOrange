@@ -62,6 +62,15 @@ class AttendanceController extends Controller
             return redirect()->back();
         }
 
+        $existingAttendance = Attendance::where('user_id', $userId)
+            ->where('clock_in_date', $currentDate)
+            ->first();
+
+        if ($existingAttendance) {
+            toast('You have already clocked in today. Please click on Overtime-Clockin', 'warning');
+            return redirect()->back();
+        }
+
         $location = Location::get(get_public_ip());
 
         try {
