@@ -20,7 +20,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::with(['roles', 'media'])->distinct()->get();        
 
         return view('administration.settings.user.index', compact(['users']));
     }

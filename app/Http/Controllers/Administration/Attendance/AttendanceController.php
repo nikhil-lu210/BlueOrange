@@ -17,16 +17,19 @@ class AttendanceController extends Controller
      */
     public function index()
     {
-        $attendances = Attendance::orderBy('created_at', 'desc')->get();
+        $attendances = Attendance::with(['user:id,name'])
+                        ->latest()
+                        ->distinct()
+                        ->get();
 
         // Check if the user has already clocked in today
         $currentTime = now();
         $currentDate = $currentTime->toDateString();
         $clockedIn = Attendance::where('user_id', auth()->user()->id)
                                 ->whereNull('clock_out')
-                                ->exists();
+                                ->first();
 
-        return view('administration.attendance.index', compact(['attendances', 'clockedIn']));
+        return view('administration.attendance.index', compact('attendances', 'clockedIn'));
     }
 
     /**
