@@ -172,7 +172,9 @@ class AttendanceController extends Controller
      */
     public function show(Attendance $attendance)
     {
-        //
+        // $attendance = $attendance->with('user')->firstOrFail();
+        // dd($attendance);
+        return view('administration.attendance.show', compact(['attendance']));
     }
 
     /**

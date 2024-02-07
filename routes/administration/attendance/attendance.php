@@ -14,4 +14,6 @@ Route::controller(AttendanceController::class)->prefix('attendance')->name('atte
     Route::post('/store', 'store')->name('store');
     Route::post('/clockin', 'clockIn')->name('clockin');
     Route::post('/clockout', 'clockOut')->name('clockout');
+    
+    Route::get('/show/{attendance}', 'show')->name('show');
 });

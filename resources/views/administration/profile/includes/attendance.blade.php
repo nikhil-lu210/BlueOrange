@@ -22,9 +22,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($attendances as $key => $attendance) 
+                        @foreach ($user->attendances as $key => $attendance) 
                             <tr>
-                                <th>#{{ serial($attendances, $key) }}</th>
+                                <th>#{{ serial($user->attendances, $key) }}</th>
                                 <td>{{ show_date($attendance->clock_in_date) }}</td>
                                 <td>{{ show_time($attendance->clock_in) }}</td>
                                 <td>
@@ -66,7 +66,7 @@
                                             </div>
                                         </div>
                                     @endcanany
-                                    <a href="#" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" target="_blank" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>

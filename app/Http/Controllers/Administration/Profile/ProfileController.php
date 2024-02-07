@@ -98,13 +98,8 @@ class ProfileController extends Controller
 
     public function attendance() {
         $user = Auth::user();
-        $attendances = Attendance::with(['user:id,name'])
-                        ->where('user_id', auth()->user()->id)
-                        ->latest()
-                        ->distinct()
-                        ->get();
 
-        return view('administration.profile.includes.attendance', compact(['user', 'attendances']));
+        return view('administration.profile.includes.attendance', compact(['user']));
     }
 
     public function break() {
