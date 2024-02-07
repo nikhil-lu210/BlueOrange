@@ -91,7 +91,9 @@
                                 </td>
                                 <td>
                                     @isset($attendance->total_time)
-                                        {{ $attendance->total_time }}
+                                        <b>
+                                            {!! total_time($attendance->total_time) !!}
+                                        </b>
                                     @else
                                         <b class="text-success text-uppercase">Running</b>
                                     @endisset
