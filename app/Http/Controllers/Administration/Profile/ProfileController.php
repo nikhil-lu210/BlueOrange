@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Attendance\Attendance;
 use App\Http\Requests\Administration\Profile\ProfileUpdateRequest;
 use App\Http\Requests\Administration\Profile\Security\PasswordUpdateRequest;
 
@@ -97,8 +98,13 @@ class ProfileController extends Controller
 
     public function attendance() {
         $user = Auth::user();
+        $attendances = Attendance::with(['user:id,name'])
+                        ->where('user_id', auth()->user()->id)
+                        ->latest()
+                        ->distinct()
+                        ->get();
 
-        return view('administration.profile.includes.attendance', compact(['user']));
+        return view('administration.profile.includes.attendance', compact(['user', 'attendances']));
     }
 
     public function break() {
