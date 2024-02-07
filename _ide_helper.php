@@ -19560,6 +19560,69 @@
      
 }
 
+    namespace Stevebauman\Location\Facades { 
+            /**
+     * 
+     *
+     */ 
+        class Location {
+                    /**
+         * Set the current driver to use.
+         *
+         * @static 
+         */ 
+        public static function setDriver($driver)
+        {
+                        /** @var \Stevebauman\Location\LocationManager $instance */
+                        return $instance->setDriver($driver);
+        }
+                    /**
+         * Set the default location driver to use.
+         *
+         * @throws DriverDoesNotExistException
+         * @static 
+         */ 
+        public static function setDefaultDriver()
+        {
+                        /** @var \Stevebauman\Location\LocationManager $instance */
+                        return $instance->setDefaultDriver();
+        }
+                    /**
+         * Attempt to retrieve the location of the user.
+         *
+         * @static 
+         */ 
+        public static function get($ip = null)
+        {
+                        /** @var \Stevebauman\Location\LocationManager $instance */
+                        return $instance->get($ip);
+        }
+                    /**
+         * Set the request resolver callback.
+         *
+         * @static 
+         */ 
+        public static function resolveRequestUsing($callback)
+        {
+                        /** @var \Stevebauman\Location\LocationManager $instance */
+                        return $instance->resolveRequestUsing($callback);
+        }
+                    /**
+         * Get the loaded driver instances.
+         *
+         * @return \Stevebauman\Location\Drivers\Driver[] 
+         * @static 
+         */ 
+        public static function drivers()
+        {
+                        /** @var \Stevebauman\Location\LocationManager $instance */
+                        return $instance->drivers();
+        }
+         
+    }
+     
+}
+
     namespace Illuminate\Http { 
             /**
      * 
@@ -23563,6 +23626,7 @@ namespace  {
             class Debugbar extends \Barryvdh\Debugbar\Facades\Debugbar {}
             class Image extends \Intervention\Image\Facades\Image {}
             class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
+            class Location extends \Stevebauman\Location\Facades\Location {}
      
 }
 

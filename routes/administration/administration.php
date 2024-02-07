@@ -12,6 +12,9 @@ Route::prefix('')
             // notification
             include_once 'notification/notification.php';
 
+            // Attendance
+            include_once 'attendance/attendance.php';
+
             // Dashboard
             include_once 'dashboard/dashboard.php';
             

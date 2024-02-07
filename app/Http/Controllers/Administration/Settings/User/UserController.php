@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use App\Models\Attendance\Attendance;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
 use App\Notifications\Administration\NewUserRegistrationNotification;
@@ -20,7 +21,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = User::with(['roles', 'media'])->distinct()->get();        
 
         return view('administration.settings.user.index', compact(['users']));
     }
@@ -100,8 +101,11 @@ class UserController extends Controller
      */
     public function showAttendance(User $user)
     {
-        // dd($user);
-        return view('administration.settings.user.includes.attendance', compact(['user']));
+        $attendances = Attendance::where('user_id', $user->id)
+                        ->latest()
+                        ->distinct()
+                        ->get();
+        return view('administration.settings.user.includes.attendance', compact(['user', 'attendances']));
     }
 
     /**

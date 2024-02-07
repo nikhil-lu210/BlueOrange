@@ -1,3 +1,10 @@
+.text-bold {
+    font-weight: bold !important;
+}
+.text-bolder {
+    font-weight: bolder !important;
+}
+
 .menu-vertical .menu-sub {
     margin-left: 10px;
 }

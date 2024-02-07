@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Administration\Dashboard;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Stevebauman\Location\Facades\Location;
 
 class DashboardController extends Controller
 {
@@ -12,6 +13,8 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $location = Location::get(get_public_ip());
+        // dd($location);
         return view('administration.dashboard.index');
     }
 
