@@ -8,6 +8,15 @@
 
 @section('css_links')
     {{--  External CSS  --}}
+    {{-- <!-- Vendors CSS --> --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/typeahead-js/typeahead.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -41,27 +50,37 @@
             <div class="card-header header-elements">
                 <h5 class="mb-0"><strong>{{ $attendance->user->name }}</strong> Attendance's Details</h5>
         
-                <div class="card-header-elements ms-auto">
-                    <a href="#" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-edit ti-xs me-1"></span>
-                        Edit Attendance
-                    </a>
-                </div>
+                @canany(['Attendance Update', 'Attendance Delete'])
+                    <div class="card-header-elements ms-auto">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#editAttendance" class="btn btn-sm btn-primary">
+                            <span class="tf-icon ti ti-edit ti-xs me-1"></span>
+                            Edit Attendance
+                        </button>
+                    </div>
+                @endcanany
             </div>
             <div class="card-body">
                 <div class="row justify-content-left">
                     <div class="col-md-4">
                         <div class="card">
                           <div class="card-body">
-                            <div class="rounded-3 text-center mb-2">
+                            <div class="rounded-3 text-center mb-3">
                                 @if ($attendance->user->hasMedia('avatar'))
                                     <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'profile_view') }}" alt="{{ $attendance->user->name }} Avatar" class="img-fluid rounded-3" width="100%">
                                 @else
                                     <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ $attendance->user->name }} No Avatar" class="img-fluid">
                                 @endif
                             </div>
-                            <h4 class="mb-2 pb-1 text-center">{{ $attendance->user->name }}</h4>
-                            <h6 class="mb-2 pb-1 text-center">{{ $attendance->user->roles[0]->name }}</h6>
+                            <h6 class="mb-1 text-center">{{ show_date($attendance->clock_in_date) }}</h6>
+                            <h4 class="mb-1 text-center">
+                                @isset($attendance->total_time)
+                                    <b>
+                                        {!! total_time($attendance->total_time) !!}
+                                    </b>
+                                @else
+                                    <b class="text-success text-uppercase">Running</b>
+                                @endisset    
+                            </h4>
                           </div>
                         </div>
                     </div>
@@ -188,18 +207,74 @@
 </div>
 <!-- End row -->
 
+{{-- Modal for Attendance Edit --}}
+@canany(['Attendance Update', 'Attendance Delete'])
+<div class="modal fade" id="editAttendance" tabindex="-1" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{{ route('administration.attendance.update', ['attendance' => $attendance]) }}" method="post" autocomplete="off">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editAttendanceTitle">Update Attendance</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="clock_in" class="form-label">{{ __('Clock In') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="clock_in" name="clock_in" value="{{ $attendance->clock_in ?? old('clock_in') }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_in') is-invalid @enderror" required/>
+                            @error('clock_in')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="clock_out" class="form-label">{{ __('Clock Out') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="clock_out" name="clock_out" value="{{ $attendance->clock_out ?? now() }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror" required/>
+                            @error('clock_out')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                        <i class="ti ti-x"></i>
+                        Close
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="ti ti-check"></i>
+                        Update Attendance
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endcanany
 @endsection
 
 
 @section('script_links')
     {{--  External Javascript Links --}}
+    {{-- <!-- Vendors JS --> --}}
+    <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
+    {{-- <!-- Page JS --> --}}
+    {{-- <script src="{{ asset('assets/js/forms-pickers.js') }}"></script> --}}
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function () {
-            // 
+            $('.date-time-picker').flatpickr({
+                enableTime: true,
+                dateFormat: 'Y-m-d H:i'
+            }); 
         });
     </script>    
 @endsection
