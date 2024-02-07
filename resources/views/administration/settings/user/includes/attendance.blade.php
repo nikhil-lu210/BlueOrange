@@ -15,41 +15,63 @@
                         <tr>
                             <th>Sl.</th>
                             <th>Date</th>
-                            <th>Clocked In At</th>
-                            <th>Clocked Out At</th>
-                            <th>Total Worked</th>
-                            <th>Action</th>
+                            <th>Clocked IN</th>
+                            <th>Clock Out</th>
+                            <th>Total</th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th>#1</th>
-                            <td>12-12-2023</td>
-                            <td>02:00 PM</td>
-                            <td>10:00 PM</td>
-                            <td>08hr 23min 12sec</td>
-                            <td>
-                                <div class="d-inline-block">
-                                    <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="text-primary ti ti-dots-vertical"></i>
+                        @foreach ($attendances as $key => $attendance) 
+                            <tr>
+                                <th>#{{ serial($attendances, $key) }}</th>
+                                <td>{{ show_date($attendance->clock_in_date) }}</td>
+                                <td>{{ show_time($attendance->clock_in) }}</td>
+                                <td>
+                                    @isset($attendance->clock_out)
+                                        {{ show_time($attendance->clock_out) }}
+                                    @else
+                                        <b class="text-success text-uppercase">Running</b>
+                                    @endisset
+                                </td>
+                                <td>
+                                    @isset($attendance->total_time)
+                                        <b>
+                                            {!! total_time($attendance->total_time) !!}
+                                        </b>
+                                    @else
+                                        <b class="text-success text-uppercase">Running</b>
+                                    @endisset
+                                </td>
+                                <td>
+                                    @canany(['Attendance Update', 'Attendance Delete'])
+                                        <div class="d-inline-block">
+                                            <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="text-primary ti ti-dots-vertical"></i>
+                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                                                @can('Attendance Update')
+                                                    <a href="javascript:void(0);" class="dropdown-item">
+                                                        <i class="text-primary ti ti-pencil"></i> 
+                                                        Edit
+                                                    </a>
+                                                @endcan
+                                                @can('Attendance Delete')
+                                                    <div class="dropdown-divider"></div>
+                                                    <a href="javascript:void(0);" class="dropdown-item text-danger delete-record">
+                                                        <i class="ti ti-trash"></i> 
+                                                        Delete
+                                                    </a>
+                                                @endcan
+                                            </div>
+                                        </div>
+                                    @endcanany
+                                    <a href="#" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                        <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
-                                    <div class="dropdown-menu dropdown-menu-end m-0" style="">
-                                        <a href="javascript:void(0);" class="dropdown-item">
-                                            <i class="text-primary ti ti-pencil"></i> 
-                                            Edit
-                                        </a>
-                                        <div class="dropdown-divider"></div>
-                                        <a href="javascript:void(0);" class="dropdown-item text-danger delete-record">
-                                            <i class="ti ti-trash"></i> 
-                                            Delete
-                                        </a>
-                                    </div>
-                                </div>
-                                <a href="#" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                    <i class="text-primary ti ti-info-hexagon"></i>
-                                </a>
-                            </td>
-                        </tr>
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>
