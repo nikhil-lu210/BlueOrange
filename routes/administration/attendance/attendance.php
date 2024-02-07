@@ -9,6 +9,7 @@ use App\Http\Controllers\Administration\Attendance\AttendanceController;
 ===============================================*/
 Route::controller(AttendanceController::class)->prefix('attendance')->name('attendance.')->group(function () {
     Route::get('/all', 'index')->name('index');
+    Route::get('/my', 'myAttendances')->name('my');
     Route::get('/create', 'create')->name('create');
     Route::post('/store', 'store')->name('store');
     Route::post('/clockin', 'clockIn')->name('clockin');

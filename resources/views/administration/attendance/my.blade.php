@@ -23,13 +23,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All Attendances') }}</b>
+    <b class="text-uppercase">{{ __('My Attendances') }}</b>
 @endsection
 
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Attendance') }}</li>
-    <li class="breadcrumb-item active">{{ __('All Attendances') }}</li>
+    <li class="breadcrumb-item active">{{ __('My Attendances') }}</li>
 @endsection
 
 
@@ -40,7 +40,7 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">All Attendances</h5>
+                <h5 class="mb-0">My Attendances</h5>
         
                 <div class="card-header-elements ms-auto">
                     @if (!$clockedIn) 
@@ -68,7 +68,6 @@
                         <tr>
                             <th>Sl.</th>
                             <th>Date</th>
-                            <th>Name</th>
                             <th>Clocked IN</th>
                             <th>Clock Out</th>
                             <th>Total</th>
@@ -80,23 +79,6 @@
                             <tr>
                                 <th>#{{ serial($attendances, $key) }}</th>
                                 <td>{{ show_date($attendance->clock_in_date) }}</td>
-                                <td>
-                                    <div class="d-flex justify-content-start align-items-center user-name">
-                                        <div class="avatar-wrapper">
-                                            <div class="avatar me-2">
-                                                @if ($attendance->user->hasMedia('avatar'))
-                                                    <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $attendance->user->name }} Avatar" class="rounded-circle">
-                                                @else
-                                                    <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ $attendance->user->name }} No Avatar" class="rounded-circle">
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <a href="{{ route('administration.settings.user.show.profile', ['user' => $attendance->user]) }}" target="_blank" class="emp_name text-truncate">{{ $attendance->user->name }}</a>
-                                            <small class="emp_post text-truncate text-muted">{{ $attendance->user->roles[0]->name }}</small>
-                                        </div>
-                                    </div>
-                                </td>
                                 <td>{{ show_time($attendance->clock_in) }}</td>
                                 <td>
                                     @isset($attendance->clock_out)

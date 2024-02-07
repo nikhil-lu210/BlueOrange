@@ -38,7 +38,7 @@
                     @endhasanyrole
                     @can('User Read') 
                         <li class="menu-item {{ request()->is('attendance/my*') ? 'active' : '' }}">
-                            <a href="{{ route('administration.attendance.index') }}" class="menu-link">My Attendances</a>
+                            <a href="{{ route('administration.attendance.my') }}" class="menu-link">My Attendances</a>
                         </li>
                     @endcan
                     @can('User Create')

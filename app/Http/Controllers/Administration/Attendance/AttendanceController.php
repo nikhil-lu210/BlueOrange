@@ -17,7 +17,7 @@ class AttendanceController extends Controller
      */
     public function index()
     {
-        $attendances = Attendance::with(['user:id,name'])
+        $attendances = Attendance::with(['user:id,name', 'user.media', 'user.roles'])
                         ->latest()
                         ->distinct()
                         ->get();
@@ -30,6 +30,27 @@ class AttendanceController extends Controller
                                 ->first();
 
         return view('administration.attendance.index', compact('attendances', 'clockedIn'));
+    }
+    
+    /**
+     * Display a listing of the resource.
+     */
+    public function myAttendances()
+    {
+        $attendances = Attendance::with(['user:id,name'])
+                        ->where('user_id', auth()->user()->id)
+                        ->latest()
+                        ->distinct()
+                        ->get();
+
+        // Check if the user has already clocked in today
+        $currentTime = now();
+        $currentDate = $currentTime->toDateString();
+        $clockedIn = Attendance::where('user_id', auth()->user()->id)
+                                ->whereNull('clock_out')
+                                ->first();
+
+        return view('administration.attendance.my', compact('attendances', 'clockedIn'));
     }
 
     /**
