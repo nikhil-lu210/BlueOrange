@@ -102,54 +102,48 @@ class AttendanceController extends Controller
 
     // Clockout
     public function clockOut()
-    {
-        $userId = auth()->user()->id;
-        $currentTime = now();
+{
+    $userId = auth()->user()->id;
+    $currentTime = now();
 
-        // Retrieve the existing attendance record
-        $existingAttendance = Attendance::where('user_id', $userId)
-            ->whereNull('clock_out')
-            ->first();
+    // Retrieve the existing attendance record
+    $existingAttendance = Attendance::where('user_id', $userId)
+        ->whereNull('clock_out')
+        ->first();
 
-        if (!$existingAttendance) {
-            toast('You have not clocked in today.', 'warning');
-            return redirect()->back();
-        }
-
-        // Update the existing attendance record with clock_out time and calculate total time
-        try {
-            $clockOutTime = $currentTime;
-            $clockInTime = $existingAttendance->clock_in;
-
-            // Check if clock in and clock out are on the same day
-            $isSameDay = $clockInTime->isSameDay($clockOutTime);
-
-            // Calculate total time with consideration for different dates
-            if ($isSameDay) {
-                $totalTime = $clockInTime->diff($clockOutTime);
-            } else {
-                $totalTime = $clockOutTime->diff($clockOutTime->copy()->startOfDay());
-            }
-
-            $formattedTotalTime = sprintf(
-                '%02d:%02d:%02d',
-                $totalTime->h, // total hours
-                $totalTime->i, // total minutes
-                $totalTime->s // total seconds
-            );
-
-            $existingAttendance->update([
-                'clock_out' => $clockOutTime,
-                'total_time' => $formattedTotalTime,
-            ]);
-
-            toast('Clocked Out Successful.', 'success');
-            return redirect()->back();
-        } catch (Exception $e) {
-            alert('Oops! Error.', $e->getMessage(), 'error');
-            return redirect()->back();
-        }
+    if (!$existingAttendance) {
+        toast('You have not clocked in today.', 'warning');
+        return redirect()->back();
     }
+
+    // Update the existing attendance record with clock_out time and calculate total time
+    try {
+        $clockOutTime = $currentTime->timestamp; // Use timestamp
+        $clockInTime = $existingAttendance->clock_in->timestamp;
+
+        // Calculate total time in seconds
+        $totalSeconds = $clockOutTime - $clockInTime;
+
+        // Convert total time to HH:MM:SS format
+        $hours = floor($totalSeconds / 3600);
+        $minutes = floor(($totalSeconds % 3600) / 60);
+        $seconds = $totalSeconds % 60;
+
+        $formattedTotalTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+        $existingAttendance->update([
+            'clock_out' => $clockOutTime,
+            'total_time' => $formattedTotalTime,
+        ]);
+
+        toast('Clocked Out Successful.', 'success');
+        return redirect()->back();
+    } catch (Exception $e) {
+        alert('Oops! Error.', $e->getMessage(), 'error');
+        return redirect()->back();
+    }
+}
+
 
 
     /**

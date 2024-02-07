@@ -20,9 +20,9 @@ return new class extends Migration
                   ->onDelete('cascade');
 
             $table->date('clock_in_date')->default(now()->toDateString());
-            $table->time('clock_in');
-            $table->time('clock_out')->nullable();
-            $table->time('total_time')->nullable();
+            $table->timestamp('clock_in');
+            $table->timestamp('clock_out')->nullable();
+            $table->string('total_time')->nullable();
             $table->ipAddress('ip_address')->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
