@@ -211,5 +211,5 @@
                 noCalendar: true
             }); 
         });
-    </script>    
+    </script>
 @endsection

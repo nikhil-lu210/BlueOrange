@@ -10,6 +10,15 @@
 @section('css_links')
     {{--  External CSS  --}}
     <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    {{-- <!-- Vendors CSS --> --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/typeahead-js/typeahead.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -159,6 +168,20 @@
                                 <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
                             </div>
                         </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="start_time" class="form-label">{{ __('Shift Start Time') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="start_time" name="start_time" value="{{ old('start_time') }}" placeholder="HH:MM" class="form-control time-picker @error('start_time') is-invalid @enderror" required/>
+                            @error('start_time')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="end_time" class="form-label">{{ __('Shift End Time') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="end_time" name="end_time" value="{{ old('end_time') }}" placeholder="HH:MM" class="form-control time-picker @error('end_time') is-invalid @enderror" required/>
+                            @error('end_time')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
                     </div>
                     <div class="mt-2 float-end">
                         <button type="reset" onclick="return confirm('Sure Want To Reset?');" class="btn btn-outline-danger me-2">Reset Form</button>
@@ -179,6 +202,15 @@
     {{--  External Javascript Links --}}
     <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
     <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    {{-- <!-- Vendors JS --> --}}
+    <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
+    {{-- <!-- Page JS --> --}}
+    {{-- <script src="{{ asset('assets/js/forms-pickers.js') }}"></script> --}}
 @endsection
 
 @section('custom_script')
@@ -221,6 +253,15 @@
                 
                 $("#userid").prop("readonly", true);
             });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            $('.time-picker').flatpickr({
+                enableTime: true,
+                noCalendar: true
+            }); 
         });
     </script>
 @endsection

@@ -62,6 +62,13 @@ class UserController extends Controller
                 if ($request->hasFile('avatar')) {
                     $user->addMedia($request->avatar)->toMediaCollection('avatar');
                 }
+                
+                Shift::create([
+                    'user_id' => $user->id,
+                    'start_time' => $request->start_time,
+                    'end_time' => $request->end_time,
+                    'implemented_from' => date('Y-m-d')
+                ]);
 
                 $role = Role::findOrFail($request->role_id);
                 $user->assignRole($role);
