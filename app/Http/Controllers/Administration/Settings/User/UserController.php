@@ -208,6 +208,17 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        dd($user);
+        // dd($user);
+        try {
+            DB::transaction(function() use ($user) {
+                $user->delete();
+            }, 5);
+
+            toast('User Has Been Deleted.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
 }
