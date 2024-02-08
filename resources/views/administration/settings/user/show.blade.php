@@ -12,6 +12,15 @@
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-profile.css')}}" />
+    {{-- <!-- Vendors CSS --> --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/typeahead-js/typeahead.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -66,6 +75,14 @@
                                     <i class="ti ti-calendar"></i> 
                                     {{ show_date($user->created_at) }}
                                 </li>
+                                <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Click to Update Shift">
+                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#updateShift" class="text-primary">
+                                        <i class="ti ti-clock"></i>
+                                        {{ show_time(optional($user->current_shift)->start_time) }}
+                                        <small>to</small>
+                                        {{ show_time(optional($user->current_shift)->end_time) }}
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                         <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="btn btn-primary waves-effect waves-light">
@@ -118,6 +135,52 @@
 <!--/ User Profile Content -->
 <!-- End row -->
 
+
+{{-- Modal for Shift Update --}}
+@canany(['User Create', 'User Update'])
+    <div class="modal fade" id="updateShift" tabindex="-1" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <form action="{{ route('administration.settings.user.shift.update', ['shift' => $user->current_shift, 'user' => $user]) }}" method="post" autocomplete="off">
+                    @csrf
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="updateShiftTitle">Update Shift</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label for="start_time" class="form-label">{{ __('Shift Start Time') }} <strong class="text-danger">*</strong></label>
+                                <input type="text" id="start_time" name="start_time" value="{{ optional($user->current_shift)->start_time ?? old('start_time') }}" placeholder="HH:MM" class="form-control time-picker @error('start_time') is-invalid @enderror" required/>
+                                @error('start_time')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="end_time" class="form-label">{{ __('Shift End Time') }} <strong class="text-danger">*</strong></label>
+                                <input type="text" id="end_time" name="end_time" value="{{ optional($user->current_shift)->end_time ?? old('end_time') }}" placeholder="HH:MM" class="form-control time-picker @error('end_time') is-invalid @enderror" required/>
+                                @error('end_time')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                            <i class="ti ti-x"></i>
+                            Close
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="ti ti-check"></i>
+                            Update Shift
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endcanany
+
 @endsection
 
 
@@ -128,13 +191,25 @@
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
     <script src="{{asset('assets/js/pages-profile.js')}}"></script>
+    {{-- <!-- Vendors JS --> --}}
+    <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
+    {{-- <!-- Page JS --> --}}
+    {{-- <script src="{{ asset('assets/js/forms-pickers.js') }}"></script> --}}
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function () {
-            // 
+            $('.time-picker').flatpickr({
+                enableTime: true,
+                noCalendar: true
+            }); 
         });
     </script>    
 @endsection

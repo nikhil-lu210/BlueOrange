@@ -13,4 +13,13 @@ class Shift extends Model
     use HasFactory, Relations, SoftDeletes, CascadeSoftDeletes;
     
     protected $cascadeDeletes = [];
+
+    protected $fillable = [
+        'user_id',
+        'start_time',
+        'end_time',
+        'implemented_from',
+        'implemented_to',
+        'status'
+    ];
 }
