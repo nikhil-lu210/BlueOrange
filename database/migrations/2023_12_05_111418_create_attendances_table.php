@@ -19,6 +19,11 @@ return new class extends Migration
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
 
+            $table->foreignId('shift_id')
+                  ->constrained()
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
+
             $table->date('clock_in_date')->default(now()->toDateString());
             $table->timestamp('clock_in');
             $table->timestamp('clock_out')->nullable();

@@ -2,6 +2,51 @@
 
 use Carbon\Carbon;
 
+if (!function_exists('get_time_only')) {
+
+    /**
+     * Get the time only from a timestamp or date string in the format "hh:mm:ss".
+     *
+     * @param  int|string|null  $datetime
+     * @return string
+     */
+    function get_time_only($datetime = null)
+    {
+        if ($datetime === null) {
+            $timestamp = time(); // Use current timestamp if none is provided
+        } else {
+            $timestamp = is_numeric($datetime) ? $datetime : strtotime($datetime);
+        }
+
+        $time = date('H:i:s', $timestamp);
+
+        return $time;
+    }
+}
+
+
+if (!function_exists('get_date_only')) {
+
+    /**
+     * Get the date only from a timestamp in the format "Y-m-d".
+     *
+     * @param  int|null  $timestamp
+     * @return string
+     */
+    function get_date_only($timestamp = null)
+    {
+        if ($timestamp === null) {
+            $timestamp = time(); // Use current timestamp if none is provided
+        }
+
+        $date = date('Y-m-d', $timestamp);
+
+        return $date;
+    }
+}
+
+
+
 if (!function_exists('show_date')) {
 
     /**
@@ -67,6 +112,50 @@ if (!function_exists('date_time_ago')) {
     }
 }
 
+if (!function_exists('total_time_difference')) {
+
+    /**
+     * Get the total time difference between a start time and end time in the format "hh:mm:ss".
+     *
+     * @param  string  $startTime
+     * @param  string  $endTime
+     * @return string
+     */
+    function total_time_difference($startTime, $endTime)
+    {
+        $startDateTime = Carbon::parse($startTime);
+        $endDateTime = Carbon::parse($endTime);
+
+        $diff = $endDateTime->diff($startDateTime);
+
+        $hours = $diff->format('%H');
+        $minutes = $diff->format('%I');
+        $seconds = $diff->format('%S');
+
+        return sprintf('%02dh %02dm %02ds', $hours, $minutes, $seconds);
+    }
+}
+
+if (!function_exists('get_total_hour')) {
+
+    /**
+     * Get the total hours difference between a start time and end time.
+     *
+     * @param  string  $startTime
+     * @param  string  $endTime
+     * @return int
+     */
+    function get_total_hour($startTime, $endTime)
+    {
+        $startDateTime = Carbon::parse($startTime);
+        $endDateTime = Carbon::parse($endTime);
+
+        $diffInHours = $endDateTime->diffInHours($startDateTime);
+
+        return $diffInHours;
+    }
+}
+
 
 
 if (!function_exists('total_time')) {
@@ -77,7 +166,7 @@ if (!function_exists('total_time')) {
      * @param  string  $totalTime
      * @return string
      */
-    function total_time($totalTime)
+    function total_time($totalTime, $minHour = 8)
     {
         // Parse the total time string
         $timeComponents = explode(':', $totalTime);
@@ -88,9 +177,9 @@ if (!function_exists('total_time')) {
         // Determine text color based on conditions
         $textColor = 'text-success'; // Default color
 
-        if ($hours < 8) {
+        if ($hours < $minHour) {
             $textColor = 'text-danger';
-        } elseif ($hours > 10) {
+        } elseif ($hours > ($minHour + 2)) {
             $textColor = 'text-warning';
         }
 
