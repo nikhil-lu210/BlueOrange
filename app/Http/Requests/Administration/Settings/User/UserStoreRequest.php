@@ -45,6 +45,8 @@ class UserStoreRequest extends FormRequest
             'last_name' => ['required', 'string'],
             'email' => ['required', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i'],
         ];
     }
 

@@ -17,6 +17,14 @@ trait Relations
     }
 
     /**
+     * Get currently active shift
+     */
+    public function getCurrentShiftAttribute()
+    {
+        return $this->shifts()->where('status', 'active')->latest()->first();
+    }
+
+    /**
      * Get the attendances associated with the user.
      */
     public function attendances(): HasMany

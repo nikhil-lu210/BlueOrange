@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance\Attendance;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
+use App\Models\WorkingShift\Shift;
 use App\Notifications\Administration\NewUserRegistrationNotification;
 
 class UserController extends Controller
@@ -61,6 +62,13 @@ class UserController extends Controller
                 if ($request->hasFile('avatar')) {
                     $user->addMedia($request->avatar)->toMediaCollection('avatar');
                 }
+                
+                Shift::create([
+                    'user_id' => $user->id,
+                    'start_time' => $request->start_time,
+                    'end_time' => $request->end_time,
+                    'implemented_from' => date('Y-m-d')
+                ]);
 
                 $role = Role::findOrFail($request->role_id);
                 $user->assignRole($role);
@@ -92,7 +100,6 @@ class UserController extends Controller
      */
     public function showProfile(User $user)
     {
-        // dd($user);
         return view('administration.settings.user.includes.profile', compact(['user']));
     }
 
@@ -164,10 +171,54 @@ class UserController extends Controller
 
 
     /**
+     * Shift Update
+     */
+    public function updateShift(Request $request, Shift $shift, User $user) {
+        $request->validate([
+            'start_time' => ['required'],
+            'end_time' => ['required'],
+        ]);
+        // dd($request->all(), $shift->id, $user->id, date('Y-m-d'));
+
+        try {
+            DB::transaction(function() use ($request, $shift, $user) {
+                $shift->update([
+                    'implemented_to' => date('Y-m-d'),
+                    'status' => 'Inactive'
+                ]);
+
+                Shift::create([
+                    'user_id' => $user->id,
+                    'start_time' => $request->start_time,
+                    'end_time' => $request->end_time,
+                    'implemented_from' => date('Y-m-d')
+                ]);
+            }, 5);
+
+            toast('User Shift has been updated.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(User $user)
     {
-        dd($user);
+        // dd($user);
+        try {
+            DB::transaction(function() use ($user) {
+                $user->delete();
+            }, 5);
+
+            toast('User Has Been Deleted.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
 }
