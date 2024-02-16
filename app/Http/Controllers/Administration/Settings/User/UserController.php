@@ -5,11 +5,19 @@ namespace App\Http\Controllers\Administration\Settings\User;
 use Hash;
 use Exception;
 use App\Models\User;
+use Endroid\QrCode\QrCode;
 use Illuminate\Http\Request;
+use Endroid\QrCode\Color\Color;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Endroid\QrCode\Builder\Builder;
 use App\Http\Controllers\Controller;
+use Endroid\QrCode\Writer\PngWriter;
 use App\Models\Attendance\Attendance;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Illuminate\Support\Facades\Storage;
+use Endroid\QrCode\ErrorCorrectionLevel;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
@@ -64,10 +72,6 @@ class UserController extends Controller
                     $user->addMedia($request->avatar)
                          ->toMediaCollection('avatar');
                 }
-
-                // Save the QR code as a media item
-                $user->addMediaFromString($qrCode->writeString())
-                    ->toMediaCollection('qrcode');
                 
                 EmployeeShift::create([
                     'user_id' => $user->id,
@@ -75,6 +79,20 @@ class UserController extends Controller
                     'end_time' => $request->end_time,
                     'implemented_from' => date('Y-m-d')
                 ]);
+
+                // Generate QR code and save it to storage (https://github.com/endroid/qr-code)
+                $qrCode = Builder::create()
+                                ->writer(new PngWriter())
+                                ->data($user->userid)
+                                ->size(300)
+                                ->margin(10)
+                                ->build();
+                $qrCodePath = 'qrcodes/' . $user->userid . '.png';
+                Storage::disk('public')->put($qrCodePath, $qrCode->getString());
+
+                // Save the QR code file as a media item
+                $user->addMedia(storage_path('app/public/' . $qrCodePath))
+                    ->toMediaCollection('qrcode');
 
                 $role = Role::findOrFail($request->role_id);
                 $user->assignRole($role);

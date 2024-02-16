@@ -8,6 +8,7 @@
         "php": "^8.1",
         "browner12/helpers": "^3.5",
         "dyrynda/laravel-cascade-soft-deletes": "^4.3",
+        "endroid/qr-code": "^5.0",
         "guzzlehttp/guzzle": "^7.5",
         "laravel/framework": "^10.0",
         "laravel/sanctum": "^3.2",
