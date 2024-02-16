@@ -17,6 +17,8 @@ Route::controller(UserController::class)
             Route::get('/edit/{user}', 'edit')->name('edit')->can('User Update');
             Route::post('/update/{user}', 'update')->name('update')->can('User Update');
             Route::get('/destroy/{user}', 'destroy')->name('destroy')->can('User Delete');
+
+            Route::get('/generate-qr-code/{user}', 'generateQrCode')->name('generate.qr.Code')->can('User Create');
             
             Route::get('/show/profile/{user}', 'showProfile')->name('show.profile')->can('User Read');
             Route::get('/show/attendance/{user}', 'showAttendance')->name('show.attendance')->can('User Read');

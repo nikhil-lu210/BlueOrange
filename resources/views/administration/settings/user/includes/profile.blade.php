@@ -35,6 +35,19 @@
                         <span>{{ $user->name }}</span>  
                     </dd>
                 </dl>
+                <dl class="row mb-1">
+                    <dt class="col-sm-4 fw-medium text-nowrap">
+                        <i class="ti ti-qrcode text-heading"></i>
+                        <span class="fw-medium mx-2 text-heading">QR Code:</span>
+                    </dt>
+                    <dd class="col-sm-8">
+                        @if ($user->hasMedia('qrcode'))
+                            <img src="{{ $user->getFirstMediaUrl('qrcode') }}" alt="{{ $user->name }} QRCODE" class="d-block h-auto ms-0 ms-sm-4" width="150px">
+                        @else
+                            <a href="{{ route('administration.settings.user.generate.qr.Code', ['user' => $user]) }}" class="btn btn-outline-primary btn-sm confirm-success">Generate QR Code</a>
+                        @endif
+                    </dd>
+                </dl>
             </div>
         </div>
     </div>

@@ -245,4 +245,29 @@ class UserController extends Controller
             return redirect()->back();
         }
     }
+
+
+    public function generateQrCode(User $user) {
+        if ($user->hasMedia('qecode')) {
+            toast('User Has Already QR Code.', 'warning');
+            return redirect()->back();
+        }
+
+        // Generate QR code and save it to storage (https://github.com/endroid/qr-code)
+        $qrCode = Builder::create()
+                ->writer(new PngWriter())
+                ->data($user->userid)
+                ->size(300)
+                ->margin(10)
+                ->build();
+        $qrCodePath = 'qrcodes/' . $user->userid . '.png';
+        Storage::disk('public')->put($qrCodePath, $qrCode->getString());
+
+        // Save the QR code file as a media item
+        $user->addMedia(storage_path('app/public/' . $qrCodePath))
+             ->toMediaCollection('qrcode');
+
+        toast('User Has Already QR Code.', 'warning');
+        return redirect()->back();
+    }
 }
