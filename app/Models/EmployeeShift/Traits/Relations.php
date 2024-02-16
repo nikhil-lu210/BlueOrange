@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\WorkingShift\Traits;
+namespace App\Models\EmployeeShift\Traits;
 
 use App\Models\Attendance\Attendance;
 use App\Models\User;
@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 trait Relations
 {
     /**
-     * Get the user for the shift.
+     * Get the user for the employee_shift.
      */
     public function user(): BelongsTo
     {
@@ -18,7 +18,7 @@ trait Relations
     }
 
     /**
-     * Get the attendances associated with the shift.
+     * Get the attendances associated with the employee_shift.
      */
     public function attendances(): HasMany
     {

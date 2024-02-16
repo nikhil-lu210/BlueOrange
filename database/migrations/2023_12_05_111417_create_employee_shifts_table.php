@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shifts', function (Blueprint $table) {
+        Schema::create('employee_shifts', function (Blueprint $table) {
             $table->id();
 
             $table->foreignId('user_id')
@@ -36,8 +36,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shifts');
-        Schema::table("shifts", function ($table) {
+        Schema::dropIfExists('employee_shifts');
+        Schema::table("employee_shifts", function ($table) {
             $table->dropSoftDeletes();
         });
     }

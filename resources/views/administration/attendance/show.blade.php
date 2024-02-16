@@ -75,7 +75,7 @@
                             <h4 class="mb-1 text-center">
                                 @isset($attendance->total_time)
                                     @php
-                                        $totalWorkingHour = get_total_hour($attendance->shift->start_time, $attendance->shift->end_time);
+                                        $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
                                     @endphp
                                     <b>
                                         {!! total_time($attendance->total_time, $totalWorkingHour) !!}
@@ -85,7 +85,7 @@
                                 @endisset    
                             </h4>
                             @php
-                                $totalTimeDifferent = total_time_difference($attendance->shift->start_time, $attendance->shift->end_time);
+                                $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
                             @endphp
                             <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
                           </div>
@@ -111,9 +111,9 @@
                                         <span class="fw-medium mx-2 text-heading">Working Shift:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        <span>{{ show_time($attendance->shift->start_time) }}</span>
+                                        <span>{{ show_time($attendance->employee_shift->start_time) }}</span>
                                         <i class="ti ti-minus text-bold"></i>
-                                        <span>{{ show_time($attendance->shift->end_time) }}</span>
+                                        <span>{{ show_time($attendance->employee_shift->end_time) }}</span>
                                     </dd>
                                 </dl>
                                 <dl class="row mb-1">
@@ -122,7 +122,7 @@
                                         <span class="fw-medium mx-2 text-heading">Total Working Hour:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        <span>{{ total_time_difference($attendance->shift->start_time, $attendance->shift->end_time) }}</span>
+                                        <span>{{ total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time) }}</span>
                                     </dd>
                                 </dl>
                                 <dl class="row mb-1">
@@ -132,7 +132,7 @@
                                     </dt>
                                     <dd class="col-sm-8">
                                         @php
-                                            if (get_time_only($attendance->clock_in) <= $attendance->shift->start_time){
+                                            if (get_time_only($attendance->clock_in) <= $attendance->employee_shift->start_time){
                                                 $clockInColor = 'text-success';
                                             } else {
                                                 $clockInColor = 'text-danger';
@@ -155,7 +155,7 @@
                                                     </span>
                                                 @else
                                                     @php
-                                                        if (get_time_only($attendance->clock_out) < $attendance->shift->end_time){
+                                                        if (get_time_only($attendance->clock_out) < $attendance->employee_shift->end_time){
                                                             $clockOutColor = 'text-danger';
                                                         } else {
                                                             $clockOutColor = 'text-success';

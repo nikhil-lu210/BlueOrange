@@ -3,25 +3,25 @@
 namespace App\Models\User\Traits;
 
 use App\Models\Attendance\Attendance;
-use App\Models\WorkingShift\Shift;
+use App\Models\EmployeeShift\EmployeeShift;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 trait Relations
 {    
     /**
-     * Get the shifts associated with the user.
+     * Get the employee_shifts associated with the user.
      */
-    public function shifts(): HasMany
+    public function employee_shifts(): HasMany
     {
-        return $this->hasMany(Shift::class);
+        return $this->hasMany(EmployeeShift::class);
     }
 
     /**
-     * Get currently active shift
+     * Get currently active employee_shift
      */
     public function getCurrentShiftAttribute()
     {
-        return $this->shifts()->where('status', 'active')->latest()->first();
+        return $this->employee_shifts()->where('status', 'active')->latest()->first();
     }
 
     /**

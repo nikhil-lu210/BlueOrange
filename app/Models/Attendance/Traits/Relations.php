@@ -3,7 +3,7 @@
 namespace App\Models\Attendance\Traits;
 
 use App\Models\User;
-use App\Models\WorkingShift\Shift;
+use App\Models\EmployeeShift\EmployeeShift;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait Relations
@@ -17,10 +17,10 @@ trait Relations
     }
     
     /**
-     * Get the shift for the attendance.
+     * Get the employee_shift for the attendance.
      */
-    public function shift(): BelongsTo
+    public function employee_shift(): BelongsTo
     {
-        return $this->belongsTo(Shift::class);
+        return $this->belongsTo(EmployeeShift::class);
     }
 }

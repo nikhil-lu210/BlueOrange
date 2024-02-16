@@ -23,7 +23,7 @@ class AttendanceController extends Controller
                             'user:id,name', 
                             'user.media', 
                             'user.roles', 
-                            'shift:id,start_time,end_time'
+                            'employee_shift:id,start_time,end_time'
                         ])->latest()
                           ->distinct()
                           ->get();
@@ -43,7 +43,7 @@ class AttendanceController extends Controller
      */
     public function myAttendances()
     {
-        $attendances = Attendance::with(['user:id,name', 'shift:id,start_time,end_time'])
+        $attendances = Attendance::with(['user:id,name', 'employee_shift:id,start_time,end_time'])
                         ->where('user_id', auth()->user()->id)
                         ->latest()
                         ->distinct()
@@ -107,7 +107,7 @@ class AttendanceController extends Controller
             DB::transaction(function() use ($user, $currentTime, $location, $currentDate) {
                 Attendance::create([
                     'user_id' => $user->id,
-                    'shift_id' => $user->current_shift->id,
+                    'employee_shift_id' => $user->current_shift->id,
                     'clock_in_date' => $currentDate,
                     'clock_in' => $currentTime,
                     'ip_address' => $location->ip ?? null,

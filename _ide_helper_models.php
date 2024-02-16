@@ -111,7 +111,7 @@ namespace App\Models{
  * @property-read int|null $permissions_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
  * @property-read int|null $roles_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\WorkingShift\Shift> $shifts
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EmployeeShift\EmployeeShift> $employee_shifts
  * @property-read int|null $shifts_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
@@ -142,18 +142,18 @@ namespace App\Models{
 	class User extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
 }
 
-namespace App\Models\WorkingShift{
+namespace App\Models\EmployeeShift{
 /**
- * App\Models\WorkingShift\Shift
+ * App\Models\EmployeeShift\EmployeeShift
  *
  * @property-read \App\Models\User $user
- * @method static \Illuminate\Database\Eloquent\Builder|Shift newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Shift newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Shift onlyTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|Shift query()
- * @method static \Illuminate\Database\Eloquent\Builder|Shift withTrashed()
- * @method static \Illuminate\Database\Eloquent\Builder|Shift withoutTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift query()
+ * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift withoutTrashed()
  */
-	class Shift extends \Eloquent {}
+	class EmployeeShift extends \Eloquent {}
 }
 
