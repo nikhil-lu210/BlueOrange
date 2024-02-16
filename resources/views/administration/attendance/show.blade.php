@@ -132,10 +132,10 @@
                                     </dt>
                                     <dd class="col-sm-8">
                                         @php
-                                            if (get_time_only($attendance->clock_in) > $attendance->shift->start_time){
-                                                $clockInColor = 'text-danger';
-                                            } else {
+                                            if (get_time_only($attendance->clock_in) <= $attendance->shift->start_time){
                                                 $clockInColor = 'text-success';
+                                            } else {
+                                                $clockInColor = 'text-danger';
                                             }
                                         @endphp
                                         <span class="{{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
@@ -256,7 +256,10 @@
             <form action="{{ route('administration.attendance.update', ['attendance' => $attendance]) }}" method="post" autocomplete="off">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editAttendanceTitle">Update Attendance</h5>
+                    <h5 class="modal-title" id="editAttendanceTitle">
+                        <span class="ti ti-edit ti-sm me-1"></span>
+                        Update Attendance
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -270,7 +273,7 @@
                         </div>
                         <div class="mb-3 col-md-6">
                             <label for="clock_out" class="form-label">{{ __('Clock Out') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="clock_out" name="clock_out" value="{{ $attendance->clock_out ?? now() }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror" required/>
+                            <input type="text" id="clock_out" name="clock_out" value="{{ $attendance->clock_out ?? '' }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror"/>
                             @error('clock_out')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror

@@ -29,7 +29,7 @@ class AttendanceUpdateRequest extends FormRequest
                 new ClockInDateMatch($this->attendance), // Use the custom rule
             ],
             'clock_out' => [
-                'required',
+                'nullable',
                 'date_format:Y-m-d H:i'
             ],
         ];

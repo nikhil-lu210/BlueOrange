@@ -200,30 +200,33 @@ class AttendanceController extends Controller
         // dd($request->all(), $attendance);
         try {
             $attendance->clock_in = $request->clock_in;
-            $attendance->clock_out = $request->clock_out;
+            
+            if ($request->clock_out) {
+                $attendance->clock_out = $request->clock_out;
         
-            // Calculate total time
-            $clockInTime = Carbon::parse($request->clock_in);
-            $clockOutTime = Carbon::parse($request->clock_out);
-        
-            // Check if clock in and clock out are on the same day
-            $isSameDay = $clockInTime->isSameDay($clockOutTime);
-        
-            // Calculate total time with consideration for different dates
-            if ($isSameDay) {
-                $totalTime = $clockInTime->diff($clockOutTime);
-            } else {
-                $totalTime = $clockOutTime->diff($clockOutTime->copy()->startOfDay());
+                // Calculate total time
+                $clockInTime = Carbon::parse($request->clock_in);
+                $clockOutTime = Carbon::parse($request->clock_out);
+            
+                // Check if clock in and clock out are on the same day
+                $isSameDay = $clockInTime->isSameDay($clockOutTime);
+            
+                // Calculate total time with consideration for different dates
+                if ($isSameDay) {
+                    $totalTime = $clockInTime->diff($clockOutTime);
+                } else {
+                    $totalTime = $clockOutTime->diff($clockOutTime->copy()->startOfDay());
+                }
+            
+                $formattedTotalTime = sprintf(
+                    '%02d:%02d:%02d',
+                    $totalTime->h, // total hours
+                    $totalTime->i, // total minutes
+                    $totalTime->s // total seconds
+                );
+            
+                $attendance->total_time = $formattedTotalTime;
             }
-        
-            $formattedTotalTime = sprintf(
-                '%02d:%02d:%02d',
-                $totalTime->h, // total hours
-                $totalTime->i, // total minutes
-                $totalTime->s // total seconds
-            );
-        
-            $attendance->total_time = $formattedTotalTime;
         
             $attendance->save();
         
