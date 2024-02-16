@@ -12,7 +12,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance\Attendance;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
-use App\Models\WorkingShift\Shift;
+use App\Models\EmployeeShift\EmployeeShift;
 use App\Notifications\Administration\NewUserRegistrationNotification;
 
 class UserController extends Controller
@@ -63,7 +63,7 @@ class UserController extends Controller
                     $user->addMedia($request->avatar)->toMediaCollection('avatar');
                 }
                 
-                Shift::create([
+                EmployeeShift::create([
                     'user_id' => $user->id,
                     'start_time' => $request->start_time,
                     'end_time' => $request->end_time,
@@ -171,23 +171,23 @@ class UserController extends Controller
 
 
     /**
-     * Shift Update
+     * EmployeeShift Update
      */
-    public function updateShift(Request $request, Shift $shift, User $user) {
+    public function updateShift(Request $request, EmployeeShift $employee_shift, User $user) {
         $request->validate([
             'start_time' => ['required'],
             'end_time' => ['required'],
         ]);
-        // dd($request->all(), $shift->id, $user->id, date('Y-m-d'));
+        // dd($request->all(), $employee_shift->id, $user->id, date('Y-m-d'));
 
         try {
-            DB::transaction(function() use ($request, $shift, $user) {
-                $shift->update([
+            DB::transaction(function() use ($request, $employee_shift, $user) {
+                $employee_shift->update([
                     'implemented_to' => date('Y-m-d'),
                     'status' => 'Inactive'
                 ]);
 
-                Shift::create([
+                EmployeeShift::create([
                     'user_id' => $user->id,
                     'start_time' => $request->start_time,
                     'end_time' => $request->end_time,
@@ -195,7 +195,7 @@ class UserController extends Controller
                 ]);
             }, 5);
 
-            toast('User Shift has been updated.', 'success');
+            toast('User EmployeeShift has been updated.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');

@@ -31,17 +31,17 @@
                     <div data-i18n="Attendance">Attendance</div>
                 </a>
                 <ul class="menu-sub">
-                    @hasanyrole ('Developer|Super Admin') 
+                    @canany(['Attendance Update', 'Attendance Delete'])
                         <li class="menu-item {{ request()->is('attendance/all*') ? 'active' : '' }}">
                             <a href="{{ route('administration.attendance.index') }}" class="menu-link">All Attendances</a>
                         </li>
-                    @endhasanyrole
-                    @can('User Read') 
+                    @endcanany
+                    @can('Attendance Read') 
                         <li class="menu-item {{ request()->is('attendance/my*') ? 'active' : '' }}">
                             <a href="{{ route('administration.attendance.my') }}" class="menu-link">My Attendances</a>
                         </li>
                     @endcan
-                    @can('User Create')
+                    @can('Attendance Create')
                         <li class="menu-item {{ request()->is('attendance/create*') ? 'active' : '' }}">
                             <a href="{{ route('administration.attendance.create') }}" class="menu-link">Assign Attendance</a>
                         </li>

@@ -19,10 +19,14 @@ class AttendanceController extends Controller
      */
     public function index()
     {
-        $attendances = Attendance::with(['user:id,name', 'user.media', 'user.roles'])
-                        ->latest()
-                        ->distinct()
-                        ->get();
+        $attendances = Attendance::with([
+                            'user:id,name', 
+                            'user.media', 
+                            'user.roles', 
+                            'employee_shift:id,start_time,end_time'
+                        ])->latest()
+                          ->distinct()
+                          ->get();
 
         // Check if the user has already clocked in today
         $currentTime = now();
@@ -39,7 +43,7 @@ class AttendanceController extends Controller
      */
     public function myAttendances()
     {
-        $attendances = Attendance::with(['user:id,name'])
+        $attendances = Attendance::with(['user:id,name', 'employee_shift:id,start_time,end_time'])
                         ->where('user_id', auth()->user()->id)
                         ->latest()
                         ->distinct()
@@ -74,12 +78,12 @@ class AttendanceController extends Controller
     // Clockin
     public function clockIn(Request $request)
     {
-        $userId = auth()->user()->id;
+        $user = auth()->user();
         $currentTime = now();
         $currentDate = $currentTime->toDateString();
 
         // Check if the user has an open attendance session (clocked in but not clocked out)
-        $openAttendance = Attendance::where('user_id', $userId)
+        $openAttendance = Attendance::where('user_id', $user->id)
             ->whereNull('clock_out')
             ->first();
 
@@ -88,7 +92,7 @@ class AttendanceController extends Controller
             return redirect()->back();
         }
 
-        $existingAttendance = Attendance::where('user_id', $userId)
+        $existingAttendance = Attendance::where('user_id', $user->id)
             ->where('clock_in_date', $currentDate)
             ->first();
 
@@ -100,9 +104,10 @@ class AttendanceController extends Controller
         $location = Location::get(get_public_ip());
 
         try {
-            DB::transaction(function() use ($userId, $currentTime, $location, $currentDate) {
+            DB::transaction(function() use ($user, $currentTime, $location, $currentDate) {
                 Attendance::create([
-                    'user_id' => $userId,
+                    'user_id' => $user->id,
+                    'employee_shift_id' => $user->current_shift->id,
                     'clock_in_date' => $currentDate,
                     'clock_in' => $currentTime,
                     'ip_address' => $location->ip ?? null,
@@ -125,47 +130,47 @@ class AttendanceController extends Controller
 
     // Clockout
     public function clockOut()
-{
-    $userId = auth()->user()->id;
-    $currentTime = now();
+    {
+        $userId = auth()->user()->id;
+        $currentTime = now();
 
-    // Retrieve the existing attendance record
-    $existingAttendance = Attendance::where('user_id', $userId)
-        ->whereNull('clock_out')
-        ->first();
+        // Retrieve the existing attendance record
+        $existingAttendance = Attendance::where('user_id', $userId)
+            ->whereNull('clock_out')
+            ->first();
 
-    if (!$existingAttendance) {
-        toast('You have not clocked in today.', 'warning');
-        return redirect()->back();
+        if (!$existingAttendance) {
+            toast('You have not clocked in today.', 'warning');
+            return redirect()->back();
+        }
+
+        // Update the existing attendance record with clock_out time and calculate total time
+        try {
+            $clockOutTime = $currentTime->timestamp; // Use timestamp
+            $clockInTime = $existingAttendance->clock_in->timestamp;
+
+            // Calculate total time in seconds
+            $totalSeconds = $clockOutTime - $clockInTime;
+
+            // Convert total time to HH:MM:SS format
+            $hours = floor($totalSeconds / 3600);
+            $minutes = floor(($totalSeconds % 3600) / 60);
+            $seconds = $totalSeconds % 60;
+
+            $formattedTotalTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+            $existingAttendance->update([
+                'clock_out' => $clockOutTime,
+                'total_time' => $formattedTotalTime,
+            ]);
+
+            toast('Clocked Out Successful.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
-
-    // Update the existing attendance record with clock_out time and calculate total time
-    try {
-        $clockOutTime = $currentTime->timestamp; // Use timestamp
-        $clockInTime = $existingAttendance->clock_in->timestamp;
-
-        // Calculate total time in seconds
-        $totalSeconds = $clockOutTime - $clockInTime;
-
-        // Convert total time to HH:MM:SS format
-        $hours = floor($totalSeconds / 3600);
-        $minutes = floor(($totalSeconds % 3600) / 60);
-        $seconds = $totalSeconds % 60;
-
-        $formattedTotalTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-
-        $existingAttendance->update([
-            'clock_out' => $clockOutTime,
-            'total_time' => $formattedTotalTime,
-        ]);
-
-        toast('Clocked Out Successful.', 'success');
-        return redirect()->back();
-    } catch (Exception $e) {
-        alert('Oops! Error.', $e->getMessage(), 'error');
-        return redirect()->back();
-    }
-}
 
 
 
@@ -195,30 +200,33 @@ class AttendanceController extends Controller
         // dd($request->all(), $attendance);
         try {
             $attendance->clock_in = $request->clock_in;
-            $attendance->clock_out = $request->clock_out;
+            
+            if ($request->clock_out) {
+                $attendance->clock_out = $request->clock_out;
         
-            // Calculate total time
-            $clockInTime = Carbon::parse($request->clock_in);
-            $clockOutTime = Carbon::parse($request->clock_out);
-        
-            // Check if clock in and clock out are on the same day
-            $isSameDay = $clockInTime->isSameDay($clockOutTime);
-        
-            // Calculate total time with consideration for different dates
-            if ($isSameDay) {
-                $totalTime = $clockInTime->diff($clockOutTime);
-            } else {
-                $totalTime = $clockOutTime->diff($clockOutTime->copy()->startOfDay());
+                // Calculate total time
+                $clockInTime = Carbon::parse($request->clock_in);
+                $clockOutTime = Carbon::parse($request->clock_out);
+            
+                // Check if clock in and clock out are on the same day
+                $isSameDay = $clockInTime->isSameDay($clockOutTime);
+            
+                // Calculate total time with consideration for different dates
+                if ($isSameDay) {
+                    $totalTime = $clockInTime->diff($clockOutTime);
+                } else {
+                    $totalTime = $clockOutTime->diff($clockOutTime->copy()->startOfDay());
+                }
+            
+                $formattedTotalTime = sprintf(
+                    '%02d:%02d:%02d',
+                    $totalTime->h, // total hours
+                    $totalTime->i, // total minutes
+                    $totalTime->s // total seconds
+                );
+            
+                $attendance->total_time = $formattedTotalTime;
             }
-        
-            $formattedTotalTime = sprintf(
-                '%02d:%02d:%02d',
-                $totalTime->h, // total hours
-                $totalTime->i, // total minutes
-                $totalTime->s // total seconds
-            );
-        
-            $attendance->total_time = $formattedTotalTime;
         
             $attendance->save();
         

@@ -63,7 +63,7 @@
                 <div class="row justify-content-left">
                     <div class="col-md-4">
                         <div class="card">
-                          <div class="card-body">
+                          <div class="card-body text-center">
                             <div class="rounded-3 text-center mb-3">
                                 @if ($attendance->user->hasMedia('avatar'))
                                     <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'profile_view') }}" alt="{{ $attendance->user->name }} Avatar" class="img-fluid rounded-3" width="100%">
@@ -74,13 +74,20 @@
                             <h6 class="mb-1 text-center">{{ show_date($attendance->clock_in_date) }}</h6>
                             <h4 class="mb-1 text-center">
                                 @isset($attendance->total_time)
+                                    @php
+                                        $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                    @endphp
                                     <b>
-                                        {!! total_time($attendance->total_time) !!}
+                                        {!! total_time($attendance->total_time, $totalWorkingHour) !!}
                                     </b>
                                 @else
                                     <b class="text-success text-uppercase">Running</b>
                                 @endisset    
                             </h4>
+                            @php
+                                $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                            @endphp
+                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
                           </div>
                         </div>
                     </div>
@@ -100,11 +107,38 @@
                                 </dl>
                                 <dl class="row mb-1">
                                     <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-clock-check text-heading"></i>
+                                        <span class="fw-medium mx-2 text-heading">Working Shift:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        <span>{{ show_time($attendance->employee_shift->start_time) }}</span>
+                                        <i class="ti ti-minus text-bold"></i>
+                                        <span>{{ show_time($attendance->employee_shift->end_time) }}</span>
+                                    </dd>
+                                </dl>
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-hourglass-filled text-heading"></i>
+                                        <span class="fw-medium mx-2 text-heading">Total Working Hour:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        <span>{{ total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time) }}</span>
+                                    </dd>
+                                </dl>
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                                         <i class="ti ti-clock-plus text-heading"></i>
                                         <span class="fw-medium mx-2 text-heading">Clock In:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        <span>{{ show_time($attendance->clock_in) }}</span>
+                                        @php
+                                            if (get_time_only($attendance->clock_in) <= $attendance->employee_shift->start_time){
+                                                $clockInColor = 'text-success';
+                                            } else {
+                                                $clockInColor = 'text-danger';
+                                            }
+                                        @endphp
+                                        <span class="{{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
                                     </dd>
                                 </dl>
                                 <dl class="row mb-1">
@@ -120,7 +154,14 @@
                                                         {{ show_date_time($attendance->clock_out) }}
                                                     </span>
                                                 @else
-                                                    {{ show_time($attendance->clock_out) }}
+                                                    @php
+                                                        if (get_time_only($attendance->clock_out) < $attendance->employee_shift->end_time){
+                                                            $clockOutColor = 'text-danger';
+                                                        } else {
+                                                            $clockOutColor = 'text-success';
+                                                        }
+                                                    @endphp
+                                                    <span class="{{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
                                                 @endif
                                             @else
                                                 <b class="text-success text-uppercase">Running</b>
@@ -136,7 +177,7 @@
                                     <dd class="col-sm-8">
                                         @isset($attendance->total_time)
                                             <b>
-                                                {!! total_time($attendance->total_time) !!}
+                                                {!! total_time($attendance->total_time, $totalWorkingHour) !!}
                                             </b>
                                         @else
                                             <b class="text-success text-uppercase">Running</b>
@@ -215,7 +256,10 @@
             <form action="{{ route('administration.attendance.update', ['attendance' => $attendance]) }}" method="post" autocomplete="off">
                 @csrf
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editAttendanceTitle">Update Attendance</h5>
+                    <h5 class="modal-title" id="editAttendanceTitle">
+                        <span class="ti ti-edit ti-sm me-1"></span>
+                        Update Attendance
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -229,7 +273,7 @@
                         </div>
                         <div class="mb-3 col-md-6">
                             <label for="clock_out" class="form-label">{{ __('Clock Out') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="clock_out" name="clock_out" value="{{ $attendance->clock_out ?? now() }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror" required/>
+                            <input type="text" id="clock_out" name="clock_out" value="{{ $attendance->clock_out ?? '' }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror"/>
                             @error('clock_out')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror

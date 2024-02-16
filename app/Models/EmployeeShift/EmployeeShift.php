@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Models\WorkingShift;
+namespace App\Models\EmployeeShift;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\WorkingShift\Traits\Relations;
+use App\Models\EmployeeShift\Traits\Relations;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Shift extends Model
+class EmployeeShift extends Model
 {
     use HasFactory, Relations, SoftDeletes, CascadeSoftDeletes;
     

@@ -124,7 +124,7 @@
                         <div class="dropdown-header d-flex align-items-center py-3">
                             <h5 class="text-body mb-0 me-auto">Notification</h5>
                             @if (Auth::user()->unreadNotifications->count() > 0) 
-                                <a href="{{ route('administration.notification.mark_all_as_read') }}" onclick="return confirm('Are You Sure?');" class="dropdown-notifications-all text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read">
+                                <a href="{{ route('administration.notification.mark_all_as_read') }}" class="dropdown-notifications-all text-body confirm-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read">
                                     <i class="ti ti-mail-opened fs-4"></i>
                                 </a>
                             @endif
@@ -147,17 +147,17 @@
                                             </div>
                                         </div>
                                         <div class="flex-grow-1">
-                                            <a href="{{ route('administration.notification.mark_as_read', ['notification_id' => $notification->id]) }}">
+                                            <a href="{{ route('administration.notification.mark_as_read_and_redirect', ['notification_id' => $notification->id]) }}">
                                                 <h6 class="mb-1 text-primary">{{ $notification->data['title'] }}</h6>
                                                 <p class="mb-0 text-dark">{{ $notification->data['message'] }}</p>
                                             </a>
                                             <small class="text-muted">{{ date_time_ago($notification->created_at) }}</small>
                                         </div>
-                                        {{-- <div class="flex-shrink-0 dropdown-notifications-actions">
-                                            <a href="javascript:void(0)" class="dropdown-notifications-archive">
+                                        <div class="flex-shrink-0 dropdown-notifications-actions">
+                                            <a href="{{ route('administration.notification.destroy', ['notification_id' => $notification->id]) }}" class="text-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Notification?">
                                                 <span class="ti ti-x"></span>
                                             </a>
-                                        </div> --}}
+                                        </div>
                                     </div>
                                 </li>
                             @empty
