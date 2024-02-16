@@ -80,6 +80,8 @@ return [
         // Model::class => PathGenerator::class
         // or
         // 'model_morph_alias' => PathGenerator::class
+
+        \App\Models\User::class => \App\Services\MediaLibrary\PathGenerators\UserPathGenerator::class
     ],
 
     /*

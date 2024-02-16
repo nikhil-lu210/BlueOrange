@@ -10,9 +10,9 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance\Attendance;
+use App\Models\EmployeeShift\EmployeeShift;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
-use App\Models\EmployeeShift\EmployeeShift;
 use App\Notifications\Administration\NewUserRegistrationNotification;
 
 class UserController extends Controller
@@ -59,9 +59,15 @@ class UserController extends Controller
                 ]);
                 
                 // Upload and associate the avatar with the user
+                // Update the path from App\Services\MediaLibrary\PathGenerators\UserPathGenerator
                 if ($request->hasFile('avatar')) {
-                    $user->addMedia($request->avatar)->toMediaCollection('avatar');
+                    $user->addMedia($request->avatar)
+                         ->toMediaCollection('avatar');
                 }
+
+                // Save the QR code as a media item
+                $user->addMediaFromString($qrCode->writeString())
+                    ->toMediaCollection('qrcode');
                 
                 EmployeeShift::create([
                     'user_id' => $user->id,
