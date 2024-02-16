@@ -80,10 +80,20 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <a href="{{ route('administration.notification.destroy', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon item-edit confirm-danger" data-bs-toggle="tooltip" title="Delete Notification?">
+                                    {{-- Delete Notification Icon --}}
+                                    <a href="{{ route('administration.notification.destroy', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon confirm-danger" data-bs-toggle="tooltip" title="Delete Notification?">
                                         <i class="text-danger ti ti-trash"></i>
                                     </a>
-                                    <a href="{{ route('administration.notification.mark_as_read', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Notification">
+
+                                    {{-- Mark as read notification icon --}}
+                                    @if (is_null($notification->read_at)) 
+                                        <a href="{{ route('administration.notification.mark_as_read', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Mark As Read?">
+                                            <i class="text-success ti ti-check"></i>
+                                        </a>
+                                    @endif
+
+                                    {{-- Mark as read & show notification icon --}}
+                                    <a href="{{ route('administration.notification.mark_as_read_and_redirect', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Notification">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>
