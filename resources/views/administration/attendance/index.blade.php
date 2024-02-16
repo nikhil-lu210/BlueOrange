@@ -98,46 +98,52 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @php
-                                        if (get_time_only($attendance->clock_in) > $attendance->employee_shift->start_time){
-                                            $clockInColor = 'text-danger';
-                                        } else {
-                                            $clockInColor = 'text-success';
-                                        }
-                                    @endphp
-                                    <span class="text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
-                                    <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="Shift Start Time">{{ show_time($attendance->employee_shift->start_time) }}</small>
-                                </td>
-                                <td>
-                                    @isset($attendance->clock_out)
+                                    <div class="d-grid">
                                         @php
-                                            if (get_time_only($attendance->clock_out) < $attendance->employee_shift->end_time){
-                                                $clockOutColor = 'text-danger';
+                                            if (get_time_only($attendance->clock_in) > $attendance->employee_shift->start_time){
+                                                $clockInColor = 'text-danger';
                                             } else {
-                                                $clockOutColor = 'text-success';
+                                                $clockInColor = 'text-success';
                                             }
                                         @endphp
-                                        <span class="text-bold {{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
-                                    @else
-                                        <b class="text-success text-uppercase">Running</b>
-                                    @endisset
-                                    <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
+                                        <span class="text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
+                                        <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="Shift Start Time">{{ show_time($attendance->employee_shift->start_time) }}</small>
+                                    </div>
                                 </td>
                                 <td>
-                                    @isset($attendance->total_time)
+                                    <div class="d-grid">
+                                        @isset($attendance->clock_out)
+                                            @php
+                                                if (get_time_only($attendance->clock_out) < $attendance->employee_shift->end_time){
+                                                    $clockOutColor = 'text-danger';
+                                                } else {
+                                                    $clockOutColor = 'text-success';
+                                                }
+                                            @endphp
+                                            <span class="text-bold {{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
+                                        @else
+                                            <b class="text-success text-uppercase">Running</b>
+                                        @endisset
+                                        <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-grid">
+                                        @isset($attendance->total_time)
+                                            @php
+                                                $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                            @endphp
+                                            <b>
+                                                {!! total_time($attendance->total_time, $totalWorkingHour) !!}
+                                            </b>
+                                        @else
+                                            <b class="text-success text-uppercase">Running</b>
+                                        @endisset
                                         @php
-                                            $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                            $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
                                         @endphp
-                                        <b>
-                                            {!! total_time($attendance->total_time, $totalWorkingHour) !!}
-                                        </b>
-                                    @else
-                                        <b class="text-success text-uppercase">Running</b>
-                                    @endisset
-                                    @php
-                                        $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                    @endphp
-                                    <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
+                                        <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
+                                    </div>
                                 </td>
                                 <td class="text-center">
                                     <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
