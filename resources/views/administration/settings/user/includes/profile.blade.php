@@ -61,7 +61,7 @@
                         <span class="fw-medium mx-2 text-heading">Contact No:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <a href="tel:+" class="text-primary">+880 1234 567890</a>
+                        <a href="tel:+880 1234 567890" class="text-primary">+880 1234 567890</a>
                     </dd>
                 </dl>
                 <dl class="row mb-1">
@@ -79,7 +79,7 @@
                         <span class="fw-medium mx-2 text-heading">Skype:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ $user->email }}</span>  
+                        <a href="skype:nigel.staffindia?chat" class="text-primary">{{ 'nigel.staffindia' }}</a>
                     </dd>
                 </dl>
             </div>
