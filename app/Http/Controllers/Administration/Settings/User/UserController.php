@@ -99,12 +99,14 @@ class UserController extends Controller
                 $role = Role::findOrFail($request->role_id);
                 $user->assignRole($role);
 
+                $authUser = Auth::user();
+
                 $notifiableUsers = User::whereHas('roles', function ($query) {
                     $query->whereIn('name', ['Super Admin', 'Admin', 'HR Manager']);
                 })->get();
                 
                 foreach ($notifiableUsers as $key => $notifiableUser) {
-                    $notifiableUser->notify(new NewUserRegistrationNotification($user));
+                    $notifiableUser->notify(new NewUserRegistrationNotification($user, $authUser));
                 }
             }, 5);
 

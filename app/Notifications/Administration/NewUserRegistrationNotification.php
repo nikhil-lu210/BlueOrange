@@ -12,14 +12,15 @@ class NewUserRegistrationNotification extends Notification
 {
     use Queueable;
 
-    public $user;
+    protected $user, $authUser;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($user)
+    public function __construct($user, $authUser)
     {
         $this->user = $user;
+        $this->authUser = $authUser;
 
         // dd($this->user);
     }
@@ -46,7 +47,7 @@ class NewUserRegistrationNotification extends Notification
             'url'   => $url,
             'icon'   => 'user',
             'title'   => 'New User Assigned',
-            'message'     => 'A New '. $this->user->roles[0]->name . ' Has Been Assigned.',
+            'message'     => 'A New '. $this->user->roles[0]->name . ' Has Been Assigned By '. $this->authUser->name,
         ];
     }
 }
