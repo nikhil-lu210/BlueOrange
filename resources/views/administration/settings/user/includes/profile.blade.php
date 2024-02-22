@@ -1,5 +1,16 @@
 @extends('administration.settings.user.show')
 
+@section('custom_css')
+    {{--  External CSS  --}}
+    <style>
+    /* Custom CSS Here */
+    dt > i,
+    dd > span > i {
+        margin-top: -4px;
+    }
+    </style>
+@endsection
+
 @section('profile_content')
 
 <!-- User Profile Content -->
@@ -50,8 +61,7 @@
                 </dl>
             </div>
         </div>
-    </div>
-    <div class="col-md-6">
+
         <div class="card mb-4">
             <div class="card-body">
                 <small class="card-text text-uppercase">Contact Information</small>
@@ -84,6 +94,92 @@
                 </dl>
             </div>
         </div>
+    </div>
+
+    <div class="col-md-6">
+        @canany(['User Create', 'User Update'])
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6 class="card-text text-uppercase float-start">Salary Breakdown</h6>
+                    <div class="d-inline-block float-end">
+                        <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-outline-primary waves-effect dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-dots"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                            <a href="#" class="dropdown-item">
+                                <i class="text-primary ti ti-history me-1"></i> 
+                                Salary History
+                            </a>
+                            <a href="#" class="dropdown-item">
+                                <i class="text-primary ti ti-calendar-time me-1"></i> 
+                                Monthly Salary
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" class="dropdown-item btn btn-primary waves-effect">
+                                <i class="ti ti-edit me-1"></i> 
+                                Update Salary
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <dl class="row mt-3 mb-1">
+                        <dt class="col-5 mb-2 fw-medium text-nowrap">
+                            <i class="ti ti-coin"></i>
+                            <span class="fw-medium mx-2 text-heading">Basic Salary:</span>
+                        </dt>
+                        <dd class="col-7">
+                            <span><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
+                        </dd>
+                    </dl>
+                    <dl class="row mt-3 mb-1">
+                        <dt class="col-5 mb-2 fw-medium text-nowrap">
+                            <i class="ti ti-coin"></i>
+                            <span class="fw-medium mx-2 text-heading">House Benefit:</span>
+                        </dt>
+                        <dd class="col-7">
+                            <span><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
+                        </dd>
+                    </dl>
+                    <dl class="row mt-3 mb-1">
+                        <dt class="col-5 mb-2 fw-medium text-nowrap">
+                            <i class="ti ti-coin"></i>
+                            <span class="fw-medium mx-2 text-heading">Transport Allowance:</span>
+                        </dt>
+                        <dd class="col-7">
+                            <span><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
+                        </dd>
+                    </dl>
+                    <dl class="row mt-3 mb-1">
+                        <dt class="col-5 mb-2 fw-medium text-nowrap">
+                            <i class="ti ti-coin"></i>
+                            <span class="fw-medium mx-2 text-heading">Medical Allowance:</span>
+                        </dt>
+                        <dd class="col-7">
+                            <span><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
+                        </dd>
+                    </dl>
+                    <dl class="row mt-3 mb-1">
+                        <dt class="col-5 mb-2 fw-medium text-nowrap">
+                            <i class="ti ti-coin"></i>
+                            <span class="fw-medium mx-2 text-heading">Night Shift Allowance:</span>
+                        </dt>
+                        <dd class="col-7">
+                            <span><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
+                        </dd>
+                    </dl>
+                    <dl class="row mt-3 mb-0 text-primary">
+                        <dt class="col-5 mb-2 text-nowrap">
+                            <i class="ti ti-topology-ring-3"></i>
+                            <span class="mx-2 text-bold">Total Salary:</span>
+                        </dt>
+                        <dd class="col-7">
+                            <span class="text-bold"><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        @endcanany
     </div>
 </div>
 <!--/ User Profile Content -->
