@@ -122,62 +122,66 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-body">
-                    <dl class="row mt-3 mb-1">
-                        <dt class="col-5 mb-2 fw-medium text-nowrap">
-                            <i class="ti ti-coin"></i>
-                            <span class="fw-medium mx-2 text-heading">Basic Salary:</span>
-                        </dt>
-                        <dd class="col-7">
-                            <span><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
-                        </dd>
-                    </dl>
-                    <dl class="row mt-3 mb-1">
-                        <dt class="col-5 mb-2 fw-medium text-nowrap">
-                            <i class="ti ti-coin"></i>
-                            <span class="fw-medium mx-2 text-heading">House Benefit:</span>
-                        </dt>
-                        <dd class="col-7">
-                            <span><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
-                        </dd>
-                    </dl>
-                    <dl class="row mt-3 mb-1">
-                        <dt class="col-5 mb-2 fw-medium text-nowrap">
-                            <i class="ti ti-coin"></i>
-                            <span class="fw-medium mx-2 text-heading">Transport Allowance:</span>
-                        </dt>
-                        <dd class="col-7">
-                            <span><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
-                        </dd>
-                    </dl>
-                    <dl class="row mt-3 mb-1">
-                        <dt class="col-5 mb-2 fw-medium text-nowrap">
-                            <i class="ti ti-coin"></i>
-                            <span class="fw-medium mx-2 text-heading">Medical Allowance:</span>
-                        </dt>
-                        <dd class="col-7">
-                            <span><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
-                        </dd>
-                    </dl>
-                    <dl class="row mt-3 mb-1">
-                        <dt class="col-5 mb-2 fw-medium text-nowrap">
-                            <i class="ti ti-coin"></i>
-                            <span class="fw-medium mx-2 text-heading">Night Shift Allowance:</span>
-                        </dt>
-                        <dd class="col-7">
-                            <span><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
-                        </dd>
-                    </dl>
-                    <dl class="row mt-3 mb-0 text-primary">
-                        <dt class="col-5 mb-2 text-nowrap">
-                            <i class="ti ti-topology-ring-3"></i>
-                            <span class="mx-2 text-bold">Total Salary:</span>
-                        </dt>
-                        <dd class="col-7">
-                            <span class="text-bold"><i class="ti ti-currency-taka"></i>{{ '10,200' }}</span>
-                        </dd>
-                    </dl>
-                </div>
+                @if ($user->current_salary) 
+                    <div class="card-body">
+                        <dl class="row mt-3 mb-1">
+                            <dt class="col-5 mb-2 fw-medium text-nowrap">
+                                <i class="ti ti-coin"></i>
+                                <span class="fw-medium mx-2 text-heading">Basic Salary:</span>
+                            </dt>
+                            <dd class="col-7">
+                                <span><i class="ti ti-currency-taka"></i>{{ $user->current_salary->basic_salary }}</span>
+                            </dd>
+                        </dl>
+                        <dl class="row mt-3 mb-1">
+                            <dt class="col-5 mb-2 fw-medium text-nowrap">
+                                <i class="ti ti-coin"></i>
+                                <span class="fw-medium mx-2 text-heading">House Benefit:</span>
+                            </dt>
+                            <dd class="col-7">
+                                <span><i class="ti ti-currency-taka"></i>{{ $user->current_salary->house_benefit }}</span>
+                            </dd>
+                        </dl>
+                        <dl class="row mt-3 mb-1">
+                            <dt class="col-5 mb-2 fw-medium text-nowrap">
+                                <i class="ti ti-coin"></i>
+                                <span class="fw-medium mx-2 text-heading">Transport Allowance:</span>
+                            </dt>
+                            <dd class="col-7">
+                                <span><i class="ti ti-currency-taka"></i>{{ $user->current_salary->transport_allowance }}</span>
+                            </dd>
+                        </dl>
+                        <dl class="row mt-3 mb-1">
+                            <dt class="col-5 mb-2 fw-medium text-nowrap">
+                                <i class="ti ti-coin"></i>
+                                <span class="fw-medium mx-2 text-heading">Medical Allowance:</span>
+                            </dt>
+                            <dd class="col-7">
+                                <span><i class="ti ti-currency-taka"></i>{{ $user->current_salary->medical_allowance }}</span>
+                            </dd>
+                        </dl>
+                        @if ($user->current_salary->night_shift_allowance) 
+                            <dl class="row mt-3 mb-1">
+                                <dt class="col-5 mb-2 fw-medium text-nowrap">
+                                    <i class="ti ti-coin"></i>
+                                    <span class="fw-medium mx-2 text-heading">Night Shift Allowance:</span>
+                                </dt>
+                                <dd class="col-7">
+                                    <span><i class="ti ti-currency-taka"></i>{{ $user->current_salary->night_shift_allowance }}</span>
+                                </dd>
+                            </dl>
+                        @endif
+                        <dl class="row mt-3 mb-0 text-primary">
+                            <dt class="col-5 mb-2 text-nowrap">
+                                <i class="ti ti-topology-ring-3"></i>
+                                <span class="mx-2 text-bold">Total Salary:</span>
+                            </dt>
+                            <dd class="col-7">
+                                <span class="text-bold"><i class="ti ti-currency-taka"></i>{{ $user->current_salary->total }}</span>
+                            </dd>
+                        </dl>
+                    </div>
+                @endif
             </div>
         @endcanany
     </div>
