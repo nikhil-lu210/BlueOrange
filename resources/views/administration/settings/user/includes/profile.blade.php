@@ -3,11 +3,11 @@
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
-    /* Custom CSS Here */
-    dt > i,
-    dd > span > i {
-        margin-top: -4px;
-    }
+        /* Custom CSS Here */
+        dt > i,
+        dd > span > i {
+            margin-top: -4px;
+        }
     </style>
 @endsection
 
