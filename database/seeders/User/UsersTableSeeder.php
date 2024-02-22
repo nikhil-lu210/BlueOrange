@@ -30,6 +30,12 @@ class UsersTableSeeder extends Seeder
         // Assign a role to the developer
         $developerRole = Role::findByName('Developer');
         $developer->assignRole($developerRole);
+        // Create associated EmployeeShift
+        $developer->employee_shifts()->create([
+            'start_time' => '14:00:00',
+            'end_time' => '22:00:00',
+            'implemented_from' => date('Y-m-d'),
+        ]);
         
         
         // Create a superAdmin
@@ -46,6 +52,12 @@ class UsersTableSeeder extends Seeder
         // Assign a role to the superAdmin
         $superAdminRole = Role::findByName('Super Admin');
         $superAdmin->assignRole($superAdminRole);
+        // Create associated EmployeeShift
+        $superAdmin->employee_shifts()->create([
+            'start_time' => '14:00:00',
+            'end_time' => '22:00:00',
+            'implemented_from' => date('Y-m-d'),
+        ]);
         
         
         // Create a admin
@@ -62,5 +74,11 @@ class UsersTableSeeder extends Seeder
         // Assign a role to the admin
         $adminRole = Role::findByName('Admin');
         $admin->assignRole($adminRole);
+        // Create associated EmployeeShift
+        $admin->employee_shifts()->create([
+            'start_time' => '14:00:00',
+            'end_time' => '22:00:00',
+            'implemented_from' => date('Y-m-d'),
+        ]);
     }
 }

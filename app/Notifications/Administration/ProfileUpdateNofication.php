@@ -8,21 +8,18 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class NewUserRegistrationNotification extends Notification
+class ProfileUpdateNofication extends Notification
 {
     use Queueable;
 
-    protected $user, $authUser;
+    protected $user;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct($user, $authUser)
+    public function __construct($user)
     {
         $this->user = $user;
-        $this->authUser = $authUser;
-
-        // dd($this->user);
     }
 
     /**
@@ -46,8 +43,8 @@ class NewUserRegistrationNotification extends Notification
         return [
             'url'   => $url,
             'icon'   => 'user',
-            'title'   => 'New User Assigned',
-            'message'     => 'A New '. $this->user->roles[0]->name . ' Has Been Assigned By '. $this->authUser->name,
+            'title'   => 'Employee Profile Updated',
+            'message'     => $this->user->name.' Has Been Updated His/Her Profile.',
         ];
     }
 }

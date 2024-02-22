@@ -5,15 +5,25 @@ namespace App\Http\Controllers\Administration\Settings\User;
 use Hash;
 use Exception;
 use App\Models\User;
+use Endroid\QrCode\QrCode;
 use Illuminate\Http\Request;
+use Endroid\QrCode\Color\Color;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Endroid\QrCode\Builder\Builder;
 use App\Http\Controllers\Controller;
+use Endroid\QrCode\Writer\PngWriter;
 use App\Models\Attendance\Attendance;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Illuminate\Support\Facades\Storage;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use App\Models\EmployeeShift\EmployeeShift;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
-use App\Models\EmployeeShift\EmployeeShift;
 use App\Notifications\Administration\NewUserRegistrationNotification;
+use App\Notifications\Administration\UserInfoUpdateNofication;
+use Auth;
 
 class UserController extends Controller
 {
@@ -59,8 +69,10 @@ class UserController extends Controller
                 ]);
                 
                 // Upload and associate the avatar with the user
+                // Update the path from App\Services\MediaLibrary\PathGenerators\UserPathGenerator
                 if ($request->hasFile('avatar')) {
-                    $user->addMedia($request->avatar)->toMediaCollection('avatar');
+                    $user->addMedia($request->avatar)
+                         ->toMediaCollection('avatar');
                 }
                 
                 EmployeeShift::create([
@@ -70,17 +82,31 @@ class UserController extends Controller
                     'implemented_from' => date('Y-m-d')
                 ]);
 
+                // Generate QR code and save it to storage (https://github.com/endroid/qr-code)
+                $qrCode = Builder::create()
+                                ->writer(new PngWriter())
+                                ->data($user->userid)
+                                ->size(300)
+                                ->margin(10)
+                                ->build();
+                $qrCodePath = 'qrcodes/' . $user->userid . '.png';
+                Storage::disk('public')->put($qrCodePath, $qrCode->getString());
+
+                // Save the QR code file as a media item
+                $user->addMedia(storage_path('app/public/' . $qrCodePath))
+                    ->toMediaCollection('qrcode');
+
                 $role = Role::findOrFail($request->role_id);
                 $user->assignRole($role);
 
-                $admins = User::whereHas('roles', function ($query) {
-                    $query->where('name', 'Super Admin');
-                })->orWhereHas('roles', function ($query) {
-                    $query->where('name', 'Admin');
+                $authUser = Auth::user();
+
+                $notifiableUsers = User::whereHas('roles', function ($query) {
+                    $query->whereIn('name', ['Super Admin', 'Admin', 'HR Manager']);
                 })->get();
                 
-                foreach ($admins as $key => $admin) {
-                    $admin->notify(new NewUserRegistrationNotification($user));
+                foreach ($notifiableUsers as $key => $notifiableUser) {
+                    $notifiableUser->notify(new NewUserRegistrationNotification($user, $authUser));
                 }
             }, 5);
 
@@ -159,6 +185,11 @@ class UserController extends Controller
                 // Sync the user's role
                 $role = Role::findOrFail($request->role_id);
                 $user->syncRoles([$role]);
+
+                $authUser = Auth::user();
+
+                // Send Notification to that User
+                $user->notify(new UserInfoUpdateNofication($user, $authUser));
             }, 5);
 
             toast('User information has been updated.', 'success');
@@ -220,5 +251,30 @@ class UserController extends Controller
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back();
         }
+    }
+
+
+    public function generateQrCode(User $user) {
+        if ($user->hasMedia('qecode')) {
+            toast('User Has Already QR Code.', 'warning');
+            return redirect()->back();
+        }
+
+        // Generate QR code and save it to storage (https://github.com/endroid/qr-code)
+        $qrCode = Builder::create()
+                ->writer(new PngWriter())
+                ->data($user->userid)
+                ->size(300)
+                ->margin(10)
+                ->build();
+        $qrCodePath = 'qrcodes/' . $user->userid . '.png';
+        Storage::disk('public')->put($qrCodePath, $qrCode->getString());
+
+        // Save the QR code file as a media item
+        $user->addMedia(storage_path('app/public/' . $qrCodePath))
+             ->toMediaCollection('qrcode');
+
+        toast('User Has Already QR Code.', 'warning');
+        return redirect()->back();
     }
 }

@@ -8,11 +8,12 @@ use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class NewUserRegistrationNotification extends Notification
+class UserInfoUpdateNofication extends Notification
 {
     use Queueable;
 
-    protected $user, $authUser;
+    protected $user;
+    protected $authUser;
 
     /**
      * Create a new notification instance.
@@ -21,8 +22,6 @@ class NewUserRegistrationNotification extends Notification
     {
         $this->user = $user;
         $this->authUser = $authUser;
-
-        // dd($this->user);
     }
 
     /**
@@ -42,12 +41,12 @@ class NewUserRegistrationNotification extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        $url = URL::route('administration.settings.user.show.profile', ['user' => $this->user->id]);
+        $url = URL::route('administration.my.profile');
         return [
             'url'   => $url,
             'icon'   => 'user',
-            'title'   => 'New User Assigned',
-            'message'     => 'A New '. $this->user->roles[0]->name . ' Has Been Assigned By '. $this->authUser->name,
+            'title'   => 'User Info Updated',
+            'message'     => 'Your User Info Has Been Updated by, '. $this->authUser->name,
         ];
     }
 }
