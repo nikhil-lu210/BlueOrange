@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Administration\Profile;
 
 use Auth;
 use Exception;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 use App\Models\Attendance\Attendance;
 use App\Http\Requests\Administration\Profile\ProfileUpdateRequest;
 use App\Http\Requests\Administration\Profile\Security\PasswordUpdateRequest;
+use App\Notifications\Administration\ProfileUpdateNofication;
 
 class ProfileController extends Controller
 {
@@ -85,6 +87,14 @@ class ProfileController extends Controller
                     // Sync the user's role
                     $role = Role::findOrFail($request->role_id);
                     $user->syncRoles([$role]);
+                }
+
+                $notifiableUsers = User::whereHas('roles', function ($query) {
+                    $query->whereIn('name', ['Super Admin', 'Admin', 'HR Manager']);
+                })->get();
+                
+                foreach ($notifiableUsers as $key => $notifiableUser) {
+                    $notifiableUser->notify(new ProfileUpdateNofication($user));
                 }
             }, 5);
 
