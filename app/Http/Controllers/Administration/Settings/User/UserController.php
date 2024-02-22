@@ -22,6 +22,8 @@ use App\Models\EmployeeShift\EmployeeShift;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
 use App\Notifications\Administration\NewUserRegistrationNotification;
+use App\Notifications\Administration\UserInfoUpdateNofication;
+use Auth;
 
 class UserController extends Controller
 {
@@ -183,6 +185,11 @@ class UserController extends Controller
                 // Sync the user's role
                 $role = Role::findOrFail($request->role_id);
                 $user->syncRoles([$role]);
+
+                $authUser = Auth::user();
+
+                // Send Notification to that User
+                $user->notify(new UserInfoUpdateNofication($user, $authUser));
             }, 5);
 
             toast('User information has been updated.', 'success');
