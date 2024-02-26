@@ -65,7 +65,7 @@
                             <th>Implemented From</th>
                             <th>Implemented To</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -89,7 +89,7 @@
                                 <td>
                                     <span class="badge bg-label-success">{{ $salary->status }}</span>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     <a href="#" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
