@@ -130,7 +130,7 @@
                                 <span class="fw-medium mx-2 text-heading">Basic Salary:</span>
                             </dt>
                             <dd class="col-7">
-                                <span><i class="ti ti-currency-taka"></i>{{ $user->current_salary->basic_salary }}</span>
+                                <span><i class="ti ti-currency-taka"></i>{{ Number::format($user->current_salary->basic_salary) }}</span>
                             </dd>
                         </dl>
                         <dl class="row mt-3 mb-1">
@@ -139,7 +139,7 @@
                                 <span class="fw-medium mx-2 text-heading">House Benefit:</span>
                             </dt>
                             <dd class="col-7">
-                                <span><i class="ti ti-currency-taka"></i>{{ $user->current_salary->house_benefit }}</span>
+                                <span><i class="ti ti-currency-taka"></i>{{ Number::format($user->current_salary->house_benefit) }}</span>
                             </dd>
                         </dl>
                         <dl class="row mt-3 mb-1">
@@ -148,7 +148,7 @@
                                 <span class="fw-medium mx-2 text-heading">Transport Allowance:</span>
                             </dt>
                             <dd class="col-7">
-                                <span><i class="ti ti-currency-taka"></i>{{ $user->current_salary->transport_allowance }}</span>
+                                <span><i class="ti ti-currency-taka"></i>{{ Number::format($user->current_salary->transport_allowance) }}</span>
                             </dd>
                         </dl>
                         <dl class="row mt-3 mb-1">
@@ -157,7 +157,7 @@
                                 <span class="fw-medium mx-2 text-heading">Medical Allowance:</span>
                             </dt>
                             <dd class="col-7">
-                                <span><i class="ti ti-currency-taka"></i>{{ $user->current_salary->medical_allowance }}</span>
+                                <span><i class="ti ti-currency-taka"></i>{{ Number::format($user->current_salary->medical_allowance) }}</span>
                             </dd>
                         </dl>
                         @if ($user->current_salary->night_shift_allowance) 
@@ -167,7 +167,7 @@
                                     <span class="fw-medium mx-2 text-heading">Night Shift Allowance:</span>
                                 </dt>
                                 <dd class="col-7">
-                                    <span><i class="ti ti-currency-taka"></i>{{ $user->current_salary->night_shift_allowance }}</span>
+                                    <span><i class="ti ti-currency-taka"></i>{{ Number::format($user->current_salary->night_shift_allowance) }}</span>
                                 </dd>
                             </dl>
                         @endif
@@ -177,7 +177,7 @@
                                 <span class="mx-2 text-bold">Total Salary:</span>
                             </dt>
                             <dd class="col-7">
-                                <span class="text-bold"><i class="ti ti-currency-taka"></i>{{ $user->current_salary->total }}</span>
+                                <span class="text-bold"><i class="ti ti-currency-taka"></i>{{ Number::format($user->current_salary->total) }}</span>
                             </dd>
                         </dl>
                     </div>

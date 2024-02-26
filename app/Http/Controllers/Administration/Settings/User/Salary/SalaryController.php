@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Salary\Salary;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Number;
 
 class SalaryController extends Controller
 {
@@ -14,8 +15,9 @@ class SalaryController extends Controller
      */
     public function index(User $user)
     {
+        // dd(Number::currency(1000, in: 'BDT'));
         $salaries = Salary::whereUserId($user->id)->get();
-        
+
         return view('administration.settings.user.salary.index', compact(['user', 'salaries']));
     }
 

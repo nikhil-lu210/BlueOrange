@@ -73,10 +73,10 @@
                             <tr>
                                 <th>#{{ serial($salaries, $key) }}</th>
                                 <td>
-                                    <span class="text-bold">
+                                    <span class="text-bold" data-bs-toggle="tooltip" title="{{ Number::spell($salary->total) }}">
                                         <i class="ti ti-currency-taka" style="margin-top: -4px; margin-right: -5px;"></i>
-                                        {{ $salary->total }}
-                                    </span>    
+                                        {{ Number::format($salary->total) }}
+                                    </span>
                                 </td>
                                 <td>{{ show_date($salary->implemented_from) }}</td>
                                 <td>
