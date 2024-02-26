@@ -106,18 +106,18 @@
                             <i class="ti ti-dots"></i>
                         </a>
                         <div class="dropdown-menu dropdown-menu-end m-0" style="">
-                            <a href="#" class="dropdown-item">
+                            <a href="{{ route('administration.settings.user.salary.index', ['user' => $user]) }}" class="dropdown-item">
                                 <i class="text-primary ti ti-history me-1"></i> 
                                 Salary History
                             </a>
                             <a href="#" class="dropdown-item">
                                 <i class="text-primary ti ti-calendar-time me-1"></i> 
-                                Monthly Salary
+                                Monthly Salary History
                             </a>
                             <div class="dropdown-divider"></div>
                             <a href="#" class="dropdown-item btn btn-primary waves-effect">
-                                <i class="ti ti-edit me-1"></i> 
-                                Update Salary
+                                <i class="ti ti-plus me-1"></i> 
+                                Upgrade Salary
                             </a>
                         </div>
                     </div>

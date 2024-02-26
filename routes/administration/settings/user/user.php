@@ -25,4 +25,8 @@ Route::controller(UserController::class)
             Route::get('/show/break/{user}', 'showBreak')->name('show.break')->can('User Read');
 
             Route::post('/shift/{shift}/update/{user}', 'updateShift')->name('shift.update')->can('User Update');
+
+
+            // salary
+            include_once 'salary/salary.php';
         });
