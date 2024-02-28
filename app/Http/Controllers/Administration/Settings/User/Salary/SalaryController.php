@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Administration\Settings\User\Salary;
 
-use App\Http\Controllers\Controller;
-use App\Models\Salary\Salary;
+use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Salary\Salary;
 use Illuminate\Support\Number;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\Settings\User\Salary\SalaryUpdateRequest;
 
 class SalaryController extends Controller
 {
@@ -46,19 +49,34 @@ class SalaryController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(User $user, Salary $salary)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user, Salary $salary)
+    public function update(SalaryUpdateRequest $request, User $user, Salary $salary)
     {
-        //
+        // dd($request->all(), $user, $salary);
+        try {
+            DB::transaction(function() use ($request, $salary) {
+                $salary->update([
+                    'basic_salary' => $request->basic_salary,
+                    'house_benefit' => $request->house_benefit,
+                    'transport_allowance' => $request->transport_allowance,
+                    'medical_allowance' => $request->medical_allowance,
+                    'night_shift_allowance' => $request->night_shift_allowance,
+                    'other_allowance' => $request->other_allowance
+                ]);
+
+                $totalSalary = $request->basic_salary + $request->house_benefit + $request->transport_allowance + $request->medical_allowance + $request->night_shift_allowance + $request->other_allowance;
+                
+                $salary->total = $totalSalary;
+                $salary->save();
+            }, 5);
+
+            toast('Salary has been updated.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
 
     /**

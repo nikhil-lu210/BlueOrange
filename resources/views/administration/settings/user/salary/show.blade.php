@@ -214,7 +214,7 @@
     <div class="modal fade" id="editSalaryHistory" tabindex="-1" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
-                <form action="#" method="post" autocomplete="off">
+                <form action="{{ route('administration.settings.user.salary.update', ['user' => $user, 'salary' => $salary]) }}" method="post" autocomplete="off">
                     @csrf
                     <div class="modal-header">
                         <h5 class="modal-title" id="editSalaryHistoryTitle">
