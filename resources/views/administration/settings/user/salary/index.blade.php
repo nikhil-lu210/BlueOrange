@@ -90,7 +90,7 @@
                                     <span class="badge bg-label-success">{{ $salary->status }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="#" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="{{ route('administration.settings.user.salary.show', ['user' => $user, 'salary' => $salary]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>

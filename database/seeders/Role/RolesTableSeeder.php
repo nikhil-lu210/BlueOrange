@@ -47,6 +47,11 @@ class RolesTableSeeder extends Seeder
                     'User Read',
                     'User Update',
                     'User Delete',
+                    
+                    'Salary Create',
+                    'Salary Read',
+                    'Salary Update',
+                    'Salary Delete',
                 ];
             } elseif ($role === 'Super Admin') {
                 $permissions = [
@@ -69,6 +74,11 @@ class RolesTableSeeder extends Seeder
                     'User Read',
                     'User Update',
                     'User Delete',
+                    
+                    'Salary Create',
+                    'Salary Read',
+                    'Salary Update',
+                    'Salary Delete',
                 ];
             } elseif ($role === 'Admin') {
                 $permissions = [
@@ -82,6 +92,11 @@ class RolesTableSeeder extends Seeder
                     'User Read',
                     'User Update',
                     'User Delete',
+                    
+                    'Salary Create',
+                    'Salary Read',
+                    'Salary Update',
+                    'Salary Delete',
                 ];
             } elseif ($role === 'HR Manager') {
                 $permissions = [
@@ -94,18 +109,28 @@ class RolesTableSeeder extends Seeder
                     'User Create',
                     'User Read',
                     'User Update',
+                    
+                    'Salary Create',
+                    'Salary Read',
+                    'Salary Update',
                 ];
             } elseif ($role === 'Team Leader') {
                 $permissions = [
                     'User Read',
+
+                    'Salary Read',
                 ];
             } elseif ($role === 'Employee') {
                 $permissions = [
                     'User Read',
+
+                    'Salary Read',
                 ];
             } else {
                 $permissions = [
                     'User Read',
+
+                    'Salary Read',
                 ];
             }
 

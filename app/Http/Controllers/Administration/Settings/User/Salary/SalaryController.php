@@ -24,7 +24,7 @@ class SalaryController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(User $user)
     {
         //
     }
@@ -32,7 +32,7 @@ class SalaryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
         //
     }
@@ -40,15 +40,15 @@ class SalaryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user, Salary $salary)
     {
-        //
+        return view('administration.settings.user.salary.show', compact(['user', 'salary']));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(User $user, Salary $salary)
     {
         //
     }
@@ -56,7 +56,7 @@ class SalaryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, User $user, Salary $salary)
     {
         //
     }
@@ -64,7 +64,7 @@ class SalaryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user, Salary $salary)
     {
         //
     }

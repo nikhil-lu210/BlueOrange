@@ -27,7 +27,7 @@ return new class extends Migration
             
             $table->date('implemented_from');
             $table->date('implemented_to')->nullable();
-            $table->date('total');
+            $table->float('total');
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->timestamps();
             $table->softDeletes();

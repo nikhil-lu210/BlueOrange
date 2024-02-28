@@ -19,6 +19,7 @@ class PermissionsTableSeeder extends Seeder
             'Permission',
             'Role',
             'User',
+            'Salary',
         ];
 
         foreach ($modules as $module) {
