@@ -24,6 +24,7 @@ return new class extends Migration
             $table->float('transport_allowance');
             $table->float('medical_allowance');
             $table->float('night_shift_allowance')->nullable();
+            $table->float('other_allowance')->nullable();
             
             $table->date('implemented_from');
             $table->date('implemented_to')->nullable();

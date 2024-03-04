@@ -190,6 +190,17 @@
                                         </dd>
                                     </dl>
                                 @endif
+                                @if ($salary->other_allowance) 
+                                    <dl class="row mt-3 mb-1">
+                                        <dt class="col-5 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-coin"></i>
+                                            <span class="fw-medium mx-2 text-heading">Other Allowance:</span>
+                                        </dt>
+                                        <dd class="col-7">
+                                            <span><i class="ti ti-currency-taka"></i>{{ format_number($salary->other_allowance) }}</span>
+                                        </dd>
+                                    </dl>
+                                @endif
                                 <dl class="row mt-3 mb-0 text-primary">
                                     <dt class="col-5 mb-2 text-nowrap">
                                         <i class="ti ti-topology-ring-3"></i>

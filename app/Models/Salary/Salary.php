@@ -21,6 +21,7 @@ class Salary extends Model
         'transport_allowance',
         'medical_allowance',
         'night_shift_allowance',
+        'other_allowance',
         'implemented_from',
         'implemented_to',
         'status'
