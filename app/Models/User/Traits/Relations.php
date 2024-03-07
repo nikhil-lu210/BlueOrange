@@ -2,9 +2,10 @@
 
 namespace App\Models\User\Traits;
 
+use App\Models\Salary\Salary;
 use App\Models\Attendance\Attendance;
 use App\Models\EmployeeShift\EmployeeShift;
-use App\Models\Salary\Salary;
+use App\Models\Salary\Monthly\MonthlySalary;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 trait Relations
@@ -39,6 +40,14 @@ trait Relations
     public function getCurrentSalaryAttribute()
     {
         return $this->salaries()->where('status', 'active')->latest()->first();
+    }
+
+    /**
+     * Get the monthly_salaries associated with the user.
+     */
+    public function monthly_salaries(): HasMany
+    {
+        return $this->hasMany(MonthlySalary::class);
     }
 
     /**

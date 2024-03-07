@@ -85,6 +85,11 @@ class SalaryController extends Controller
     public function update(SalaryUpdateRequest $request, User $user, Salary $salary)
     {
         // dd($request->all(), $user, $salary);
+        if ($salary->monthly_salaries->count() > 0) {
+            toast('You cannot Update Salary as this Salary has already been paid one or more times.', 'warning');
+            return redirect()->back();
+        }
+        
         try {
             DB::transaction(function() use ($request, $salary) {
                 $salary->update([

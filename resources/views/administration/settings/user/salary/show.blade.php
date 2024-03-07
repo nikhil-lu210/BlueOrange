@@ -17,6 +17,9 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
+    <!-- DataTables css -->
+    <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('custom_css')
@@ -67,14 +70,16 @@
             <div class="card-header header-elements">
                 <h5 class="mb-0"><strong>{{ $user->name }}</strong>'s Salary History Details</h5>
         
-                @canany(['Salary Update'])
-                    <div class="card-header-elements ms-auto">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#editSalaryHistory" class="btn btn-sm btn-primary">
-                            <span class="tf-icon ti ti-edit ti-xs me-1"></span>
-                            Edit Salary History
-                        </button>
-                    </div>
-                @endcanany
+                @if ($salary->status === 'Active' && $salary->monthly_salaries->count() == 0) 
+                    @canany(['Salary Update'])
+                        <div class="card-header-elements ms-auto">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#editSalaryHistory" class="btn btn-sm btn-primary">
+                                <span class="tf-icon ti ti-edit ti-xs me-1"></span>
+                                Edit Salary History
+                            </button>
+                        </div>
+                    @endcanany
+                @endif
             </div>
             <div class="card-body">
                 <div class="row justify-content-left">
@@ -218,101 +223,157 @@
         </div>        
     </div>
 </div>
-<!-- End row -->
 
-{{-- Modal for Salary Upgrade --}}
-@canany(['Salary Create', 'Salary Update'])
-    <div class="modal fade" id="editSalaryHistory" tabindex="-1" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <form action="{{ route('administration.settings.user.salary.update', ['user' => $user, 'salary' => $salary]) }}" method="post" autocomplete="off">
-                    @csrf
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editSalaryHistoryTitle">
-                            <span class="ti ti-edit ti-sm me-1"></span>
-                            Update Salary History
-                        </h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="row">
-                            <div class="mb-3 col-md-6">
-                                <label for="basic_salary" class="form-label">{{ __('Basic Salary') }} <strong class="text-danger">*</strong></label>
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
-                                    <input type="number" step="0.01" min="0" name="basic_salary" value="{{ $salary->basic_salary ?? old('basic_salary') }}" class="form-control" placeholder="20,000" required>
-                                </div>
-                                @error('basic_salary')
-                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                                @enderror
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="house_benefit" class="form-label">{{ __('House Benefit') }} <strong class="text-danger">*</strong></label>
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
-                                    <input type="number" step="0.01" min="0" name="house_benefit" value="{{ $salary->house_benefit ?? old('house_benefit') }}" class="form-control" placeholder="20,000" required>
-                                </div>
-                                @error('house_benefit')
-                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                                @enderror
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="transport_allowance" class="form-label">{{ __('Transport Allowance') }} <strong class="text-danger">*</strong></label>
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
-                                    <input type="number" step="0.01" min="0" name="transport_allowance" value="{{ $salary->transport_allowance ?? old('transport_allowance') }}" class="form-control" placeholder="20,000" required>
-                                </div>
-                                @error('transport_allowance')
-                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                                @enderror
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="medical_allowance" class="form-label">{{ __('Medical Allowance') }} <strong class="text-danger">*</strong></label>
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
-                                    <input type="number" step="0.01" min="0" name="medical_allowance" value="{{ $salary->medical_allowance ?? old('medical_allowance') }}" class="form-control" placeholder="20,000" required>
-                                </div>
-                                @error('medical_allowance')
-                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                                @enderror
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="night_shift_allowance" class="form-label">{{ __('Night Shift Allowance') }}</label>
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
-                                    <input type="number" step="0.01" min="0" name="night_shift_allowance" value="{{ $salary->night_shift_allowance ?? old('night_shift_allowance') }}" class="form-control" placeholder="20,000">
-                                </div>
-                                @error('night_shift_allowance')
-                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                                @enderror
-                            </div>
-                            <div class="mb-3 col-md-6">
-                                <label for="other_allowance" class="form-label">{{ __('Other Allowance') }}</label>
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
-                                    <input type="number" step="0.01" min="0" name="other_allowance" value="{{ $salary->other_allowance ?? old('other_allowance') }}" class="form-control" placeholder="20,000">
-                                </div>
-                                @error('other_allowance')
-                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                                @enderror
-                            </div>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
-                            <i class="ti ti-x"></i>
-                            Close
-                        </button>
-                        <button type="submit" class="btn btn-success">
-                            <i class="ti ti-check"></i>
-                            Update Salary History
-                        </button>
-                    </div>
-                </form>
+{{-- Monthly Salaries under this salary --}}
+@if ($salary->monthly_salaries->count() > 0) 
+    <div class="row justify-content-center">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header header-elements">
+                    <h5 class="mb-0">
+                        <strong>{{ $user->name }}</strong>'s Monthly Salaries for 
+                        <span class="text-bold">{{ format_number($salary->total) }}<sup>TK</sup></span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <table class="table data-table table-bordered table-responsive" style="width: 100%;">
+                        <thead>
+                            <tr>
+                                <th>Sl.</th>
+                                <th>Total Salary</th>
+                                <th>Salary Proccessed</th>
+                                <th class="text-center">Status</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($salary->monthly_salaries as $key => $monthlySalary) 
+                                <tr>
+                                    <th>#{{ serial($salary->monthly_salaries, $key) }}</th>
+                                    <td>
+                                        <span class="text-bold" data-bs-toggle="tooltip" title="{{ spell_number($monthlySalary->salary) }}">
+                                            <i class="ti ti-currency-taka" style="margin-top: -4px; margin-right: -5px;"></i>
+                                            {{ format_number($monthlySalary->salary) }}
+                                        </span>
+                                    </td>
+                                    <td>{{ show_date_time($monthlySalary->created_at) }}</td>
+                                    <td class="text-center">
+                                        <span class="badge bg-label-{{ $monthlySalary->status == 'Paid' ? 'success' : 'primary' }}">{{ $monthlySalary->status }}</span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="#" class="btn btn-sm btn-icon confirm-success" data-bs-toggle="tooltip" title="Download Invoice">
+                                            <i class="text-dark ti ti-download"></i>
+                                        </a>
+                                        <a href="#" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
+                                            <i class="text-primary ti ti-info-hexagon"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
-@endcanany
+@endif
+<!-- End row -->
+
+{{-- Modal for Salary Upgrade --}}
+@if ($salary->status === 'Active' && $salary->monthly_salaries->count() == 0) 
+    @canany(['Salary Create', 'Salary Update'])
+        <div class="modal fade" id="editSalaryHistory" tabindex="-1" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <form action="{{ route('administration.settings.user.salary.update', ['user' => $user, 'salary' => $salary]) }}" method="post" autocomplete="off">
+                        @csrf
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editSalaryHistoryTitle">
+                                <span class="ti ti-edit ti-sm me-1"></span>
+                                Update Salary History
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="mb-3 col-md-6">
+                                    <label for="basic_salary" class="form-label">{{ __('Basic Salary') }} <strong class="text-danger">*</strong></label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
+                                        <input type="number" step="0.01" min="0" name="basic_salary" value="{{ $salary->basic_salary ?? old('basic_salary') }}" class="form-control" placeholder="20,000" required>
+                                    </div>
+                                    @error('basic_salary')
+                                        <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                    @enderror
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="house_benefit" class="form-label">{{ __('House Benefit') }} <strong class="text-danger">*</strong></label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
+                                        <input type="number" step="0.01" min="0" name="house_benefit" value="{{ $salary->house_benefit ?? old('house_benefit') }}" class="form-control" placeholder="20,000" required>
+                                    </div>
+                                    @error('house_benefit')
+                                        <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                    @enderror
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="transport_allowance" class="form-label">{{ __('Transport Allowance') }} <strong class="text-danger">*</strong></label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
+                                        <input type="number" step="0.01" min="0" name="transport_allowance" value="{{ $salary->transport_allowance ?? old('transport_allowance') }}" class="form-control" placeholder="20,000" required>
+                                    </div>
+                                    @error('transport_allowance')
+                                        <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                    @enderror
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="medical_allowance" class="form-label">{{ __('Medical Allowance') }} <strong class="text-danger">*</strong></label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
+                                        <input type="number" step="0.01" min="0" name="medical_allowance" value="{{ $salary->medical_allowance ?? old('medical_allowance') }}" class="form-control" placeholder="20,000" required>
+                                    </div>
+                                    @error('medical_allowance')
+                                        <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                    @enderror
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="night_shift_allowance" class="form-label">{{ __('Night Shift Allowance') }}</label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
+                                        <input type="number" step="0.01" min="0" name="night_shift_allowance" value="{{ $salary->night_shift_allowance ?? old('night_shift_allowance') }}" class="form-control" placeholder="20,000">
+                                    </div>
+                                    @error('night_shift_allowance')
+                                        <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                    @enderror
+                                </div>
+                                <div class="mb-3 col-md-6">
+                                    <label for="other_allowance" class="form-label">{{ __('Other Allowance') }}</label>
+                                    <div class="input-group input-group-merge">
+                                        <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
+                                        <input type="number" step="0.01" min="0" name="other_allowance" value="{{ $salary->other_allowance ?? old('other_allowance') }}" class="form-control" placeholder="20,000">
+                                    </div>
+                                    @error('other_allowance')
+                                        <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+                                <i class="ti ti-x"></i>
+                                Close
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="ti ti-check"></i>
+                                Update Salary History
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    @endcanany
+@endif
 
 @endsection
 
@@ -326,8 +387,11 @@
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
-    {{-- <!-- Page JS --> --}}
-    {{-- <script src="{{ asset('assets/js/forms-pickers.js') }}"></script> --}}
+    
+    <!-- Datatable js -->
+    <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 @endsection
 
 @section('custom_script')
