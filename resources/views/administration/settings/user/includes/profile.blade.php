@@ -115,7 +115,7 @@
                                 Monthly Salary History
                             </a>
                             <div class="dropdown-divider"></div>
-                            <a href="#" class="dropdown-item btn btn-primary waves-effect">
+                            <a href="{{ route('administration.settings.user.salary.create', ['user' => $user]) }}" class="dropdown-item btn btn-primary waves-effect">
                                 <i class="ti ti-plus me-1"></i> 
                                 Upgrade Salary
                             </a>

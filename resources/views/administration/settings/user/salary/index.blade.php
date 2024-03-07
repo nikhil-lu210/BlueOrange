@@ -50,7 +50,7 @@
                 <h5 class="mb-0">Salary History of {{ $user->name }}</h5>
         
                 <div class="card-header-elements ms-auto">
-                    <a href="#" class="btn btn-sm btn-primary">
+                    <a href="{{ route('administration.settings.user.salary.create', ['user' => $user]) }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-plus ti-xs me-1"></span>
                         Upgrade Salary
                     </a>

@@ -29,7 +29,7 @@ class SalaryController extends Controller
      */
     public function create(User $user)
     {
-        //
+        return view('administration.settings.user.salary.create', compact(['user']));
     }
 
     /**
