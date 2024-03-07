@@ -11,7 +11,7 @@ class SalaryStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class SalaryStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'basic_salary' => ['required', 'numeric'],
+            'house_benefit' => ['required', 'numeric'],
+            'transport_allowance' => ['required', 'numeric'],
+            'medical_allowance' => ['required', 'numeric'],
+            'night_shift_allowance' => ['nullable', 'numeric']
         ];
     }
 }

@@ -16,4 +16,5 @@ Route::controller(SalaryController::class)
             Route::post('/{user}/history/{salary}/update', 'update')->name('update')->can('Salary Update');
             
             Route::get('/{user}/create', 'create')->name('create')->can('Salary Create');
+            Route::post('/{user}/store', 'store')->name('store')->can('Salary Create');
         });

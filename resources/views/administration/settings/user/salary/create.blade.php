@@ -64,7 +64,7 @@
                     </a>
                 </div>
             </div>
-            <form action="#" method="post" autocomplete="off" name="sumbit_form" id="submitForm">
+            <form action="{{ route('administration.settings.user.salary.store', ['user' => $user]) }}" method="post" autocomplete="off" name="sumbit_form" id="submitForm">
                 @csrf
                 <div class="card-body">
                     <div class="row">
@@ -129,6 +129,7 @@
                             @enderror
                         </div>
                     </div>
+                    <hr>
                     <dl class="row mt-3 mb-0 text-primary">
                         <dt class="col-5 mb-2 text-nowrap">
                             <i class="ti ti-topology-ring-3"></i>
