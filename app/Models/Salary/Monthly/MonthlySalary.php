@@ -16,6 +16,5 @@ class MonthlySalary extends Model
 
     protected $fillable = [
         'user_id',
-        'salary',
     ];
 }

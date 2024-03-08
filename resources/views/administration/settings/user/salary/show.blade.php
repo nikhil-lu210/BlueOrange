@@ -264,7 +264,7 @@
                                         <a href="#" class="btn btn-sm btn-icon confirm-success" data-bs-toggle="tooltip" title="Download Invoice">
                                             <i class="text-dark ti ti-download"></i>
                                         </a>
-                                        <a href="#" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
+                                        <a href="{{ route('administration.settings.user.salary.monthly.show', ['user' => $user, 'monthly_salary' => $monthlySalary]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
                                             <i class="text-primary ti ti-info-hexagon"></i>
                                         </a>
                                     </td>

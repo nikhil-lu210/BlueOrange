@@ -36,15 +36,15 @@ class MonthlySalaryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user, MonthlySalary $monthlySalary)
+    public function show(User $user, MonthlySalary $monthly_salary)
     {
-        //
+        return view('administration.settings.user.salary.monthly.show', compact(['user', 'monthly_salary']));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(User $user, MonthlySalary $monthlySalary)
+    public function edit(User $user, MonthlySalary $monthly_salary)
     {
         //
     }
@@ -52,7 +52,7 @@ class MonthlySalaryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user, MonthlySalary $monthlySalary)
+    public function update(Request $request, User $user, MonthlySalary $monthly_salary)
     {
         //
     }
@@ -60,7 +60,7 @@ class MonthlySalaryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user, MonthlySalary $monthlySalary)
+    public function destroy(User $user, MonthlySalary $monthly_salary)
     {
         //
     }

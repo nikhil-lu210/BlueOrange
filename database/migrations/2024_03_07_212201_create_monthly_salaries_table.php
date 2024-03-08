@@ -24,7 +24,7 @@ return new class extends Migration
                   ->onUpdate('restrict')
                   ->onDelete('restrict');
 
-            $table->float('salary');
+            // $table->float('salary');
             $table->enum('status', ['Paid', 'Pending', 'Canceled'])->default('Pending');
             $table->timestamps();
             $table->softDeletes();
