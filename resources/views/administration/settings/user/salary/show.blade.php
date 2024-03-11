@@ -240,7 +240,6 @@
                         <thead>
                             <tr>
                                 <th>Sl.</th>
-                                <th>Total Salary</th>
                                 <th>Salary Proccessed</th>
                                 <th class="text-center">Status</th>
                                 <th class="text-center">Action</th>
@@ -250,12 +249,6 @@
                             @foreach ($salary->monthly_salaries as $key => $monthlySalary) 
                                 <tr>
                                     <th>#{{ serial($salary->monthly_salaries, $key) }}</th>
-                                    <td>
-                                        <span class="text-bold" data-bs-toggle="tooltip" title="{{ spell_number($monthlySalary->salary) }}">
-                                            <i class="ti ti-currency-taka" style="margin-top: -4px; margin-right: -5px;"></i>
-                                            {{ format_number($monthlySalary->salary) }}
-                                        </span>
-                                    </td>
                                     <td>{{ show_date_time($monthlySalary->created_at) }}</td>
                                     <td class="text-center">
                                         <span class="badge bg-label-{{ $monthlySalary->status == 'Paid' ? 'success' : 'primary' }}">{{ $monthlySalary->status }}</span>

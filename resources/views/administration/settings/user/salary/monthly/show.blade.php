@@ -75,47 +75,65 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="d-flex justify-content-between flex-xl-row flex-md-column flex-sm-row flex-column m-sm-3 m-0">
-                    <div class="mb-xl-0 mb-4">
-                        <div class="d-flex svg-illustration mb-4 gap-2 align-items-center">
-                            <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M0.00172773 0V6.85398C0.00172773 6.85398 -0.133178 9.01207 1.98092 10.8388L13.6912 21.9964L19.7809 21.9181L18.8042 9.88248L16.4951 7.17289L9.23799 0H0.00172773Z"
-                                    fill="#7367F0"
-                                />
-                                <path opacity="0.06" fill-rule="evenodd" clip-rule="evenodd" d="M7.69824 16.4364L12.5199 3.23696L16.5541 7.25596L7.69824 16.4364Z" fill="#161616" />
-                                <path opacity="0.06" fill-rule="evenodd" clip-rule="evenodd" d="M8.07751 15.9175L13.9419 4.63989L16.5849 7.28475L8.07751 15.9175Z" fill="#161616" />
-                                <path
-                                    fill-rule="evenodd"
-                                    clip-rule="evenodd"
-                                    d="M7.77295 16.3566L23.6563 0H32V6.88383C32 6.88383 31.8262 9.17836 30.6591 10.4057L19.7824 22H13.6938L7.77295 16.3566Z"
-                                    fill="#7367F0"
-                                />
-                            </svg>
-
-                            <span class="app-brand-text fw-bold fs-4"> Vuexy </span>
+                <div class="row mt-3">
+                    <div class="col-md-6 text-start">
+                        <div class="mb-0">
+                            <div class="mb-2">
+                                <span class="app-brand-text fw-bold fs-4"> LOGO </span>
+                            </div>
+                            <dl class="row mt-1 mb-1">
+                                <dt class="col-2 fw-medium text-nowrap">
+                                    <span class="fw-medium mx-2 text-heading">Company:</span>
+                                </dt>
+                                <dd class="col-10 mb-0">
+                                    <span>{{ __('Staff-India (UK) Ltd.') }}</span>
+                                </dd>
+                            </dl>
+                            <dl class="row mb-1">
+                                <dt class="col-2 fw-medium text-nowrap">
+                                    <span class="fw-medium mx-2 text-heading">Address:</span>
+                                </dt>
+                                <dd class="col-10 mb-0">
+                                    <span>{{ __('House-7, Road-30, Block-D, Tposhor, Sylhet, Bangladesh') }}</span>
+                                </dd>
+                            </dl>
+                            <dl class="row mb-1">
+                                <dt class="col-2 fw-medium text-nowrap">
+                                    <span class="fw-medium mx-2 text-heading">Phone No:</span>
+                                </dt>
+                                <dd class="col-10 mb-0">
+                                    <span>{{ __('+8801712345678') }}</span>
+                                </dd>
+                            </dl>
+                            <dl class="row mb-1">
+                                <dt class="col-2 fw-medium text-nowrap">
+                                    <span class="fw-medium mx-2 text-heading">Email:</span>
+                                </dt>
+                                <dd class="col-10">
+                                    <span>{{ __('manager@mail.com') }}</span>
+                                </dd>
+                            </dl>
                         </div>
-                        <p class="mb-2">Office 149, 450 South Brand Brooklyn</p>
-                        <p class="mb-2">San Diego County, CA 91905, USA</p>
-                        <p class="mb-0">+1 (123) 456 7891, +44 (876) 543 2198</p>
                     </div>
-                    <div>
-                        <h4 class="fw-medium mb-2">INVOICE #86423</h4>
-                        <div class="mb-2 pt-1">
-                            <span>Date Issues:</span>
-                            <span class="fw-medium">April 25, 2021</span>
-                        </div>
-                        <div class="pt-1">
-                            <span>Date Due:</span>
-                            <span class="fw-medium">May 25, 2021</span>
+                    <div class="col-md-6 text-end">
+                        <div>
+                            <h4 class="fw-medium mb-2 text-uppercase">#SIPS86423</h4>
+                            <div class="mb-2 pt-1">
+                                <span>Payment Date:</span>
+                                <span class="fw-medium">May 25, 2021</span>
+                            </div>
+                            <div class="pt-1">
+                                <span>Paid By:</span>
+                                <span class="fw-medium">
+                                    <a href="#">ManagerNameHere</a>
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
                 <hr class="my-4"/>
-            
+
                 <div class="row">
                     <div class="col-md-6 mb-xl-0 mb-md-4 mb-sm-0 mb-4">
                         <h6 class="mb-3">Invoice To:</h6>
@@ -255,7 +273,7 @@
                 </div>
 
                 <hr class="my-4"/>
-                
+
                 <div class="row">
                     <div class="col-md-8 align-self-end">
                         <b class="border-top pt-2 px-2">Accountant Digital Signature</b>
@@ -274,7 +292,7 @@
                                 <span class="fw-medium mx-2 text-heading">Total Deductions:</span>
                             </dt>
                             <dd class="col-7 text-end">
-                                -<span><i class="ti ti-currency-taka"></i>{{ format_number(5000) }}</span>
+                                <span><i class="ti ti-minus"></i><i class="ti ti-currency-taka"></i>{{ format_number(5000) }}</span>
                             </dd>
                         </dl>
                         <dl class="row pt-2 mb-1 bg-label-primary">
