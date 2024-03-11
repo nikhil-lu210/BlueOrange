@@ -19,5 +19,6 @@ Route::controller(SalaryController::class)
                     ->name('monthly.')
                     ->group(function () {
                         Route::get('/history', 'monthly')->name('history')->can('Salary Read');
+                        Route::get('/history/{monthly_salary}', 'monthlyShow')->name('history.show')->can('Salary Read');
                     });
         });

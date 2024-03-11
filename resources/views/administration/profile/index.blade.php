@@ -28,7 +28,12 @@
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active">{{ __('My Profile') }}</li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('administration.my.profile') }}">
+            {{ __('My Profile') }}
+        </a>
+    </li>
+    @yield('profile_breadcrumb')
 @endsection
 
 

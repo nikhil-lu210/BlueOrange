@@ -1,5 +1,9 @@
 @extends('administration.profile.index')
 
+@section('profile_breadcrumb')
+    <li class="breadcrumb-item active">{{ __('Monthly Salary History') }}</li>
+@endsection
+
 @section('profile_content')
 
 <!-- User Profile Content -->
@@ -40,7 +44,7 @@
                                     <a href="#" class="btn btn-sm btn-icon confirm-success" data-bs-toggle="tooltip" title="Download Invoice">
                                         <i class="text-dark ti ti-download"></i>
                                     </a>
-                                    <a href="{{ route('administration.settings.user.salary.monthly.show', ['user' => $user, 'monthly_salary' => $monthlySalary]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="{{ route('administration.my.salary.monthly.history.show', ['monthly_salary' => $monthlySalary]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>
