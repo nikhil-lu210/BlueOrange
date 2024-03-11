@@ -86,21 +86,9 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('my/attendance*') ? 'active' : '' }}" href="{{ route('administration.my.attendance') }}">
-                    <i class="ti-xs ti ti-clock-dollar me-1"></i> 
-                    Attendance
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('my/break*') ? 'active' : '' }}" href="{{ route('administration.my.break') }}">
-                    <i class="ti-xs ti ti-hourglass-empty me-1"></i> 
-                    Breaks
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('my/task*') ? 'active' : '' }}" href="#">
-                    <i class="ti-xs ti ti-subtask me-1"></i> 
-                    Tasks
+                <a class="nav-link {{ request()->is('my/salary*') ? 'active' : '' }}" href="{{ route('administration.my.salary.monthly.history') }}">
+                    <i class="ti-xs ti ti-currency-taka me-1"></i> 
+                    Salaries
                 </a>
             </li>
         </ul>

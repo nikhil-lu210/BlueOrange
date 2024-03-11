@@ -12,16 +12,20 @@ class SalaryController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth'); // Ensure the user is authenticated
-        $this->user = Auth::user();   
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::user();
+
+            return $next($request);
+        });
     }
 
-    public function index()
+    public function monthly()
     {
         $user = $this->user;
-        $user = $user->with(['current_salary'])->firstOrFail();
 
-        dd($user);
+        $monthly_salaries = $user->monthly_salaries;
+
+        return view('administration.profile.includes.salary.history', compact(['user', 'monthly_salaries']));
     }
 
     public function show(Salary $salary)
