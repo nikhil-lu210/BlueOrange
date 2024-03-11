@@ -14,7 +14,9 @@ class MonthlySalaryController extends Controller
      */
     public function index(User $user)
     {
-        //
+        $monthly_salaries = $user->monthly_salaries;
+        
+        return view('administration.settings.user.salary.monthly.index', compact(['user', 'monthly_salaries']));
     }
 
     /**

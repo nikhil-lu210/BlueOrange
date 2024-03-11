@@ -58,7 +58,7 @@
                 </h5>
         
                 <div class="card-header-elements ms-auto">
-                    <a href="#" class="btn btn-sm btn-primary">
+                    <a href="{{ route('administration.settings.user.salary.index', ['user' => $user]) }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-circle ti-xs me-1"></span>
                         All Salary History
                     </a>

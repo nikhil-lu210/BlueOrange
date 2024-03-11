@@ -110,7 +110,7 @@
                                 <i class="text-primary ti ti-history me-1"></i> 
                                 Salary History
                             </a>
-                            <a href="#" class="dropdown-item">
+                            <a href="{{ route('administration.settings.user.salary.monthly.index', ['user' => $user]) }}" class="dropdown-item">
                                 <i class="text-primary ti ti-calendar-time me-1"></i> 
                                 Monthly Salary History
                             </a>
