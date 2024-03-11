@@ -12,6 +12,25 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">My Monthly Salaries</h5>
+        
+                <div class="card-header-elements ms-auto">
+                    <div class="btn-group btn-group-md">
+                        <a href="#" data-bs-toggle="tooltip" title="{{ __('Show Current Salary Breakdown') }}" class="btn btn-primary">
+                            Current Salary: {{ $user->current_salary->total }}<sup>TK</sup>
+                        </a>
+                        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split waves-effect waves-light" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden">Toggle Dropdown</span>
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="dropdown-item" href="{{ route('administration.my.salary.index') }}">
+                                    <i class="ti ti-history me-1"></i>
+                                    All Base Salaries
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <table class="table data-table table-bordered table-responsive" style="width: 100%;">

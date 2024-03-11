@@ -20,6 +20,15 @@ class SalaryController extends Controller
         });
     }
 
+    public function index()
+    {
+        $user = $this->user;
+
+        $salaries = $user->salaries;
+
+        return view('administration.profile.includes.salary.index', compact(['user', 'salaries']));
+    }
+
     public function show(Salary $salary)
     {
         $user = $this->user;
@@ -28,7 +37,7 @@ class SalaryController extends Controller
             abort(403, 'THIS ACTION IS UNAUTHORIZED');
         }
 
-        dd($user, $salary);
+        return view('administration.profile.includes.salary.show', compact(['user', 'salary']));
     }
 
     public function monthly()
