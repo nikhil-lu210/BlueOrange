@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('settings')
         ->name('settings.')
         ->group(function () {
+            // system
+            include_once 'system/system.php';
+            
             // user
             include_once 'user/user.php';
             

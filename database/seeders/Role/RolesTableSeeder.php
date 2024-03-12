@@ -52,6 +52,11 @@ class RolesTableSeeder extends Seeder
                     'Salary Read',
                     'Salary Update',
                     'Salary Delete',
+                    
+                    'Holiday Create',
+                    'Holiday Read',
+                    'Holiday Update',
+                    'Holiday Delete',
                 ];
             } elseif ($role === 'Super Admin') {
                 $permissions = [
@@ -79,6 +84,11 @@ class RolesTableSeeder extends Seeder
                     'Salary Read',
                     'Salary Update',
                     'Salary Delete',
+                    
+                    'Holiday Create',
+                    'Holiday Read',
+                    'Holiday Update',
+                    'Holiday Delete',
                 ];
             } elseif ($role === 'Admin') {
                 $permissions = [
@@ -97,6 +107,10 @@ class RolesTableSeeder extends Seeder
                     'Salary Read',
                     'Salary Update',
                     'Salary Delete',
+                    
+                    'Holiday Create',
+                    'Holiday Read',
+                    'Holiday Update',
                 ];
             } elseif ($role === 'HR Manager') {
                 $permissions = [
@@ -113,24 +127,34 @@ class RolesTableSeeder extends Seeder
                     'Salary Create',
                     'Salary Read',
                     'Salary Update',
+                    
+                    'Holiday Create',
+                    'Holiday Read',
+                    'Holiday Update',
                 ];
             } elseif ($role === 'Team Leader') {
                 $permissions = [
                     'User Read',
 
                     'Salary Read',
+                    
+                    'Holiday Read',
                 ];
             } elseif ($role === 'Employee') {
                 $permissions = [
                     'User Read',
 
                     'Salary Read',
+                    
+                    'Holiday Read',
                 ];
             } else {
                 $permissions = [
                     'User Read',
 
                     'Salary Read',
+                    
+                    'Holiday Read',
                 ];
             }
 

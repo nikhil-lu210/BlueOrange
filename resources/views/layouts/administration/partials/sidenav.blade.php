@@ -55,6 +55,23 @@
             <span class="menu-header-text">Settings</span>
         </li>
 
+        <!-- System Settings -->
+        @canany (['Holiday Read'])
+            <li class="menu-item {{ request()->is('settings/system*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-settings"></i>
+                    <div data-i18n="System Settings">System Settings</div>
+                </a>
+                <ul class="menu-sub">
+                    @can ('Holiday Read') 
+                        <li class="menu-item {{ request()->is('settings/system/holiday*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.settings.system.holiday.index') }}" class="menu-link">Holidays</a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcanany
+
         <!-- User Management -->
         @canany (['User Create', 'User Read']) 
             <li class="menu-item {{ request()->is('settings/user*') ? 'active open' : '' }}">
