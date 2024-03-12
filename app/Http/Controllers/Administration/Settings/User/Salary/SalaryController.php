@@ -41,10 +41,12 @@ class SalaryController extends Controller
         $salary = null;
         try {
             DB::transaction(function() use ($request, $user, &$salary) {
-                $user->current_salary->update([
-                    'implemented_to' => date('Y-m-d'),
-                    'status' => 'Inactive'
-                ]);
+                if ($user->current_salary) {
+                    $user->current_salary->update([
+                        'implemented_to' => date('Y-m-d'),
+                        'status' => 'Inactive'
+                    ]);
+                }
 
                 $salary = Salary::create([
                     'user_id' => $user->id,

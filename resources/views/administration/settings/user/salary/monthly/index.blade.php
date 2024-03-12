@@ -48,13 +48,6 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Monthly Salary History of {{ $user->name }}</h5>
-        
-                <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.settings.user.salary.create', ['user' => $user]) }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                        Upgrade Salary
-                    </a>
-                </div>
             </div>
             <div class="card-body">
                 <table class="table data-table table-bordered table-responsive" style="width: 100%;">
