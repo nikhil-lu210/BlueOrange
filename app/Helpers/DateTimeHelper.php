@@ -196,3 +196,47 @@ if (!function_exists('total_time')) {
         return "<span class='$textColor'>$formattedTotalTime</span>";
     }
 }
+
+
+
+if (!function_exists('total_day')) {
+
+    /**
+     * Calculate total days between $startDate and $endDate.
+     * Return total years, months, and days.
+     *
+     * @param  string  $startDate
+     * @param  string|null  $endDate
+     * @return string
+     */
+    function total_day($startDate, $endDate = null)
+    {
+        // Convert start and end dates to DateTime objects
+        $startDate = new DateTime($startDate);
+        $endDate = $endDate ? new DateTime($endDate) : new DateTime();
+
+        // Calculate the interval between the two dates
+        $interval = $startDate->diff($endDate);
+
+        // Extract years, months, and days from the interval
+        $years = $interval->y;
+        $months = $interval->m;
+        $days = $interval->d;
+
+        // Build the formatted total day string
+        $formattedTotalDay = '';
+
+        if ($years > 0) {
+            $formattedTotalDay .= "$years " . ($years == 1 ? 'Year' : 'Years') . ' ';
+        }
+
+        if ($months > 0) {
+            $formattedTotalDay .= "$months " . ($months == 1 ? 'Month' : 'Months') . ' ';
+        }
+
+        $formattedTotalDay .= "$days " . ($days == 1 ? 'Day' : 'Days');
+
+        // Return the formatted total day
+        return $formattedTotalDay;
+    }
+}

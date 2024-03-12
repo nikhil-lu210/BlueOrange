@@ -1,5 +1,9 @@
 @extends('administration.profile.index')
 
+@section('profile_breadcrumb')
+    <li class="breadcrumb-item active">{{ __('Profile') }}</li>
+@endsection
+
 @section('profile_content')
 
 <!-- User Profile Content -->

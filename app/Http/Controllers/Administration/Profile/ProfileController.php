@@ -105,16 +105,4 @@ class ProfileController extends Controller
             return redirect()->back()->withInput();
         }
     }
-
-    public function attendance() {
-        $user = Auth::user();
-
-        return view('administration.profile.includes.attendance', compact(['user']));
-    }
-
-    public function break() {
-        $user = Auth::user();
-
-        return view('administration.profile.includes.break', compact(['user']));
-    }
 }

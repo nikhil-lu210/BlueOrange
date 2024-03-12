@@ -42,7 +42,7 @@
     <li class="breadcrumb-item">
         <a href="{{ route('administration.settings.user.index') }}">{{ __('All Users') }}</a>
     </li>
-    <li class="breadcrumb-item active">{{ __('User Details') }}</li>
+    <li class="breadcrumb-item active">{{ $user->name }}</li>
 @endsection
 
 

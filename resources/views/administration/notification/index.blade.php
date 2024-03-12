@@ -68,7 +68,7 @@
                     </thead>
                     <tbody>
                         @foreach ($notifications as $key => $notification) 
-                            <tr>
+                            <tr class="@if (is_null($notification->read_at)) bg-label-primary text-bold @endif">
                                 <th>#{{ serial($notifications, $key) }}</th>
                                 <td>{{ $notification->data['message'] }}</td>
                                 <td>{{ date_time_ago($notification->created_at) }}</td>
@@ -76,7 +76,7 @@
                                     @if (!is_null($notification->read_at)) 
                                         {{ date_time_ago($notification->read_at) }}
                                     @else 
-                                        <span class="badge bg-label-dark">Unread</span>
+                                        <b class="text-primary">Unread</b>
                                     @endif
                                 </td>
                                 <td>
@@ -85,17 +85,17 @@
                                         <i class="text-danger ti ti-trash"></i>
                                     </a>
 
+                                    {{-- Mark as read & show notification icon --}}
+                                    <a href="{{ route('administration.notification.mark_as_read_and_redirect', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Notification">
+                                        <i class="text-primary ti ti-info-hexagon"></i>
+                                    </a>
+
                                     {{-- Mark as read notification icon --}}
                                     @if (is_null($notification->read_at)) 
                                         <a href="{{ route('administration.notification.mark_as_read', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Mark As Read?">
                                             <i class="text-success ti ti-check"></i>
                                         </a>
                                     @endif
-
-                                    {{-- Mark as read & show notification icon --}}
-                                    <a href="{{ route('administration.notification.mark_as_read_and_redirect', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Notification">
-                                        <i class="text-primary ti ti-info-hexagon"></i>
-                                    </a>
                                 </td>
                             </tr>
                         @endforeach

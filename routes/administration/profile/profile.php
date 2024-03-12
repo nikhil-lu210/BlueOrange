@@ -15,6 +15,6 @@ Route::controller(ProfileController::class)->prefix('my')->name('my.')->group(fu
     Route::get('/profile/edit', 'edit')->name('profile.edit');
     Route::post('/profile/update', 'update')->name('profile.update');
     
-    Route::get('/attendance', 'attendance')->name('attendance');
-    Route::get('/break', 'break')->name('break');
+    // salary
+    include_once 'salary/salary.php';
 });
