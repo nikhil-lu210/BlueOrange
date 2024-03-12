@@ -56,21 +56,28 @@
                     <div class="d-flex align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
                         <div class="user-profile-info">
                             <h4 class="mb-0">{{ $user->name }}</h4>
-                            <p class="fw-bold text-dark mb-1">ID: <span class="text-primary">{{ $user->userid }}</span></p>
+                            <p class="fw-bold text-dark mb-1">
+                                <span class="text-primary" data-bs-toggle="tooltip" title="Employee ID" data-bs-placement="right">{{ $user->userid }}</span>
+                            </p>
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
-                                <li class="list-inline-item d-flex gap-1">
+                                <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Employee Role" data-bs-placement="bottom">
                                     <i class="ti ti-crown"></i> 
                                     {{ $user->roles[0]->name }}
                                 </li>
-                                <li class="list-inline-item d-flex gap-1">
+                                <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Joining Date">
                                     <i class="ti ti-calendar"></i> 
                                     {{ show_date($user->created_at) }}
                                 </li>
+                                <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Working Shift">
+                                    <i class="ti ti-clock"></i>
+                                    {{ show_time(optional($user->current_shift)->start_time) }}
+                                    <small>to</small>
+                                    {{ show_time(optional($user->current_shift)->end_time) }}
+                                </li>
                             </ul>
                         </div>
-                        <a href="{{ route('administration.my.profile.edit') }}" class="btn btn-primary waves-effect waves-light">
-                            <i class="ti ti-pencil me-1"></i>
-                            Edit Profile 
+                        <a href="{{ route('administration.my.profile.edit') }}" class="btn btn-dark btn-icon rounded-pill confirm-danger" data-bs-toggle="tooltip" title="Edit Profile">
+                            <i class="ti ti-pencil"></i>
                         </a>
                     </div>
                 </div>
