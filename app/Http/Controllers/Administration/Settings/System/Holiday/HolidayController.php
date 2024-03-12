@@ -12,7 +12,7 @@ class HolidayController extends Controller
      */
     public function index()
     {
-        //
+        return view('administration.settings.system.holiday.index');
     }
 
     /**
