@@ -38,6 +38,7 @@ class SalaryController extends Controller
      */
     public function store(SalaryStoreRequest $request, User $user)
     {
+        // dd($request->all());
         $salary = null;
         try {
             DB::transaction(function() use ($request, $user, &$salary) {
@@ -56,20 +57,22 @@ class SalaryController extends Controller
                     'medical_allowance' => $request->medical_allowance,
                     'night_shift_allowance' => $request->night_shift_allowance,
                     'other_allowance' => $request->other_allowance,
-                    'implemented_from' => date('Y-m-d')
+                    'implemented_from' => date('Y-m-d'),
+                    'total' => 0
                 ]);
+                // dd($salary);
 
                 $totalSalary = $request->basic_salary + $request->house_benefit + $request->transport_allowance + $request->medical_allowance + $request->night_shift_allowance + $request->other_allowance;
-                
+                // dd($totalSalary);
                 $salary->total = $totalSalary;
                 $salary->save();
             }, 5);
-            // dd($salary);
+            
             toast('User Salary has been Upgraded.', 'success');
             return redirect()->route('administration.settings.user.salary.show', ['user' => $user, 'salary' => $salary]);
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
-            return redirect()->back()->withInput();
+            return redirect()->back()->withInput()->withErrors($e->getMessage());
         }
     }
 

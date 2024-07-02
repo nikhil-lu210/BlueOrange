@@ -24,6 +24,7 @@ class Salary extends Model
         'other_allowance',
         'implemented_from',
         'implemented_to',
+        'total',
         'status'
     ];
 }
