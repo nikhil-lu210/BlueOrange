@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Http\Controllers\Administration\Dashboard;
+namespace App\Http\Controllers\Administration\Settings\System\Holiday;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
 
-class DashboardController extends Controller
+class HolidayController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return view('administration.dashboard.index');
+        return view('administration.settings.system.holiday.index');
     }
 
     /**
