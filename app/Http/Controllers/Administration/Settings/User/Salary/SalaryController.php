@@ -22,6 +22,11 @@ class SalaryController extends Controller
         // dd(Number::currency(1000, in: 'BDT'));
         $salaries = Salary::whereUserId($user->id)->get();
 
+        if (count($salaries) < 1) {
+            toast('Please update salary structure first!', 'warning');
+            return view('administration.settings.user.salary.create', compact(['user']));
+        }
+
         return view('administration.settings.user.salary.index', compact(['user', 'salaries']));
     }
 
@@ -81,6 +86,10 @@ class SalaryController extends Controller
      */
     public function show(User $user, Salary $salary)
     {
+        if ($salary->user_id != $user->id) {
+            toast('This salary does not belongs to this user!', 'warning');
+            return redirect()->back();
+        }
         return view('administration.settings.user.salary.show', compact(['user', 'salary']));
     }
 
