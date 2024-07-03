@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers\Administration\Settings\System\Holiday;
 
-use App\Http\Controllers\Controller;
-use App\Models\Holiday\Holiday;
+use Exception;
 use Illuminate\Http\Request;
+use App\Models\Holiday\Holiday;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\Settings\System\Holiday\HolidayStoreRequest;
 
 class HolidayController extends Controller
 {
@@ -28,9 +31,21 @@ class HolidayController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(HolidayStoreRequest $request)
     {
-        //
+        try {
+            DB::transaction(function () use ($request) {
+                Holiday::create([
+                    'name' => $request->input('name'),
+                    'date' => $request->input('date'),
+                    'description' => $request->input('description')
+                ]);
+            });
+            return redirect()->back()->with('success', 'Holiday added successfully.');
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
 
     /**

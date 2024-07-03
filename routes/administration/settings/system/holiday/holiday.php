@@ -12,4 +12,5 @@ Route::controller(HolidayController::class)
         ->name('holiday.')
         ->group(function () {
             Route::get('/', 'index')->name('index')->can('Holiday Read');
+            Route::post('/store', 'store')->name('store')->can('Holiday Create');
         });

@@ -69,7 +69,7 @@
                         @foreach ($holidays as $key => $holiday) 
                             <tr>
                                 <th>{{ serial($holidays, $key) }}</th>
-                                <td>{{ $holiday->date }}</td>
+                                <td>{{ show_date($holiday->date) }}</td>
                                 <td>{{ $holiday->name }}</td>
                                 <td>{{ $holiday->description }}</td>
                                 <td>
@@ -128,6 +128,7 @@
         // Custom Script Here
         $(document).ready(function() {
             $('.date-picker').datepicker({
+                format: 'yyyy-mm-dd',
                 todayHighlight: true,
                 autoclose: true,
                 orientation: 'auto right'

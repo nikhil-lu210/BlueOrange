@@ -9,7 +9,7 @@
                     <p class="text-muted">Assign A New Holiday</p>
                 </div>
                 <!-- Holiday Create form -->
-                <form method="post" action="#" class="row g-3" autocomplete="off">
+                <form method="post" action="{{ route('administration.settings.system.holiday.store') }}" class="row g-3" autocomplete="off">
                     @csrf
                     <div class="col-md-8">
                         <label class="form-label">Holiday For (Title) <strong class="text-danger">*</strong></label>
@@ -20,7 +20,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label">Date <strong class="text-danger">*</strong></label>
-                        <input type="text" name="date" value="{{ old('date') }}" class="form-control  date-picker" placeholder="MM/DD/YYYY" tabindex="-1" required/>
+                        <input type="text" name="date" value="{{ old('date') }}" class="form-control  date-picker" placeholder="YYYY-MM-DD" tabindex="-1" required/>
                         @error('date')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
