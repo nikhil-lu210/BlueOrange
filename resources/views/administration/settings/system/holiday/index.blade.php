@@ -89,7 +89,7 @@
                                             </a>
                                         </div>
                                     </div>
-                                    <a href="javascript:void(0);" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="javascript:void(0);" class="btn btn-sm btn-icon item-edit" title="Show Details" data-bs-toggle="modal" data-bs-target="#showHolidayModal">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>
@@ -106,6 +106,7 @@
 
 {{-- Assign Holiday Modal --}}
 @include('administration.settings.system.holiday.modals.holiday_create')
+@include('administration.settings.system.holiday.modals.holiday_show')
 
 @endsection
 
