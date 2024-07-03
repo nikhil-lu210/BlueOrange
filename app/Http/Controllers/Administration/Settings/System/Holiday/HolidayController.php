@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Administration\Settings\System\Holiday;
 
 use App\Http\Controllers\Controller;
+use App\Models\Holiday\Holiday;
 use Illuminate\Http\Request;
 
 class HolidayController extends Controller
@@ -12,7 +13,8 @@ class HolidayController extends Controller
      */
     public function index()
     {
-        return view('administration.settings.system.holiday.index');
+        $holidays = Holiday::select(['id', 'name', 'date', 'description'])->orderBy('date', 'desc')->get();
+        return view('administration.settings.system.holiday.index', compact(['holidays']));
     }
 
     /**
