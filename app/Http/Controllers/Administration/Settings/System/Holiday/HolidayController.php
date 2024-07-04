@@ -90,6 +90,14 @@ class HolidayController extends Controller
      */
     public function destroy(Holiday $holiday)
     {
-        //
+        try {
+            $holiday->delete();
+            
+            toast('Holiday deleted successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
 }
