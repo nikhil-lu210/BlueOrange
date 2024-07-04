@@ -5,8 +5,8 @@
             <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body">
                 <div class="text-center mb-4">
-                    <h3 class="role-title mb-2">Assign Holiday</h3>
-                    <p class="text-muted">Assign A New Holiday</p>
+                    <h3 class="role-title mb-2">Update Holiday</h3>
+                    <p class="text-muted">Edit & Update Holiday Details</p>
                 </div>
                 <!-- Holiday Update form -->
                 <form method="post" action="#" class="row g-3" autocomplete="off">
