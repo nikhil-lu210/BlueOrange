@@ -2,6 +2,7 @@
 
 namespace App\Models\Holiday;
 
+use App\Models\Holiday\Traits\Relations;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
@@ -9,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Holiday extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, Relations;
     
     protected $cascadeDeletes = [];
 
@@ -17,6 +18,6 @@ class Holiday extends Model
         'date',
         'name',
         'description',
-        'status'
+        'is_active'
     ];
 }

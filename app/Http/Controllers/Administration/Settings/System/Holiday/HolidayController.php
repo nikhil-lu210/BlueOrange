@@ -2,8 +2,13 @@
 
 namespace App\Http\Controllers\Administration\Settings\System\Holiday;
 
-use App\Http\Controllers\Controller;
+use Exception;
 use Illuminate\Http\Request;
+use App\Models\Holiday\Holiday;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\Settings\System\Holiday\HolidayStoreRequest;
+use App\Http\Requests\Administration\Settings\System\Holiday\HolidayUpdateRequest;
 
 class HolidayController extends Controller
 {
@@ -12,7 +17,8 @@ class HolidayController extends Controller
      */
     public function index()
     {
-        return view('administration.settings.system.holiday.index');
+        $holidays = Holiday::select(['id', 'name', 'date', 'description', 'is_active'])->orderBy('date', 'desc')->get();
+        return view('administration.settings.system.holiday.index', compact(['holidays']));
     }
 
     /**
@@ -26,15 +32,26 @@ class HolidayController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(HolidayStoreRequest $request)
     {
-        //
+        try {
+            Holiday::create([
+                'name' => $request->input('name'),
+                'date' => $request->input('date'),
+                'description' => $request->input('description')
+            ]);
+            toast('Holiday assigned successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Holiday $holiday)
     {
         //
     }
@@ -42,7 +59,7 @@ class HolidayController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Holiday $holiday)
     {
         //
     }
@@ -50,16 +67,37 @@ class HolidayController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(HolidayUpdateRequest $request, Holiday $holiday)
     {
-        //
+        try {
+            $holiday->name = $request->input('name');
+            $holiday->date = $request->input('date');
+            $holiday->description = $request->input('description');
+            $holiday->is_active = $request->has('is_active');
+    
+            $holiday->save();
+    
+            toast('Holiday updated successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Holiday $holiday)
     {
-        //
+        try {
+            $holiday->delete();
+            
+            toast('Holiday deleted successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
 }
