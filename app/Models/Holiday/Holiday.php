@@ -18,6 +18,6 @@ class Holiday extends Model
         'date',
         'name',
         'description',
-        'status'
+        'is_active'
     ];
 }

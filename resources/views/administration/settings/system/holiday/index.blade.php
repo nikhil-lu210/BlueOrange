@@ -16,6 +16,9 @@
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
+
+    {{-- Bootstrap Select --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -62,6 +65,7 @@
                             <th>Date</th>
                             <th>Holiday</th>
                             <th>Description</th>
+                            <th>Status</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -73,12 +77,19 @@
                                 <td>{{ $holiday->name }}</td>
                                 <td>{{ $holiday->description }}</td>
                                 <td>
+                                    @php
+                                        $status = $holiday->is_active == true ? 'Active' : 'Inactive';
+                                        $background = $holiday->is_active == true ? 'bg-success' : 'bg-danger';
+                                    @endphp
+                                    <span class="badge {{ $background }}">{{ $status }}</span>
+                                </td>
+                                <td>
                                     <div class="d-inline-block">
                                         <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
                                             <i class="text-primary ti ti-dots-vertical"></i>
                                         </a>
                                         <div class="dropdown-menu dropdown-menu-end m-0" style="">
-                                            <a href="javascript:void(0);" class="dropdown-item">
+                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editHolidayModal" data-holiday="{{ json_encode($holiday) }}">
                                                 <i class="text-primary ti ti-pencil"></i> 
                                                 Edit
                                             </a>
@@ -106,6 +117,7 @@
 
 {{-- Assign Holiday Modal --}}
 @include('administration.settings.system.holiday.modals.holiday_create')
+@include('administration.settings.system.holiday.modals.holiday_edit')
 @include('administration.settings.system.holiday.modals.holiday_show')
 
 @endsection
@@ -113,14 +125,17 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <!-- Datatable js -->
+    {{-- <!-- Datatable js --> --}}
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 
-    <!-- Vendors JS -->
+    {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
+
+    {{-- Bootstrap Select --}}
+    <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
 @endsection
 
 @section('custom_script')
@@ -150,6 +165,36 @@
                 modal.find('.modal-body .holiday-title').text(holiday.name);
                 modal.find('.modal-body .holiday-date').text(holiday.date);
                 modal.find('.modal-body .holiday-description').text(holiday.description);
+                
+                if (holiday.is_active == true) {
+                    modal.find('.modal-body .holiday-status').text('Active');
+                } else {
+                    modal.find('.modal-body .holiday-status').text('Inactive');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#editHolidayModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var holiday = button.data('holiday');
+
+                // Update the modal's content.
+                var modal = $(this);
+                modal.find('input[name="name"]').val(holiday.name);
+                modal.find('input[name="date"]').val(holiday.date);
+                modal.find('textarea[name="description"]').val(holiday.description);
+
+                // Update the status checkbox
+                var statusCheckbox = modal.find('input[name="is_active"]');
+                statusCheckbox.prop('checked', holiday.is_active);
+
+                // Update the form action URL dynamically if needed
+                var formAction = "{{ route('administration.settings.system.holiday.update', ':id') }}";
+                formAction = formAction.replace(':id', holiday.id);
+                modal.find('form').attr('action', formAction);
             });
         });
     </script>

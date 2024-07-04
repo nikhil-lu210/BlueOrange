@@ -25,7 +25,7 @@ class HolidayStoreRequest extends FormRequest
             'name' => 'required|string|max:255',
             'date' => 'required|date_format:Y-m-d',
             'description' => 'required|string',
-            'status' => 'nullable|string|in:Active,Inactive',
+            'is_active' => 'nullable',
         ];
     }
 }

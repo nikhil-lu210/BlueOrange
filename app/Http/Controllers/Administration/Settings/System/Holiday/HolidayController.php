@@ -8,6 +8,7 @@ use App\Models\Holiday\Holiday;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Administration\Settings\System\Holiday\HolidayStoreRequest;
+use App\Http\Requests\Administration\Settings\System\Holiday\HolidayUpdateRequest;
 
 class HolidayController extends Controller
 {
@@ -16,7 +17,7 @@ class HolidayController extends Controller
      */
     public function index()
     {
-        $holidays = Holiday::select(['id', 'name', 'date', 'description'])->orderBy('date', 'desc')->get();
+        $holidays = Holiday::select(['id', 'name', 'date', 'description', 'is_active'])->orderBy('date', 'desc')->get();
         return view('administration.settings.system.holiday.index', compact(['holidays']));
     }
 
@@ -34,14 +35,13 @@ class HolidayController extends Controller
     public function store(HolidayStoreRequest $request)
     {
         try {
-            DB::transaction(function () use ($request) {
-                Holiday::create([
-                    'name' => $request->input('name'),
-                    'date' => $request->input('date'),
-                    'description' => $request->input('description')
-                ]);
-            });
-            return redirect()->back()->with('success', 'Holiday added successfully.');
+            Holiday::create([
+                'name' => $request->input('name'),
+                'date' => $request->input('date'),
+                'description' => $request->input('description')
+            ]);
+            toast('Holiday assigned successfully.', 'success');
+            return redirect()->back();
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back()->withInput();
@@ -67,9 +67,22 @@ class HolidayController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Holiday $holiday)
+    public function update(HolidayUpdateRequest $request, Holiday $holiday)
     {
-        //
+        try {
+            $holiday->name = $request->input('name');
+            $holiday->date = $request->input('date');
+            $holiday->description = $request->input('description');
+            $holiday->is_active = $request->has('is_active');
+    
+            $holiday->save();
+    
+            toast('Holiday updated successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
 
     /**

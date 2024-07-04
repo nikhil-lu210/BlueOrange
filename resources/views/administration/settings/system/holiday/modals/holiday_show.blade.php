@@ -31,6 +31,15 @@
                         </dl>
                         <dl class="row mt-3 mb-1">
                             <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                <i class="ti ti-wave-saw-tool text-heading"></i>
+                                <span class="fw-medium mx-2 text-heading">Status:</span>
+                            </dt>
+                            <dd class="col-sm-8">
+                                <span class="holiday-status"></span>
+                            </dd>
+                        </dl>
+                        <dl class="row mt-3 mb-1">
+                            <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                                 <i class="ti ti-file-description text-heading"></i>
                                 <span class="fw-medium mx-2 text-heading">Description:</span>
                             </dt>
