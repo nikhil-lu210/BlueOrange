@@ -1,4 +1,4 @@
-<!-- Holiday Create Modal -->
+<!-- Holiday Details Modal -->
 <div class="modal fade" data-bs-backdrop="static" id="showHolidayModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content p-3 p-md-5">
@@ -6,7 +6,7 @@
             <div class="modal-body">
                 <div class="text-center mb-4">
                     <h3 class="role-title mb-2">Holiday Details</h3>
-                    <p class="text-muted">Details of {{ 'holiday_name_here' }}</p>
+                    <p class="text-muted">Details of <span class="holiday-name"></span></p>
                 </div>
 
                 <div class="row">
@@ -17,7 +17,7 @@
                                 <span class="fw-medium mx-2 text-heading">Title:</span>
                             </dt>
                             <dd class="col-sm-8">
-                                <span>{{ 'Holiday_Title_Here' }}</span>
+                                <span class="holiday-title"></span>
                             </dd>
                         </dl>
                         <dl class="row mt-3 mb-1">
@@ -26,7 +26,7 @@
                                 <span class="fw-medium mx-2 text-heading">Date:</span>
                             </dt>
                             <dd class="col-sm-8">
-                                <span>{{ 'Holiday_Date_Here' }}</span>
+                                <span class="holiday-date"></span>
                             </dd>
                         </dl>
                         <dl class="row mt-3 mb-1">
@@ -35,7 +35,7 @@
                                 <span class="fw-medium mx-2 text-heading">Description:</span>
                             </dt>
                             <dd class="col-sm-8">
-                                <span>{{ 'Holiday_Description_Here' }}</span>
+                                <span class="holiday-description"></span>
                             </dd>
                         </dl>
                     </div>
@@ -44,4 +44,4 @@
         </div>
     </div>
 </div>
-<!--/ Holiday Create Modal -->
+<!--/ Holiday Details Modal -->

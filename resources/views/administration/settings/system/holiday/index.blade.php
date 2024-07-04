@@ -89,7 +89,7 @@
                                             </a>
                                         </div>
                                     </div>
-                                    <a href="javascript:void(0);" class="btn btn-sm btn-icon item-edit" title="Show Details" data-bs-toggle="modal" data-bs-target="#showHolidayModal">
+                                    <a href="javascript:void(0);" class="btn btn-sm btn-icon item-edit" title="Show Details" data-bs-toggle="modal" data-bs-target="#showHolidayModal" data-holiday="{{ json_encode($holiday) }}">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>
@@ -133,6 +133,23 @@
                 todayHighlight: true,
                 autoclose: true,
                 orientation: 'auto right'
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('#showHolidayModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var holiday = button.data('holiday');
+
+                // Update the modal's content.
+                var modal = $(this);
+                modal.find('.modal-body .role-title').text('Holiday Details');
+                modal.find('.modal-body .text-muted').text('Details of ' + holiday.name);
+                modal.find('.modal-body .holiday-title').text(holiday.name);
+                modal.find('.modal-body .holiday-date').text(holiday.date);
+                modal.find('.modal-body .holiday-description').text(holiday.description);
             });
         });
     </script>
