@@ -67,7 +67,22 @@
                             <tr>
                                 <th>#{{ serial($announcements, $key) }}</th>
                                 <td>{{ show_date($announcement->created_at) }}</td>
-                                <td class="text-bold">{{ $announcement->title }}</td>
+                                <td>
+                                    <b>{{ $announcement->title }}</b>
+                                    <br>
+                                    @if (!is_null($announcement->recipients))
+                                        <small class="text-primary text-bold cursor-pointer text-left" title="
+                                            @foreach ($announcement->recipients as $recipient)
+                                                <small>{{ show_user_data($recipient, 'name') }}</small>
+                                                <br>
+                                            @endforeach
+                                        ">
+                                            {{ count($announcement->recipients) }} Recipients
+                                        </small>
+                                    @else
+                                        <small class="text-muted">All Recipients</small>
+                                    @endif
+                                </td>
                                 <td>{{ $announcement->announcer->name }}</td>
                                 <td class="text-center">
                                     @can ('Announcement Delete') 

@@ -56,6 +56,15 @@
                                     {{ show_date_time($announcement->created_at) }}
                                 </li>
                             </ul>
+                            @if (!is_null($announcement->recipients)) 
+                                <ul class="list-inline mb-0 mt-3 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-1">
+                                    @foreach ($announcement->recipients as $recipient) 
+                                        <li class="list-inline-item d-flex gap-1 badge bg-black">
+                                            {{ show_user_data($recipient, 'name') }}
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            @endif
                         </div>
                         @can ('Announcement Update') 
                             <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-dark btn-icon rounded-pill" data-bs-toggle="tooltip" title="Edit Announcement">
