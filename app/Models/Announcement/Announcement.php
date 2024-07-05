@@ -13,7 +13,7 @@ class Announcement extends Model
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, Relations;
     
-    protected $cascadeDeletes = [];
+    protected $cascadeDeletes = ['comments'];
 
     protected $fillable = [
         'announcer_id',

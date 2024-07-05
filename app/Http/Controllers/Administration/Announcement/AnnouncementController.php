@@ -137,6 +137,14 @@ class AnnouncementController extends Controller
      */
     public function destroy(Announcement $announcement)
     {
-        dd($announcement);
+        try {
+            $announcement->delete();
+            
+            toast('Announcement deleted successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
 }
