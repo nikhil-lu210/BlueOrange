@@ -2,6 +2,8 @@
 
 namespace App\Models\User\Traits;
 
+use App\Models\Announcement\Announcement;
+use App\Models\Announcement\AnnouncementComment;
 use App\Models\Salary\Salary;
 use App\Models\Attendance\Attendance;
 use App\Models\EmployeeShift\EmployeeShift;
@@ -56,5 +58,21 @@ trait Relations
     public function attendances(): HasMany
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    /**
+     * Get the announcements associated with the user.
+     */
+    public function announcements(): HasMany
+    {
+        return $this->hasMany(Announcement::class, 'announcer_id');
+    }
+
+    /**
+     * Get the announcement_comments associated with the user.
+     */
+    public function announcement_comments(): HasMany
+    {
+        return $this->hasMany(AnnouncementComment::class, 'commenter_id');
     }
 }

@@ -20,6 +20,9 @@
 <!-- Main JS -->
 <script src="{{ asset('assets/js/main.js') }}"></script>
 
+{{-- Custom Js by NIKHIL --}}
+<script src="{{ asset('assets/js/custom.js') }}"></script>
+
 <!-- Page JS -->
 @yield('script_links')
 

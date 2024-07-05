@@ -15,6 +15,9 @@ Route::prefix('')
             // Attendance
             include_once 'attendance/attendance.php';
 
+            // announcement
+            include_once 'announcement/announcement.php';
+
             // Dashboard
             include_once 'dashboard/dashboard.php';
             
