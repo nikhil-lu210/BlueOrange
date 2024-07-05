@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\Administration\Announcement\AnnouncementController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Administration\Announcement\AnnouncementController;
+use App\Http\Controllers\Administration\Announcement\AnnouncementCommentController;
 
 
 /* ==============================================
@@ -18,3 +19,9 @@ Route::controller(AnnouncementController::class)->prefix('announcement')->name('
     Route::post('/update/{announcement}', 'update')->name('update')->can('Announcement Update');
     Route::get('/destroy/{announcement}', 'destroy')->name('destroy')->can('Announcement Delete');
 });
+Route::controller(AnnouncementCommentController::class)
+        ->prefix('announcement/comment')
+        ->name('announcement.comment.')
+        ->group(function () {
+            Route::post('/store/{announcement}', 'store')->name('store')->can('Announcement Read');
+        });

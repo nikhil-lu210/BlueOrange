@@ -103,7 +103,8 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-12">
-                            <form action="" method="post">
+                            <form action="{{ route('administration.announcement.comment.store', ['announcement' => $announcement]) }}" method="post">
+                                @csrf
                                 <div class="collapse" id="collapseExample">
                                     <div class="row">
                                         <div class="col-md-12">
@@ -128,29 +129,33 @@
                         <div class="col-md-12 comments">
                             <table class="table">
                                 <tbody>
-                                    <tr class="border-0 border-bottom-0">
-                                        <td class="border-0 border-bottom-0">
-                                            <div class="d-flex justify-content-between align-items-center user-name">
-                                                <div class="d-flex commenter">
-                                                    <div class="avatar-wrapper">
-                                                        <div class="avatar me-2">
-                                                          <img src="../../assets/img/avatars/11.png" alt="Avatar" class="rounded-circle">
+                                    @foreach ($announcement->comments as $comment) 
+                                        <tr class="border-0 border-bottom-0">
+                                            <td class="border-0 border-bottom-0">
+                                                <div class="d-flex justify-content-between align-items-center user-name">
+                                                    <div class="d-flex commenter">
+                                                        <div class="avatar-wrapper">
+                                                            <div class="avatar me-2">
+                                                                @if (auth()->user()->hasMedia('avatar'))
+                                                                    <img src="{{ $comment->commenter->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $comment->commenter->name }} Avatar" class="h-auto rounded-circle">
+                                                                @else
+                                                                    <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ $comment->commenter->name }} No Avatar" class="h-auto rounded-circle">
+                                                                @endif
+                                                            </div>
+                                                          </div>
+                                                          <div class="d-flex flex-column">
+                                                            <span class="fw-medium">{{ $comment->commenter->name }}</span>
+                                                            <small class="text-muted">{{ $comment->commenter->roles[0]->name }}</small>
                                                         </div>
-                                                      </div>
-                                                      <div class="d-flex flex-column">
-                                                        <span class="fw-medium">Devonne Wallbridge</span>
-                                                        <small class="text-muted">Web Developer</small>
                                                     </div>
+                                                    <small class="date-time text-muted">{{ date_time_ago($comment->created_at) }}</small>
                                                 </div>
-                                                <small class="date-time text-muted">
-                                                    3min ago
-                                                </small>
-                                            </div>
-                                            <div class="d-flex mt-2">
-                                                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                                <div class="d-flex mt-2">
+                                                    <p>{{ $comment->comment }}</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                 </tbody>
                             </table>
                         </div>
