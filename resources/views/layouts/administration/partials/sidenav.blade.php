@@ -63,11 +63,11 @@
                             <a href="{{ route('administration.announcement.index') }}" class="menu-link">All Announcements</a>
                         </li>
                     @endcanany
-                    {{-- @can('Announcement Read') 
+                    @can('Announcement Read') 
                         <li class="menu-item {{ request()->is('announcement/my*') ? 'active' : '' }}">
                             <a href="{{ route('administration.announcement.my') }}" class="menu-link">My Announcements</a>
                         </li>
-                    @endcan --}}
+                    @endcan
                     @can('Announcement Create')
                         <li class="menu-item {{ request()->is('announcement/create*') ? 'active' : '' }}">
                             <a href="{{ route('administration.announcement.create') }}" class="menu-link">New Announcement</a>

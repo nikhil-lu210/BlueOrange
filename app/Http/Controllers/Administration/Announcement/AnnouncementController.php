@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Administration\Announcement;
 use Exception;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Announcement\Announcement;
 use App\Http\Requests\Administration\Announcement\AnnouncementStoreRequest;
 use App\Http\Requests\Administration\Announcement\AnnouncementUpdateRequest;
@@ -25,7 +26,10 @@ class AnnouncementController extends Controller
      */
     public function my()
     {
-        $announcements = Announcement::all();
+        $announcements = Announcement::all()->filter(function ($announcement) {
+            return $announcement->isAuthorized();
+        });
+        // dd($announcements);
         return view('administration.announcement.my', compact(['announcements']));
     }
 
@@ -67,16 +71,32 @@ class AnnouncementController extends Controller
      */
     public function show(Announcement $announcement)
     {
-        $user = auth()->user();
-
-        $hasPermission = $user->hasPermissionTo('Announcement Create') || $user->hasPermissionTo('Announcement Update');
-        $isRecipient = is_null($announcement->recipients) || in_array($user->id, $announcement->recipients);
-
-        if ($hasPermission && $isRecipient) {
+        // dd($announcement);
+        if ($announcement->isAuthorized() == false) {
             abort(403, 'You do not have permission to view this announcement.');
         }
+
+        // Fetch current read_by_at value and convert it to array
+        $readBy = $announcement->read_by_at ? json_decode($announcement->read_by_at, true) : [];
+
+        // Get current user ID
+        $userId = Auth::id();
+
+        // Check if user already read the announcement
+        $userRead = collect($readBy)->firstWhere('read_by', $userId);
+
+        if (!$userRead) {
+            // User has not read the announcement yet, add new entry
+            $readBy[] = [
+                'read_by' => $userId,
+                'read_at' => now()->toDateTimeString(),
+            ];
+
+            // Update announcement with updated read_by_at array
+            $announcement->update(['read_by_at' => json_encode($readBy)]);
+        }
         
-        dd($announcement);
+        // dd($announcement->isAuthorized());
         return view('administration.announcement.show', compact('announcement'));
     }
 

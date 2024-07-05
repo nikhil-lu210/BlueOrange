@@ -23,13 +23,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('My Announcements') }}</b>
+    <b class="text-uppercase">{{ __('All Announcements') }}</b>
 @endsection
 
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Announcement') }}</li>
-    <li class="breadcrumb-item active">{{ __('My Announcements') }}</li>
+    <li class="breadcrumb-item active">{{ __('All Announcements') }}</li>
 @endsection
 
 
@@ -40,13 +40,15 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">My Announcements</h5>
+                <h5 class="mb-0">All Announcements</h5>
         
                 <div class="card-header-elements ms-auto">
-                    <a href="#" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                        Create Announcement
-                    </a>
+                    @can ('Announcement Create') 
+                        <a href="{{ route('administration.announcement.create') }}" class="btn btn-sm btn-primary">
+                            <span class="tf-icon ti ti-plus ti-xs me-1"></span>
+                            Create Announcement
+                        </a>
+                    @endcan
                 </div>
             </div>
             <div class="card-body">
@@ -65,11 +67,24 @@
                             <tr>
                                 <th>#{{ serial($announcements, $key) }}</th>
                                 <td>{{ show_date($announcement->created_at) }}</td>
-                                <td>{{ $announcement->description }}</td>
+                                <td class="text-bold">{{ $announcement->title }}</td>
+                                <td>{{ $announcement->announcer->name }}</td>
                                 <td class="text-center">
-                                    <a href="#" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                        <i class="text-primary ti ti-info-hexagon"></i>
-                                    </a>
+                                    @can ('Announcement Delete') 
+                                        <a href="{{ route('administration.announcement.destroy', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Announcement?">
+                                            <i class="text-white ti ti-trash"></i>
+                                        </a>
+                                    @endcan
+                                    @can ('Announcement Update') 
+                                        <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Announcement?">
+                                            <i class="text-white ti ti-pencil"></i>
+                                        </a>
+                                    @endcan
+                                    @can ('Announcement Read') 
+                                        <a href="{{ route('administration.announcement.show', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                            <i class="text-white ti ti-info-hexagon"></i>
+                                        </a>
+                                    @endcan
                                 </td>
                             </tr>
                         @endforeach
