@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Announcement\Announcement;
 use App\Http\Requests\Administration\Announcement\AnnouncementStoreRequest;
 use App\Http\Requests\Administration\Announcement\AnnouncementUpdateRequest;
+use App\Models\User;
+use App\Notifications\Administration\Announcement\AnnouncementCreateNotification;
 
 class AnnouncementController extends Controller
 {
@@ -49,13 +51,23 @@ class AnnouncementController extends Controller
     {
         // dd($request->all(), auth()->id());
         try {
-            Announcement::create([
+            $announcement = Announcement::create([
                 'announcer_id' => auth()->id(),
                 'recipients' => $request->recipients ?? null,
                 'title' => $request->title,
                 'description' => $request->description,
             ]);
 
+            $notifiableUsers = [];
+            if (is_null($announcement->recipients)) {
+                $notifiableUsers = User::select(['id', 'name'])->where('id', '!=', $announcement->announcer_id)->get();
+            } else {
+                $notifiableUsers = User::select(['id', 'name'])->whereIn('id', $announcement->recipients)->get();
+            }
+            
+            foreach ($notifiableUsers as $notifiableUser) {
+                $notifiableUser->notify(new AnnouncementCreateNotification($announcement, auth()->user()));
+            }
             
             toast('Announcement assigned successfully.', 'success');
             return redirect()->route('administration.announcement.index');

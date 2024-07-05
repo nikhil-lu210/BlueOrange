@@ -54,7 +54,7 @@
         @canany(['Announcement Create', 'Announcement Read']) 
             <li class="menu-item {{ request()->is('announcement*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-clock-2"></i>
+                    <i class="menu-icon tf-icons ti ti-speakerphone"></i>
                     <div data-i18n="Announcement">Announcement</div>
                 </a>
                 <ul class="menu-sub">
