@@ -82,9 +82,7 @@
                                     </div>
                                 </td>
                                 <td>{{ $user->email }}</td>
-                                <td>
-                                    <span class="badge bg-label-success">Active</span>
-                                </td>
+                                <td>{!! show_status($user->status) !!}</td>
                                 <td>
                                     <div class="d-inline-block">
                                         <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
