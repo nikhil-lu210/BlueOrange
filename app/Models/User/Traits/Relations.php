@@ -2,13 +2,15 @@
 
 namespace App\Models\User\Traits;
 
-use App\Models\Announcement\Announcement;
-use App\Models\Announcement\AnnouncementComment;
+use App\Models\Task\Task;
 use App\Models\Salary\Salary;
 use App\Models\Attendance\Attendance;
+use App\Models\Announcement\Announcement;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
+use App\Models\Announcement\AnnouncementComment;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait Relations
 {    
@@ -74,5 +76,22 @@ trait Relations
     public function announcement_comments(): HasMany
     {
         return $this->hasMany(AnnouncementComment::class, 'commenter_id');
+    }
+
+    /**
+     * Get the created_tasks associated with the user.
+     */
+    public function created_tasks(): HasMany
+    {
+        return $this->hasMany(Task::class);
+    }
+
+
+    /**
+     * Get the tasks associated with the user.
+     */
+    public function tasks(): BelongsToMany
+    {
+        return $this->belongsToMany(Task::class);
     }
 }
