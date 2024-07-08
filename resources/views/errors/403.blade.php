@@ -29,7 +29,7 @@
                 <h2 class="mb-1 mx-2">You are not authorized!</h2>
                 <p class="mb-4 mx-2">{{ $exception->getMessage() }}</p>
                 <a href="{{ url()->previous() }}" class="btn btn-primary mb-4">
-                    <i class="ti ti-home" style="font-size: 18px; margin-top: -3px; padding-right: 4px;"></i>
+                    <i class="ti ti-arrow-left" style="font-size: 20px; margin-top: -2px; padding-right: 4px;"></i>
                     Back to Previous Page
                 </a>
                 <div class="mt-0">
