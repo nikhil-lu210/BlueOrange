@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Administration\Settings\User;
 
+use Auth;
 use Hash;
 use Exception;
 use App\Models\User;
@@ -13,17 +14,18 @@ use Spatie\Permission\Models\Role;
 use Endroid\QrCode\Builder\Builder;
 use App\Http\Controllers\Controller;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Attendance\Attendance;
 use Endroid\QrCode\Encoding\Encoding;
 use Endroid\QrCode\RoundBlockSizeMode;
 use Illuminate\Support\Facades\Storage;
 use Endroid\QrCode\ErrorCorrectionLevel;
 use App\Models\EmployeeShift\EmployeeShift;
+use App\Notifications\Administration\UserInfoUpdateNofication;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
+use App\Mail\Administration\User\UserCredentialsMail;
 use App\Notifications\Administration\NewUserRegistrationNotification;
-use App\Notifications\Administration\UserInfoUpdateNofication;
-use Auth;
 
 class UserController extends Controller
 {
@@ -108,6 +110,9 @@ class UserController extends Controller
                 foreach ($notifiableUsers as $key => $notifiableUser) {
                     $notifiableUser->notify(new NewUserRegistrationNotification($user, $authUser));
                 }
+
+                // Send Login Credentials Mail to the User's email
+                Mail::to($user->email)->send(new UserCredentialsMail($request));
             }, 5);
 
             toast('A New User Has Been Created.','success');
