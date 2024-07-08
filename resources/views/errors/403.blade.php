@@ -28,9 +28,9 @@
                 <h4 class="mb-0 mx-2 text-primary text-bold">{{ $exception->getStatusCode() }} Error!</h4>
                 <h2 class="mb-1 mx-2">You are not authorized!</h2>
                 <p class="mb-4 mx-2">{{ $exception->getMessage() }}</p>
-                <a href="{{ route('administration.dashboard.index') }}" class="btn btn-primary mb-4">
+                <a href="{{ url()->previous() }}" class="btn btn-primary mb-4">
                     <i class="ti ti-home" style="font-size: 18px; margin-top: -3px; padding-right: 4px;"></i>
-                    Back to Dashboard
+                    Back to Previous Page
                 </a>
                 <div class="mt-0">
                     <img src="{{ asset('assets/img/illustrations/page-misc-you-are-not-authorized.png') }}" alt="page-misc-not-authorized" width="110" class="img-fluid" />
