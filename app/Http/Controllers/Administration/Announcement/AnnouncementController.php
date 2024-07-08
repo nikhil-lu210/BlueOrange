@@ -3,13 +3,16 @@
 namespace App\Http\Controllers\Administration\Announcement;
 
 use Exception;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Announcement\Announcement;
+use App\Mail\Administration\Announcement\NewAnnouncementMail;
 use App\Http\Requests\Administration\Announcement\AnnouncementStoreRequest;
 use App\Http\Requests\Administration\Announcement\AnnouncementUpdateRequest;
-use App\Models\User;
 use App\Notifications\Administration\Announcement\AnnouncementCreateNotification;
 
 class AnnouncementController extends Controller
@@ -51,23 +54,29 @@ class AnnouncementController extends Controller
     {
         // dd($request->all(), auth()->id());
         try {
-            $announcement = Announcement::create([
-                'announcer_id' => auth()->id(),
-                'recipients' => $request->recipients ?? null,
-                'title' => $request->title,
-                'description' => $request->description,
-            ]);
+            DB::transaction(function() use ($request) {
+                $announcement = Announcement::create([
+                    'announcer_id' => auth()->id(),
+                    'recipients' => $request->recipients ?? null,
+                    'title' => $request->title,
+                    'description' => $request->description,
+                ]);
 
-            $notifiableUsers = [];
-            if (is_null($announcement->recipients)) {
-                $notifiableUsers = User::select(['id', 'name'])->where('id', '!=', $announcement->announcer_id)->get();
-            } else {
-                $notifiableUsers = User::select(['id', 'name'])->whereIn('id', $announcement->recipients)->get();
-            }
-            
-            foreach ($notifiableUsers as $notifiableUser) {
-                $notifiableUser->notify(new AnnouncementCreateNotification($announcement, auth()->user()));
-            }
+                $notifiableUsers = [];
+                if (is_null($announcement->recipients)) {
+                    $notifiableUsers = User::select(['id', 'name'])->where('id', '!=', $announcement->announcer_id)->get();
+                } else {
+                    $notifiableUsers = User::select(['id', 'name'])->whereIn('id', $announcement->recipients)->get();
+                }
+                
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new AnnouncementCreateNotification($announcement, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    Mail::to($notifiableUser->email)->send(new NewAnnouncementMail($announcement, $notifiableUser));
+                }
+            });
             
             toast('Announcement assigned successfully.', 'success');
             return redirect()->route('administration.announcement.index');
@@ -85,7 +94,7 @@ class AnnouncementController extends Controller
     {
         // dd($announcement);
         if ($announcement->isAuthorized() == false) {
-            abort(403, 'You do not have permission to view this announcement.');
+            abort(403, "You do not have permission to view this announcement ({$announcement->title}).");
         }
 
         // Fetch current read_by_at value and convert it to array
