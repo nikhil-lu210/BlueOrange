@@ -3,7 +3,6 @@
 namespace App\Models\Task\Traits;
 
 use App\Models\Task\TaskComment;
-use App\Models\Task\TaskFile;
 use App\Models\Task\TaskHistory;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -45,17 +44,5 @@ trait TaskRelations
     public function comments(): HasMany
     {
         return $this->hasMany(TaskComment::class);
-    }
-
-
-    /**
-     * Get the files associated with the task.
-     */
-    public function files(): HasMany
-    {
-        return $this->hasMany(TaskFile::class)
-                    ->whereNotNull('task_id')
-                    ->whereNull('task_comment_id')
-                    ->whereNull('task_history_id');
     }
 }

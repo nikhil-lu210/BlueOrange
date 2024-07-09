@@ -2,15 +2,17 @@
 
 namespace App\Models\Task;
 
-use App\Models\Task\Traits\TaskRelations;
+use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Task\Traits\TaskRelations;
+use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Task extends Model
+class Task extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes, TaskRelations;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, InteractsWithMedia, TaskRelations;
     
     protected $cascadeDeletes = ['task_user'];
 
