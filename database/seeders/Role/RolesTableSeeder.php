@@ -37,6 +37,11 @@ class RolesTableSeeder extends Seeder
                     'Announcement Read',
                     'Announcement Update',
                     'Announcement Delete',
+
+                    'Task Create',
+                    'Task Read',
+                    'Task Update',
+                    'Task Delete',
                     
                     'Permission Create',
                     'Permission Read',
@@ -74,6 +79,11 @@ class RolesTableSeeder extends Seeder
                     'Announcement Read',
                     'Announcement Update',
                     'Announcement Delete',
+
+                    'Task Create',
+                    'Task Read',
+                    'Task Update',
+                    'Task Delete',
                     
                     'Permission Create',
                     'Permission Read',
@@ -105,6 +115,9 @@ class RolesTableSeeder extends Seeder
                     'Attendance Read',
                     
                     'Announcement Read',
+
+                    'Task Create',
+                    'Task Read',
                     
                     'Permission Read',
                     
@@ -130,6 +143,8 @@ class RolesTableSeeder extends Seeder
                     
                     'Announcement Read',
                     
+                    'Task Read',
+                    
                     'Permission Read',
                     
                     'Role Read',
@@ -149,6 +164,8 @@ class RolesTableSeeder extends Seeder
             } elseif ($role === 'Team Leader') {
                 $permissions = [
                     'Announcement Read',
+                    
+                    'Task Read',
 
                     'User Read',
 
@@ -160,6 +177,8 @@ class RolesTableSeeder extends Seeder
                 $permissions = [
                     'Announcement Read',
                     
+                    'Task Read',
+                    
                     'User Read',
 
                     'Salary Read',
@@ -169,6 +188,8 @@ class RolesTableSeeder extends Seeder
             } else {
                 $permissions = [
                     'Announcement Read',
+                    
+                    'Task Read',
                     
                     'User Read',
 
