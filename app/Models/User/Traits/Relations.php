@@ -92,6 +92,6 @@ trait Relations
      */
     public function tasks(): BelongsToMany
     {
-        return $this->belongsToMany(Task::class);
+        return $this->belongsToMany(Task::class)->withPivot('progress')->withTimestamps();
     }
 }

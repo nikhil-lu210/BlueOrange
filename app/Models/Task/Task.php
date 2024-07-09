@@ -17,6 +17,7 @@ class Task extends Model implements HasMedia
     protected $cascadeDeletes = ['task_user'];
 
     protected $fillable = [
+        'taskid',
         'creator_id',
         'title',
         'description',
@@ -24,4 +25,14 @@ class Task extends Model implements HasMedia
         'priority',
         'status'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($task) {
+            // Combine 'BOT', timestamp
+            $task->taskid = 'BOT' . now()->format('YmdHis');
+        });
+    }
 }

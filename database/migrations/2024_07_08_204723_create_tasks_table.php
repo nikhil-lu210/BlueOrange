@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('tasks', function (Blueprint $table) {
             $table->id();
 
+            $table->string('taskid')->unique();
+
             $table->foreignId('creator_id')
                 ->constrained('users')
                 ->onUpdate('cascade')

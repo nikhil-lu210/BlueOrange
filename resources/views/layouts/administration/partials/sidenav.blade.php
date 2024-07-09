@@ -81,7 +81,7 @@
         @canany(['Task Create', 'Task Read']) 
             <li class="menu-item {{ request()->is('task*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-speakerphone"></i>
+                    <i class="menu-icon tf-icons ti ti-brand-stackshare"></i>
                     <div data-i18n="Task">Task</div>
                 </a>
                 <ul class="menu-sub">

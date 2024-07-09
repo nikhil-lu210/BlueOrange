@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Administration\Task;
 
-use App\Http\Controllers\Controller;
+use Exception;
 use App\Models\Task\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\Task\TaskStoreRequest;
 
 class TaskController extends Controller
 {
@@ -37,15 +41,39 @@ class TaskController extends Controller
      */
     public function create()
     {
-        return view('administration.task.create');
+        $roles = Role::with(['users'])->get();
+        return view('administration.task.create', compact(['roles']));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(TaskStoreRequest $request)
     {
-        dd($request);
+        try {
+            DB::transaction(function () use ($request) {
+                $task = Task::create([
+                    'creator_id' => auth()->id(),
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'deadline' => $request->deadline ?? null,
+                    'priority' => $request->priority
+                ]);
+
+                // Assign users to the task if necessary
+                if ($request->has('users')) {
+                    $task->users()->attach($request->users);
+                }
+            });
+
+            toast('Task assigned successfully.', 'success');
+            return redirect()->route('administration.task.index');
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()
+                            ->withInput()
+                            ->with('error', 'An error occurred while creating the Task: ' . $e->getMessage());
+        }
     }
 
     /**

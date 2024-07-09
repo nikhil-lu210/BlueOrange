@@ -25,7 +25,7 @@ trait TaskRelations
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot('progress')->withTimestamps();
     }
 
 
