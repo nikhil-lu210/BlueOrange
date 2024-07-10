@@ -7,6 +7,7 @@ use App\Models\Task\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use App\Models\FileMedia\FileMedia;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
 
@@ -53,7 +54,6 @@ class TaskController extends Controller
         try {
             DB::transaction(function () use ($request) {
                 $task = Task::create([
-                    'creator_id' => auth()->id(),
                     'title' => $request->title,
                     'description' => $request->description,
                     'deadline' => $request->deadline ?? null,
@@ -64,15 +64,20 @@ class TaskController extends Controller
                 if ($request->has('users')) {
                     $task->users()->attach($request->users);
                 }
+
+                // Store Task Files
+                if ($request->hasFile('files')) {
+                    foreach ($request->file('files') as $file) {
+                        $directory = 'public/tasks/' . $task->taskid;
+                        store_file_media($file, $task, $directory);
+                    }
+                }
             });
 
             toast('Task assigned successfully.', 'success');
             return redirect()->route('administration.task.index');
         } catch (Exception $e) {
-            dd($e->getMessage());
-            return redirect()->back()
-                            ->withInput()
-                            ->with('error', 'An error occurred while creating the Task: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the Task: ' . $e->getMessage());
         }
     }
 
@@ -82,7 +87,8 @@ class TaskController extends Controller
     public function show(Task $task, $taskid)
     {
         $task = Task::whereId($task->id)->whereTaskid($taskid)->firstOrFail();
-        dd($task);
+        // dd(get_file_media_url($task->files[0]), $task->files[0]->original_name);
+        return view('administration.task.show', compact(['task']));
     }
 
     /**

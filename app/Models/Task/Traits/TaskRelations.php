@@ -2,12 +2,14 @@
 
 namespace App\Models\Task\Traits;
 
+use App\Models\User;
 use App\Models\Task\TaskComment;
 use App\Models\Task\TaskHistory;
-use App\Models\User;
+use App\Models\FileMedia\FileMedia;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait TaskRelations
 {
@@ -44,5 +46,13 @@ trait TaskRelations
     public function comments(): HasMany
     {
         return $this->hasMany(TaskComment::class);
+    }
+
+    /**
+     * Get the files associated with the task.
+     */
+    public function files(): MorphMany
+    {
+        return $this->morphMany(FileMedia::class, 'fileable');
     }
 }

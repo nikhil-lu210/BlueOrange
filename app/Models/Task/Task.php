@@ -14,7 +14,7 @@ class Task extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, InteractsWithMedia, TaskRelations;
     
-    protected $cascadeDeletes = ['task_user'];
+    protected $cascadeDeletes = ['task_user', 'files'];
 
     protected $fillable = [
         'taskid',
@@ -33,6 +33,11 @@ class Task extends Model implements HasMedia
         static::creating(function ($task) {
             // Combine 'BOT', timestamp
             $task->taskid = 'BOT' . now()->format('YmdHis');
+
+            // Store the task creator id
+            if (auth()->check()) {
+                $task->creator_id = auth()->user()->id;
+            }
         });
     }
 }

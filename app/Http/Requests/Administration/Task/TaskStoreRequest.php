@@ -28,7 +28,7 @@ class TaskStoreRequest extends FormRequest
             'description' => ['required', 'string', 'min:20'],
             'deadline' => ['nullable', 'date_format:Y-m-d'],
             'priority' => ['required', 'string', 'in:Low,Medium,Average,High'],
-            'files.*' => ['nullable', 'mimes:jpeg,jpg,png,pdf,zip,csv,sql', 'max:5000']
+            'files.*' => ['nullable', 'max:5000'] // 'mimes:jpeg,jpg,png,pdf,zip,csv,sql',
         ];
     }
 

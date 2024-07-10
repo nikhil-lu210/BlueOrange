@@ -14,7 +14,7 @@ class TaskComment extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, InteractsWithMedia, TaskCommentRelations;
     
-    protected $cascadeDeletes = [];
+    protected $cascadeDeletes = ['files'];
 
     protected $fillable = [
         'task_id',

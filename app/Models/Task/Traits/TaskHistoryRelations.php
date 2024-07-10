@@ -4,7 +4,9 @@ namespace App\Models\Task\Traits;
 
 use App\Models\User;
 use App\Models\Task\Task;
+use App\Models\FileMedia\FileMedia;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait TaskHistoryRelations
 {
@@ -22,5 +24,13 @@ trait TaskHistoryRelations
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Get the files associated with the task_history.
+     */
+    public function files(): MorphMany
+    {
+        return $this->morphMany(FileMedia::class, 'fileable');
     }
 }
