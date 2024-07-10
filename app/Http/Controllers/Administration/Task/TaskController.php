@@ -86,8 +86,9 @@ class TaskController extends Controller
      */
     public function show(Task $task, $taskid)
     {
-        $task = Task::whereId($task->id)->whereTaskid($taskid)->firstOrFail();
-        // dd(get_file_media_url($task->files[0]), $task->files[0]->original_name);
+        $task = Task::with(['creator', 'users', 'files', 'comments.files'])->whereId($task->id)->whereTaskid($taskid)->firstOrFail();
+        // dd($task->comments);
+
         return view('administration.task.show', compact(['task']));
     }
 

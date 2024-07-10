@@ -64,9 +64,9 @@ class AnnouncementController extends Controller
 
                 $notifiableUsers = [];
                 if (is_null($announcement->recipients)) {
-                    $notifiableUsers = User::select(['id', 'name'])->where('id', '!=', $announcement->announcer_id)->get();
+                    $notifiableUsers = User::select(['id', 'name', 'email'])->where('id', '!=', $announcement->announcer_id)->get();
                 } else {
-                    $notifiableUsers = User::select(['id', 'name'])->whereIn('id', $announcement->recipients)->get();
+                    $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $announcement->recipients)->get();
                 }
                 
                 foreach ($notifiableUsers as $notifiableUser) {
@@ -81,9 +81,8 @@ class AnnouncementController extends Controller
             toast('Announcement assigned successfully.', 'success');
             return redirect()->route('administration.announcement.index');
         } catch (Exception $e) {
-            return redirect()->back()
-                            ->withInput()
-                            ->with('error', 'An error occurred while creating the announcement: ' . $e->getMessage());
+            // dd($e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the announcement: ' . $e->getMessage());
         }
     }
 

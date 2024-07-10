@@ -9,6 +9,7 @@ use App\Models\Announcement\Announcement;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Announcement\AnnouncementComment;
+use App\Models\Task\TaskComment;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -93,5 +94,13 @@ trait Relations
     public function tasks(): BelongsToMany
     {
         return $this->belongsToMany(Task::class)->withPivot('progress')->withTimestamps();
+    }
+
+    /**
+     * Get the task_comments associated with the user.
+     */
+    public function task_comments(): HasMany
+    {
+        return $this->hasMany(TaskComment::class, 'user_id');
     }
 }

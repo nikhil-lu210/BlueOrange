@@ -9,6 +9,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('')
         ->name('administration.')
         ->group(function () {
+            // file_media
+            include_once 'file_media/file_media.php';
+
             // notification
             include_once 'notification/notification.php';
 

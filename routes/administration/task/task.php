@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Administration\Task\TaskCommentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Administration\Task\TaskController;
 
@@ -19,9 +20,6 @@ Route::controller(TaskController::class)->prefix('task')->name('task.')->group(f
 });
 
 
-// Route::controller(AnnouncementCommentController::class)
-//         ->prefix('announcement/comment')
-//         ->name('announcement.comment.')
-//         ->group(function () {
-//             Route::post('/store/{announcement}', 'store')->name('store')->can('Announcement Read');
-//         });
+Route::controller(TaskCommentController::class)->prefix('task/comment')->name('task.comment.')->group(function () {
+    Route::post('/store/{task}', 'store')->name('store')->can('Task Read');
+});

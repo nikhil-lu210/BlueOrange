@@ -47,3 +47,47 @@ if (!function_exists('get_file_media_url')) {
         return null;
     }
 }
+
+
+if (!function_exists('get_file_media_size')) {
+    /**
+     * Get the human-readable file size.
+     *
+     * @param FileMedia $file
+     * @return string
+     */
+    function get_file_media_size(FileMedia $file): string
+    {
+        $bytes = $file->file_size;
+        if ($bytes >= 1073741824) {
+            $size = number_format($bytes / 1073741824, 2) . ' GB';
+        } elseif ($bytes >= 1048576) {
+            $size = number_format($bytes / 1048576, 2) . ' MB';
+        } elseif ($bytes >= 1024) {
+            $size = number_format($bytes / 1024, 2) . ' KB';
+        } elseif ($bytes > 1) {
+            $size = $bytes . ' bytes';
+        } elseif ($bytes == 1) {
+            $size = $bytes . ' byte';
+        } else {
+            $size = '0 bytes';
+        }
+
+        return $size;
+    }
+}
+
+
+
+if (!function_exists('file_media_download')) {
+    /**
+     * Generate the download URL for a given FileMedia instance.
+     *
+     * @param  \App\Models\FileMedia\FileMedia  $fileMedia
+     * @return string
+     */
+    function file_media_download(FileMedia $fileMedia)
+    {
+        return route('administration.file.download', ['fileMedia' => $fileMedia]);
+    }
+}

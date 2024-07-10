@@ -21,4 +21,16 @@ class TaskComment extends Model implements HasMedia
         'user_id',
         'comment'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($comment) {
+            // Store the comment's user id
+            if (auth()->check()) {
+                $comment->user_id = auth()->user()->id;
+            }
+        });
+    }
 }

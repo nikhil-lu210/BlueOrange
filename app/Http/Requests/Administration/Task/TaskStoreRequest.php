@@ -48,7 +48,7 @@ class TaskStoreRequest extends FormRequest
             'description.min' => 'The description must be at least 20 characters long.',
             'deadline.date_format' => 'The deadline must be in the format YYYY-MM-DD.',
             'priority.in' => 'The priority must be one of: Low, Medium, Average, High.',
-            'files.*.mimes' => 'Each file must be one of: jpeg, jpg, png, pdf, zip, csv, sql.',
+            // 'files.*.mimes' => 'Each file must be one of: jpeg, jpg, png, pdf, zip, csv, sql.',
             'files.*.max' => 'Each file may not be greater than 5000 KB in size.'
         ];
     }

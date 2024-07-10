@@ -25,18 +25,22 @@ if (!function_exists('get_time_only')) {
 }
 
 
-if (!function_exists('get_date_only')) {
 
+if (!function_exists('get_date_only')) {
     /**
      * Get the date only from a timestamp in the format "Y-m-d".
      *
-     * @param  int|null  $timestamp
+     * @param  Carbon|int|string|null  $timestamp
      * @return string
      */
     function get_date_only($timestamp = null)
     {
         if ($timestamp === null) {
             $timestamp = time(); // Use current timestamp if none is provided
+        } elseif ($timestamp instanceof Carbon) {
+            $timestamp = $timestamp->timestamp; // Convert Carbon instance to timestamp
+        } elseif (is_string($timestamp)) {
+            $timestamp = strtotime($timestamp); // Convert string to timestamp
         }
 
         $date = date('Y-m-d', $timestamp);
@@ -44,6 +48,7 @@ if (!function_exists('get_date_only')) {
         return $date;
     }
 }
+
 
 
 
