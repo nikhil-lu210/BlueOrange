@@ -91,7 +91,7 @@
                                         </a>
                                     @endcan
                                     @can ('Task Read') 
-                                        <a href="{{ route('administration.task.show', ['task' => $task]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                        <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                             <i class="text-white ti ti-info-hexagon"></i>
                                         </a>
                                     @endcan
