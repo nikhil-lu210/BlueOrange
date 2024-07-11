@@ -9,6 +9,10 @@
     margin-left: 10px;
 }
 
+.breadcrumb-item a {
+    font-weight: bold !important;
+}
+
 .breadcrumb-item + .breadcrumb-item {
     padding-left: 0px !important;
 }
