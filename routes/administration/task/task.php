@@ -3,6 +3,7 @@
 use App\Http\Controllers\Administration\Task\TaskCommentController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Administration\Task\TaskController;
+use App\Http\Controllers\Administration\Task\TaskHistoryController;
 
 /* ==============================================
 ===============< Task Routes >==============
@@ -22,4 +23,10 @@ Route::controller(TaskController::class)->prefix('task')->name('task.')->group(f
 
 Route::controller(TaskCommentController::class)->prefix('task/comment')->name('task.comment.')->group(function () {
     Route::post('/store/{task}', 'store')->name('store')->can('Task Read');
+});
+
+
+Route::controller(TaskHistoryController::class)->prefix('task/history')->name('task.history.')->group(function () {
+    Route::post('/start/{task}', 'start')->name('start')->can('Task Read');
+    Route::post('/stop/{task}/{taskHistory}', 'stop')->name('stop')->can('Task Read');
 });

@@ -16,7 +16,7 @@ class TaskCommentController extends Controller
      */
     public function store(Request $request, Task $task)
     {
-        // dd($request->all(), $task->id);
+        // dd($request->all(), $task->id, auth()->user()->userid);
         $request->validate([
             'comment' => ['required', 'string', 'min:10'],
             'files.*' => ['nullable', 'max:5000']
@@ -32,7 +32,7 @@ class TaskCommentController extends Controller
                 // Store Task's Comment Files
                 if ($request->hasFile('files')) {
                     foreach ($request->file('files') as $file) {
-                        $directory = 'public/tasks/comments' . $task->taskid;
+                        $directory = 'public/tasks/' . $task->taskid .'/comments/' . auth()->user()->userid;
                         store_file_media($file, $comment, $directory);
                     }
                 }
@@ -41,6 +41,7 @@ class TaskCommentController extends Controller
             toast('Task Comment Submitted Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
+            dd($e->getMessage());
             return redirect()->back()->withInput()->with('error', 'An error occurred while creating the Task: ' . $e->getMessage());
         }
     }

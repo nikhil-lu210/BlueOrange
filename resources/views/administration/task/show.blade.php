@@ -8,6 +8,12 @@
 
 @section('css_links')
     {{--  External CSS  --}}
+    {{-- Bootstrap Datepicker --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
+
+    {{-- Bootstrap Select --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -72,14 +78,20 @@
                             @endif
                         </div>
                         @can ('Task Read') 
-                            <a href="javascript:void(0);" class="btn btn-success" title="Start Working On This Task">
-                                <i class="ti ti-clock-check me-1" style="margin-top: -3px;"></i>
-                                Start
-                            </a>
-                            <a href="javascript:void(0);" class="btn btn-danger" title="Stop  Working On This Task">
-                                <i class="ti ti-clock-x me-1" style="margin-top: -3px;"></i>
-                                Stop
-                            </a>
+                            @if (!$isWorking)
+                                <form action="{{ route('administration.task.history.start', ['task' => $task]) }}" method="post">
+                                    @csrf
+                                    <button type="submit" class="btn btn-success" title="Start Working On This Task">
+                                        <i class="ti ti-clock-check me-1" style="margin-top: -3px;"></i>
+                                        Start
+                                    </button>
+                                </form>
+                            @else
+                                <button type="button" class="btn btn-danger" title="Stop  Working On This Task" data-bs-toggle="modal" data-bs-target="#stopTaskModal">
+                                    <i class="ti ti-clock-x me-1" style="margin-top: -3px;"></i>
+                                    Stop
+                                </button>
+                            @endif
                         @endcan
                     </div>
                 </div>
@@ -95,7 +107,9 @@
         @include('administration.task.includes.task_assignees')
         
         {{-- Task History Summary --}}
-        @include('administration.task.includes.task_history_summary')
+        @if ($task->histories) 
+            @include('administration.task.includes.task_history_summary')
+        @endif
     </div>
     
     <div class="col-md-7">
@@ -115,13 +129,35 @@
 </div>
 <!-- End row -->
 
+{{-- Page Modal --}}
+@if ($lastActiveTaskHistory) 
+    @include('administration.task.modals.task_stop')
+@endif
+
 @endsection
 
 
 @section('script_links')
     {{--  External Javascript Links --}}
+    {{-- <!-- Vendors JS --> --}}
+    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
+
+    {{-- Bootstrap Select --}}
+    <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
+    <script>
+        // Custom Script Here
+        $(document).ready(function() {
+            $('.date-picker').datepicker({
+                format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                autoclose: true,
+                orientation: 'auto right'
+            });
+        });
+    </script>
 @endsection

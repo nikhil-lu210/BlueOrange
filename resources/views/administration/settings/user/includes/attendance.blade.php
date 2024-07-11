@@ -37,7 +37,7 @@
                                 <td>
                                     @isset($attendance->total_time)
                                         <b>
-                                            {!! total_time($attendance->total_time) !!}
+                                            {!! total_time_with_min_hour($attendance->total_time) !!}
                                         </b>
                                     @else
                                         <b class="text-success text-uppercase">Running</b>

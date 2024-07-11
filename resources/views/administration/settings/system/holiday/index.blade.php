@@ -115,7 +115,7 @@
 <!-- End row -->
 
 
-{{-- Assign Holiday Modal --}}
+{{-- Page Modal --}}
 @include('administration.settings.system.holiday.modals.holiday_create')
 @include('administration.settings.system.holiday.modals.holiday_edit')
 @include('administration.settings.system.holiday.modals.holiday_show')

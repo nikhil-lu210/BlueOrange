@@ -28,9 +28,11 @@ return new class extends Migration
             $table->dateTime('ends_at')->nullable();
             $table->string('total_worked')->nullable();
 
-            $table->text('note');
+            $table->text('note')->nullable();
 
             $table->tinyInteger('progress')->min(0)->max(100)->default(0);
+
+            $table->enum('status', ['Working', 'Completed'])->default('Working');
 
             $table->timestamps();
             $table->softDeletes();

@@ -23,7 +23,8 @@ class TaskHistory extends Model implements HasMedia
         'ends_at',
         'total_worked',
         'note',
-        'progress'
+        'progress',
+        'status',
     ];
 
     protected $dates = [
@@ -36,4 +37,19 @@ class TaskHistory extends Model implements HasMedia
         'started_at' => 'datetime',
         'ends_at' => 'datetime'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($history) {
+            // Store the history's user id
+            if (auth()->check()) {
+                $history->user_id = auth()->user()->id;
+            }
+
+            // Store started_at current date-time
+            $history->started_at = now();
+        });
+    }
 }

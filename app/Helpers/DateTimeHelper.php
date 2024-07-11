@@ -161,49 +161,6 @@ if (!function_exists('get_total_hour')) {
     }
 }
 
-
-
-if (!function_exists('total_time')) {
-
-    /**
-     * Format total time and apply text color based on conditions.
-     *
-     * @param  string  $totalTime
-     * @return string
-     */
-    function total_time($totalTime, $minHour = 8)
-    {
-        // Parse the total time string
-        $timeComponents = explode(':', $totalTime);
-        $hours = (int)$timeComponents[0];
-        $minutes = (int)$timeComponents[1];
-        $seconds = (int)$timeComponents[2];
-
-        // Determine text color based on conditions
-        $textColor = 'text-success'; // Default color
-
-        if ($hours < $minHour) {
-            $textColor = 'text-danger';
-        } elseif ($hours > ($minHour + 2)) {
-            $textColor = 'text-warning';
-        }
-
-        // Format the total time based on relevant parts
-        if ($hours > 0) {
-            $formattedTotalTime = sprintf('%02dh %02dm %02ds', $hours, $minutes, $seconds);
-        } elseif ($minutes > 0) {
-            $formattedTotalTime = sprintf('%02dm %02ds', $minutes, $seconds);
-        } else {
-            $formattedTotalTime = sprintf('%02ds', $seconds);
-        }
-
-        // Return the formatted total time with the appropriate text color
-        return "<span class='$textColor'>$formattedTotalTime</span>";
-    }
-}
-
-
-
 if (!function_exists('total_day')) {
 
     /**
@@ -243,5 +200,78 @@ if (!function_exists('total_day')) {
 
         // Return the formatted total day
         return $formattedTotalDay;
+    }
+}
+
+
+
+
+if (!function_exists('total_time_with_min_hour')) {
+
+    /**
+     * Format total time and apply text color based on conditions.
+     *
+     * @param  string  $totalTime
+     * @return string
+     */
+    function total_time_with_min_hour($totalTime, $minHour = 8)
+    {
+        // Parse the total time string
+        $timeComponents = explode(':', $totalTime);
+        $hours = (int)$timeComponents[0];
+        $minutes = (int)$timeComponents[1];
+        $seconds = (int)$timeComponents[2];
+
+        // Determine text color based on conditions
+        $textColor = 'text-success'; // Default color
+
+        if ($hours < $minHour) {
+            $textColor = 'text-danger';
+        } elseif ($hours > ($minHour + 2)) {
+            $textColor = 'text-warning';
+        }
+
+        // Format the total time based on relevant parts
+        if ($hours > 0) {
+            $formattedTotalTime = sprintf('%02dh %02dm %02ds', $hours, $minutes, $seconds);
+        } elseif ($minutes > 0) {
+            $formattedTotalTime = sprintf('%02dm %02ds', $minutes, $seconds);
+        } else {
+            $formattedTotalTime = sprintf('%02ds', $seconds);
+        }
+
+        // Return the formatted total time with the appropriate text color
+        return "<span class='$textColor'>$formattedTotalTime</span>";
+    }
+}
+
+
+if (!function_exists('total_time')) {
+
+    /**
+     * Format total time.
+     *
+     * @param  string  $totalTime
+     * @return string
+     */
+    function total_time($totalTime)
+    {
+        // Parse the total time string
+        $timeComponents = explode(':', $totalTime);
+        $hours = (int)$timeComponents[0];
+        $minutes = (int)$timeComponents[1];
+        $seconds = (int)$timeComponents[2];
+
+        // Format the total time based on relevant parts
+        if ($hours > 0) {
+            $formattedTotalTime = sprintf('%02dh %02dm %02ds', $hours, $minutes, $seconds);
+        } elseif ($minutes > 0) {
+            $formattedTotalTime = sprintf('%02dm %02ds', $minutes, $seconds);
+        } else {
+            $formattedTotalTime = sprintf('%02ds', $seconds);
+        }
+
+        // Return the formatted total time
+        return $formattedTotalTime;
     }
 }

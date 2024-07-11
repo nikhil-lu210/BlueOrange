@@ -86,10 +86,33 @@ class TaskController extends Controller
      */
     public function show(Task $task, $taskid)
     {
-        $task = Task::with(['creator', 'users', 'files', 'comments.files'])->whereId($task->id)->whereTaskid($taskid)->firstOrFail();
-        // dd($task->comments);
+        $task = Task::with([
+                'creator', 
+                'users', 
+                'files', 
+                'comments.files', 
+                'histories' => function ($history) {
+                    $history->whereStatus('Completed')->orderBy('ends_at', 'desc')->get();
+                }
+            ])
+            ->whereId($task->id)
+            ->whereTaskid($taskid)
+            ->firstOrFail();
 
-        return view('administration.task.show', compact(['task']));
+        $isWorking = $task->histories()
+                        ->whereUserId(auth()->id())
+                        ->whereNull('ends_at')
+                        ->whereStatus('Working')
+                        ->exists();
+
+        $lastActiveTaskHistory = $task->histories()
+                        ->whereUserId(auth()->id())
+                        ->where('status', 'Working')
+                        ->latest('started_at')
+                        ->first();
+        // dd($task->histories);
+
+        return view('administration.task.show', compact(['task', 'isWorking', 'lastActiveTaskHistory']));
     }
 
     /**

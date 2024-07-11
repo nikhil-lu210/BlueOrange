@@ -78,7 +78,7 @@
                                         $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
                                     @endphp
                                     <b>
-                                        {!! total_time($attendance->total_time, $totalWorkingHour) !!}
+                                        {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
                                     </b>
                                 @else
                                     <b class="text-success text-uppercase">Running</b>
@@ -177,7 +177,7 @@
                                     <dd class="col-sm-8">
                                         @isset($attendance->total_time)
                                             <b>
-                                                {!! total_time($attendance->total_time, $totalWorkingHour) !!}
+                                                {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
                                             </b>
                                         @else
                                             <b class="text-success text-uppercase">Running</b>
