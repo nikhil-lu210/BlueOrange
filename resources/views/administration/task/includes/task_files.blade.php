@@ -4,7 +4,7 @@
 
         @if (auth()->user()->id == $task->creator->id) 
             <div class="card-header-elements ms-auto">
-                <button type="button" class="btn btn-xs btn-primary">
+                <button type="button" class="btn btn-xs btn-primary" title="Click to upload files for {{ $task->title }}">
                     <span class="tf-icon ti ti-upload ti-xs me-1"></span>
                     Upload Files
                 </button>

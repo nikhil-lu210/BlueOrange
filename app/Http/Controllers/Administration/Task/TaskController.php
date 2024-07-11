@@ -34,7 +34,17 @@ class TaskController extends Controller
      */
     public function my()
     {
-        return view('administration.task.my');
+        $tasks = Task::with([
+                        'creator:id,first_name,last_name'
+                    ])
+                    ->whereHas('users', function($query) {
+                        $query->where('user_id', auth()->id());
+                    })
+                    ->orderByDesc('created_at')
+                    ->get();
+        // dd($tasks);
+
+        return view('administration.task.my', compact(['tasks']));
     }
 
     /**

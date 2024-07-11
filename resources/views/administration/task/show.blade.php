@@ -110,7 +110,7 @@
         @include('administration.task.includes.task_assignees')
         
         {{-- Task History Summary --}}
-        @if ($task->histories) 
+        @if ($task->histories->count() > 0) 
             @include('administration.task.includes.task_history_summary')
         @endif
     </div>
@@ -120,7 +120,7 @@
         @include('administration.task.includes.task_details')
         
         {{-- <!-- Task Files --> --}}
-        @if ($task->files)
+        @if ($task->files->count() > 0)
             @include('administration.task.includes.task_files')
         @endif
 

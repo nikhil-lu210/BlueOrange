@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Announcement'))
+@section('page_title', __('Task'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -23,13 +23,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All Announcements') }}</b>
+    <b class="text-uppercase">{{ __('My Tasks') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Announcement') }}</li>
-    <li class="breadcrumb-item active">{{ __('All Announcements') }}</li>
+    <li class="breadcrumb-item">{{ __('Task') }}</li>
+    <li class="breadcrumb-item active">{{ __('My Tasks') }}</li>
 @endsection
 
 
@@ -40,13 +40,13 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">All Announcements</h5>
+                <h5 class="mb-0">My Tasks</h5>
         
                 <div class="card-header-elements ms-auto">
-                    @can ('Announcement Create') 
-                        <a href="{{ route('administration.announcement.create') }}" class="btn btn-sm btn-primary">
+                    @can ('Task Create') 
+                        <a href="{{ route('administration.task.create') }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                            Create Announcement
+                            Create Task
                         </a>
                     @endcan
                 </div>
@@ -56,47 +56,42 @@
                     <thead>
                         <tr>
                             <th>Sl.</th>
-                            <th>Announced At</th>
-                            <th>Announcement</th>
-                            <th>Announcer</th>
+                            <th>Title</th>
+                            <th>Creator</th>
+                            <th>Deadline</th>
+                            <th>Status</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($announcements as $key => $announcement) 
+                        @foreach ($tasks as $key => $task) 
                             <tr>
-                                <th>#{{ serial($announcements, $key) }}</th>
-                                <td>{{ show_date($announcement->created_at) }}</td>
+                                <th>#{{ serial($tasks, $key) }}</th>
                                 <td>
-                                    <b>{{ $announcement->title }}</b>
+                                    <b title="{{ $task->title }}">{{ show_content($task->title, 30) }}</b>
                                     <br>
-                                    @if (!is_null($announcement->recipients))
-                                        <small class="text-primary text-bold cursor-pointer text-left" title="
-                                            @foreach ($announcement->recipients as $recipient)
-                                                <small>{{ show_user_data($recipient, 'name') }}</small>
-                                                <br>
-                                            @endforeach
-                                        ">
-                                            {{ count($announcement->recipients) }} Recipients
-                                        </small>
-                                    @else
-                                        <small class="text-muted">All Recipients</small>
-                                    @endif
+                                    <small>Priority: <span class="text-muted">{{ $task->priority }}</span></small>
                                 </td>
-                                <td>{{ $announcement->announcer->name }}</td>
+                                <td>{{ $task->creator->first_name.' '.$task->creator->last_name }}</td>
+                                <td>
+                                    <b>{{ show_date($task->deadline) }}</b>
+                                    <br>
+                                    <small>Created: <span class="text-muted">{{ show_date($task->created_at) }}</span></small>
+                                </td>
+                                <td>{!! show_status($task->status) !!}</td>
                                 <td class="text-center">
-                                    @can ('Announcement Delete') 
-                                        <a href="{{ route('administration.announcement.destroy', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Announcement?">
+                                    @can ('Task Delete') 
+                                        <a href="{{ route('administration.task.destroy', ['task' => $task]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Task?">
                                             <i class="text-white ti ti-trash"></i>
                                         </a>
                                     @endcan
-                                    @can ('Announcement Update') 
-                                        <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Announcement?">
+                                    @can ('Task Update') 
+                                        <a href="{{ route('administration.task.edit', ['task' => $task]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Task?">
                                             <i class="text-white ti ti-pencil"></i>
                                         </a>
                                     @endcan
-                                    @can ('Announcement Read') 
-                                        <a href="{{ route('administration.announcement.show', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                    @can ('Task Read') 
+                                        <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                             <i class="text-white ti ti-info-hexagon"></i>
                                         </a>
                                     @endcan

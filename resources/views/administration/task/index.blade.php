@@ -68,7 +68,7 @@
                             <tr>
                                 <th>#{{ serial($tasks, $key) }}</th>
                                 <td>
-                                    <b>{{ $task->title }}</b>
+                                    <b title="{{ $task->title }}">{{ show_content($task->title, 30) }}</b>
                                     <br>
                                     <small>Priority: <span class="text-muted">{{ $task->priority }}</span></small>
                                 </td>
