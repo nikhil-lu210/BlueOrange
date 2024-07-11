@@ -14,7 +14,28 @@ if (!function_exists('serial')) {
         $totalDigits = strlen((string) $totalItems);
         return str_pad($key + 1, $totalDigits, '0', STR_PAD_LEFT);
     }
-} 
+}
+
+
+if (!function_exists('show_content')) {
+    /**
+     * Truncate a sentence to a specified number of characters and append '...' if truncated.
+     *
+     * @param  string  $sentence
+     * @param  int|null  $totalChar
+     * @return string
+     */
+    function show_content($sentence, $totalChar = null)
+    {
+        if ($totalChar && strlen($sentence) > $totalChar) {
+            return substr($sentence, 0, $totalChar) . '...';
+        }
+
+        return $sentence;
+    }
+}
+
+
 
 
 if (!function_exists('show_status')) {

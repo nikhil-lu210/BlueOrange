@@ -9,8 +9,14 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('')
         ->name('administration.')
         ->group(function () {
+            // file_media
+            include_once 'file_media/file_media.php';
+
             // notification
             include_once 'notification/notification.php';
+
+            // Dashboard
+            include_once 'dashboard/dashboard.php';
 
             // Attendance
             include_once 'attendance/attendance.php';
@@ -18,8 +24,8 @@ Route::prefix('')
             // announcement
             include_once 'announcement/announcement.php';
 
-            // Dashboard
-            include_once 'dashboard/dashboard.php';
+            // task
+            include_once 'task/task.php';
             
             // Profile
             include_once 'profile/profile.php';

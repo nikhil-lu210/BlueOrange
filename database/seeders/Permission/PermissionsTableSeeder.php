@@ -17,6 +17,7 @@ class PermissionsTableSeeder extends Seeder
         $modules = [
             'Attendance',
             'Announcement',
+            'Task',
             'Permission',
             'Role',
             'User',
