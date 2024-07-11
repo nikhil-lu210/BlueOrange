@@ -43,7 +43,8 @@
             <a href="{{ route('administration.task.my') }}">{{ __('My Tasks') }}</a>
         </li>
     @endcanany
-    <li class="breadcrumb-item active">{{ __('Task Details') }}</li>
+    <li class="breadcrumb-item">{{ __('Task Details') }}</li>
+    <li class="breadcrumb-item active">{{ $task->taskid }}</li>
 @endsection
 
 
@@ -78,19 +79,21 @@
                             @endif
                         </div>
                         @can ('Task Read') 
-                            @if (!$isWorking)
-                                <form action="{{ route('administration.task.history.start', ['task' => $task]) }}" method="post">
-                                    @csrf
-                                    <button type="submit" class="btn btn-success" title="Start Working On This Task">
-                                        <i class="ti ti-clock-check me-1" style="margin-top: -3px;"></i>
-                                        Start
+                            @if ($task->users->contains(auth()->user()->id)) 
+                                @if (!$isWorking)
+                                    <form action="{{ route('administration.task.history.start', ['task' => $task]) }}" method="post">
+                                        @csrf
+                                        <button type="submit" class="btn btn-success" title="Start Working On This Task">
+                                            <i class="ti ti-clock-check me-1" style="margin-top: -3px;"></i>
+                                            Start
+                                        </button>
+                                    </form>
+                                @else
+                                    <button type="button" class="btn btn-danger" title="Stop  Working On This Task" data-bs-toggle="modal" data-bs-target="#stopTaskModal">
+                                        <i class="ti ti-clock-x me-1" style="margin-top: -3px;"></i>
+                                        Stop
                                     </button>
-                                </form>
-                            @else
-                                <button type="button" class="btn btn-danger" title="Stop  Working On This Task" data-bs-toggle="modal" data-bs-target="#stopTaskModal">
-                                    <i class="ti ti-clock-x me-1" style="margin-top: -3px;"></i>
-                                    Stop
-                                </button>
+                                @endif
                             @endif
                         @endcan
                     </div>

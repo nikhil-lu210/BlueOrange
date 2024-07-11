@@ -8,7 +8,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item" href="javascript:void(0);">
+                        <a class="dropdown-item" href="{{ route('administration.task.history.show', ['task' => $task]) }}">
                             <i class="ti ti-history me-1 fs-5" style="margin-top: -2px;"></i>
                             History Details
                         </a>
@@ -19,7 +19,7 @@
     </div>
     <div class="card-body pb-0">
         <ul class="timeline ms-1 mb-0">
-            @foreach ($task->histories as $history) 
+            @foreach ($task->histories as $history)
                 <li class="timeline-item timeline-item-transparent {{ $loop->last ? 'border-transparent' : '' }}">
                     <span class="timeline-indicator-advanced timeline-indicator-primary">
                       <i class="ti ti-hash rounded-circle scaleX-n1-rtl"></i>
@@ -33,18 +33,6 @@
                     </div>
                 </li>
             @endforeach
-            {{-- <li class="timeline-item timeline-item-transparent border-transparent">
-                <span class="timeline-indicator-advanced timeline-indicator-primary">
-                  <i class="ti ti-hash rounded-circle scaleX-n1-rtl"></i>
-                </span>
-                <div class="timeline-event">
-                    <div class="timeline-header">
-                        <h6 class="mb-0">Project status updated</h6>
-                        <small class="text-muted">10 Day Ago</small>
-                    </div>
-                    <p class="mb-0">Woocommerce iOS App Completed</p>
-                </div>
-            </li> --}}
         </ul>
     </div>    
 </div>

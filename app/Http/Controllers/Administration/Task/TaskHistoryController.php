@@ -18,9 +18,19 @@ class TaskHistoryController extends Controller
     {
         // dd($request->all(), $task->id);        
         try {
-            TaskHistory::create([
-                'task_id' => $task->id
-            ]);
+            DB::transaction(function () use ($task) {
+                // Create a new TaskHistory
+                TaskHistory::create([
+                    'task_id' => $task->id,
+                ]);
+    
+                // Check if this is the first TaskHistory for the task
+                $historyCount = $task->histories()->count();
+                if ($historyCount >= 1 && $task->status === 'Active') {
+                    // Update task status to Running
+                    $task->update(['status' => 'Running']);
+                }
+            });
             
             toast('Task Started Successfully.', 'success');
             return redirect()->back();
@@ -82,8 +92,10 @@ class TaskHistoryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Task $task, TaskHistory $taskHistory)
+    public function show(Task $task)
     {
-        //
+        $histories = TaskHistory::with(['task', 'user', 'files'])->whereTaskId($task->id)->orderBy('created_at', 'desc')->get();
+        // dd($histories);
+        return view('administration.task.history', compact(['task', 'histories']));
     }
 }

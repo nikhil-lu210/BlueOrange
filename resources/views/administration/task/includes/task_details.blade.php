@@ -8,7 +8,7 @@
                 </button>
                 <ul class="dropdown-menu dropdown-menu-end">
                     <li>
-                        <a class="dropdown-item text-dark" href="{{ route('administration.task.edit', ['task' => $task]) }}">
+                        <a class="dropdown-item text-dark" href="{{ route('administration.task.history.show', ['task' => $task]) }}">
                             <i class="ti ti-history me-1 fs-5" style="margin-top: -5px;"></i>
                             Task History
                         </a>

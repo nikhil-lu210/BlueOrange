@@ -27,6 +27,7 @@ Route::controller(TaskCommentController::class)->prefix('task/comment')->name('t
 
 
 Route::controller(TaskHistoryController::class)->prefix('task/history')->name('task.history.')->group(function () {
+    Route::get('/show/{task}', 'show')->name('show')->can('Task Read');
     Route::post('/start/{task}', 'start')->name('start')->can('Task Read');
     Route::post('/stop/{task}/{taskHistory}', 'stop')->name('stop')->can('Task Read');
 });
