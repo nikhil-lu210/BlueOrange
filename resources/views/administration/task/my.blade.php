@@ -57,7 +57,7 @@
                         <tr>
                             <th>Sl.</th>
                             <th>Title</th>
-                            <th>Creator</th>
+                            <th>Assigner & Assignees</th>
                             <th>Deadline</th>
                             <th>Status</th>
                             <th class="text-center">Action</th>
@@ -72,9 +72,36 @@
                                     <br>
                                     <small>Priority: <span class="text-muted">{{ $task->priority }}</span></small>
                                 </td>
-                                <td>{{ $task->creator->first_name.' '.$task->creator->last_name }}</td>
                                 <td>
-                                    <b>{{ show_date($task->deadline) }}</b>
+                                    <b class="text-dark">{{ $task->creator->first_name.' '.$task->creator->last_name }}</b>
+                                    <br>
+                                    @if ($task->users->count() > 0)
+                                        <div class="d-flex align-items-center">
+                                            <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2 mt-1">
+                                                @foreach ($task->users->take(6) as $user)
+                                                    <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
+                                                        @if ($user->hasMedia('avatar'))
+                                                            <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
+                                                        @else
+                                                            <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="No Avatar" class="rounded-circle">
+                                                        @endif
+                                                    </li>
+                                                @endforeach
+                                                @if ($task->users->count() > 6)
+                                                    <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $task->users->count() - 6 }} More" class="avatar avatar-sm pull-up more-user-avatar">
+                                                        <small>{{ $task->users->count() - 6 }}+</small>
+                                                    </li>
+                                                @endif
+                                            </ul>
+                                        </div>
+                                    @endif
+                                </td>
+                                <td>
+                                    @if (!is_null($task->deadline)) 
+                                        <b>{{ show_date($task->deadline) }}</b>
+                                    @else 
+                                        <span class="badge bg-success">Ongoing Task</span>
+                                    @endif
                                     <br>
                                     <small>Created: <span class="text-muted">{{ show_date($task->created_at) }}</span></small>
                                 </td>
