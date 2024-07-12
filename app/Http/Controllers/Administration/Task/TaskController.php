@@ -18,6 +18,7 @@ use App\Mail\Administration\Task\AddUsersTaskMail;
 use App\Mail\Administration\Task\UpdateTaskMail;
 use App\Notifications\Administration\Task\TaskAddUsersNotification;
 use App\Notifications\Administration\Task\TaskCreateNotification;
+use App\Notifications\Administration\Task\TaskFileUploadNotification;
 use App\Notifications\Administration\Task\TaskUpdateNotification;
 
 class TaskController extends Controller
@@ -295,18 +296,30 @@ class TaskController extends Controller
         ]);
 
         try {
-            if ($request->hasFile('files')) {
-                foreach ($request->file('files') as $file) {
-                    $directory = 'public/tasks/' . $task->taskid;
-                    store_file_media($file, $task, $directory);
+            DB::transaction(function() use ($request, $task) {
+                if ($request->hasFile('files')) {
+                    foreach ($request->file('files') as $file) {
+                        $directory = 'public/tasks/' . $task->taskid;
+                        store_file_media($file, $task, $directory);
+                    }
                 }
+
+                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
+
+                $notifiableUsers = [];
+                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
                 
-                toast('Task Files Added Successfully.', 'success');
-                return redirect()->back();
-            } else {
-                toast('No File Selected. Please Select Files.', 'danger');
-                return redirect()->back();
-            }
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskFileUploadNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    // Mail::to($notifiableUser->email)->send(new UpdateTaskMail($task, $notifiableUser));
+                }
+            });
+            
+            toast('Task Files Added Successfully.', 'success');
+            return redirect()->back();
         } catch (Exception $e) {
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
