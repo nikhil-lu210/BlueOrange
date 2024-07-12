@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Administration\Task;
 
 use Exception;
+use App\Models\User;
 use App\Models\Task\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Models\FileMedia\FileMedia;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Administration\Task\NewTaskMail;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
 use App\Http\Requests\Administration\Task\TaskUpdateRequest;
+use App\Notifications\Administration\Task\TaskCreateNotification;
 
 class TaskController extends Controller
 {
@@ -81,6 +85,17 @@ class TaskController extends Controller
                         $directory = 'public/tasks/' . $task->taskid;
                         store_file_media($file, $task, $directory);
                     }
+                }
+
+                $notifiableUsers = [];
+                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $request->users)->get();
+                
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskCreateNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    Mail::to($notifiableUser->email)->send(new NewTaskMail($task, $notifiableUser));
                 }
             });
 
