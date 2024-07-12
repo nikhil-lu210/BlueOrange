@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\Administration\Task\NewTaskMail;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
 use App\Http\Requests\Administration\Task\TaskUpdateRequest;
+use App\Mail\Administration\Task\UpdateTaskMail;
 use App\Notifications\Administration\Task\TaskCreateNotification;
 use App\Notifications\Administration\Task\TaskUpdateNotification;
 
@@ -181,7 +182,7 @@ class TaskController extends Controller
                     $notifiableUser->notify(new TaskUpdateNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    // Mail::to($notifiableUser->email)->send(new NewTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->send(new UpdateTaskMail($task, $notifiableUser));
                 }
             });
             

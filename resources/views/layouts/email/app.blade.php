@@ -28,7 +28,7 @@
                         <tr>
                             <td style="text-align: center;">
                                 <a href="{{ config('app.url') }}" title="logo" target="_blank">
-                                    <img width="150" src="{{ asset('Logo/blueorange.png') }}" title="logo" alt="logo" />
+                                    <img width="120" src="{{ asset('Logo/blueorange.png') }}" title="logo" alt="logo" />
                                 </a>
                             </td>
                         </tr>
