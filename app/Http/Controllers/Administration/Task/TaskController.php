@@ -12,14 +12,15 @@ use App\Models\FileMedia\FileMedia;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Administration\Task\NewTaskMail;
+use App\Mail\Administration\Task\UpdateTaskMail;
+use App\Mail\Administration\Task\AddUsersTaskMail;
+use App\Mail\Administration\Task\FileUploadForTaskMail;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
 use App\Http\Requests\Administration\Task\TaskUpdateRequest;
-use App\Mail\Administration\Task\AddUsersTaskMail;
-use App\Mail\Administration\Task\UpdateTaskMail;
-use App\Notifications\Administration\Task\TaskAddUsersNotification;
 use App\Notifications\Administration\Task\TaskCreateNotification;
-use App\Notifications\Administration\Task\TaskFileUploadNotification;
 use App\Notifications\Administration\Task\TaskUpdateNotification;
+use App\Notifications\Administration\Task\TaskAddUsersNotification;
+use App\Notifications\Administration\Task\TaskFileUploadNotification;
 
 class TaskController extends Controller
 {
@@ -314,10 +315,10 @@ class TaskController extends Controller
                     $notifiableUser->notify(new TaskFileUploadNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    // Mail::to($notifiableUser->email)->send(new UpdateTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->send(new FileUploadForTaskMail($task, $notifiableUser));
                 }
             });
-            
+
             toast('Task Files Added Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
