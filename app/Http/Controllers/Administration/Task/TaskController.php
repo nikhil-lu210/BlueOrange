@@ -147,18 +147,24 @@ class TaskController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Add Users for Task
      */
     public function addUsers(Request $request, Task $task)
     {
         $request->validate([
             'users' => ['required', 'array'],
-            'users.*' => ['integer', 'exists:users,id'],
+            'users.*' => [
+                'integer',
+                'exists:users,id',
+                function ($attribute, $value, $fail) use ($task) {
+                    if ($task->users()->where('user_id', $value)->exists()) {
+                        $fail('The user is already assigned to this task.');
+                    }
+                },
+            ],
         ]);
-        // dd($request->all(), $task);
 
         try {
-            // Assign users to the task
             if ($request->has('users')) {
                 $task->users()->attach($request->users);
             }
@@ -166,22 +172,30 @@ class TaskController extends Controller
             toast('Assignees Added Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('errors', 'An error occurred: ' . $e->getMessage());
         }
     }
 
     /**
-     * Update the specified resource in storage.
+     * Remove user for task
      */
     public function removeUser(Request $request, Task $task)
     {
         $request->validate([
-            'user' => ['required', 'integer', 'exists:users,id']
+            'user' => [
+                'required',
+                'integer',
+                'exists:users,id',
+                function ($attribute, $value, $fail) use ($task) {
+                    if (!$task->users()->where('user_id', $value)->exists()) {
+                        $fail('The selected user is not assigned to this task.');
+                    }
+                },
+            ],
         ]);
         // dd($request->all(), $task);
 
         try {
-            // Assign users to the task
             if ($request->has('user')) {
                 $task->users()->detach($request->user);
             }
@@ -189,7 +203,7 @@ class TaskController extends Controller
             toast('Assignee Removed Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('errors', 'An error occurred: ' . $e->getMessage());
         }
     }
 
