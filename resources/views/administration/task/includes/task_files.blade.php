@@ -30,9 +30,11 @@
                             <td>{{ get_file_media_size($file) }}</td>
                             <td>{{ date_time_ago($file->created_at) }}</td>
                             <td class="text-center">
-                                <a href="{{ file_media_destroy($file) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" title="Delete {{ $file->original_name }}">
-                                    <i class="ti ti-trash"></i>
-                                </a>
+                                @if ($task->creator_id == auth()->user()->id) 
+                                    <a href="{{ file_media_destroy($file) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" title="Delete {{ $file->original_name }}">
+                                        <i class="ti ti-trash"></i>
+                                    </a>
+                                @endif
                                 <a href="{{ file_media_download($file) }}" target="_blank" class="btn btn-icon btn-primary btn-sm waves-effect" title="Download {{ $file->original_name }}">
                                     <i class="ti ti-download"></i>
                                 </a>

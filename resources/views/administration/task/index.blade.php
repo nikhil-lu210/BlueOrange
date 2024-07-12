@@ -119,16 +119,18 @@
                                 </td>
                                 <td>{!! show_status($task->status) !!}</td>
                                 <td class="text-center">
-                                    @can ('Task Delete') 
-                                        <a href="{{ route('administration.task.destroy', ['task' => $task]) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" data-bs-toggle="tooltip" title="Delete Task?">
-                                            <i class="ti ti-trash"></i>
-                                        </a>
-                                    @endcan
-                                    @can ('Task Update') 
-                                        <a href="{{ route('administration.task.edit', ['task' => $task]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Task?">
-                                            <i class="ti ti-pencil"></i>
-                                        </a>
-                                    @endcan
+                                    @if ($task->creator_id == auth()->user()->id) 
+                                        @can ('Task Delete') 
+                                            <a href="{{ route('administration.task.destroy', ['task' => $task]) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" data-bs-toggle="tooltip" title="Delete Task?">
+                                                <i class="ti ti-trash"></i>
+                                            </a>
+                                        @endcan
+                                        @can ('Task Update') 
+                                            <a href="{{ route('administration.task.edit', ['task' => $task]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Task?">
+                                                <i class="ti ti-pencil"></i>
+                                            </a>
+                                        @endcan
+                                    @endif
                                     @can ('Task Read') 
                                         <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                             <i class="ti ti-info-hexagon"></i>

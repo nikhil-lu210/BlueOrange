@@ -3,10 +3,12 @@
         <h5 class="mb-0">Task Comments</h5>
 
         <div class="card-header-elements ms-auto">
-            <button type="button" class="btn btn-primary btn-xs" title="Create Comment" data-bs-toggle="collapse" data-bs-target="#taskComment" aria-expanded="false" aria-controls="taskComment">
-                <span class="tf-icon ti ti-message-circle ti-xs me-1"></span>
-                Comment
-            </button>
+            @if ($task->users->contains(auth()->user()->id) || $task->creator_id == auth()->user()->id) 
+                <button type="button" class="btn btn-primary btn-xs" title="Create Comment" data-bs-toggle="collapse" data-bs-target="#taskComment" aria-expanded="false" aria-controls="taskComment">
+                    <span class="tf-icon ti ti-message-circle ti-xs me-1"></span>
+                    Comment
+                </button>
+            @endif
         </div>
     </div>
     <!-- Account -->
