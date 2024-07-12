@@ -9,8 +9,9 @@ use Illuminate\Http\Request;
 use App\Models\Task\TaskComment;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Notifications\Administration\Task\TaskCommentNotification;
 use Illuminate\Support\Facades\Mail;
+use App\Mail\Administration\Task\NewCommentOnTaskMail;
+use App\Notifications\Administration\Task\TaskCommentNotification;
 
 class TaskCommentController extends Controller
 {
@@ -60,7 +61,7 @@ class TaskCommentController extends Controller
                     $notifiableUser->notify(new TaskCommentNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    // Mail::to($notifiableUser->email)->send(new FileUploadForTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->send(new NewCommentOnTaskMail($task, $notifiableUser, auth()->user()));
                 }
             });
             

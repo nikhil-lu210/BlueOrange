@@ -70,8 +70,8 @@
                                         <p>{{ $comment->comment }}</p>
                                     </div>
 
-                                    @if ($comment->files) 
-                                        <div class="d-flex flex-wrap gap-2 pt-1">
+                                    @if ($comment->files->count() > 0) 
+                                        <div class="d-flex flex-wrap gap-2 pt-1 mb-3">
                                             @foreach ($comment->files as $commentFile) 
                                                 <a href="{{ file_media_download($commentFile) }}" target="_blank" class="me-3 badge bg-label-dark" title="Click Here to Download {{ $commentFile->original_name }}">
                                                     <i class="ti ti-file-download fw-bold fs-6"></i>
