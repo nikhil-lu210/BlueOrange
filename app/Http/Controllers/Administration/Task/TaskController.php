@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\Administration\Task\NewTaskMail;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
 use App\Http\Requests\Administration\Task\TaskUpdateRequest;
+use App\Mail\Administration\Task\AddUsersTaskMail;
 use App\Mail\Administration\Task\UpdateTaskMail;
+use App\Notifications\Administration\Task\TaskAddUsersNotification;
 use App\Notifications\Administration\Task\TaskCreateNotification;
 use App\Notifications\Administration\Task\TaskUpdateNotification;
 
@@ -228,9 +230,22 @@ class TaskController extends Controller
         ]);
 
         try {
-            if ($request->has('users')) {
-                $task->users()->attach($request->users);
-            }
+            DB::transaction(function() use ($request, $task) {
+                if ($request->has('users')) {
+                    $task->users()->attach($request->users);
+                }
+
+                $notifiableUsers = [];
+                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $request->users)->get();
+                
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskAddUsersNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    Mail::to($notifiableUser->email)->send(new AddUsersTaskMail($task, $notifiableUser));
+                }
+            });
 
             toast('Assignees Added Successfully.', 'success');
             return redirect()->back();
