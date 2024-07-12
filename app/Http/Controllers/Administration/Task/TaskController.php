@@ -15,6 +15,7 @@ use App\Mail\Administration\Task\NewTaskMail;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
 use App\Http\Requests\Administration\Task\TaskUpdateRequest;
 use App\Notifications\Administration\Task\TaskCreateNotification;
+use App\Notifications\Administration\Task\TaskUpdateNotification;
 
 class TaskController extends Controller
 {
@@ -87,8 +88,10 @@ class TaskController extends Controller
                     }
                 }
 
+                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
+
                 $notifiableUsers = [];
-                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $request->users)->get();
+                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
                 
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
@@ -160,12 +163,27 @@ class TaskController extends Controller
     public function update(TaskUpdateRequest $request, Task $task)
     {
         try {
-            $task->update([
-                'title' => $request->title,
-                'description' => $request->description,
-                'deadline' => $request->deadline ?? null,
-                'priority' => $request->priority
-            ]);
+            DB::transaction(function () use ($request, $task) {
+                $task->update([
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'deadline' => $request->deadline ?? null,
+                    'priority' => $request->priority
+                ]);
+
+                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
+
+                $notifiableUsers = [];
+                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
+                
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskUpdateNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    // Mail::to($notifiableUser->email)->send(new NewTaskMail($task, $notifiableUser));
+                }
+            });
             
             toast('Task Updated successfully.', 'success');
             return redirect()->route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]);

@@ -149,7 +149,7 @@
                                         <div class="flex-grow-1">
                                             <a href="{{ route('administration.notification.mark_as_read_and_redirect', ['notification_id' => $notification->id]) }}">
                                                 <h6 class="mb-1 text-primary">{{ $notification->data['title'] }}</h6>
-                                                <p class="mb-0 text-dark">{{ $notification->data['message'] }}</p>
+                                                <p class="mb-0 text-dark">{{ show_content($notification->data['message'], 60) }}</p>
                                             </a>
                                             <small class="text-muted">{{ date_time_ago($notification->created_at) }}</small>
                                         </div>
