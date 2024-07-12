@@ -9,19 +9,19 @@
                     </button>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li>
-                            <a class="dropdown-item" href="javascript:void(0);">
+                            <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#addTaskUsersModal">
                                 <i class="ti ti-plus me-1 fs-5" style="margin-top: -2px;"></i>
                                 Add Assignees
-                            </a>
+                            </button>
                         </li>
                         <li>
                             <hr class="dropdown-divider" />
                         </li>
                         <li>
-                            <a class="dropdown-item text-danger confirm-danger" href="javascript:void(0);">
+                            <button type="button" class="dropdown-item text-danger" data-bs-toggle="modal" data-bs-target="#removeTaskUserModal">
                                 <i class="ti ti-x me-1 fs-5" style="margin-top: -2px;"></i>
                                 Remove Assignees
-                            </a>
+                            </button>
                         </li>
                     </ul>
                 </div>
@@ -55,3 +55,10 @@
         </ul>
     </div>
 </div>
+
+
+{{-- Add Assignees Modal --}}
+@include('administration.task.modals.add_assignees')
+
+{{-- Remove Assignee Modal --}}
+@include('administration.task.modals.remove_assignee')

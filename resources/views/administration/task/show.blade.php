@@ -8,6 +8,7 @@
 
 @section('css_links')
     {{--  External CSS  --}}
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -142,6 +143,8 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
+    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
     {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>

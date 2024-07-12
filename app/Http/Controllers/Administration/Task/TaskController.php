@@ -120,9 +120,14 @@ class TaskController extends Controller
                         ->where('status', 'Working')
                         ->latest('started_at')
                         ->first();
-        // dd($task->histories);
+        
+        $roles = Role::with(['users' => function($user) use ($task) {
+            $user->whereDoesntHave('tasks', function($taskQuery) use ($task) {
+                $taskQuery->where('task_id', $task->id);
+            });
+        }])->get();
 
-        return view('administration.task.show', compact(['task', 'isWorking', 'lastActiveTaskHistory']));
+        return view('administration.task.show', compact(['task', 'isWorking', 'lastActiveTaskHistory', 'roles']));
     }
 
     /**
@@ -139,6 +144,53 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         dd($request->all(), $task);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function addUsers(Request $request, Task $task)
+    {
+        $request->validate([
+            'users' => ['required', 'array'],
+            'users.*' => ['integer', 'exists:users,id'],
+        ]);
+        // dd($request->all(), $task);
+
+        try {
+            // Assign users to the task
+            if ($request->has('users')) {
+                $task->users()->attach($request->users);
+            }
+
+            toast('Assignees Added Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function removeUser(Request $request, Task $task)
+    {
+        $request->validate([
+            'user' => ['required', 'integer', 'exists:users,id']
+        ]);
+        // dd($request->all(), $task);
+
+        try {
+            // Assign users to the task
+            if ($request->has('user')) {
+                $task->users()->detach($request->user);
+            }
+
+            toast('Assignee Removed Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**
