@@ -73,7 +73,7 @@
                                             </li>
                                         @endforeach
                                         <li class="m-2">
-                                            <small class="text-muted">{{ count($task->users) }} Users</small>
+                                            <small class="text-muted">Total {{ count($task->users) }} Assignees</small>
                                         </li>
                                     </ul>
                                 </div>

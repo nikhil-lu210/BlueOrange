@@ -4,7 +4,7 @@
 
         @if (auth()->user()->id == $task->creator->id) 
             <div class="card-header-elements ms-auto">
-                <button type="button" class="btn btn-xs btn-primary" title="Click to upload files for {{ $task->title }}">
+                <button type="button" class="btn btn-xs btn-primary" title="Click to upload files for {{ $task->title }}" data-bs-toggle="modal" data-bs-target="#addTaskFilesModal">
                     <span class="tf-icon ti ti-upload ti-xs me-1"></span>
                     Upload Files
                 </button>
@@ -30,6 +30,11 @@
                             <td>{{ get_file_media_size($file) }}</td>
                             <td>{{ date_time_ago($file->created_at) }}</td>
                             <td class="text-center">
+                                @if ($task->creator_id == auth()->user()->id) 
+                                    <a href="{{ file_media_destroy($file) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" title="Delete {{ $file->original_name }}">
+                                        <i class="ti ti-trash"></i>
+                                    </a>
+                                @endif
                                 <a href="{{ file_media_download($file) }}" target="_blank" class="btn btn-icon btn-primary btn-sm waves-effect" title="Download {{ $file->original_name }}">
                                     <i class="ti ti-download"></i>
                                 </a>
@@ -41,3 +46,7 @@
         </div>
     </div>
 </div>
+
+
+{{-- Add Task Files Modal --}}
+@include('administration.task.modals.add_task_files')

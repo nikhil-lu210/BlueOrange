@@ -20,7 +20,16 @@
             <li class="d-flex align-items-center mb-3">
                 <i class="ti ti-hourglass-off text-heading"></i>
                 <span class="fw-medium mx-2 text-heading">Deadline:</span> 
-                <span class="text-capitalize">{{ date_time_ago($task->deadline) }}</span>
+                <span class="text-capitalize">
+                    @if (!is_null($task->deadline)) 
+                        {{ show_date($task->deadline) }}
+                        @if ($task->deadline < now()->format('Y-m-d'))
+                            <sup class="badge bg-label-danger fs-tiny fw-bold">{{ date_time_ago($task->deadline) }}</sup>
+                        @endif
+                    @else
+                        <span class="badge bg-success fs-tiny fw-bold">{{ __('Ongoing Task') }}</span>
+                    @endif
+                </span>
             </li>
             <li class="d-flex align-items-center mb-3">
                 <i class="ti ti-check text-heading"></i>

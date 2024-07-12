@@ -23,7 +23,7 @@
         border-radius: 50px;
         text-align: center;
         padding-top: 5px;
-        border: 1px solid #333333;
+        border: 1px solid #ffffff;
     }
     .more-user-avatar small {
         font-size: 12px;

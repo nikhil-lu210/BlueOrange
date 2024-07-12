@@ -3,10 +3,12 @@
         <h5 class="mb-0">Task Comments</h5>
 
         <div class="card-header-elements ms-auto">
-            <button type="button" class="btn btn-primary btn-xs" title="Create Comment" data-bs-toggle="collapse" data-bs-target="#taskComment" aria-expanded="false" aria-controls="taskComment">
-                <span class="tf-icon ti ti-message-circle ti-xs me-1"></span>
-                Comment
-            </button>
+            @if ($task->users->contains(auth()->user()->id) || $task->creator_id == auth()->user()->id) 
+                <button type="button" class="btn btn-primary btn-xs" title="Create Comment" data-bs-toggle="collapse" data-bs-target="#taskComment" aria-expanded="false" aria-controls="taskComment">
+                    <span class="tf-icon ti ti-message-circle ti-xs me-1"></span>
+                    Comment
+                </button>
+            @endif
         </div>
     </div>
     <!-- Account -->
@@ -70,8 +72,8 @@
                                         <p>{{ $comment->comment }}</p>
                                     </div>
 
-                                    @if ($comment->files) 
-                                        <div class="d-flex flex-wrap gap-2 pt-1">
+                                    @if ($comment->files->count() > 0) 
+                                        <div class="d-flex flex-wrap gap-2 pt-1 mb-3">
                                             @foreach ($comment->files as $commentFile) 
                                                 <a href="{{ file_media_download($commentFile) }}" target="_blank" class="me-3 badge bg-label-dark" title="Click Here to Download {{ $commentFile->original_name }}">
                                                     <i class="ti ti-file-download fw-bold fs-6"></i>

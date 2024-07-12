@@ -3,13 +3,24 @@
 namespace App\Http\Controllers\Administration\Task;
 
 use Exception;
+use App\Models\User;
 use App\Models\Task\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Models\FileMedia\FileMedia;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Administration\Task\NewTaskMail;
+use App\Mail\Administration\Task\UpdateTaskMail;
+use App\Mail\Administration\Task\AddUsersTaskMail;
+use App\Mail\Administration\Task\FileUploadForTaskMail;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
+use App\Http\Requests\Administration\Task\TaskUpdateRequest;
+use App\Notifications\Administration\Task\TaskCreateNotification;
+use App\Notifications\Administration\Task\TaskUpdateNotification;
+use App\Notifications\Administration\Task\TaskAddUsersNotification;
+use App\Notifications\Administration\Task\TaskFileUploadNotification;
 
 class TaskController extends Controller
 {
@@ -25,7 +36,7 @@ class TaskController extends Controller
                     ])
                     ->orderByDesc('created_at')
                     ->get();
-        // dd($tasks);
+                    
         return view('administration.task.index', compact(['tasks']));
     }
     
@@ -42,8 +53,7 @@ class TaskController extends Controller
                     })
                     ->orderByDesc('created_at')
                     ->get();
-        // dd($tasks);
-
+                    
         return view('administration.task.my', compact(['tasks']));
     }
 
@@ -82,12 +92,25 @@ class TaskController extends Controller
                         store_file_media($file, $task, $directory);
                     }
                 }
+
+                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
+
+                $notifiableUsers = [];
+                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
+                
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskCreateNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    Mail::to($notifiableUser->email)->send(new NewTaskMail($task, $notifiableUser));
+                }
             });
 
             toast('Task assigned successfully.', 'success');
             return redirect()->route('administration.task.index');
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the Task: ' . $e->getMessage());
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
     }
 
@@ -135,61 +158,42 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        dd($task);
+        $roles = Role::with(['users'])->get();
+        return view('administration.task.edit', compact(['roles', 'task']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task)
+    public function update(TaskUpdateRequest $request, Task $task)
     {
-        dd($request->all(), $task);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function addUsers(Request $request, Task $task)
-    {
-        $request->validate([
-            'users' => ['required', 'array'],
-            'users.*' => ['integer', 'exists:users,id'],
-        ]);
-        // dd($request->all(), $task);
-
         try {
-            // Assign users to the task
-            if ($request->has('users')) {
-                $task->users()->attach($request->users);
-            }
+            DB::transaction(function () use ($request, $task) {
+                $task->update([
+                    'title' => $request->title,
+                    'description' => $request->description,
+                    'deadline' => $request->deadline ?? null,
+                    'priority' => $request->priority
+                ]);
 
-            toast('Assignees Added Successfully.', 'success');
-            return redirect()->back();
+                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
+
+                $notifiableUsers = [];
+                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
+                
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskUpdateNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    Mail::to($notifiableUser->email)->send(new UpdateTaskMail($task, $notifiableUser));
+                }
+            });
+            
+            toast('Task Updated successfully.', 'success');
+            return redirect()->route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]);
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function removeUser(Request $request, Task $task)
-    {
-        $request->validate([
-            'user' => ['required', 'integer', 'exists:users,id']
-        ]);
-        // dd($request->all(), $task);
-
-        try {
-            // Assign users to the task
-            if ($request->has('user')) {
-                $task->users()->detach($request->user);
-            }
-
-            toast('Assignee Removed Successfully.', 'success');
-            return redirect()->back();
-        } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
     }
 
@@ -198,6 +202,127 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        dd($task);
+        // dd($task);
+        try {
+            $task->delete();
+            
+            toast('Task Has Been Delete Successfully.', 'success');
+            return redirect()->route('administration.task.index');
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Add Users for Task
+     */
+    public function addUsers(Request $request, Task $task)
+    {
+        $request->validate([
+            'users' => ['required', 'array'],
+            'users.*' => [
+                'integer',
+                'exists:users,id',
+                function ($attribute, $value, $fail) use ($task) {
+                    if ($task->users()->where('user_id', $value)->exists()) {
+                        $fail('The user is already assigned to this task.');
+                    }
+                },
+            ],
+        ]);
+
+        try {
+            DB::transaction(function() use ($request, $task) {
+                if ($request->has('users')) {
+                    $task->users()->attach($request->users);
+                }
+
+                $notifiableUsers = [];
+                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $request->users)->get();
+                
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskAddUsersNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    Mail::to($notifiableUser->email)->send(new AddUsersTaskMail($task, $notifiableUser));
+                }
+            });
+
+            toast('Assignees Added Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Remove user for task
+     */
+    public function removeUser(Request $request, Task $task)
+    {
+        $request->validate([
+            'user' => [
+                'required',
+                'integer',
+                'exists:users,id',
+                function ($attribute, $value, $fail) use ($task) {
+                    if (!$task->users()->where('user_id', $value)->exists()) {
+                        $fail('The selected user is not assigned to this task.');
+                    }
+                },
+            ],
+        ]);
+        // dd($request->all(), $task);
+
+        try {
+            if ($request->has('user')) {
+                $task->users()->detach($request->user);
+            }
+
+            toast('Assignee Removed Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Upload Files for task
+     */
+    public function uploadFiles(Request $request, Task $task)
+    {
+        $request->validate([
+            'files.*' => ['required', 'max:5000']
+        ]);
+
+        try {
+            DB::transaction(function() use ($request, $task) {
+                if ($request->hasFile('files')) {
+                    foreach ($request->file('files') as $file) {
+                        $directory = 'public/tasks/' . $task->taskid;
+                        store_file_media($file, $task, $directory);
+                    }
+                }
+
+                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
+
+                $notifiableUsers = [];
+                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
+                
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskFileUploadNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    Mail::to($notifiableUser->email)->send(new FileUploadForTaskMail($task, $notifiableUser));
+                }
+            });
+
+            toast('Task Files Added Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
 }
