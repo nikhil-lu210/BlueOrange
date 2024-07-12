@@ -11,7 +11,8 @@ class TaskUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        // return true;
+        return auth()->user()->can('Task Update');
     }
 
     /**
@@ -22,7 +23,26 @@ class TaskUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'title' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string', 'min:20'],
+            'deadline' => ['nullable', 'date_format:Y-m-d'],
+            'priority' => ['required', 'string', 'in:Low,Medium,Average,High'],
+        ];
+    }
+
+    /**
+     * Get custom error messages for validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'title.required' => 'The title is required.',
+            'description.required' => 'The description is required.',
+            'description.min' => 'The description must be at least 20 characters long.',
+            'deadline.date_format' => 'The deadline must be in the format YYYY-MM-DD.',
+            'priority.in' => 'The priority must be one of: Low, Medium, Average, High.',
         ];
     }
 }

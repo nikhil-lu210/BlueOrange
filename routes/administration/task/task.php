@@ -16,7 +16,7 @@ Route::controller(TaskController::class)->prefix('task')->name('task.')->group(f
     
     Route::get('/show/{task}/{taskid}', 'show')->name('show')->can('Task Read');
     Route::get('/edit/{task}', 'edit')->name('edit')->can('Task Update');
-    Route::post('/update/{task}', 'update')->name('update')->can('Task Update');
+    Route::put('/update/{task}', 'update')->name('update')->can('Task Update');
     Route::get('/destroy/{task}', 'destroy')->name('destroy')->can('Task Delete');
     
     Route::post('/add/users/{task}', 'addUsers')->name('add.users')->can('Task Update');

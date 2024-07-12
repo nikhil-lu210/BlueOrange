@@ -10,6 +10,7 @@ use Spatie\Permission\Models\Role;
 use App\Models\FileMedia\FileMedia;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
+use App\Http\Requests\Administration\Task\TaskUpdateRequest;
 
 class TaskController extends Controller
 {
@@ -25,7 +26,7 @@ class TaskController extends Controller
                     ])
                     ->orderByDesc('created_at')
                     ->get();
-        // dd($tasks);
+                    
         return view('administration.task.index', compact(['tasks']));
     }
     
@@ -42,8 +43,7 @@ class TaskController extends Controller
                     })
                     ->orderByDesc('created_at')
                     ->get();
-        // dd($tasks);
-
+                    
         return view('administration.task.my', compact(['tasks']));
     }
 
@@ -87,7 +87,7 @@ class TaskController extends Controller
             toast('Task assigned successfully.', 'success');
             return redirect()->route('administration.task.index');
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the Task: ' . $e->getMessage());
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
     }
 
@@ -135,15 +135,28 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        dd($task);
+        $roles = Role::with(['users'])->get();
+        return view('administration.task.edit', compact(['roles', 'task']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Task $task)
+    public function update(TaskUpdateRequest $request, Task $task)
     {
-        dd($request->all(), $task);
+        try {
+            $task->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'deadline' => $request->deadline ?? null,
+                'priority' => $request->priority
+            ]);
+            
+            toast('Task Updated successfully.', 'success');
+            return redirect()->route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]);
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -172,7 +185,7 @@ class TaskController extends Controller
             toast('Assignees Added Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('errors', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
     }
 
@@ -203,7 +216,7 @@ class TaskController extends Controller
             toast('Assignee Removed Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('errors', 'An error occurred: ' . $e->getMessage());
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
     }
 

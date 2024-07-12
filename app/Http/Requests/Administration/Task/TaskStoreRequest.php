@@ -11,7 +11,7 @@ class TaskStoreRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return true;
+        return auth()->user()->can('Task Create');
     }
 
     /**
