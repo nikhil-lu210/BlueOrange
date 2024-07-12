@@ -160,6 +160,14 @@ class TaskController extends Controller
     }
 
     /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Task $task)
+    {
+        dd($task);
+    }
+
+    /**
      * Add Users for Task
      */
     public function addUsers(Request $request, Task $task)
@@ -221,10 +229,29 @@ class TaskController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Upload Files for task
      */
-    public function destroy(Task $task)
+    public function uploadFiles(Request $request, Task $task)
     {
-        dd($task);
+        $request->validate([
+            'files.*' => ['required', 'max:5000']
+        ]);
+
+        try {
+            if ($request->hasFile('files')) {
+                foreach ($request->file('files') as $file) {
+                    $directory = 'public/tasks/' . $task->taskid;
+                    store_file_media($file, $task, $directory);
+                }
+                
+                toast('Task Files Added Successfully.', 'success');
+                return redirect()->back();
+            } else {
+                toast('No File Selected. Please Select Files.', 'danger');
+                return redirect()->back();
+            }
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
 }

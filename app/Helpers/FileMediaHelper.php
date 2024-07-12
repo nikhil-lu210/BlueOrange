@@ -91,3 +91,18 @@ if (!function_exists('file_media_download')) {
         return route('administration.file.download', ['fileMedia' => $fileMedia]);
     }
 }
+
+
+
+if (!function_exists('file_media_destroy')) {
+    /**
+     * Generate the URL for deleting a FileMedia instance.
+     *
+     * @param  \App\Models\FileMedia  $fileMedia
+     * @return string
+     */
+    function file_media_destroy(FileMedia $fileMedia)
+    {
+        return route('administration.file.destroy', ['fileMedia' => $fileMedia]);
+    }
+}

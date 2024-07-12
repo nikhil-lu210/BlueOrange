@@ -8,4 +8,6 @@ use Illuminate\Support\Facades\Route;
 ===============================================*/
 Route::controller(FileMediaController::class)->prefix('file')->name('file.')->group(function () {
     Route::get('/file/download/{fileMedia}', 'download')->name('download');
+
+    Route::get('/file/destroy/{fileMedia}', 'destroy')->name('destroy'); // Soft-Delete
 });

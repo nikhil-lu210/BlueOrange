@@ -21,6 +21,7 @@ Route::controller(TaskController::class)->prefix('task')->name('task.')->group(f
     
     Route::post('/add/users/{task}', 'addUsers')->name('add.users')->can('Task Update');
     Route::post('/remove/user/{task}', 'removeUser')->name('remove.user')->can('Task Update');
+    Route::post('/upload/files/{task}', 'uploadFiles')->name('upload.files')->can('Task Update');
 });
 
 
