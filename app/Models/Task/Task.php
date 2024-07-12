@@ -14,7 +14,7 @@ class Task extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, InteractsWithMedia, TaskRelations;
     
-    protected $cascadeDeletes = ['task_user', 'files'];
+    protected $cascadeDeletes = ['histories', 'comments', 'files'];
 
     protected $fillable = [
         'taskid',

@@ -164,7 +164,15 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        dd($task);
+        // dd($task);
+        try {
+            $task->delete();
+            
+            toast('Task Has Been Delete Successfully.', 'success');
+            return redirect()->route('administration.task.index');
+        } catch (Exception $e) {
+            return redirect()->back()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**
