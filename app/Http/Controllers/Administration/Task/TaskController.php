@@ -27,34 +27,63 @@ class TaskController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $tasks = Task::with([
-                        'creator' => function($creator) {
-                            $creator->select(['id', 'first_name', 'last_name']);
-                        }
-                    ])
-                    ->orderByDesc('created_at')
-                    ->get();
+        $creators = User::permission('Task Create')->select(['id', 'name'])->get();
+        $assignees = User::permission('Task Read')->select(['id', 'name'])->get();
+
+        $query = Task::with([
+            'creator' => function($query) {
+                $query->select(['id', 'first_name', 'last_name']);
+            },
+            'users'
+        ])->orderByDesc('created_at');
+
+        if ($request->has('creator_id') && !is_null($request->creator_id)) {
+            $query->where('creator_id', $request->creator_id);
+        }
+
+        if ($request->has('user_id') && !is_null($request->user_id)) {
+            $query->whereHas('users', function ($q) use ($request) {
+                $q->where('users.id', $request->user_id);
+            });
+        }
+
+        if ($request->has('status') && !is_null($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        $tasks = $query->get();
                     
-        return view('administration.task.index', compact(['tasks']));
+        return view('administration.task.index', compact(['tasks', 'creators', 'assignees']));
     }
     
     /**
      * Display a listing of the resource.
      */
-    public function my()
+    public function my(Request $request)
     {
-        $tasks = Task::with([
-                        'creator:id,first_name,last_name'
-                    ])
-                    ->whereHas('users', function($query) {
-                        $query->where('user_id', auth()->id());
-                    })
-                    ->orderByDesc('created_at')
-                    ->get();
+        $creators = User::permission('Task Create')->select(['id', 'name'])->get();
+
+        $query = Task::with([
+            'creator:id,first_name,last_name'
+        ])
+        ->whereHas('users', function($query) {
+            $query->where('user_id', auth()->id());
+        })
+        ->orderByDesc('created_at');
+
+        if ($request->has('creator_id') && !is_null($request->creator_id)) {
+            $query->where('creator_id', $request->creator_id);
+        }
+
+        if ($request->has('status') && !is_null($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        $tasks = $query->get();
                     
-        return view('administration.task.my', compact(['tasks']));
+        return view('administration.task.my', compact(['creators', 'tasks']));
     }
 
     /**

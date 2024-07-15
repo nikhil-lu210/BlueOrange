@@ -1,14 +1,42 @@
+/**
+ * jquery-confirm v3.2.3 (http://craftpip.github.io/jquery-confirm/)
+ */
+
 $(document).ready(function() {
     $('.confirm-success').confirm({
         title: 'Confirmation Alert!',
         content: 'Are You Sure?',
-        type: 'green',
+        type: 'green', // More types: red, green, orange, blue, purple, dark
         icon: 'fa fa-warning',
     });
     $('.confirm-danger').confirm({
         title: 'Confirmation Alert!',
         content: 'Are You Sure?',
-        type: 'red',
+        type: 'red', // More types: red, green, orange, blue, purple, dark
+        icon: 'fa fa-warning',
+    });
+    $('.confirm-warning').confirm({
+        title: 'Confirmation Alert!',
+        content: 'Are You Sure?',
+        type: 'orange', // More types: red, green, orange, blue, purple, dark
+        icon: 'fa fa-warning',
+    });
+    $('.confirm-info').confirm({
+        title: 'Confirmation Alert!',
+        content: 'Are You Sure?',
+        type: 'blue', // More types: red, green, orange, blue, purple, dark
+        icon: 'fa fa-warning',
+    });
+    $('.confirm-primary').confirm({
+        title: 'Confirmation Alert!',
+        content: 'Are You Sure?',
+        type: 'purple', // More types: red, green, orange, blue, purple, dark
+        icon: 'fa fa-warning',
+    });
+    $('.confirm-dark').confirm({
+        title: 'Confirmation Alert!',
+        content: 'Are You Sure?',
+        type: 'dark', // More types: red, green, orange, blue, purple, dark
         icon: 'fa fa-warning',
     });
 
