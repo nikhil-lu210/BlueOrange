@@ -61,7 +61,7 @@
                         <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                         <button type="submit" class="btn btn-primary me-sm-3 me-1">
                             <i class="ti ti-check"></i>
-                            Stop Task Now
+                            Update Now
                         </button>
                     </div>
                 </form>

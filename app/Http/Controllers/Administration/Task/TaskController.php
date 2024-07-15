@@ -16,10 +16,12 @@ use App\Mail\Administration\Task\AddUsersTaskMail;
 use App\Mail\Administration\Task\FileUploadForTaskMail;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
 use App\Http\Requests\Administration\Task\TaskUpdateRequest;
+use App\Mail\Administration\Task\StatusUpdateTaskMail;
 use App\Notifications\Administration\Task\TaskCreateNotification;
 use App\Notifications\Administration\Task\TaskUpdateNotification;
 use App\Notifications\Administration\Task\TaskAddUsersNotification;
 use App\Notifications\Administration\Task\TaskFileUploadNotification;
+use App\Notifications\Administration\Task\TaskStatusUpdateNotification;
 
 class TaskController extends Controller
 {
@@ -366,9 +368,24 @@ class TaskController extends Controller
         ]);
         
         try {
-            $task->update([
-                'status' => $request->status
-            ]);
+            DB::transaction(function() use ($request, $task) {
+                $task->update([
+                    'status' => $request->status
+                ]);
+
+                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
+
+                $notifiableUsers = [];
+                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
+                
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskStatusUpdateNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    Mail::to($notifiableUser->email)->send(new StatusUpdateTaskMail($task, $notifiableUser));
+                }
+            });
 
             toast('Task Status Updated to '. $request->status, 'success');
             return redirect()->back();
