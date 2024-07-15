@@ -8,7 +8,6 @@ use App\Models\Task\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
-use App\Models\FileMedia\FileMedia;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Administration\Task\NewTaskMail;
@@ -349,6 +348,29 @@ class TaskController extends Controller
             });
 
             toast('Task Files Added Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+
+    /**
+     * Update Task Status
+     */
+    public function updateTaskStatus(Request $request, Task $task) {
+        abort_if($task->creator_id != auth()->user()->id, 403, 'You are not authorized to update the task status. Only the task creator can update the status');
+
+        $request->validate([
+            'status' => ['required', 'in:Active,Running,Completed,Cancelled']
+        ]);
+        
+        try {
+            $task->update([
+                'status' => $request->status
+            ]);
+
+            toast('Task Status Updated to '. $request->status, 'success');
             return redirect()->back();
         } catch (Exception $e) {
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
