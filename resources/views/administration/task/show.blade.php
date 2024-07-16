@@ -79,24 +79,33 @@
                                 </div>
                             @endif
                         </div>
-                        @can ('Task Read') 
-                            @if ($task->users->contains(auth()->user()->id)) 
-                                @if (!$isWorking)
-                                    <form action="{{ route('administration.task.history.start', ['task' => $task]) }}" method="post">
-                                        @csrf
-                                        <button type="submit" class="btn btn-success" title="Start Working On This Task">
-                                            <i class="ti ti-clock-check me-1" style="margin-top: -3px;"></i>
-                                            Start
-                                        </button>
-                                    </form>
-                                @else
-                                    <button type="button" class="btn btn-danger" title="Stop  Working On This Task" data-bs-toggle="modal" data-bs-target="#stopTaskModal">
-                                        <i class="ti ti-clock-x me-1" style="margin-top: -3px;"></i>
-                                        Stop
+                        
+                        <div class="actions d-flex">
+                            @can ('Task Read') 
+                                @if ($task->creator_id === auth()->user()->id)
+                                    <button type="button" class="btn btn-primary me-1" title="Update Task Status" data-bs-toggle="modal" data-bs-target="#taskStatusModal">
+                                        <i class="ti ti-check me-1" style="margin-top: -3px;"></i>
+                                        Update Status
                                     </button>
                                 @endif
-                            @endif
-                        @endcan
+                                @if ($task->users->contains(auth()->user()->id) && ($task->status == 'Active' || $task->status == 'Running')) 
+                                    @if (!$isWorking)
+                                        <form action="{{ route('administration.task.history.start', ['task' => $task]) }}" method="post">
+                                            @csrf
+                                            <button type="submit" class="btn btn-success me-1" title="Start Working On This Task">
+                                                <i class="ti ti-clock-check me-1" style="margin-top: -3px;"></i>
+                                                Start
+                                            </button>
+                                        </form>
+                                    @else
+                                        <button type="button" class="btn btn-danger me-1" title="Stop  Working On This Task" data-bs-toggle="modal" data-bs-target="#stopTaskModal">
+                                            <i class="ti ti-clock-x me-1" style="margin-top: -3px;"></i>
+                                            Stop
+                                        </button>
+                                    @endif
+                                @endif
+                            @endcan
+                        </div>
                     </div>
                 </div>
             </div>
@@ -136,6 +145,10 @@
 {{-- Page Modal --}}
 @if ($lastActiveTaskHistory) 
     @include('administration.task.modals.task_stop')
+@endif
+
+@if ($task->creator_id == auth()->user()->id) 
+    @include('administration.task.modals.task_status')
 @endif
 
 @endsection

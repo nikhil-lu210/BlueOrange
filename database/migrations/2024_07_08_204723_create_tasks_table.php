@@ -26,7 +26,7 @@ return new class extends Migration
             $table->date('deadline')->nullable();
 
             $table->enum('priority', ['Low', 'Medium', 'Average', 'High'])->default('Average');
-            $table->enum('status', ['Active', 'Running', 'Completed', 'Canceled'])->default('Active');
+            $table->enum('status', ['Active', 'Running', 'Completed', 'Cancelled'])->default('Active');
 
             $table->timestamps();
             $table->softDeletes();

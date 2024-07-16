@@ -11,8 +11,15 @@ class TaskUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        // return true;
-        return auth()->user()->can('Task Update');
+        $task = $this->route('task');
+
+        $canUpdate = (
+            $task->creator_id == auth()->user()->id || 
+            auth()->user()->hasRole('Developer') || 
+            auth()->user()->can('Task Update')
+        );
+        
+        return $canUpdate;
     }
 
     /**
