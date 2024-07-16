@@ -149,6 +149,18 @@ class TaskController extends Controller
      */
     public function show(Task $task, $taskid)
     {
+        abort_if(
+            !(
+                $task->users->contains(auth()->user()->id) ||
+                $task->creator_id == auth()->user()->id ||
+                auth()->user()->hasRole('Developer') ||
+                auth()->user()->hasRole('Super Admin')
+            ),
+            403,
+            'You are not authorized to view this task as you are not the assigner, assignee, Developer, or Superadmin.'
+        );
+        
+
         $task = Task::with([
                 'creator', 
                 'users', 
@@ -188,6 +200,15 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
+        abort_if(
+            !(
+                $task->creator_id == auth()->user()->id ||
+                auth()->user()->hasRole('Developer')
+            ),
+            403,
+            'You are not authorized to view this task as you are not the assigner, assignee, Developer, or Superadmin.'
+        );
+        
         $roles = Role::with(['users'])->get();
         return view('administration.task.edit', compact(['roles', 'task']));
     }
