@@ -24,7 +24,7 @@
         <ul class="list-unstyled chat-contact-list" id="chat-list">
             @forelse ($chatUsers as $user)
                 {{-- <li class="chat-contact-list-item active"> --}}
-                <li class="chat-contact-list-item">
+                <li class="chat-contact-list-item {{ (isset($activeUser) && $activeUser === $user->id) ? 'active' : '' }}">
                     <a href="{{ route('administration.chatting.show', ['user' => $user, 'userid' => $user->userid]) }}" class="d-flex align-items-center">
                         <div class="flex-shrink-0 avatar avatar-online">
                             @if ($user->hasMedia('avatar'))
@@ -57,7 +57,7 @@
                 <h5 class="text-primary mb-0">Contacts</h5>
             </li>
             @forelse ($contacts as $contact) 
-                <li class="chat-contact-list-item">
+                <li class="chat-contact-list-item {{ (isset($activeUser) && $activeUser === $contact->id) ? 'active' : '' }}">
                     <a href="{{ route('administration.chatting.show', ['user' => $contact, 'userid' => $contact->userid]) }}" class="d-flex align-items-center">
                         <div class="flex-shrink-0 avatar avatar-offline">
                             @if ($contact->hasMedia('avatar'))

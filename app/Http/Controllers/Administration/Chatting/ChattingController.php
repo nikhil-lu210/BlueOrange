@@ -52,8 +52,16 @@ class ChattingController extends Controller
         $contacts = $this->chatContacts();
 
         $hasChat = true;
+
+        $activeUser = $user->id;
         
-        return view('administration.chatting.show', compact(['chatUsers', 'contacts', 'hasChat', 'user']));
+        return view('administration.chatting.show', compact([
+            'chatUsers', 
+            'contacts', 
+            'hasChat', 
+            'user',
+            'activeUser'
+        ]));
     }
 
     /**
