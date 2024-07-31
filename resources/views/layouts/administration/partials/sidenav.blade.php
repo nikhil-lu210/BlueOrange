@@ -23,6 +23,14 @@
             </a>
         </li>
 
+        <li class="menu-item {{ request()->is('chatting*') ? 'active' : '' }}">
+            <a href="{{ route('administration.chatting.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-message"></i>
+                <div data-i18n="Chattings">Chattings</div>
+                <div class="badge bg-danger rounded-pill ms-auto">{{ '5' }}</div>
+            </a>
+        </li>
+
         <!-- Attendance Management -->
         @canany(['Attendance Create', 'Attendance Read']) 
             <li class="menu-item {{ request()->is('attendance*') ? 'active open' : '' }}">
