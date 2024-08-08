@@ -25,27 +25,13 @@ class ChattingController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(User $user, $userid)
     {
         abort_if($user->userid !== $userid, 403, 'The user not exists in the database!');
+
+        abort_if($user->id == auth()->user()->id, 403, 'You cannot chat with yourself.');
 
         $chatUsers = $this->chatUsers(auth()->user());
 
@@ -62,30 +48,6 @@ class ChattingController extends Controller
             'user',
             'activeUser'
         ]));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
 
 

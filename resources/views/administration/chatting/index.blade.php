@@ -11,6 +11,8 @@
     {{--  External CSS  --}}
     {{-- <!-- Page CSS --> --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/app-chat.css') }}" />
+
+    @livewireStyles
 @endsection
 
 @section('custom_css')
@@ -93,6 +95,8 @@
     {{-- Vendors JS --}}
     <script src="{{ asset('assets/vendor/libs/bootstrap-maxlength/bootstrap-maxlength.js') }}"></script>
     {{-- <script src="{{ asset('assets/js/app-chat.js') }}"></script> --}}
+
+    @livewireScripts
 @endsection
 
 @section('custom_script')
