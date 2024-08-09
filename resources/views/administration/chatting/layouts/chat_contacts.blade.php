@@ -34,12 +34,14 @@
                         </div>
                         <div class="chat-contact-info flex-grow-1 ms-2">
                             <h6 class="chat-contact-name text-truncate m-0">{{ $user->name }}</h6>
-                            @if ($user->last_message)
-                                <small class="text-muted mb-auto">{{ date_time_ago($user->last_message->created_at) }}</small>
+                            @if (get_receiver_last_message($user->id))
+                                <small class="text-muted mb-auto">{{ show_content(get_receiver_last_message($user->id)->message, 30) }}</small>
+                                <br>
+                                <small class="text-muted mb-auto">{{ date_time_ago(get_receiver_last_message($user->id)->created_at) }}</small>
                             @endif
                         </div>
-                        @if ($user->unread_messages_count > 0)
-                            <small class="mb-auto badge bg-danger rounded-pill total-unread-message" style="padding: 5px 7px; font-size: 10px;">{{ $user->unread_messages_count }}</small>
+                        @if (get_receiver_unread_messages_count($user->id) > 0)
+                            <small class="mb-auto badge bg-danger rounded-pill total-unread-message" style="padding: 5px 7px; font-size: 10px;">{{ get_receiver_unread_messages_count($user->id) }}</small>
                         @endif
                     </a>
                 </li>

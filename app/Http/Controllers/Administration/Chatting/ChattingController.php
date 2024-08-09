@@ -40,6 +40,12 @@ class ChattingController extends Controller
         $hasChat = true;
 
         $activeUser = $user->id;
+
+        // Mark all messages from the receiver as seen
+        Chatting::where('sender_id', $user->id)
+                    ->where('receiver_id', auth()->user()->id)
+                    ->whereNull('seen_at')
+                    ->update(['seen_at' => now()]);
         
         return view('administration.chatting.show', compact([
             'chatUsers', 
@@ -84,27 +90,6 @@ class ChattingController extends Controller
             ])
             ->orderByDesc('last_message_time')
             ->get();
-
-        foreach ($chatUsers as $user) {
-            // Get last message
-            $lastMessage = Chatting::where(function ($query) use ($user, $authUser) {
-                $query->where('sender_id', $user->id)
-                      ->where('receiver_id', $authUser->id)
-                      ->orWhere('sender_id', $authUser->id)
-                      ->where('receiver_id', $user->id);
-            })
-            ->orderBy('created_at', 'desc')
-            ->first();
-
-            // Get unread message count
-            $unreadMessagesCount = Chatting::where('sender_id', $user->id)
-                                           ->where('receiver_id', $authUser->id)
-                                           ->where('seen_at', null)
-                                           ->count();
-
-            $user->last_message = $lastMessage;
-            $user->unread_messages_count = $unreadMessagesCount;
-        }
 
         return $chatUsers;
     }
