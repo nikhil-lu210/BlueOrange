@@ -78,6 +78,11 @@
                                               <p class="mb-0">Lorem consectetur.pdf</p>
                                             </div>
                                         </a>
+
+                                        {{-- If File type is image --}}
+                                        <div class="chat-message-image mt-1" style="width: 170px;" target="_blank">
+                                            <img src="https://fakeimg.pl/300" class="img-responsive img-thumbnail image-link">
+                                        </div>
                                     @endif
                                 </div>
                                 <div class="user-avatar flex-shrink-0 ms-3">
@@ -112,6 +117,11 @@
                                               <p class="mb-0">Lorem consectetur.pdf</p>
                                             </div>
                                         </a>
+
+                                        {{-- If File type is image --}}
+                                        <div class="chat-message-image mt-1" style="width: 170px;" target="_blank">
+                                            <img src="https://fakeimg.pl/300" class="img-responsive img-thumbnail image-link">
+                                        </div>
                                     @endif
                                 </div>
                                 @if (!is_null($message->seen_at))
