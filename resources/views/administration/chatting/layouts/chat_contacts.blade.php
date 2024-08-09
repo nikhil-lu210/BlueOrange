@@ -23,7 +23,7 @@
         </div>
         <ul class="list-unstyled chat-contact-list" id="chat-list">
             @forelse ($chatUsers as $user)
-                <li class="chat-contact-list-item {{ (isset($activeUser) && $activeUser === $user->id) ? 'active' : '' }}">
+                <li class="chat-contact-list-item position-relative {{ (isset($activeUser) && $activeUser === $user->id) ? 'active' : '' }}">
                     <a href="{{ route('administration.chatting.show', ['user' => $user, 'userid' => $user->userid]) }}" class="d-flex align-items-center">
                         <div class="flex-shrink-0 avatar avatar-online">
                             @if ($user->hasMedia('avatar'))
@@ -35,13 +35,12 @@
                         <div class="chat-contact-info flex-grow-1 ms-2">
                             <h6 class="chat-contact-name text-truncate m-0">{{ $user->name }}</h6>
                             @if (get_receiver_last_message($user->id))
-                                <small class="text-muted mb-auto">{{ show_content(get_receiver_last_message($user->id)->message, 30) }}</small>
-                                <br>
-                                <small class="text-muted mb-auto">{{ date_time_ago(get_receiver_last_message($user->id)->created_at) }}</small>
+                                <small class="text-muted mb-auto float-start">{{ show_content(get_receiver_last_message($user->id)->message, 20) }}</small>
+                                <small class="text-muted mb-auto float-end">{{ date_time_ago(get_receiver_last_message($user->id)->created_at) }}</small>
                             @endif
                         </div>
                         @if (get_receiver_unread_messages_count($user->id) > 0)
-                            <small class="mb-auto badge bg-danger rounded-pill total-unread-message" style="padding: 5px 7px; font-size: 10px;">{{ get_receiver_unread_messages_count($user->id) }}</small>
+                            <small class="mb-auto badge bg-danger rounded-pill total-unread-message position-absolute" style="padding: 5px 7px; font-size: 10px; right: 0; top: 8px;">{{ get_receiver_unread_messages_count($user->id) }}</small>
                         @endif
                     </a>
                 </li>
