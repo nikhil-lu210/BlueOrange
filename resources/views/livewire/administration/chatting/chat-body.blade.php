@@ -30,8 +30,8 @@
                 </div>
             </div>
         </div>
-        <div class="chat-history-body bg-body">
-            <ul class="list-unstyled chat-history">
+        <div class="chat-history-body bg-body" wire:keep-alive>
+            <ul class="list-unstyled chat-history" wire:poll.10s="loadMessages">
                 @php
                     $currentDate = null;
                 @endphp
@@ -139,6 +139,7 @@
         <!-- Chat message form -->
         <div class="chat-history-footer shadow-sm">
             <form wire:submit.prevent="sendMessage" class="form-send-message d-flex justify-content-between align-items-center" enctype="multipart/form-data">
+                @csrf
                 <input wire:model="newMessage" class="form-control message-input border-0 me-3 shadow-none" placeholder="Type your message here" />
                 <div class="message-actions d-flex align-items-center">
                     <label for="attach-doc" class="form-label mb-0" title="Upload File">
