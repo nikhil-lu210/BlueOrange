@@ -23,6 +23,16 @@
             </a>
         </li>
 
+        <li class="menu-item {{ request()->is('chatting*') ? 'active' : '' }}">
+            <a href="{{ route('administration.chatting.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons ti ti-message"></i>
+                <div data-i18n="Chattings">Chattings</div>
+                @if (get_total_unread_messages_count() > 0) 
+                    <div class="badge bg-danger rounded-pill ms-auto">{{ get_total_unread_messages_count() }}</div>
+                @endif
+            </a>
+        </li>
+
         <!-- Attendance Management -->
         @canany(['Attendance Create', 'Attendance Read']) 
             <li class="menu-item {{ request()->is('attendance*') ? 'active open' : '' }}">

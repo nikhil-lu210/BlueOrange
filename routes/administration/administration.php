@@ -18,6 +18,9 @@ Route::prefix('')
             // Dashboard
             include_once 'dashboard/dashboard.php';
 
+            // chatting
+            include_once 'chatting/chatting.php';
+
             // Attendance
             include_once 'attendance/attendance.php';
 
