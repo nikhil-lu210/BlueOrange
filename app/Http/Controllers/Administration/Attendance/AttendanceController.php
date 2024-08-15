@@ -20,7 +20,7 @@ class AttendanceController extends Controller
     public function index()
     {
         $attendances = Attendance::with([
-                            'user:id,name', 
+                            'user:id,userid,name', 
                             'user.media', 
                             'user.roles', 
                             'employee_shift:id,start_time,end_time'
