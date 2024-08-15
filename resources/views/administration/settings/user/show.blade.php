@@ -1,7 +1,5 @@
 @extends('layouts.administration.app')
-{{-- @php
-    dd($user->toArray());
-@endphp --}}
+
 @section('meta_tags')
     {{--  External META's  --}}
 @endsection
