@@ -19,10 +19,10 @@
         width: 100% !important;
     }
     .timeline.timeline-center .timeline-item.timeline-item-right .timeline-event .timeline-event-time, .timeline.timeline-center .timeline-item:nth-of-type(even):not(.timeline-item-left):not(.timeline-item-right) .timeline-event .timeline-event-time {
-        left: -15.2rem;
+        left: -17rem;
     }
     .timeline.timeline-center .timeline-item.timeline-item-left .timeline-event .timeline-event-time, .timeline.timeline-center .timeline-item:nth-of-type(odd):not(.timeline-item-left):not(.timeline-item-right) .timeline-event .timeline-event-time {
-        right: -15.2rem;
+        right: -17rem;
     }
     </style>
 @endsection
