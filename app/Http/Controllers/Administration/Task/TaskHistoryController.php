@@ -76,7 +76,7 @@ class TaskHistoryController extends Controller
                 // Store Task Files
                 if ($request->hasFile('files')) {
                     foreach ($request->file('files') as $file) {
-                        $directory = 'public/tasks/' . $task->taskid .'/task_history/' . auth()->user()->userid;
+                        $directory = 'tasks/' . $task->taskid .'/task_history/' . auth()->user()->userid;
                         store_file_media($file, $taskHistory, $directory);
                     }
                 }

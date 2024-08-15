@@ -130,9 +130,7 @@
         @include('administration.task.includes.task_details')
         
         {{-- <!-- Task Files --> --}}
-        @if ($task->files->count() > 0)
-            @include('administration.task.includes.task_files')
-        @endif
+        @include('administration.task.includes.task_files')
 
 
         {{-- Task Comments --}}

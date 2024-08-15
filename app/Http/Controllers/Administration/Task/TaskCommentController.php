@@ -36,7 +36,7 @@ class TaskCommentController extends Controller
                 // Store Task's Comment Files
                 if ($request->hasFile('files')) {
                     foreach ($request->file('files') as $file) {
-                        $directory = 'public/tasks/' . $task->taskid .'/comments/' . auth()->user()->userid;
+                        $directory = 'tasks/' . $task->taskid .'/comments/' . auth()->user()->userid;
                         store_file_media($file, $comment, $directory);
                     }
                 }

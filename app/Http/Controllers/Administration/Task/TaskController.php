@@ -118,7 +118,7 @@ class TaskController extends Controller
                 // Store Task Files
                 if ($request->hasFile('files')) {
                     foreach ($request->file('files') as $file) {
-                        $directory = 'public/tasks/' . $task->taskid;
+                        $directory = 'tasks/' . $task->taskid;
                         store_file_media($file, $task, $directory);
                     }
                 }
@@ -351,7 +351,7 @@ class TaskController extends Controller
             DB::transaction(function() use ($request, $task) {
                 if ($request->hasFile('files')) {
                     foreach ($request->file('files') as $file) {
-                        $directory = 'public/tasks/' . $task->taskid;
+                        $directory = 'tasks/' . $task->taskid;
                         store_file_media($file, $task, $directory);
                     }
                 }
