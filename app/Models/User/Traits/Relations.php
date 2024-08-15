@@ -9,12 +9,21 @@ use App\Models\Announcement\Announcement;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Announcement\AnnouncementComment;
+use App\Models\Shortcut\Shortcut;
 use App\Models\Task\TaskComment;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait Relations
 {    
+    /**
+     * Get the shortcuts associated with the user.
+     */
+    public function shortcuts(): HasMany
+    {
+        return $this->hasMany(Shortcut::class);
+    }
+    
     /**
      * Get the employee_shifts associated with the user.
      */

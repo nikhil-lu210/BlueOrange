@@ -68,42 +68,22 @@
                     <div class="dropdown-menu-header border-bottom">
                         <div class="dropdown-header d-flex align-items-center py-3">
                             <h5 class="text-body mb-0 me-auto">Shortcuts</h5>
-                            <a href="javascript:void(0)" class="dropdown-shortcuts-add text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Add shortcuts"><i class="ti ti-sm ti-plus"></i></a>
+                            <a href="{{ route('administration.shortcut.create') }}" class="dropdown-shortcuts-add text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Add shortcuts"><i class="ti ti-sm ti-plus"></i></a>
                         </div>
                     </div>
                     <div class="dropdown-shortcuts-list scrollable-container">
-                        <div class="row row-bordered overflow-visible g-0">
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-chart-bar fs-4"></i>
-                                </span>
-                                <a href="{{ route('administration.dashboard.index') }}" class="stretched-link">Dashboard</a>
-                                <small class="text-muted mb-0">User Profile</small>
+                        @foreach (auth()->user()->shortcuts->chunk(2) as $chunk)
+                            <div class="row row-bordered overflow-visible g-0">
+                                @foreach ($chunk as $shortcut)
+                                    <div class="dropdown-shortcuts-item col">
+                                        <span class="dropdown-shortcuts-icon rounded-circle mb-2">
+                                            <i class="ti ti-{{ $shortcut->icon }} fs-4"></i>
+                                        </span>
+                                        <a href="{{ $shortcut->url }}" class="stretched-link">{{ $shortcut->name }}</a>
+                                    </div>
+                                @endforeach
                             </div>
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-settings fs-4"></i>
-                                </span>
-                                <a href="#" class="stretched-link">Setting</a>
-                                <small class="text-muted mb-0">Account Settings</small>
-                            </div>
-                        </div>
-                        <div class="row row-bordered overflow-visible g-0">
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-lock fs-4"></i>
-                                </span>
-                                <a href="#" class="stretched-link">Role Management</a>
-                                <small class="text-muted mb-0">Permission</small>
-                            </div>
-                            <div class="dropdown-shortcuts-item col">
-                                <span class="dropdown-shortcuts-icon rounded-circle mb-2">
-                                    <i class="ti ti-users fs-4"></i>
-                                </span>
-                                <a href="#" class="stretched-link">User App</a>
-                                <small class="text-muted mb-0">Manage Users</small>
-                            </div>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </li>

@@ -17,8 +17,8 @@ namespace App\Models\Announcement{
  *
  * @property int $id
  * @property int $announcer_id
- * @property string $description
  * @property string $title
+ * @property string $description
  * @property array|null $recipients JSON field to hold user IDs for recipients
  * @property array|null $read_by_at JSON field to track read status by user
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -126,6 +126,40 @@ namespace App\Models\Attendance{
 	class Attendance extends \Eloquent {}
 }
 
+namespace App\Models\Chatting{
+/**
+ * App\Models\Chatting\Chatting
+ *
+ * @property int $id
+ * @property int $sender_id
+ * @property int $receiver_id
+ * @property string|null $message
+ * @property string|null $file
+ * @property \Illuminate\Support\Carbon|null $seen_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\User $receiver
+ * @property-read \App\Models\User $sender
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting whereFile($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting whereReceiverId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting whereSeenAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting whereSenderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Chatting withoutTrashed()
+ */
+	class Chatting extends \Eloquent {}
+}
+
 namespace App\Models\EmployeeShift{
 /**
  * App\Models\EmployeeShift\EmployeeShift
@@ -161,6 +195,46 @@ namespace App\Models\EmployeeShift{
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift withoutTrashed()
  */
 	class EmployeeShift extends \Eloquent {}
+}
+
+namespace App\Models\FileMedia{
+/**
+ * App\Models\FileMedia\FileMedia
+ *
+ * @property int $id
+ * @property int $uploader_id
+ * @property string $fileable_type
+ * @property int $fileable_id
+ * @property string $file_name
+ * @property string $file_path
+ * @property string $mime_type
+ * @property int $file_size
+ * @property string $original_name
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $fileable
+ * @property-read \App\Models\User $uploader
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia query()
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereFileName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereFilePath($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereFileSize($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereFileableId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereFileableType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereMimeType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereOriginalName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia whereUploaderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|FileMedia withoutTrashed()
+ */
+	class FileMedia extends \Eloquent {}
 }
 
 namespace App\Models\Holiday{
@@ -296,6 +370,146 @@ namespace App\Models\Salary{
 	class Salary extends \Eloquent {}
 }
 
+namespace App\Models\Shortcut{
+/**
+ * App\Models\Shortcut\Shortcut
+ *
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut withoutTrashed()
+ */
+	class Shortcut extends \Eloquent {}
+}
+
+namespace App\Models\Task{
+/**
+ * App\Models\Task\Task
+ *
+ * @property int $id
+ * @property string $taskid
+ * @property int $creator_id
+ * @property string $title
+ * @property string $description
+ * @property string|null $deadline
+ * @property string $priority
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\TaskComment> $comments
+ * @property-read int|null $comments_count
+ * @property-read \App\Models\User $creator
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileMedia\FileMedia> $files
+ * @property-read int|null $files_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\TaskHistory> $histories
+ * @property-read int|null $histories_count
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Task newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Task newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Task onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Task query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Task whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task whereCreatorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task whereDeadline($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task wherePriority($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task whereTaskid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Task withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Task withoutTrashed()
+ */
+	class Task extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
+}
+
+namespace App\Models\Task{
+/**
+ * App\Models\Task\TaskComment
+ *
+ * @property int $id
+ * @property int $task_id
+ * @property int $user_id
+ * @property string $comment
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\User $commenter
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileMedia\FileMedia> $files
+ * @property-read int|null $files_count
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
+ * @property-read \App\Models\Task\Task $task
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment query()
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereComment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereTaskId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskComment withoutTrashed()
+ */
+	class TaskComment extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
+}
+
+namespace App\Models\Task{
+/**
+ * App\Models\Task\TaskHistory
+ *
+ * @property int $id
+ * @property int $task_id
+ * @property int $user_id
+ * @property \Illuminate\Support\Carbon $started_at
+ * @property \Illuminate\Support\Carbon|null $ends_at
+ * @property string|null $total_worked
+ * @property string|null $note
+ * @property int $progress
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileMedia\FileMedia> $files
+ * @property-read int|null $files_count
+ * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
+ * @property-read int|null $media_count
+ * @property-read \App\Models\Task\Task $task
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory query()
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereEndsAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereProgress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereStartedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereTaskId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereTotalWorked($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory withoutTrashed()
+ */
+	class TaskHistory extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
+}
+
 namespace App\Models{
 /**
  * App\Models\User
@@ -309,6 +523,7 @@ namespace App\Models{
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $email_verified_at
  * @property string $password
+ * @property string $status
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -319,6 +534,8 @@ namespace App\Models{
  * @property-read int|null $announcements_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Attendance> $attendances
  * @property-read int|null $attendances_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\Task> $created_tasks
+ * @property-read int|null $created_tasks_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EmployeeShift\EmployeeShift> $employee_shifts
  * @property-read int|null $employee_shifts_count
  * @property-read mixed $current_salary
@@ -335,6 +552,12 @@ namespace App\Models{
  * @property-read int|null $roles_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Salary\Salary> $salaries
  * @property-read int|null $salaries_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Shortcut\Shortcut> $shortcuts
+ * @property-read int|null $shortcuts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\TaskComment> $task_comments
+ * @property-read int|null $task_comments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\Task> $tasks
+ * @property-read int|null $tasks_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
@@ -355,6 +578,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUserid($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User withTrashed()
