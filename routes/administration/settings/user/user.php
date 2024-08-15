@@ -23,7 +23,6 @@ Route::controller(UserController::class)
             Route::get('/show/{user:userid}/profile', 'showProfile')->name('show.profile')->can('User Read');
             Route::get('/show/{user:userid}/attendance', 'showAttendance')->name('show.attendance')->can('User Read');
             Route::get('/show/{user:userid}/break', 'showBreak')->name('show.break')->can('User Read');
-            Route::get('/show/{user:userid}/task', 'showTask')->name('show.task')->can('User Read');
 
             Route::post('/shift/{shift}/update/{user}', 'updateShift')->name('shift.update')->can('User Update');
 

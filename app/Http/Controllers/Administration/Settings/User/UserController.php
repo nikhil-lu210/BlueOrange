@@ -151,22 +151,6 @@ class UserController extends Controller
         return view('administration.settings.user.includes.break', compact(['user']));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function showTask(User $user)
-    {
-        $tasks = Task::with(['creator', 'users.media'])
-            ->whereHas('users', function($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
-            ->orderByDesc('created_at')
-            ->get();
-            
-        // dd($user->toArray());
-        return view('administration.settings.user.includes.task', compact('user', 'tasks'));
-    }
-
 
     /**
      * Show the form for editing the specified resource.

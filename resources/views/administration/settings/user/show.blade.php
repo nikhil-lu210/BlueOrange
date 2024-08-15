@@ -119,12 +119,6 @@
                     Breaks
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/*/task*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.task', ['user' => $user]) }}">
-                    <i class="ti-xs ti ti-subtask me-1"></i> 
-                    Tasks
-                </a>
-            </li>
         </ul>
     </div>
 </div>
