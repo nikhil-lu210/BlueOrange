@@ -218,17 +218,17 @@
         @endcanany
         
         <!-- Shortcuts -->
-        <li class="menu-item {{ request()->is('shortcuts*') ? 'active open' : '' }}">
+        <li class="menu-item {{ request()->is('shortcut*') ? 'active open' : '' }}">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons ti ti-share-3"></i>
                 <div data-i18n="Shortcuts">Shortcuts</div>
             </a>
             <ul class="menu-sub">
-                <li class="menu-item {{ request()->is('shortcut') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">My Shortcuts</a>
+                <li class="menu-item {{ request()->is('shortcut/all*') ? 'active' : '' }}">
+                    <a href="{{ route('administration.shortcut.index') }}" class="menu-link">My Shortcuts</a>
                 </li>
-                <li class="menu-item {{ request()->is('shortcuts/create*') ? 'active' : '' }}">
-                    <a href="#" class="menu-link">Add Shortcut</a>
+                <li class="menu-item {{ request()->is('shortcut/create*') ? 'active' : '' }}">
+                    <a href="{{ route('administration.shortcut.create') }}" class="menu-link">Add Shortcut</a>
                 </li>
             </ul>
         </li>
