@@ -1,5 +1,7 @@
 @extends('layouts.administration.app')
-
+{{-- @php
+    dd($user->toArray());
+@endphp --}}
 @section('meta_tags')
     {{--  External META's  --}}
 @endsection
@@ -35,7 +37,7 @@
     <b class="text-uppercase">{{ __('User Details') }}</b>
 @endsection
 
-
+{{-- {{ dd($user) }} --}}
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('User Management') }}</li>
     <li class="breadcrumb-item">{{ __('Users') }}</li>
@@ -102,25 +104,25 @@
     <div class="col-md-12">
         <ul class="nav nav-pills flex-column flex-sm-row mb-4">
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/profile*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">
+                <a class="nav-link {{ request()->is('settings/user/show/*/profile*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">
                     <i class="ti-xs ti ti-user-check me-1"></i> 
                     Profile
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/attendance*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.attendance', ['user' => $user]) }}">
+                <a class="nav-link {{ request()->is('settings/user/show/*/attendance*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.attendance', ['user' => $user]) }}">
                     <i class="ti-xs ti ti-clock-dollar me-1"></i> 
                     Attendance
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/break*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.break', ['user' => $user]) }}">
+                <a class="nav-link {{ request()->is('settings/user/show/*/break*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.break', ['user' => $user]) }}">
                     <i class="ti-xs ti ti-hourglass-empty me-1"></i> 
                     Breaks
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/task*') ? 'active' : '' }}" href="#">
+                <a class="nav-link {{ request()->is('settings/user/show/*/task*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.task', ['user' => $user]) }}">
                     <i class="ti-xs ti ti-subtask me-1"></i> 
                     Tasks
                 </a>

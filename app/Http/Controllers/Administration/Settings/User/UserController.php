@@ -6,9 +6,8 @@ use Auth;
 use Hash;
 use Exception;
 use App\Models\User;
-use Endroid\QrCode\QrCode;
+use App\Models\Task\Task;
 use Illuminate\Http\Request;
-use Endroid\QrCode\Color\Color;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Endroid\QrCode\Builder\Builder;
@@ -16,15 +15,12 @@ use App\Http\Controllers\Controller;
 use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Attendance\Attendance;
-use Endroid\QrCode\Encoding\Encoding;
-use Endroid\QrCode\RoundBlockSizeMode;
 use Illuminate\Support\Facades\Storage;
-use Endroid\QrCode\ErrorCorrectionLevel;
 use App\Models\EmployeeShift\EmployeeShift;
+use App\Mail\Administration\User\UserCredentialsMail;
 use App\Notifications\Administration\UserInfoUpdateNofication;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
-use App\Mail\Administration\User\UserCredentialsMail;
 use App\Notifications\Administration\NewUserRegistrationNotification;
 
 class UserController extends Controller
@@ -154,6 +150,23 @@ class UserController extends Controller
         // dd($user);
         return view('administration.settings.user.includes.break', compact(['user']));
     }
+
+    /**
+     * Display the specified resource.
+     */
+    public function showTask(User $user)
+    {
+        $tasks = Task::with(['creator', 'users.media'])
+            ->whereHas('users', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->orderByDesc('created_at')
+            ->get();
+            
+        // dd($user->toArray());
+        return view('administration.settings.user.includes.task', compact('user', 'tasks'));
+    }
+
 
     /**
      * Show the form for editing the specified resource.
