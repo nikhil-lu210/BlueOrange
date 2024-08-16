@@ -35,7 +35,7 @@
                         <div class="chat-contact-info flex-grow-1 ms-2">
                             <h6 class="chat-contact-name text-truncate m-0">{{ $user->name }}</h6>
                             @if (get_receiver_last_message($user->id))
-                                <small class="text-muted mb-auto float-start">{{ show_content(get_receiver_last_message($user->id)->message, 20) }}</small>
+                                <small class="text-muted mb-auto float-start">{{ show_content(get_receiver_last_message($user->id)->message, 15) }}</small>
                                 <small class="text-muted mb-auto float-end">{{ date_time_ago(get_receiver_last_message($user->id)->created_at) }}</small>
                             @endif
                         </div>
