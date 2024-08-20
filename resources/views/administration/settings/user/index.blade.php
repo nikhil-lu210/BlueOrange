@@ -12,6 +12,10 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
+    
+    {{-- Select 2 --}}
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
 @endsection
 
 @section('custom_css')
@@ -36,6 +40,60 @@
 @section('content')
 
 <!-- Start row -->
+<div class="row">
+    <div class="col-md-12">
+        <form action="{{ route('administration.settings.user.index') }}" method="get">
+            @csrf
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label for="role_id" class="form-label">Select Role</label>
+                            <select name="role_id" id="role_id" class="select2 form-select @error('role_id') is-invalid @enderror" data-allow-clear="true">
+                                <option value="" {{ is_null(request()->role_id) ? 'selected' : '' }}>Select Role</option>
+                                @foreach ($roles as $role)
+                                    <option value="{{ $role->id }}" {{ $role->id == request()->role_id ? 'selected' : '' }}>
+                                        {{ $role->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('role_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="status" class="form-label">Select Task Status</label>
+                            <select name="status" id="status" class="form-select bootstrap-select w-100 @error('status') is-invalid @enderror"  data-style="btn-default">
+                                <option value="" {{ is_null(request()->status) ? 'selected' : '' }}>Select Status</option>
+                                <option value="Active" {{ request()->status == 'Active' ? 'selected' : '' }}>Active</option>
+                                <option value="Inactive" {{ request()->status == 'Inactive' ? 'selected' : '' }}>Inactive</option>
+                                <option value="Fired" {{ request()->status == 'Fired' ? 'selected' : '' }}>Fired</option>
+                                <option value="Resigned" {{ request()->status == 'Resigned' ? 'selected' : '' }}>Resigned</option>
+                            </select>
+                            @error('status')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12 text-end">
+                        @if (request()->role_id || request()->status) 
+                            <a href="{{ route('administration.settings.user.index') }}" class="btn btn-danger confirm-warning">
+                                <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
+                                Reset Filters
+                            </a>
+                        @endif
+                        <button type="submit" class="btn btn-primary">
+                            <span class="tf-icon ti ti-filter ti-xs me-1"></span>
+                            Filter Users
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>        
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card mb-4">
@@ -123,11 +181,23 @@
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
+
+    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+
+    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
         // Custom Script Here
+        $(document).ready(function() {
+            $('.bootstrap-select').each(function() {
+                if (!$(this).data('bs.select')) { // Check if it's already initialized
+                    $(this).selectpicker();
+                }
+            });
+        });
     </script>
 @endsection

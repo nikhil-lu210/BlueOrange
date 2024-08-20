@@ -28,11 +28,22 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with(['roles', 'media'])->distinct()->get();
+        $roles = Role::select(['id', 'name'])->distinct()->get();
+
+        $users = User::distinct()
+                    ->when($request->filled('role_id'), function ($query) use ($request) {
+                        $query->whereHas('roles', function ($role) use ($request) {
+                            $role->where('roles.id', $request->role_id);
+                        });
+                    })
+                    ->when($request->filled('status'), function ($query) use ($request) {
+                        $query->where('status', $request->status);
+                    })
+                    ->get();
         
-        return view('administration.settings.user.index', compact(['users']));
+        return view('administration.settings.user.index', compact(['roles', 'users']));
     }
 
     /**
