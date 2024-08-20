@@ -374,11 +374,27 @@ namespace App\Models\Shortcut{
 /**
  * App\Models\Shortcut\Shortcut
  *
- * @property-read \App\Models\User|null $user
+ * @property int $id
+ * @property int $user_id
+ * @property string $icon
+ * @property string $name
+ * @property string $url
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|Shortcut newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Shortcut newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Shortcut onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Shortcut query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut whereIcon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut whereUrl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Shortcut whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Shortcut withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Shortcut withoutTrashed()
  */

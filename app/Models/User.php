@@ -24,6 +24,8 @@ class User extends Authenticatable implements HasMedia
     protected $cascadeDeletes = ['shortcuts', 'employee_shifts', 'attendances'];
     protected $dates = ['deleted_at'];
 
+    protected $with = ['roles', 'media', 'shortcuts'];
+
     protected static function boot()
     {
         parent::boot();
