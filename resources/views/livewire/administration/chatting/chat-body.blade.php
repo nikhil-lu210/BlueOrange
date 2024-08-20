@@ -142,10 +142,10 @@
                 @csrf
                 <input wire:model="newMessage" class="form-control message-input border-0 me-3 shadow-none" placeholder="Type your message here" />
                 <div class="message-actions d-flex align-items-center">
-                    <label for="attach-doc" class="form-label mb-0" title="Upload File">
+                    {{-- <label for="attach-doc" class="form-label mb-0" title="Upload File">
                         <i class="ti ti-photo ti-sm cursor-pointer mx-3"></i>
                         <input type="file" id="attach-doc" name="file" wire:model="file" hidden />
-                    </label>
+                    </label> --}}
                     <button type="submit" class="btn btn-primary d-flex send-msg-btn">
                         <i class="ti ti-send me-md-1 me-0"></i>
                         <span class="align-middle d-md-inline-block d-none">Send</span>
