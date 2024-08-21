@@ -28,6 +28,8 @@ class Announcement extends Model
         'read_by_at' => 'array',
     ];
 
+    protected $with = ['announcer'];
+
     /**
      * Determine if the authenticated user is authorized to view this announcement.
      *
