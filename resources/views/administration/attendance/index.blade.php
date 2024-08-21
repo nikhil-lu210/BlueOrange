@@ -99,6 +99,14 @@
                 <h5 class="mb-0">All Attendances</h5>
         
                 <div class="card-header-elements ms-auto">
+                    <a href="{{ route('administration.attendance.export', [
+                        'user_id' => request('user_id'), 
+                        'created_month_year' => request('created_month_year')
+                    ]) }}" target="_blank" class="btn btn-sm btn-dark">
+                        <span class="tf-icon ti ti-download me-1"></span>
+                        Download
+                    </a>
+
                     @if (!$clockedIn) 
                         <form action="{{ route('administration.attendance.clockin') }}" method="post">
                             @csrf
