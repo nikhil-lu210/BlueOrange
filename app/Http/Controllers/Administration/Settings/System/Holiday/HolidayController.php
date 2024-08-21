@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Administration\Settings\System\Holiday;
 
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Holiday\Holiday;
 use Illuminate\Support\Facades\DB;
@@ -15,9 +16,18 @@ class HolidayController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $holidays = Holiday::select(['id', 'name', 'date', 'description', 'is_active'])->orderBy('date', 'desc')->get();
+        $query = Holiday::select(['id', 'name', 'date', 'description', 'is_active']);
+
+        if ($request->has('month_year') && !is_null($request->month_year)) {
+            $monthYear = Carbon::createFromFormat('F Y', $request->month_year);
+
+            $query->whereYear('date', $monthYear->year)->whereMonth('date', $monthYear->month);
+        }
+
+        $holidays = $query->get();
+
         return view('administration.settings.system.holiday.index', compact(['holidays']));
     }
 

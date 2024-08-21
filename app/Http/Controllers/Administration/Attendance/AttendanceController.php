@@ -11,22 +11,36 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance\Attendance;
 use Stevebauman\Location\Facades\Location;
 use App\Http\Requests\Administration\Attendance\AttendanceUpdateRequest;
+use App\Models\User;
 
 class AttendanceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $attendances = Attendance::with([
-                            'user:id,userid,name', 
-                            'user.media', 
-                            'user.roles', 
-                            'employee_shift:id,start_time,end_time'
-                        ])->latest()
-                          ->distinct()
-                          ->get();
+        $users = User::select(['id', 'name'])->whereStatus('Active')->distinct()->get();
+
+        $query = Attendance::with([
+                                'user:id,userid,name', 
+                                'user.media', 
+                                'user.roles', 
+                                'employee_shift:id,start_time,end_time'
+                            ])
+                            ->latest();
+
+        if ($request->has('user_id') && !is_null($request->user_id)) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
+            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $query->whereYear('clock_in', $monthYear->year)
+                ->whereMonth('clock_in', $monthYear->month);
+        }
+
+        $attendances = $query->get();
 
         // Check if the user has already clocked in today
         $currentTime = now();
@@ -35,7 +49,7 @@ class AttendanceController extends Controller
                                 ->whereNull('clock_out')
                                 ->first();
 
-        return view('administration.attendance.index', compact('attendances', 'clockedIn'));
+        return view('administration.attendance.index', compact('users', 'attendances', 'clockedIn'));
     }
     
     /**

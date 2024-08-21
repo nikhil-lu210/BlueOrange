@@ -67,10 +67,15 @@
                             <label for="creator_id" class="form-label">Select Task Creator</label>
                             <select name="creator_id" id="creator_id" class="select2 form-select @error('creator_id') is-invalid @enderror" data-allow-clear="true">
                                 <option value="" {{ is_null(request()->creator_id) ? 'selected' : '' }}>Select Creator</option>
-                                @foreach ($creators as $creator)
-                                    <option value="{{ $creator->id }}" {{ $creator->id == request()->creator_id ? 'selected' : '' }}>
-                                        {{ $creator->name }}
-                                    </option>
+                                
+                                @foreach ($roles as $role)
+                                    <optgroup label="{{ $role->name }}">
+                                        @foreach ($role->users as $creator)
+                                            <option value="{{ $creator->id }}" {{ $creator->id == request()->creator_id ? 'selected' : '' }}>
+                                                {{ $creator->name }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
                                 @endforeach
                             </select>
                             @error('creator_id')

@@ -44,6 +44,39 @@
 @section('content')
 
 <!-- Start row -->
+<div class="row justify-content-center">
+    <div class="col-md-4">
+        <form action="{{ route('administration.settings.system.holiday.index') }}" method="get" autocomplete="off">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="mb-3 col-md-12">
+                            <label class="form-label">Holidays Of</label>
+                            <input type="text" name="month_year" value="{{ request()->month_year ?? old('month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
+                            @error('month_year')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>                        
+                    </div>
+                    
+                    <div class="col-md-12 text-end">
+                        @if (request()->month_year) 
+                            <a href="{{ route('administration.settings.system.holiday.index') }}" class="btn btn-danger confirm-warning">
+                                <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
+                                Reset Filters
+                            </a>
+                        @endif
+                        <button type="submit" class="btn btn-primary">
+                            <span class="tf-icon ti ti-filter ti-xs me-1"></span>
+                            Filter Holidays
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>        
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card mb-4">
@@ -145,6 +178,14 @@
         $(document).ready(function() {
             $('.date-picker').datepicker({
                 format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                autoclose: true,
+                orientation: 'auto right'
+            });
+
+            $('.month-year-picker').datepicker({
+                format: 'MM yyyy',         // Display format to show full month name and year
+                minViewMode: 'months',     // Only allow month selection
                 todayHighlight: true,
                 autoclose: true,
                 orientation: 'auto right'

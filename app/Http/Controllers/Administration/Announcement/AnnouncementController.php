@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Administration\Announcement;
 
 use Exception;
+use Carbon\Carbon;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
@@ -20,10 +22,35 @@ class AnnouncementController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $announcements = Announcement::with(['announcer'])->orderBy('created_at', 'desc')->get();
-        return view('administration.announcement.index', compact(['announcements']));
+        $roles = Role::select(['id', 'name'])
+                        ->with([
+                            'users' => function ($user) {
+                                $user->permission('Announcement Create')->select(['id', 'name']);
+                            }
+                        ])
+                        ->whereHas('users', function ($user) {
+                            $user->permission('Announcement Create');
+                        })
+                        ->distinct()
+                        ->get();
+
+        $query = Announcement::orderByDesc('created_at');
+
+        if ($request->has('announcer_id') && !is_null($request->announcer_id)) {
+            $query->where('announcer_id', $request->announcer_id);
+        }
+
+        if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
+            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $query->whereYear('created_at', $monthYear->year)
+                  ->whereMonth('created_at', $monthYear->month);
+        }
+
+        $announcements = $query->get();
+
+        return view('administration.announcement.index', compact(['roles', 'announcements']));
     }
     
     /**
