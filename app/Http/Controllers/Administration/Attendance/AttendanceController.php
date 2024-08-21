@@ -294,6 +294,11 @@ class AttendanceController extends Controller
         // Get the filtered attendances
         $attendances = $query->get();
 
+        if ($attendances->count() < 1) {
+            toast('There is no attendances to download.', 'warning');
+            return redirect()->back();
+        }
+
         // Construct the filename based on conditions
         if (!empty($userName) && !empty($monthYear)) {
             $fileName = 'attendances_' . $userName . '_' . $monthYear . '.xlsx';
