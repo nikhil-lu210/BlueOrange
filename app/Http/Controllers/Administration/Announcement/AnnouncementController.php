@@ -26,10 +26,13 @@ class AnnouncementController extends Controller
     {
         $roles = Role::select(['id', 'name'])
                         ->with([
-                            'users' => function($user) {
-                                $user->select(['id', 'name']);
+                            'users' => function ($user) {
+                                $user->permission('Announcement Create')->select(['id', 'name']);
                             }
                         ])
+                        ->whereHas('users', function ($user) {
+                            $user->permission('Announcement Create');
+                        })
                         ->distinct()
                         ->get();
 

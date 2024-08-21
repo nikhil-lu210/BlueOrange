@@ -30,7 +30,18 @@ class TaskController extends Controller
      */
     public function index(Request $request)
     {
-        $creators = User::permission('Task Create')->select(['id', 'name'])->get();
+        $roles = Role::select(['id', 'name'])
+                        ->with([
+                            'users' => function ($user) {
+                                $user->permission('Task Create')->select(['id', 'name']);
+                            }
+                        ])
+                        ->whereHas('users', function ($user) {
+                            $user->permission('Task Create');
+                        })
+                        ->distinct()
+                        ->get();
+
         $assignees = User::permission('Task Read')->select(['id', 'name'])->get();
 
         $query = Task::with([
@@ -56,7 +67,7 @@ class TaskController extends Controller
 
         $tasks = $query->get();
                     
-        return view('administration.task.index', compact(['tasks', 'creators', 'assignees']));
+        return view('administration.task.index', compact(['tasks', 'roles', 'assignees']));
     }
     
     /**
