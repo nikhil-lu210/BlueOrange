@@ -79,7 +79,9 @@ class AttendanceController extends Controller
      */
     public function create()
     {
-        //
+        $users = User::select(['id', 'name'])->whereStatus('Active')->distinct()->get();
+
+        return view('administration.attendance.create', compact(['users']));
     }
 
     /**
@@ -87,7 +89,62 @@ class AttendanceController extends Controller
      */
     public function store(Request $request)
     {
-        // 
+        // Fetch the user
+        $user = User::whereId($request->user_id)->whereStatus('Active')->firstOrFail();
+
+        // Create Carbon instances for clockIn and clockOut
+        $clockIn = Carbon::parse("$request->clock_in_date $request->clock_in:00");
+        $clockOut = Carbon::parse("$request->clock_in_date $request->clock_out:00");
+
+        // Calculate the difference in seconds
+        $totalSeconds = $clockOut->diffInSeconds($clockIn);
+
+        // Convert total time to HH:MM:SS format
+        $hours = floor($totalSeconds / 3600);
+        $minutes = floor(($totalSeconds % 3600) / 60);
+        $seconds = $totalSeconds % 60;
+
+        $formattedTotalTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+        // dd($clockIn, $clockOut, $formattedTotalTime);
+
+        // Check if the user has an attendance on selected date and type
+        $hasAttendance = Attendance::where('user_id', $user->id)
+            ->where('clock_in_date', $request->clock_in_date)
+            ->where('type', $request->type)
+            ->first();
+
+        if ($hasAttendance) {
+            toast('This Employee has already clocked in as '.$request->type.' on the selected date.', 'warning');
+            return redirect()->back()->withInput();
+        }
+
+        $location = Location::get(get_public_ip());
+
+        try {
+            $attendance = Attendance::create([
+                'user_id' => $user->id,
+                'employee_shift_id' => $user->current_shift->id,
+                'clock_in_date' => $request->clock_in_date,
+                'clock_in' => $clockIn,
+                'clock_out' => $clockOut,
+                'total_time' => $formattedTotalTime,
+                'type' => $request->type,
+                'ip_address' => $location->ip ?? null,
+                'country' => $location->countryName ?? null,
+                'city' => $location->cityName ?? null,
+                'zip_code' => $location->zipCode ?? null,
+                'time_zone' => $location->timezone ?? null,
+                'latitude' => $location->latitude ?? null,
+                'longitude' => $location->longitude ?? null
+            ]);
+
+            toast('Clocked In Successful for '.$user->name.' on '.$request->clock_in_date.'.', 'success');
+            return redirect()->route('administration.attendance.show', ['attendance' => $attendance]);
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
     
     // Clockin

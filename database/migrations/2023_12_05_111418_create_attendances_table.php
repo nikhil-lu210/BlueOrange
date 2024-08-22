@@ -25,8 +25,8 @@ return new class extends Migration
                   ->onDelete('cascade');
 
             $table->date('clock_in_date')->default(now()->toDateString());
-            $table->timestamp('clock_in');
-            $table->timestamp('clock_out')->nullable();
+            $table->dateTime('clock_in');
+            $table->dateTime('clock_out')->nullable();
             $table->string('total_time')->nullable();
             $table->enum('type', ['Regular', 'Overtime'])->default('Regular');
             $table->ipAddress('ip_address')->nullable();
