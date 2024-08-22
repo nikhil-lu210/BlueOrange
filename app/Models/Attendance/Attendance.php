@@ -32,6 +32,7 @@ class Attendance extends Model
         'clock_in',
         'clock_out',
         'total_time',
+        'type',
         'ip_address',
         'country',
         'city',

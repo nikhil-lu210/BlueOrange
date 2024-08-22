@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Administration\Attendance;
 
+use App\Exports\Administration\Attendance\AttendanceExport;
 use Exception;
-use Carbon\CarbonPeriod;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +12,7 @@ use App\Models\Attendance\Attendance;
 use Stevebauman\Location\Facades\Location;
 use App\Http\Requests\Administration\Attendance\AttendanceUpdateRequest;
 use App\Models\User;
+use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceController extends Controller
 {
@@ -28,7 +29,7 @@ class AttendanceController extends Controller
                                 'user.roles', 
                                 'employee_shift:id,start_time,end_time'
                             ])
-                            ->latest();
+                            ->orderByDesc('clock_in');
 
         if ($request->has('user_id') && !is_null($request->user_id)) {
             $query->where('user_id', $request->user_id);
@@ -96,6 +97,8 @@ class AttendanceController extends Controller
         $currentTime = now();
         $currentDate = $currentTime->toDateString();
 
+        $type = $request->attendance === 'Overtime' ? 'Overtime' : 'Regular';
+
         // Check if the user has an open attendance session (clocked in but not clocked out)
         $openAttendance = Attendance::where('user_id', $user->id)
             ->whereNull('clock_out')
@@ -108,22 +111,24 @@ class AttendanceController extends Controller
 
         $existingAttendance = Attendance::where('user_id', $user->id)
             ->where('clock_in_date', $currentDate)
+            ->whereType($type)
             ->first();
-
+        // dd($existingAttendance);
         if ($existingAttendance) {
-            toast('You have already clocked in today. Please click on Overtime-Clockin', 'warning');
+            toast('You have already clocked in as '.$type.' today.', 'warning');
             return redirect()->back();
         }
 
         $location = Location::get(get_public_ip());
 
         try {
-            DB::transaction(function() use ($user, $currentTime, $location, $currentDate) {
+            DB::transaction(function() use ($user, $currentTime, $location, $currentDate, $type) {
                 Attendance::create([
                     'user_id' => $user->id,
                     'employee_shift_id' => $user->current_shift->id,
                     'clock_in_date' => $currentDate,
                     'clock_in' => $currentTime,
+                    'type' => $type,
                     'ip_address' => $location->ip ?? null,
                     'country' => $location->countryName ?? null,
                     'city' => $location->cityName ?? null,
@@ -259,4 +264,59 @@ class AttendanceController extends Controller
     {
         //
     }
+
+    /**
+     * export attendances.
+     */
+    public function export(Request $request)
+    {
+        // Building the query based on filters
+        $query = Attendance::with([
+            'user:id,name',
+            'employee_shift:id,start_time,end_time'
+        ])->latest();
+
+        // Initialize variables for filename parts
+        $userName = '';
+        $monthYear = '';
+        
+        // Handle user_id filter
+        if ($request->has('user_id') && !is_null($request->user_id)) {
+            $query->where('user_id', $request->user_id);
+            $user = User::find($request->user_id);
+            $userName = $user ? 'of_' . strtolower(str_replace(' ', '_', $user->name)) : '';
+        }
+
+        // Handle created_month_year filter
+        if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
+            $monthYearDate = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $query->whereYear('clock_in', $monthYearDate->year)
+                ->whereMonth('clock_in', $monthYearDate->month);
+            $monthYear = 'of_' . $monthYearDate->format('m_Y');
+        }
+
+        // Get the filtered attendances
+        $attendances = $query->get();
+
+        if ($attendances->count() < 1) {
+            toast('There is no attendances to download.', 'warning');
+            return redirect()->back();
+        }
+
+        // Construct the filename based on conditions
+        if (!empty($userName) && !empty($monthYear)) {
+            $fileName = 'attendances_' . $userName . '_' . $monthYear . '.xlsx';
+        } elseif (!empty($userName)) {
+            $fileName = 'attendances_' . $userName . '.xlsx';
+        } elseif (!empty($monthYear)) {
+            $fileName = 'attendances_' . $monthYear . '.xlsx';
+        } else {
+            $date = now()->format('d_m_Y');
+            $fileName = 'attendances_backup_' . $date . '.xlsx';
+        }
+
+        // Return the Excel download with the appropriate filename
+        return Excel::download(new AttendanceExport($attendances), $fileName);
+    }
+
 }

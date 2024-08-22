@@ -189,9 +189,15 @@ class UserController extends Controller
                     'name' => $fullName,
                     'email' => $request->email,
                 ]);
-
-                // Upload and associate the avatar with the user
+                
+                // Handle avatar upload
                 if ($request->hasFile('avatar')) {
+                    // Remove the previous avatar if it exists
+                    if ($user->hasMedia('avatar')) {
+                        $user->clearMediaCollection('avatar');
+                    }
+                    
+                    // Add the updated avatar
                     $user->addMedia($request->avatar)->toMediaCollection('avatar');
                 }
 

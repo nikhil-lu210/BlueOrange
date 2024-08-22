@@ -197,6 +197,9 @@ return [
         // Spatie Permission (https://spatie.be/docs/laravel-permission/v5/installation-laravel)
         Spatie\Permission\PermissionServiceProvider::class,
 
+        // Laravel Excel (https://laravel-excel.com)
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+
         /*
          * Application Service Providers...
          */
@@ -221,6 +224,9 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // RealRashid SweetAlertServiceProvider (https://realrashid.github.io/sweet-alert/install)
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
+
+        // Laravel Excel (https://laravel-excel.com)
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ])->toArray(),
 
 ];

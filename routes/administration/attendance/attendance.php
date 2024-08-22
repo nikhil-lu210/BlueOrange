@@ -17,4 +17,6 @@ Route::controller(AttendanceController::class)->prefix('attendance')->name('atte
     
     Route::get('/show/{attendance}', 'show')->name('show');
     Route::post('/update/{attendance}', 'update')->name('update');
+    
+    Route::get('/export', 'export')->name('export');
 });

@@ -5,12 +5,10 @@ namespace App\Http\Controllers\Administration\Profile;
 use Auth;
 use Exception;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Attendance\Attendance;
 use App\Http\Requests\Administration\Profile\ProfileUpdateRequest;
 use App\Http\Requests\Administration\Profile\Security\PasswordUpdateRequest;
 use App\Notifications\Administration\ProfileUpdateNofication;
@@ -78,8 +76,14 @@ class ProfileController extends Controller
                     $user->save();
                 }
 
-                // Upload and associate the avatar with the user
+                // Handle avatar upload
                 if ($request->hasFile('avatar')) {
+                    // Remove the previous avatar if it exists
+                    if ($user->hasMedia('avatar')) {
+                        $user->clearMediaCollection('avatar');
+                    }
+                    
+                    // Add the updated avatar
                     $user->addMedia($request->avatar)->toMediaCollection('avatar');
                 }
 
