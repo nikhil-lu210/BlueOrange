@@ -41,6 +41,10 @@ class AttendanceController extends Controller
                 ->whereMonth('clock_in', $monthYear->month);
         }
 
+        if ($request->has('type') && !is_null($request->type)) {
+            $query->where('type', $request->type);
+        }
+
         $attendances = $query->get();
 
         // Check if the user has already clocked in today
@@ -336,12 +340,13 @@ class AttendanceController extends Controller
         // Initialize variables for filename parts
         $userName = '';
         $monthYear = '';
+        $clockinType = '';
         
         // Handle user_id filter
         if ($request->has('user_id') && !is_null($request->user_id)) {
             $query->where('user_id', $request->user_id);
             $user = User::find($request->user_id);
-            $userName = $user ? 'of_' . strtolower(str_replace(' ', '_', $user->name)) : '';
+            $userName = $user ? '_of_' . strtolower(str_replace(' ', '_', $user->name)) : '';
         }
 
         // Handle created_month_year filter
@@ -349,7 +354,14 @@ class AttendanceController extends Controller
             $monthYearDate = Carbon::createFromFormat('F Y', $request->created_month_year);
             $query->whereYear('clock_in', $monthYearDate->year)
                 ->whereMonth('clock_in', $monthYearDate->month);
-            $monthYear = 'of_' . $monthYearDate->format('m_Y');
+            $monthYear = '_of_' . $monthYearDate->format('m_Y');
+        }
+        
+        // Handle type filter
+        if ($request->has('type') && !is_null($request->type)) {
+            $query->where('type', $request->type);
+            
+            $clockinType = strtolower($request->type). '_';
         }
 
         // Get the filtered attendances
@@ -360,17 +372,7 @@ class AttendanceController extends Controller
             return redirect()->back();
         }
 
-        // Construct the filename based on conditions
-        if (!empty($userName) && !empty($monthYear)) {
-            $fileName = 'attendances_' . $userName . '_' . $monthYear . '.xlsx';
-        } elseif (!empty($userName)) {
-            $fileName = 'attendances_' . $userName . '.xlsx';
-        } elseif (!empty($monthYear)) {
-            $fileName = 'attendances_' . $monthYear . '.xlsx';
-        } else {
-            $date = now()->format('d_m_Y');
-            $fileName = 'attendances_backup_' . $date . '.xlsx';
-        }
+        $fileName = $clockinType . 'attendances_backup' . $userName . $monthYear . '.xlsx';
 
         // Return the Excel download with the appropriate filename
         return Excel::download(new AttendanceExport($attendances), $fileName);
