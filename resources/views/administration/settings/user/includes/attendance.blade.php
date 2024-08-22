@@ -8,6 +8,18 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">All Attendances</h5>
+        
+                <div class="card-header-elements ms-auto">
+                    @if ($attendances->count() > 0)
+                        <a href="{{ route('administration.attendance.export', [
+                            'user_id' => $user->id, 
+                            'created_month_year' => date('F Y', strtotime('last month'))
+                        ]) }}" target="_blank" class="btn btn-sm btn-dark me-3" title="Download {{ $user->name }}'s Last Month's ({{ date('F Y', strtotime('last month')) }}) Attendances.">
+                            <span class="tf-icon ti ti-download me-1"></span>
+                            Download
+                        </a>
+                    @endif
+                </div>
             </div>
             <div class="card-body">
                 <table class="table data-table table-bordered table-responsive" style="width: 100%;">
