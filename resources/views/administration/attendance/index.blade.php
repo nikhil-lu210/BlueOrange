@@ -103,7 +103,7 @@
                         <a href="{{ route('administration.attendance.export', [
                             'user_id' => request('user_id'), 
                             'created_month_year' => request('created_month_year')
-                        ]) }}" target="_blank" class="btn btn-sm btn-dark">
+                        ]) }}" target="_blank" class="btn btn-sm btn-dark me-3">
                             <span class="tf-icon ti ti-download me-1"></span>
                             Download
                         </a>
@@ -112,9 +112,13 @@
                     @if (!$clockedIn) 
                         <form action="{{ route('administration.attendance.clockin') }}" method="post">
                             @csrf
-                            <button type="submit" name="attendance" value="clock_in" class="btn btn-sm btn-success">
+                            <button type="submit" name="attendance" value="Regular" class="btn btn-sm btn-success" title="Regular Clockin">
                                 <span class="tf-icon ti ti-clock-check me-1"></span>
-                                Clock In
+                                Regular
+                            </button>
+                            <button type="submit" name="attendance" value="Overtime" class="btn btn-sm btn-primary" title="Overtime Clockin">
+                                <span class="tf-icon ti ti-clock-check me-1"></span>
+                                Overtime
                             </button>
                         </form>
                     @else
@@ -148,7 +152,7 @@
                                 <td>
                                     {{ show_date($attendance->clock_in_date) }}
                                     <br>
-                                    <small class="emp_post text-truncate text-muted">{{ $attendance->type }}</small>
+                                    <small class="text-bold text-{{ $attendance->type === 'Regular' ? 'success' : 'primary' }}">{{ $attendance->type }}</small>
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-start align-items-center user-name">

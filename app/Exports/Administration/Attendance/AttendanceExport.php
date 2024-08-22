@@ -28,6 +28,7 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
                 'clock_in' => show_time($attendance->clock_in),
                 'clock_out' => show_time($attendance->clock_out),
                 'total_time' => total_time($attendance->total_time),
+                'type' => $attendance->type,
             ];
         });
     }
@@ -45,7 +46,8 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
             'Shift',
             'Clockin',
             'Clockout',
-            'Total'
+            'Total',
+            'Type',
         ];
     }
 }

@@ -29,7 +29,7 @@ class AttendanceController extends Controller
                                 'user.roles', 
                                 'employee_shift:id,start_time,end_time'
                             ])
-                            ->latest();
+                            ->orderByDesc('clock_in');
 
         if ($request->has('user_id') && !is_null($request->user_id)) {
             $query->where('user_id', $request->user_id);
@@ -97,6 +97,8 @@ class AttendanceController extends Controller
         $currentTime = now();
         $currentDate = $currentTime->toDateString();
 
+        $type = $request->attendance === 'Overtime' ? 'Overtime' : 'Regular';
+
         // Check if the user has an open attendance session (clocked in but not clocked out)
         $openAttendance = Attendance::where('user_id', $user->id)
             ->whereNull('clock_out')
@@ -109,22 +111,24 @@ class AttendanceController extends Controller
 
         $existingAttendance = Attendance::where('user_id', $user->id)
             ->where('clock_in_date', $currentDate)
+            ->whereType($type)
             ->first();
-
+        // dd($existingAttendance);
         if ($existingAttendance) {
-            toast('You have already clocked in today. Please click on Overtime-Clockin', 'warning');
+            toast('You have already clocked in as '.$type.' today.', 'warning');
             return redirect()->back();
         }
 
         $location = Location::get(get_public_ip());
 
         try {
-            DB::transaction(function() use ($user, $currentTime, $location, $currentDate) {
+            DB::transaction(function() use ($user, $currentTime, $location, $currentDate, $type) {
                 Attendance::create([
                     'user_id' => $user->id,
                     'employee_shift_id' => $user->current_shift->id,
                     'clock_in_date' => $currentDate,
                     'clock_in' => $currentTime,
+                    'type' => $type,
                     'ip_address' => $location->ip ?? null,
                     'country' => $location->countryName ?? null,
                     'city' => $location->cityName ?? null,
