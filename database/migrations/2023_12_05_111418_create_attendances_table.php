@@ -28,6 +28,7 @@ return new class extends Migration
             $table->timestamp('clock_in');
             $table->timestamp('clock_out')->nullable();
             $table->string('total_time')->nullable();
+            $table->enum('type', ['Regular', 'Overtime'])->default('Regular');
             $table->ipAddress('ip_address')->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();
@@ -39,7 +40,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->unique(['user_id', 'clock_in_date'], 'user_id_clock_in_date_unique');
+            $table->unique(['user_id', 'clock_in_date', 'type'], 'user_id_clock_in_date_type_unique');
         });
     }
 

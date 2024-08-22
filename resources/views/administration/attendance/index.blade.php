@@ -145,7 +145,11 @@
                         @foreach ($attendances as $key => $attendance) 
                             <tr>
                                 <th>#{{ serial($attendances, $key) }}</th>
-                                <td>{{ show_date($attendance->clock_in_date) }}</td>
+                                <td>
+                                    {{ show_date($attendance->clock_in_date) }}
+                                    <br>
+                                    <small class="emp_post text-truncate text-muted">{{ $attendance->type }}</small>
+                                </td>
                                 <td>
                                     <div class="d-flex justify-content-start align-items-center user-name">
                                         <div class="avatar-wrapper">
