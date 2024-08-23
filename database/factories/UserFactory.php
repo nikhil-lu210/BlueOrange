@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -38,30 +39,32 @@ class UserFactory extends Factory
             'remember_token' => Str::random(10),
         ];
     }
-
+    
 
     public function configure()
     {
         return $this->afterCreating(function (User $user) {
-            // Assign a random role
-            $role = Role::inRandomOrder()->first();
-            $user->assignRole($role);
+            DB::transaction(function () use ($user) {
+                // Assign a random role
+                $role = Role::inRandomOrder()->first();
+                $user->assignRole($role);
 
-            // Generate a random start time between 01:00 and 23:00
-            $start_time = Carbon::createFromTime(rand(1, 23), 0, 0);
+                // Generate a random start time between 01:00 and 23:00
+                $start_time = Carbon::createFromTime(rand(1, 23), 0, 0);
 
-            // Calculate end time (8 hours later)
-            $end_time = $start_time->copy()->addHours(8);
+                // Calculate end time (8 hours later)
+                $end_time = $start_time->copy()->addHours(8);
 
-            // Format end time to handle cases where it exceeds 24:00
-            $formatted_end_time = $end_time->format('H:i:s');
+                // Format end time to handle cases where it exceeds 24:00
+                $formatted_end_time = $end_time->format('H:i:s');
 
-            // Create associated EmployeeShift
-            $user->employee_shifts()->create([
-                'start_time' => $start_time->format('H:i:s'),
-                'end_time' => $formatted_end_time,
-                'implemented_from' => now()->format('Y-m-d'),
-            ]);
+                // Create associated EmployeeShift
+                $user->employee_shifts()->create([
+                    'start_time' => $start_time->format('H:i:s'),
+                    'end_time' => $formatted_end_time,
+                    'implemented_from' => now()->format('Y-m-d'),
+                ]);
+            }, 5);
         });
     }
 }
