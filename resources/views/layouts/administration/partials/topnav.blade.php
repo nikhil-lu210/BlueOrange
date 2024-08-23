@@ -163,7 +163,7 @@
                         @if (auth()->user()->hasMedia('avatar'))
                             <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="h-auto rounded-circle">
                         @else
-                            <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ auth()->user()->name }} No Avatar" class="h-auto rounded-circle">
+                            <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ auth()->user()->name }} No Avatar" class="h-auto rounded-circle">
                         @endif
                     </div>
                 </a>
@@ -176,7 +176,7 @@
                                         @if (auth()->user()->hasMedia('avatar'))
                                             <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="h-auto rounded-circle">
                                         @else
-                                            <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ auth()->user()->name }} No Avatar" class="h-auto rounded-circle">
+                                            <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ auth()->user()->name }} No Avatar" class="h-auto rounded-circle">
                                         @endif
                                     </div>
                                 </div>

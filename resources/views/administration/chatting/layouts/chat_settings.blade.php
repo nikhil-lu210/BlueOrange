@@ -4,7 +4,7 @@
             @if (auth()->user()->hasMedia('avatar'))
                 <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
             @else
-                <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="No Avatar" class="rounded-circle">
+                <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="rounded-circle">
             @endif
         </div>
         <h5 class="mt-2 mb-0">{{ auth()->user()->name }}</h5>

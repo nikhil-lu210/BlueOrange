@@ -68,7 +68,7 @@
                                 @if ($attendance->user->hasMedia('avatar'))
                                     <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'profile_view') }}" alt="{{ $attendance->user->name }} Avatar" class="img-fluid rounded-3" width="100%">
                                 @else
-                                    <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ $attendance->user->name }} No Avatar" class="img-fluid">
+                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $attendance->user->name }} No Avatar" class="img-fluid">
                                 @endif
                             </div>
                             <h6 class="mb-1 text-center">{{ show_date($attendance->clock_in_date) }}</h6>

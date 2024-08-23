@@ -77,7 +77,7 @@
                                 @if ($history->user->hasMedia('avatar'))
                                     <img src="{{ $history->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle cursor-pointer" width="40" title="{{ $history->user->name }}">
                                 @else
-                                    <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="No Avatar" class="rounded-circle cursor-pointer" width="40" title="{{ $history->user->name }}">
+                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="rounded-circle cursor-pointer" width="40" title="{{ $history->user->name }}">
                                 @endif
                             </span>
                             <div class="timeline-event card p-0" data-aos="fade-right">

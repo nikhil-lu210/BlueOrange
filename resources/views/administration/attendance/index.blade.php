@@ -174,7 +174,7 @@
                                                 @if ($attendance->user->hasMedia('avatar'))
                                                     <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $attendance->user->name }} Avatar" class="rounded-circle">
                                                 @else
-                                                    <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ $attendance->user->name }} No Avatar" class="rounded-circle">
+                                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $attendance->user->name }} No Avatar" class="rounded-circle">
                                                 @endif
                                             </div>
                                         </div>

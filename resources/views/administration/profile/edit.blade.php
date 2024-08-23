@@ -59,7 +59,7 @@
                         @if ($user->hasMedia('avatar'))
                             <img src="{{ $user->getFirstMediaUrl('avatar') }}" alt="{{ $user->name }} Avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
                         @else
-                            <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ $user->name }} No Avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
+                            <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $user->name }} No Avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar">
                         @endif
                         <div class="button-wrapper">
                             <label for="upload" class="btn btn-primary me-2 mb-3" tabindex="0">

@@ -57,7 +57,7 @@
                                                     @if (auth()->user()->hasMedia('avatar'))
                                                         <img src="{{ $comment->commenter->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $comment->commenter->name }} Avatar" class="h-auto rounded-circle">
                                                     @else
-                                                        <img src="https://fakeimg.pl/300/dddddd/?text=No-Image" alt="{{ $comment->commenter->name }} No Avatar" class="h-auto rounded-circle">
+                                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $comment->commenter->name }} No Avatar" class="h-auto rounded-circle">
                                                     @endif
                                                 </div>
                                               </div>
