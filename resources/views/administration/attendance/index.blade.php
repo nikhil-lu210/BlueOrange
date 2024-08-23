@@ -108,7 +108,14 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">All Attendances</h5>
+                {{-- $clockinType . 'attendances_backup' . $userName . $monthYear --}}
+                <h5 class="mb-0">
+                    <span>{{ request()->type ?? request()->type }}</span>
+                    <span>Attendances</span>
+                    <span>of</span>
+                    <span class="text-bold">{{ request()->user_id ? show_user_data(request()->user_id, 'name') : 'All Users' }}</span>
+                    <sup>(<b>Month: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
+                </h5>
         
                 <div class="card-header-elements ms-auto">
                     @if ($attendances->count() > 0)

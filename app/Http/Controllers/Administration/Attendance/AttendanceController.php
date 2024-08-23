@@ -39,6 +39,12 @@ class AttendanceController extends Controller
             $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
             $query->whereYear('clock_in', $monthYear->year)
                 ->whereMonth('clock_in', $monthYear->month);
+        } else {
+            // dd(Carbon::now()->startOfMonth()->format('Y-m-d'), Carbon::now()->endOfMonth()->format('Y-m-d'));
+            $query->whereBetween('clock_in_date', [
+                Carbon::now()->startOfMonth()->format('Y-m-d'),
+                Carbon::now()->endOfMonth()->format('Y-m-d')
+            ]);
         }
 
         if ($request->has('type') && !is_null($request->type)) {
@@ -355,6 +361,12 @@ class AttendanceController extends Controller
             $query->whereYear('clock_in', $monthYearDate->year)
                 ->whereMonth('clock_in', $monthYearDate->month);
             $monthYear = '_of_' . $monthYearDate->format('m_Y');
+        } else {
+            // dd(Carbon::now()->startOfMonth()->format('Y-m-d'), Carbon::now()->endOfMonth()->format('Y-m-d'));
+            $query->whereBetween('clock_in_date', [
+                Carbon::now()->startOfMonth()->format('Y-m-d'),
+                Carbon::now()->endOfMonth()->format('Y-m-d')
+            ]);
         }
         
         // Handle type filter
@@ -372,7 +384,8 @@ class AttendanceController extends Controller
             return redirect()->back();
         }
 
-        $fileName = $clockinType . 'attendances_backup' . $userName . $monthYear . '.xlsx';
+        $downloadMonth = $monthYear ? $monthYear : '_'.date('m_Y');
+        $fileName = $clockinType . 'attendances_backup' . $userName . $downloadMonth . '.xlsx';
 
         // Return the Excel download with the appropriate filename
         return Excel::download(new AttendanceExport($attendances), $fileName);
