@@ -8,7 +8,7 @@
             @endif
         </div>
         <h6 class="mt-2 mb-0">{{ $user->name }}</h6>
-        <span>{{ $user->roles[0]->name }}</span>
+        <span>{{ $user->roles->first()->name }}</span>
         <i class="ti ti-x ti-sm cursor-pointer close-sidebar d-block" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-sidebar-right"></i>
     </div>
     <div class="sidebar-body px-4 pb-4">

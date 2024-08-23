@@ -1,6 +1,24 @@
 <?php
 
 use App\Models\User;
+use Spatie\Permission\Models\Role;
+
+if (!function_exists('show_role')) {
+
+    /**
+     * Get specific column value from Role by ID using pluck method.
+     *
+     * @param int $role_id Role ID
+     * @param string $column Column name
+     * @return mixed Column value or null if Role not found
+     */
+    function show_role(int $role_id, string $column = 'name')
+    {
+        $value = Role::where('id', $role_id)->pluck($column)->first();
+
+        return $value ?? null;
+    }
+}
 
 if (!function_exists('show_user_data')) {
 

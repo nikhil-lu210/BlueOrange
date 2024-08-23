@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Str;
+
 if (!function_exists('serial')) {
     /**
      * Get the serial number with leading zeros based on the given key.
@@ -56,5 +58,20 @@ if (!function_exists('show_status')) {
         };
 
         return sprintf('<span class="badge %s">%s</span>', $badgeClass, htmlspecialchars($status, ENT_QUOTES, 'UTF-8'));
+    }
+}
+
+
+
+if (!function_exists('show_plural')) {
+    /**
+     * Convert a singular word to its plural form.
+     *
+     * @param string $value The singular word.
+     * @return string The plural form of the word.
+     */
+    function show_plural(string $value): string
+    {
+        return Str::plural($value);
     }
 }

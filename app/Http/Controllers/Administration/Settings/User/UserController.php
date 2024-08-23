@@ -6,7 +6,6 @@ use Auth;
 use Hash;
 use Exception;
 use App\Models\User;
-use App\Models\Task\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -32,16 +31,24 @@ class UserController extends Controller
     {
         $roles = Role::select(['id', 'name'])->distinct()->get();
 
-        $users = User::distinct()
-                    ->when($request->filled('role_id'), function ($query) use ($request) {
-                        $query->whereHas('roles', function ($role) use ($request) {
-                            $role->where('roles.id', $request->role_id);
-                        });
-                    })
-                    ->when($request->filled('status'), function ($query) use ($request) {
-                        $query->where('status', $request->status);
-                    })
-                    ->get();
+        $query = User::select(['id','userid','name','email','status'])->with([
+            'media', 
+            'roles:id,name'
+        ]);
+
+        if ($request->has('role_id') && !is_null($request->role_id)) {
+            $query->whereHas('roles', function ($role) use ($request) {
+                $role->where('roles.id', $request->role_id);
+            });
+        }
+
+        if ($request->has('status') && !is_null($request->status)) {
+            $query->where('status', $request->status);
+        } else {
+            $query->where('status', 'Active');
+        }
+
+        $users = $query->get();
         
         return view('administration.settings.user.index', compact(['roles', 'users']));
     }

@@ -62,7 +62,7 @@
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Employee Role" data-bs-placement="bottom">
                                     <i class="ti ti-crown"></i> 
-                                    {{ $user->roles[0]->name }}
+                                    {{ $user->roles->first()->name }}
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Joining Date">
                                     <i class="ti ti-calendar"></i> 

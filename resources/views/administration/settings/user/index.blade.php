@@ -98,7 +98,11 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">All Users</h5>
+                <h5 class="mb-0">
+                    <span>All</span>
+                    <span>{{ request()->status ?? 'Active' }}</span>
+                    <span>{{ request()->role_id ? show_plural(show_role(request()->role_id)) : 'Users' }}</span>
+                </h5>
         
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.settings.user.create') }}" class="btn btn-sm btn-primary">
@@ -135,7 +139,7 @@
                                         </div>
                                         <div class="d-flex flex-column">
                                             <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="emp_name text-truncate">{{ $user->name }}</a>
-                                            <small class="emp_post text-truncate text-muted">{{ $user->roles[0]->name }}</small>
+                                            <small class="emp_post text-truncate text-muted">{{ $user->roles->first()->name }}</small>
                                         </div>
                                     </div>
                                 </td>
