@@ -2,37 +2,56 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
+use App\Models\User;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
-/**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
- */
 class UserFactory extends Factory
 {
+
     /**
-     * Define the model's default state.
-     *
-     * @return array<string, mixed>
+     * To create a bunch of users by tinker is: 
+     * App\Models\User::factory()->count(100)->create();
+     * 
+     * This will create 100 users at a time
      */
-    public function definition(): array
+
+    protected $model = User::class;
+
+    public function definition()
     {
+        $firstName = $this->faker->firstName;
+        $lastName = $this->faker->lastName;
         return [
-            'name' => fake()->name(),
-            'email' => fake()->unique()->safeEmail(),
+            'userid' => strtoupper(Str::random(8)),
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'name' => $firstName . ' ' . $lastName,
+            'email' => $this->faker->unique()->safeEmail,
+            'password' => Hash::make('12345678'),
+            'status' => Arr::random(['Active', 'Inactive', 'Fired', 'Resigned']),
             'email_verified_at' => now(),
-            'password' => '$2y$10$RTQm7niLQVWD8W0CuSezJObIQN2uwi4/2a4ClXQz9mfWXbDBMzViO', // 12345678
             'remember_token' => Str::random(10),
         ];
     }
 
-    /**
-     * Indicate that the model's email address should be unverified.
-     */
-    public function unverified(): static
+
+    public function configure()
     {
-        return $this->state(fn (array $attributes) => [
-            'email_verified_at' => null,
-        ]);
+        return $this->afterCreating(function (User $user) {
+            // Assign a random role
+            $role = Role::inRandomOrder()->first();
+            $user->assignRole($role);
+
+            // Create associated EmployeeShift
+            $user->employee_shifts()->create([
+                'start_time' => '14:00:00',
+                'end_time' => '22:00:00',
+                'implemented_from' => now()->format('Y-m-d'),
+            ]);
+        });
     }
 }
