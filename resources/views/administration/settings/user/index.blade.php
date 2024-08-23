@@ -116,6 +116,7 @@
                     <thead>
                         <tr>
                             <th>Sl.</th>
+                            <th>Employee ID</th>
                             <th>Name</th>
                             <th>Email</th>
                             <th>Status</th>
@@ -126,6 +127,7 @@
                         @foreach ($users as $key => $user) 
                             <tr>
                                 <th>#{{ serial($users, $key) }}</th>
+                                <th><b class="text-primary">{{ $user->userid }}</b></th>
                                 <td>
                                     <div class="d-flex justify-content-start align-items-center user-name">
                                         <div class="avatar-wrapper">
