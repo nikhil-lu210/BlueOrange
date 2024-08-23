@@ -341,7 +341,9 @@ class AttendanceController extends Controller
         $query = Attendance::with([
             'user:id,name',
             'employee_shift:id,start_time,end_time'
-        ])->latest();
+        ])
+        ->whereHas('user')
+        ->orderBy(User::select('name')->whereColumn('users.id', 'attendances.user_id')); // order by asc
 
         // Initialize variables for filename parts
         $userName = '';
