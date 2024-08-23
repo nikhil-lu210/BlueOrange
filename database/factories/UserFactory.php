@@ -32,7 +32,7 @@ class UserFactory extends Factory
             'first_name' => $firstName,
             'last_name' => $lastName,
             'name' => $firstName . ' ' . $lastName,
-            'email' => $this->faker->unique(true)->safeEmail,
+            'email' => strtolower(Str::random(8)).$this->faker->unique(true)->safeEmail,
             'password' => Hash::make('12345678'),
             'status' => Arr::random(['Active', 'Inactive', 'Fired', 'Resigned']),
             'email_verified_at' => now(),
