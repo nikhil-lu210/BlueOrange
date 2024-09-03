@@ -1,0 +1,41 @@
+{
+    "Dashboard": "डैशबोर्ड",
+
+    "Chattings": "चैटिंग",
+
+    "Attendance": "उपस्थिति",
+    "All Attendance": "सभी उपस्थिति",
+    "My Attendance": "मेरी उपस्थिति",
+    "Assign Attendance": "उपस्थिति निर्दिष्ट करें",
+
+    "Announcement": "घोषणा",
+    "All Announcements": "सभी घोषणाएँ",
+    "My Announcements": "मेरी घोषणाएँ",
+    "New Announcement": "नई घोषणा",
+
+    "Task": "काम",
+    "All Tasks": "सभी कार्य",
+    "My Tasks": "मेरे कार्य",
+    "New Task": "नया कार्य",
+
+    "Settings": "सेटिंग्स",
+
+    "System Settings": "सिस्टम सेटिंग्स",
+    "Holidays": "छुट्टियां",
+
+    "User Management": "प्रयोक्ता प्रबंधन",
+    "All Users": "सभी उपयोगकर्ता",
+    "Create New User": "नया उपयोगकर्ता बनाएं",
+
+    "Role & Permission": "भूमिका एवं अनुमति",
+    "Roles": "भूमिकाएँ",
+    "All Roles": "सभी भूमिकाएँ",
+    "Create Role": "भूमिका बनाएँ",
+    "Permissions": "अनुमतियां",
+    "All Permissions": "सभी अनुमतियाँ",
+    "Create Permission": "अनुमति बनाएँ",
+
+    "Shortcuts": "शॉर्टकट",
+    "My Shortcuts": "मेरी संक्षिप्त रीति",
+    "Add Shortcut": "छोटा रास्ता जोडें"
+}
