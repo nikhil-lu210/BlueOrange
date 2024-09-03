@@ -17,6 +17,7 @@
         "livewire/livewire": "^3.5",
         "maatwebsite/excel": "^3.1",
         "realrashid/sweet-alert": "^6.0",
+        "spatie/laravel-backup": "^9.0",
         "spatie/laravel-medialibrary": "^10.0.0",
         "spatie/laravel-permission": "^5.11",
         "stevebauman/location": "^7.0"
