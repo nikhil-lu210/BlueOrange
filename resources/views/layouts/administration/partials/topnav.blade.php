@@ -47,16 +47,6 @@
                             </a>
                         </li>
                     @endforeach
-                    {{-- <li>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="bn">
-                            <span class="align-middle">বাংলা</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="hn">
-                            <span class="align-middle">हिन्दी</span>
-                        </a>
-                    </li> --}}
                 </ul>
             </li>
             <!--/ Language -->
@@ -69,8 +59,8 @@
                 <div class="dropdown-menu dropdown-menu-end py-0">
                     <div class="dropdown-menu-header border-bottom">
                         <div class="dropdown-header d-flex align-items-center py-3">
-                            <h5 class="text-body mb-0 me-auto">Shortcuts</h5>
-                            <a href="{{ route('administration.shortcut.create') }}" class="dropdown-shortcuts-add text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="Add shortcuts"><i class="ti ti-sm ti-plus"></i></a>
+                            <h5 class="text-body mb-0 me-auto">{{ __('topnav.shortcuts') }}</h5>
+                            <a href="{{ route('administration.shortcut.create') }}" class="dropdown-shortcuts-add text-body" data-bs-toggle="tooltip" data-bs-placement="top" title="{{ __('topnav.add_shortcut') }}"><i class="ti ti-sm ti-plus"></i></a>
                         </div>
                     </div>
                     <div class="dropdown-shortcuts-list scrollable-container">
@@ -104,7 +94,7 @@
                 <ul class="dropdown-menu dropdown-menu-end py-0">
                     <li class="dropdown-menu-header border-bottom">
                         <div class="dropdown-header d-flex align-items-center py-3">
-                            <h5 class="text-body mb-0 me-auto">Notification</h5>
+                            <h5 class="text-body mb-0 me-auto">{{ __('topnav.notifications') }}</h5>
                             @if (Auth::user()->unreadNotifications->count() > 0) 
                                 <a href="{{ route('administration.notification.mark_all_as_read') }}" class="dropdown-notifications-all text-body confirm-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read">
                                     <i class="ti ti-mail-opened fs-4"></i>
@@ -144,14 +134,14 @@
                                 </li>
                             @empty
                                 <li class="list-group-item list-group-item-action dropdown-notifications-item">
-                                    No Unread Notification
+                                    {{ __('topnav.no_unread_notification') }}
                                 </li>
                             @endforelse
                         </ul>
                     </li>
                     <li class="dropdown-menu-footer border-top">
                         <a href="{{ route('administration.notification.index') }}" class="dropdown-item d-flex justify-content-center text-primary p-2 h-px-40 mb-1 align-items-center">
-                            View all notifications
+                            {{ __('topnav.view_all_notification') }}
                         </a>
                     </li>
                 </ul>
@@ -195,13 +185,13 @@
                     <li>
                         <a class="dropdown-item" href="{{ route('administration.my.profile') }}">
                             <i class="ti ti-user-check me-2 ti-sm"></i>
-                            <span class="align-middle">My Profile</span>
+                            <span class="align-middle">{{ __('topnav.my_profile') }}</span>
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="{{ route('administration.my.profile.security') }}">
                             <i class="ti ti-lock-cog me-2 ti-sm"></i>
-                            <span class="align-middle">Security</span>
+                            <span class="align-middle">{{ __('topnav.security') }}</span>
                         </a>
                     </li>
                     <li>
@@ -210,7 +200,7 @@
                     <li>
                         <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                             <i class="ti ti-logout me-2 ti-sm"></i>
-                            <span class="align-middle">Log Out</span>
+                            <span class="align-middle">{{ __('topnav.logout') }}</span>
                         </a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                             @csrf
