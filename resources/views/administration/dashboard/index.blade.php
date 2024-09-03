@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Dashboard'))
+@section('page_title', __('dashboard.dashboard'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -20,12 +20,12 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Dashboard') }}</b>
+    <b class="text-uppercase">{{ __('dashboard.dashboard') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item active">{{ __('Dashboard') }}</li>
+    <li class="breadcrumb-item active">{{ __('dashboard.dashboard') }}</li>
 @endsection
 
 

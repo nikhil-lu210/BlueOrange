@@ -40,12 +40,14 @@
                     <i class="ti ti-language rounded-circle ti-md"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    <li>
-                        <a class="dropdown-item" href="javascript:void(0);" data-language="en">
-                            <span class="align-middle">English</span>
-                        </a>
-                    </li>
-                    <li>
+                    @foreach (config('localization.languages') as $lang) 
+                        <li>
+                            <a class="dropdown-item" href="{{ route('administration.localization', ['lang' => $lang['key']]) }}" data-language="{{ $lang['key'] }}">
+                                <span class="align-middle">{{ $lang['value'] }}</span>
+                            </a>
+                        </li>
+                    @endforeach
+                    {{-- <li>
                         <a class="dropdown-item" href="javascript:void(0);" data-language="bn">
                             <span class="align-middle">বাংলা</span>
                         </a>
@@ -54,7 +56,7 @@
                         <a class="dropdown-item" href="javascript:void(0);" data-language="hn">
                             <span class="align-middle">हिन्दी</span>
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </li>
             <!--/ Language -->
