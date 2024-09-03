@@ -21,6 +21,7 @@ class AttendanceController extends Controller
      */
     public function index(Request $request)
     {
+        // dd($request->filter_attendance);
         $users = User::select(['id', 'name'])->whereStatus('Active')->distinct()->get();
 
         $query = Attendance::with([
@@ -41,10 +42,12 @@ class AttendanceController extends Controller
                 ->whereMonth('clock_in', $monthYear->month);
         } else {
             // dd(Carbon::now()->startOfMonth()->format('Y-m-d'), Carbon::now()->endOfMonth()->format('Y-m-d'));
-            $query->whereBetween('clock_in_date', [
-                Carbon::now()->startOfMonth()->format('Y-m-d'),
-                Carbon::now()->endOfMonth()->format('Y-m-d')
-            ]);
+            if (!$request->has('filter_attendance')) {
+                $query->whereBetween('clock_in_date', [
+                    Carbon::now()->startOfMonth()->format('Y-m-d'),
+                    Carbon::now()->endOfMonth()->format('Y-m-d')
+                ]);
+            }
         }
 
         if ($request->has('type') && !is_null($request->type)) {
@@ -365,10 +368,12 @@ class AttendanceController extends Controller
             $monthYear = '_of_' . $monthYearDate->format('m_Y');
         } else {
             // dd(Carbon::now()->startOfMonth()->format('Y-m-d'), Carbon::now()->endOfMonth()->format('Y-m-d'));
-            $query->whereBetween('clock_in_date', [
-                Carbon::now()->startOfMonth()->format('Y-m-d'),
-                Carbon::now()->endOfMonth()->format('Y-m-d')
-            ]);
+            if (!$request->has('filter_attendance')) {
+                $query->whereBetween('clock_in_date', [
+                    Carbon::now()->startOfMonth()->format('Y-m-d'),
+                    Carbon::now()->endOfMonth()->format('Y-m-d')
+                ]);
+            }
         }
         
         // Handle type filter

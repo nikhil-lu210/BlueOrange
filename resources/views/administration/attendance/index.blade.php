@@ -93,7 +93,7 @@
                                 Reset Filters
                             </a>
                         @endif
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" name="filter_attendance" value="true" class="btn btn-primary">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
                             Filter Attendances
                         </button>
@@ -122,7 +122,8 @@
                         <a href="{{ route('administration.attendance.export', [
                             'user_id' => request('user_id'), 
                             'created_month_year' => request('created_month_year'),
-                            'type' => request('type')
+                            'type' => request('type'),
+                            'filter_attendance' => request('filter_attendance')
                         ]) }}" target="_blank" class="btn btn-sm btn-dark me-3">
                             <span class="tf-icon ti ti-download me-1"></span>
                             Download
