@@ -8,7 +8,11 @@ use Illuminate\Support\Facades\Route;
 // Route::prefix('administration')
 Route::prefix('')
         ->name('administration.')
+        ->middleware('localization')
         ->group(function () {
+            // localization
+            include_once 'localization/localization.php';
+
             // file_media
             include_once 'file_media/file_media.php';
 
