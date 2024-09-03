@@ -43,12 +43,12 @@
                 <ul class="menu-sub">
                     @canany(['Attendance Update', 'Attendance Delete'])
                         <li class="menu-item {{ request()->is('attendance/all*') ? 'active' : '' }}">
-                            <a href="{{ route('administration.attendance.index') }}" class="menu-link">{{ __('All Attendance') }}</a>
+                            <a href="{{ route('administration.attendance.index') }}" class="menu-link">{{ __('All Attendances') }}</a>
                         </li>
                     @endcanany
                     @can('Attendance Read') 
                         <li class="menu-item {{ request()->is('attendance/my*') ? 'active' : '' }}">
-                            <a href="{{ route('administration.attendance.my') }}" class="menu-link">{{ __('My Attendance') }}</a>
+                            <a href="{{ route('administration.attendance.my') }}" class="menu-link">{{ __('My Attendances') }}</a>
                         </li>
                     @endcan
                     @can('Attendance Create')
