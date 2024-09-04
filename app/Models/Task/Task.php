@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Task\Traits\TaskRelations;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -15,6 +16,10 @@ class Task extends Model implements HasMedia
     use HasFactory, SoftDeletes, CascadeSoftDeletes, InteractsWithMedia, TaskRelations;
     
     protected $cascadeDeletes = ['histories', 'comments', 'files'];
+
+    protected $casts = [
+        'description' => PurifyHtmlOnGet::class,
+    ];
 
     protected $fillable = [
         'taskid',

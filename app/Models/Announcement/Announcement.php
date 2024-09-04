@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Announcement\Traits\Relations;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -22,8 +23,9 @@ class Announcement extends Model
         'description',
         'read_by_at',
     ];
-
+    
     protected $casts = [
+        'description' => PurifyHtmlOnGet::class,
         'recipients' => 'array',
         'read_by_at' => 'array',
     ];

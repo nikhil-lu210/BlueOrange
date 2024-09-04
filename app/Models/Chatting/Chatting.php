@@ -5,6 +5,7 @@ namespace App\Models\Chatting;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Chatting\Traits\Relations;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -21,8 +22,9 @@ class Chatting extends Model
         'file',
         'seen_at'
     ];
-
+    
     protected $casts = [
+        'message' => PurifyHtmlOnGet::class,
         'seen_at' => 'datetime',
     ];
 }
