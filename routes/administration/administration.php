@@ -10,6 +10,9 @@ Route::prefix('')
         ->name('administration.')
         ->middleware('localization')
         ->group(function () {
+            // logs
+            include_once 'logs/logs.php';
+            
             // localization
             include_once 'localization/localization.php';
 

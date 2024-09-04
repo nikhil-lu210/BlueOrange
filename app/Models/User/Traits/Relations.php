@@ -11,11 +11,20 @@ use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Announcement\AnnouncementComment;
 use App\Models\Shortcut\Shortcut;
 use App\Models\Task\TaskComment;
+use App\Models\User\LoginHistory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait Relations
 {    
+    /**
+     * Get the login_logout_histories associated with the user.
+     */
+    public function login_logout_histories(): HasMany
+    {
+        return $this->hasMany(LoginHistory::class);
+    }
+    
     /**
      * Get the shortcuts associated with the user.
      */

@@ -18,7 +18,7 @@ namespace App\Models\Announcement{
  * @property int $id
  * @property int $announcer_id
  * @property string $title
- * @property string $description
+ * @property string|array $description
  * @property array|null $recipients JSON field to hold user IDs for recipients
  * @property array|null $read_by_at JSON field to track read status by user
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -53,7 +53,7 @@ namespace App\Models\Announcement{
  * @property int $id
  * @property int $announcement_id
  * @property int $commenter_id
- * @property string $comment
+ * @property string|array $comment
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -87,6 +87,7 @@ namespace App\Models\Attendance{
  * @property \Illuminate\Support\Carbon $clock_in
  * @property \Illuminate\Support\Carbon|null $clock_out
  * @property string|null $total_time
+ * @property string $type
  * @property string|null $ip_address
  * @property string|null $country
  * @property string|null $city
@@ -99,6 +100,7 @@ namespace App\Models\Attendance{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\EmployeeShift\EmployeeShift $employee_shift
  * @property-read \App\Models\User $user
+ * @method static \Database\Factories\Attendance\AttendanceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance onlyTrashed()
@@ -117,6 +119,7 @@ namespace App\Models\Attendance{
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereLongitude($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereTimeZone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereTotalTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereType($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereZipCode($value)
@@ -133,7 +136,7 @@ namespace App\Models\Chatting{
  * @property int $id
  * @property int $sender_id
  * @property int $receiver_id
- * @property string|null $message
+ * @property string|array|null $message
  * @property string|null $file
  * @property \Illuminate\Support\Carbon|null $seen_at
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -244,7 +247,7 @@ namespace App\Models\Holiday{
  * @property int $id
  * @property string $date
  * @property string $name
- * @property string|null $description
+ * @property string|array|null $description
  * @property int $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -409,7 +412,7 @@ namespace App\Models\Task{
  * @property string $taskid
  * @property int $creator_id
  * @property string $title
- * @property string $description
+ * @property string|array $description
  * @property string|null $deadline
  * @property string $priority
  * @property string $status
@@ -455,7 +458,7 @@ namespace App\Models\Task{
  * @property int $id
  * @property int $task_id
  * @property int $user_id
- * @property string $comment
+ * @property string|array $comment
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
@@ -492,7 +495,7 @@ namespace App\Models\Task{
  * @property \Illuminate\Support\Carbon $started_at
  * @property \Illuminate\Support\Carbon|null $ends_at
  * @property string|null $total_worked
- * @property string|null $note
+ * @property string|array|null $note
  * @property int $progress
  * @property string $status
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -556,6 +559,8 @@ namespace App\Models{
  * @property-read int|null $employee_shifts_count
  * @property-read mixed $current_salary
  * @property-read mixed $current_shift
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User\LoginHistory> $login_logout_histories
+ * @property-read int|null $login_logout_histories_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Salary\Monthly\MonthlySalary> $monthly_salaries
@@ -601,5 +606,35 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User withoutTrashed()
  */
 	class User extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
+}
+
+namespace App\Models\User{
+/**
+ * App\Models\User\LoginHistory
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string|null $login_time
+ * @property string|null $logout_time
+ * @property string $login_ip
+ * @property string|null $logout_ip
+ * @property string $user_agent
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory query()
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereLoginIp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereLoginTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereLogoutIp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereLogoutTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereUserAgent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereUserId($value)
+ */
+	class LoginHistory extends \Eloquent {}
 }
 
