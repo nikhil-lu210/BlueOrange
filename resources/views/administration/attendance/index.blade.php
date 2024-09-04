@@ -51,9 +51,9 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="mb-3 col-md-5">
-                            <label for="user_id" class="form-label">Select Employee</label>
+                            <label for="user_id" class="form-label">{{ __('Select Employee') }}</label>
                             <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true">
-                                <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>Select Employee</option>
+                                <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>{{ __('Select Employee') }}</option>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}" {{ $user->id == request()->user_id ? 'selected' : '' }}>
                                         {{ $user->name }}
@@ -66,7 +66,7 @@
                         </div>
                         
                         <div class="mb-3 col-md-4">
-                            <label class="form-label">Attendances Of</label>
+                            <label class="form-label">{{ __('Attendances Of') }}</label>
                             <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                             @error('created_month_year')
                                 <span class="text-danger">{{ $message }}</span>
@@ -74,11 +74,11 @@
                         </div>
 
                         <div class="mb-3 col-md-3">
-                            <label for="type" class="form-label">Select Clockin Type</label>
+                            <label for="type" class="form-label">{{ __('Select Clockin Type') }}</label>
                             <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default">
-                                <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>Select Type</option>
-                                <option value="Regular" {{ request()->type == 'Regular' ? 'selected' : '' }}>Regular</option>
-                                <option value="Overtime" {{ request()->type == 'Overtime' ? 'selected' : '' }}>Overtime</option>
+                                <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ __('Select Type') }}</option>
+                                <option value="Regular" {{ request()->type == 'Regular' ? 'selected' : '' }}>{{ __('Regular') }}</option>
+                                <option value="Overtime" {{ request()->type == 'Overtime' ? 'selected' : '' }}>{{ __('Overtime') }}</option>
                             </select>
                             @error('announcer_id')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -90,12 +90,12 @@
                         @if (request()->user_id || request()->created_month_year) 
                             <a href="{{ route('administration.attendance.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
-                                Reset Filters
+                                {{ __('Reset Filters') }}
                             </a>
                         @endif
                         <button type="submit" name="filter_attendance" value="true" class="btn btn-primary">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                            Filter Attendances
+                            {{ __('Filter Attendances') }}
                         </button>
                     </div>
                 </div>
@@ -126,20 +126,20 @@
                             'filter_attendance' => request('filter_attendance')
                         ]) }}" target="_blank" class="btn btn-sm btn-dark me-3">
                             <span class="tf-icon ti ti-download me-1"></span>
-                            Download
+                            {{ __('Download') }}
                         </a>
                     @endif
 
                     @if (!$clockedIn) 
                         <form action="{{ route('administration.attendance.clockin') }}" method="post">
                             @csrf
-                            <button type="submit" name="attendance" value="Regular" class="btn btn-sm btn-success" title="Regular Clockin">
+                            <button type="submit" name="attendance" value="Regular" class="btn btn-sm btn-success" title="{{ __('Regular Clockin') }}">
                                 <span class="tf-icon ti ti-clock-check me-1"></span>
-                                Regular
+                                {{ __('Regular') }}
                             </button>
-                            <button type="submit" name="attendance" value="Overtime" class="btn btn-sm btn-primary" title="Overtime Clockin">
+                            <button type="submit" name="attendance" value="Overtime" class="btn btn-sm btn-primary" title="{{ __('Overtime Clockin') }}">
                                 <span class="tf-icon ti ti-clock-check me-1"></span>
-                                Overtime
+                                {{ __('Overtime') }}
                             </button>
                         </form>
                     @else
@@ -147,7 +147,7 @@
                             @csrf
                             <button type="submit" name="attendance" value="clock_out" class="btn btn-sm btn-danger">
                                 <span class="tf-icon ti ti-clock-off me-1"></span>
-                                Clock Out
+                                {{ __('Clock Out') }}
                             </button>
                         </form>
                     @endif
