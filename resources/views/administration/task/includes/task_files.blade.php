@@ -27,7 +27,11 @@
                     <tbody>
                         @foreach ($task->files as $file) 
                             <tr>
-                                <td><b class="text-dark">{{ $file->original_name }}</b></td>
+                                <td>
+                                    <b class="text-dark" title="{{ $file->original_name }}">
+                                        {{ show_content($file->original_name, 20) }}
+                                    </b>
+                                </td>
                                 <td>{{ get_file_media_size($file) }}</td>
                                 <td>{{ date_time_ago($file->created_at) }}</td>
                                 <td class="text-center">
