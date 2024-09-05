@@ -12,6 +12,12 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
+    
+    {{-- Select 2 --}}
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    
+    {{-- Bootstrap Datepicker --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -36,11 +42,63 @@
 @section('content')
 
 <!-- Start row -->
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <form action="{{ route('administration.logs.login_logout_history.index') }}" method="get" autocomplete="off">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="mb-3 col-md-7">
+                            <label for="user_id" class="form-label">{{ __('Select Employee') }}</label>
+                            <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true">
+                                <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>{{ __('Select Employee') }}</option>
+                                @foreach ($users as $user)
+                                    <option value="{{ $user->id }}" {{ $user->id == request()->user_id ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('announcer_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        
+                        <div class="mb-3 col-md-5">
+                            <label class="form-label">{{ __('History Of') }}</label>
+                            <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
+                            @error('created_month_year')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-12 text-end">
+                        @if (request()->user_id || request()->created_month_year) 
+                            <a href="{{ route('administration.logs.login_logout_history.index') }}" class="btn btn-danger confirm-warning">
+                                <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
+                                {{ __('Reset Filters') }}
+                            </a>
+                        @endif
+                        <button type="submit" name="filter_histories" value="true" class="btn btn-primary">
+                            <span class="tf-icon ti ti-filter ti-xs me-1"></span>
+                            {{ __('Filter Histories') }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>        
+    </div>
+</div>
+
 <div class="row">
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">All Login & Logout Histories of <b class="text-primary">{{ date('M Y') }}</b></h5>
+                <h5 class="mb-0">
+                    All Login & Logout Histories of 
+                    <span class="text-bold">{{ request()->user_id ? show_user_data(request()->user_id, 'name') : 'All Users' }}</span>
+                    <sup>(<b>Month: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
+                </h5>
             </div>
             <div class="card-body">
                 <table class="table data-table table-bordered table-responsive" style="width: 100%;">
@@ -118,14 +176,6 @@
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <a href="#" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete History?">
-                                        <i class="text-white ti ti-trash"></i>
-                                    </a>
-                                    
-                                    {{-- <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-primary" title="Show Details" data-bs-toggle="modal" data-bs-target="#showHistoryModal" data-history="{{ json_encode($history) }}">
-                                        <i class="ti ti-info-hexagon"></i>
-                                    </a> --}}
-
                                     <a href="javascript:void(0);" 
                                     class="btn btn-sm btn-icon btn-primary" 
                                     title="Show Details" 
@@ -165,10 +215,30 @@
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
+
+    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+
+    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    
+    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
 @endsection
+
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
+    <script>
+        // Custom Script Here
+        $(document).ready(function() {
+            $('.month-year-picker').datepicker({
+                format: 'MM yyyy',         // Display format to show full month name and year
+                minViewMode: 'months',     // Only allow month selection
+                todayHighlight: true,
+                autoclose: true,
+                orientation: 'auto right'
+            });
+        });
+    </script>
+
     <script>
         $(document).ready(function() {
             $('#showHistoryModal').on('show.bs.modal', function(event) {
