@@ -121,7 +121,24 @@
                                     <a href="#" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete History?">
                                         <i class="text-white ti ti-trash"></i>
                                     </a>
-                                    <a href="#" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                    
+                                    {{-- <a href="javascript:void(0);" class="btn btn-sm btn-icon btn-primary" title="Show Details" data-bs-toggle="modal" data-bs-target="#showHistoryModal" data-history="{{ json_encode($history) }}">
+                                        <i class="ti ti-info-hexagon"></i>
+                                    </a> --}}
+
+                                    <a href="javascript:void(0);" 
+                                    class="btn btn-sm btn-icon btn-primary" 
+                                    title="Show Details" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#showHistoryModal" 
+                                    data-history="{{ json_encode([
+                                        'user_name' => $history->user->name,
+                                        'login_time' => show_date_time($history->login_time),
+                                        'logout_time' => $history->logout_time ? show_date_time($history->logout_time) : "No History",
+                                        'login_ip' => $history->login_ip,
+                                        'logout_ip' => $history->logout_ip ?? "No History",
+                                        'user_agent' => $history->user_agent
+                                    ]) }}">
                                         <i class="ti ti-info-hexagon"></i>
                                     </a>
                                 </td>
@@ -134,6 +151,10 @@
     </div>
 </div>
 <!-- End row -->
+
+
+{{-- Page Modal --}}
+@include('administration.logs.login_logout_history.modals.history_show')
 
 @endsection
 
@@ -149,6 +170,23 @@
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Custom Script Here
+        $(document).ready(function() {
+            $('#showHistoryModal').on('show.bs.modal', function(event) {
+                var button = $(event.relatedTarget);
+                var history = button.data('history');
+
+                console.log(history);
+                
+
+                // Update the modal's content.
+                var modal = $(this);
+                modal.find('.modal-body .user_name').text(history.user_name);
+                modal.find('.modal-body .login_time').text(history.login_time);
+                modal.find('.modal-body .logout_time').text(history.logout_time);
+                modal.find('.modal-body .login_ip').text(history.login_ip);
+                modal.find('.modal-body .logout_ip').text(history.logout_ip);
+                modal.find('.modal-body .user_agent').text(history.user_agent);
+            });
+        });
     </script>
 @endsection

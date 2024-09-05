@@ -15,6 +15,7 @@ class LoginLogoutHistoryController extends Controller
                                     Carbon::now()->startOfMonth()->format('Y-m-d'),
                                     Carbon::now()->endOfMonth()->format('Y-m-d')
                                 ])
+                                ->orderByDesc('created_at')
                                 ->get();
         
         return view('administration.logs.login_logout_history.index', compact(['histories']));
