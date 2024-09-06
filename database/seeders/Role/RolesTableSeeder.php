@@ -44,6 +44,11 @@ class RolesTableSeeder extends Seeder
                     'Task Read',
                     'Task Update',
                     'Task Delete',
+
+                    'Daily Work Update Create',
+                    'Daily Work Update Read',
+                    'Daily Work Update Update',
+                    'Daily Work Update Delete',
                     
                     'Permission Create',
                     'Permission Read',
@@ -88,6 +93,11 @@ class RolesTableSeeder extends Seeder
                     'Task Read',
                     'Task Update',
                     'Task Delete',
+
+                    'Daily Work Update Create',
+                    'Daily Work Update Read',
+                    'Daily Work Update Update',
+                    'Daily Work Update Delete',
                     
                     'Permission Create',
                     'Permission Read',
@@ -122,6 +132,10 @@ class RolesTableSeeder extends Seeder
 
                     'Task Create',
                     'Task Read',
+
+                    'Daily Work Update Create',
+                    'Daily Work Update Read',
+                    'Daily Work Update Update',
                     
                     'Permission Read',
                     
@@ -148,6 +162,9 @@ class RolesTableSeeder extends Seeder
                     'Announcement Read',
                     
                     'Task Read',
+
+                    'Daily Work Update Create',
+                    'Daily Work Update Read',
                     
                     'Permission Read',
                     
@@ -171,6 +188,10 @@ class RolesTableSeeder extends Seeder
                     
                     'Task Read',
 
+                    'Daily Work Update Create',
+                    'Daily Work Update Read',
+                    'Daily Work Update Update',
+
                     'User Read',
 
                     'Salary Read',
@@ -182,6 +203,9 @@ class RolesTableSeeder extends Seeder
                     'Announcement Read',
                     
                     'Task Read',
+
+                    'Daily Work Update Create',
+                    'Daily Work Update Read',
                     
                     'User Read',
 
@@ -194,6 +218,9 @@ class RolesTableSeeder extends Seeder
                     'Announcement Read',
                     
                     'Task Read',
+
+                    'Daily Work Update Create',
+                    'Daily Work Update Read',
                     
                     'User Read',
 

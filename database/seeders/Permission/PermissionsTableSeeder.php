@@ -19,6 +19,7 @@ class PermissionsTableSeeder extends Seeder
             'Attendance',
             'Announcement',
             'Task',
+            'Daily Work Update',
             'Permission',
             'Role',
             'User',
