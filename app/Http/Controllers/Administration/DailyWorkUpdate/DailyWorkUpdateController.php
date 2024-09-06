@@ -15,6 +15,7 @@ class DailyWorkUpdateController extends Controller
      */
     public function index(Request $request)
     {
+        // dd(auth()->user()->tl_employees);
         $roles = $this->getRolesWithPermission();
 
         $dailyWorkUpdates = $this->getFilteredDailyWorkUpdates($request);

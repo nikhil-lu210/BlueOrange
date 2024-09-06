@@ -30,6 +30,8 @@ class UsersTableSeeder extends Seeder
         // Assign a role to the developer
         $developerRole = Role::findByName('Developer');
         $developer->assignRole($developerRole);
+        // Assign team_leader
+        $developer->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
         // Create associated EmployeeShift
         $developer->employee_shifts()->create([
             'start_time' => '14:00:00',
@@ -52,6 +54,8 @@ class UsersTableSeeder extends Seeder
         // Assign a role to the superAdmin
         $superAdminRole = Role::findByName('Super Admin');
         $superAdmin->assignRole($superAdminRole);
+        // Assign team_leader
+        $superAdmin->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
         // Create associated EmployeeShift
         $superAdmin->employee_shifts()->create([
             'start_time' => '14:00:00',
@@ -74,6 +78,8 @@ class UsersTableSeeder extends Seeder
         // Assign a role to the admin
         $adminRole = Role::findByName('Admin');
         $admin->assignRole($adminRole);
+        // Assign team_leader
+        $admin->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
         // Create associated EmployeeShift
         $admin->employee_shifts()->create([
             'start_time' => '14:00:00',
@@ -96,6 +102,8 @@ class UsersTableSeeder extends Seeder
         // Assign a role to the HR Manager
         $hrRole = Role::findByName('HR Manager');
         $hr->assignRole($hrRole);
+        // Assign team_leader
+        $hr->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
         // Create associated EmployeeShift
         $hr->employee_shifts()->create([
             'start_time' => '14:00:00',
@@ -118,6 +126,8 @@ class UsersTableSeeder extends Seeder
         // Assign a role to the Team Leader
         $tlRole = Role::findByName('Team Leader');
         $tl->assignRole($tlRole);
+        // Assign team_leader
+        $tl->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
         // Create associated EmployeeShift
         $tl->employee_shifts()->create([
             'start_time' => '14:00:00',
@@ -140,6 +150,8 @@ class UsersTableSeeder extends Seeder
         // Assign a role to the Employee
         $employeeRole = Role::findByName('Employee');
         $employee->assignRole($employeeRole);
+        // Assign team_leader
+        $employee->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
         // Create associated EmployeeShift
         $employee->employee_shifts()->create([
             'start_time' => '14:00:00',
