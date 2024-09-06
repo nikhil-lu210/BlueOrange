@@ -36,6 +36,9 @@ Route::prefix('')
 
             // task
             include_once 'task/task.php';
+
+            // daily_work_update
+            include_once 'daily_work_update/daily_work_update.php';
             
             // Profile
             include_once 'profile/profile.php';
