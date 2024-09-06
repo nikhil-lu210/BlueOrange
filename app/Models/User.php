@@ -91,4 +91,15 @@ class User extends Authenticatable implements HasMedia
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function hasAllPermissions(array $permissions): bool
+    {
+        foreach ($permissions as $permission) {
+            if (!$this->can($permission)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

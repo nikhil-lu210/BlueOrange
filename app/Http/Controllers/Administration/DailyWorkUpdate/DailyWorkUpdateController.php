@@ -15,6 +15,14 @@ class DailyWorkUpdateController extends Controller
     {
         //
     }
+    
+    /**
+     * Display a listing of the resource.
+     */
+    public function my()
+    {
+        //
+    }
 
     /**
      * Show the form for creating a new resource.
