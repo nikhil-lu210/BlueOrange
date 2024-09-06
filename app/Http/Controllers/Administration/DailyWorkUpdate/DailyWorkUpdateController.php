@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Administration\DailyWorkUpdate;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
+use App\Notifications\Administration\DailyWorkUpdate\DailyWorkUpdateCreateNotification;
 
 class DailyWorkUpdateController extends Controller
 {
@@ -47,7 +50,7 @@ class DailyWorkUpdateController extends Controller
      */
     public function create()
     {
-        //
+        return view('administration.daily_work_update.create');
     }
 
     /**
@@ -55,7 +58,38 @@ class DailyWorkUpdateController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->all(), auth()->user()->active_team_leader->id);
+        try {
+            DB::transaction(function () use ($request) {
+                $authUser = auth()->user();
+                $teamLeader = $authUser->active_team_leader;
+
+                $workUpdate = DailyWorkUpdate::create([
+                    'user_id' => $authUser->id,
+                    'team_leader_id' => $teamLeader->id,
+                    'date' => $request->date ?? date('Y-m-d'),
+                    'work_update' => $request->work_update,
+                    'progress' => $request->progress,
+                    'note' => $request->note_issue ?? null
+                ]);
+
+                // Store Task Files
+                if ($request->hasFile('files')) {
+                    foreach ($request->file('files') as $file) {
+                        $directory = 'daily_work_update/' . $authUser->userid;
+                        store_file_media($file, $workUpdate, $directory);
+                    }
+                }
+                
+                // Send Notification to System
+                $teamLeader->notify(new DailyWorkUpdateCreateNotification($workUpdate, auth()->user()));
+            });
+
+            toast('Daily Work Update Has Been Submitted Successfully.', 'success');
+            return redirect()->route('administration.daily_work_update.my');
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**

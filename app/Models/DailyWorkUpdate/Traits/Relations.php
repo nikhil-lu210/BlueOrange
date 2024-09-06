@@ -3,8 +3,10 @@
 namespace App\Models\DailyWorkUpdate\Traits;
 
 use App\Models\User;
+use App\Models\FileMedia\FileMedia;
 use App\Models\EmployeeShift\EmployeeShift;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait Relations
 {
@@ -22,5 +24,13 @@ trait Relations
     public function team_leader(): BelongsTo
     {
         return $this->belongsTo(User::class, 'team_leader_id');
+    }
+
+    /**
+     * Get the files associated with the daily_work_update.
+     */
+    public function files(): MorphMany
+    {
+        return $this->morphMany(FileMedia::class, 'fileable');
     }
 }
