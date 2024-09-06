@@ -69,12 +69,12 @@ class DailyWorkUpdateController extends Controller
                         ->distinct()
                         ->get();
 
-        $authUser = auth()->user()->id;
+        $authUserID = auth()->user()->id;
 
-        if (!$request->has('filter_work_updates')) {
-            $dailyWorkUpdates = DailyWorkUpdate::whereUserId($authUser)->orWhere('team_leader_id', $authUser)->get();
+        if (!$request->has('filter_work_updates') && auth()->user()->tl_employees_daily_work_updates->count() < 1) {
+            $dailyWorkUpdates = DailyWorkUpdate::whereUserId($authUserID)->orWhere('team_leader_id', $authUserID)->get();
         } else {
-            $query = DailyWorkUpdate::where('team_leader_id', $authUser)->orderByDesc('created_at');
+            $query = DailyWorkUpdate::where('team_leader_id', $authUserID)->orderByDesc('created_at');
     
             if ($request->has('user_id') && !is_null($request->user_id)) {
                 $query->where('user_id', $request->user_id);
