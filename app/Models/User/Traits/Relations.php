@@ -9,6 +9,7 @@ use App\Models\Announcement\Announcement;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Announcement\AnnouncementComment;
+use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Shortcut\Shortcut;
 use App\Models\Task\TaskComment;
 use App\Models\User\LoginHistory;
@@ -120,5 +121,21 @@ trait Relations
     public function task_comments(): HasMany
     {
         return $this->hasMany(TaskComment::class, 'user_id');
+    }
+
+    /**
+     * Get the daily_work_updates associated with the user.
+     */
+    public function daily_work_updates(): HasMany
+    {
+        return $this->hasMany(DailyWorkUpdate::class, 'user_id');
+    }
+
+    /**
+     * Get the tl_employees_daily_work_updates associated with the user.
+     */
+    public function tl_employees_daily_work_updates(): HasMany
+    {
+        return $this->hasMany(DailyWorkUpdate::class, 'team_leader_id');
     }
 }

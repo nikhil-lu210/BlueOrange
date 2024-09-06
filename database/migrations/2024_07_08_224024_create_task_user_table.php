@@ -24,7 +24,7 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->tinyInteger('progress')->min(0)->max(100)->default(0);
+            $table->tinyInteger('progress')->default(0);
 
             $table->unique(['task_id', 'user_id'], 'task_user_unique');
 

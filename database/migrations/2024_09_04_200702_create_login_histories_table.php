@@ -22,6 +22,7 @@ return new class extends Migration
             $table->text('user_agent');
 
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -31,5 +32,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('login_histories');
+        Schema::table("login_histories", function ($table) {
+            $table->dropSoftDeletes();
+        });
     }
 };
