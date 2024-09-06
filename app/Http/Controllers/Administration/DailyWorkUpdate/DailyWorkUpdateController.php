@@ -15,83 +15,30 @@ class DailyWorkUpdateController extends Controller
      */
     public function index(Request $request)
     {
-        $roles = Role::select(['id', 'name'])
-                        ->with([
-                            'users' => function ($user) {
-                                $user->permission('Daily Work Update Create')->select(['id', 'name']);
-                            }
-                        ])
-                        ->whereHas('users', function ($user) {
-                            $user->permission('Daily Work Update Create');
-                        })
-                        ->distinct()
-                        ->get();
+        $roles = $this->getRolesWithPermission();
 
-        $query = DailyWorkUpdate::orderByDesc('created_at');
+        $dailyWorkUpdates = $this->getFilteredDailyWorkUpdates($request);
 
-        if ($request->has('user_id') && !is_null($request->user_id)) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
-            $query->whereYear('date', $monthYear->year)
-                ->whereMonth('date', $monthYear->month);
-        } else {
-            // dd(Carbon::now()->startOfMonth()->format('Y-m-d'), Carbon::now()->endOfMonth()->format('Y-m-d'));
-            if (!$request->has('filter_work_updates')) {
-                $query->whereBetween('date', [
-                    Carbon::now()->startOfMonth()->format('Y-m-d'),
-                    Carbon::now()->endOfMonth()->format('Y-m-d')
-                ]);
-            }
-        }
-
-        $dailyWorkUpdates = $query->get();
-
-        return view('administration.daily_work_update.index', compact(['roles', 'dailyWorkUpdates']));
+        return view('administration.daily_work_update.index', compact('roles', 'dailyWorkUpdates'));
     }
-    
+
     /**
-     * Display a listing of the resource.
+     * Display my work updates
      */
     public function my(Request $request)
     {
-        $roles = Role::select(['id', 'name'])
-                        ->with([
-                            'users' => function ($user) {
-                                $user->permission('Daily Work Update Create')->select(['id', 'name']);
-                            }
-                        ])
-                        ->whereHas('users', function ($user) {
-                            $user->permission('Daily Work Update Create');
-                        })
-                        ->distinct()
-                        ->get();
-
-        $authUserID = auth()->user()->id;
+        $roles = $this->getRolesWithPermission();
+        $authUserID = auth()->id();
 
         if (!$request->has('filter_work_updates') && auth()->user()->tl_employees_daily_work_updates->count() < 1) {
-            $dailyWorkUpdates = DailyWorkUpdate::whereUserId($authUserID)->orWhere('team_leader_id', $authUserID)->get();
+            $dailyWorkUpdates = DailyWorkUpdate::whereUserId($authUserID)
+                                ->orWhere('team_leader_id', $authUserID)
+                                ->get();
         } else {
-            $query = DailyWorkUpdate::where('team_leader_id', $authUserID)->orderByDesc('created_at');
-    
-            if ($request->has('user_id') && !is_null($request->user_id)) {
-                $query->where('user_id', $request->user_id);
-            }
-    
-            if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-                $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
-                $query->whereYear('date', $monthYear->year)
-                    ->whereMonth('date', $monthYear->month);
-            }
-    
-            $dailyWorkUpdates = $query->get();
+            $dailyWorkUpdates = $this->getFilteredDailyWorkUpdates($request, $authUserID);
         }
 
-        // dd($dailyWorkUpdates, auth()->user()->tl_employees_daily_work_updates->count());
-
-        return view('administration.daily_work_update.my', compact(['roles', 'dailyWorkUpdates']));
+        return view('administration.daily_work_update.my', compact('roles', 'dailyWorkUpdates'));
     }
 
     /**
@@ -140,5 +87,55 @@ class DailyWorkUpdateController extends Controller
     public function destroy(DailyWorkUpdate $dailyWorkUpdate)
     {
         //
+    }
+
+
+
+    
+
+    /**
+     * Helper method to get roles with 'Daily Work Update Create' permission
+     */
+    private function getRolesWithPermission()
+    {
+        return Role::select(['id', 'name'])
+            ->with(['users' => function ($user) {
+                $user->permission('Daily Work Update Create')->select(['id', 'name']);
+            }])
+            ->whereHas('users', function ($user) {
+                $user->permission('Daily Work Update Create');
+            })
+            ->distinct()
+            ->get();
+    }
+
+    /**
+     * Helper method to filter Daily Work Updates
+     */
+    private function getFilteredDailyWorkUpdates(Request $request, $teamLeaderId = null)
+    {
+        $query = DailyWorkUpdate::query()->orderByDesc('created_at');
+
+        if ($teamLeaderId) {
+            $query->where('team_leader_id', $teamLeaderId);
+        }
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('created_month_year')) {
+            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $query->whereYear('date', $monthYear->year)
+                  ->whereMonth('date', $monthYear->month);
+        } elseif (!$request->has('filter_work_updates')) {
+            // Default to current month
+            $query->whereBetween('date', [
+                Carbon::now()->startOfMonth()->format('Y-m-d'),
+                Carbon::now()->endOfMonth()->format('Y-m-d')
+            ]);
+        }
+
+        return $query->get();
     }
 }
