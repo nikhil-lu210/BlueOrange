@@ -22,10 +22,11 @@ Route::controller(UserController::class)
             
             Route::get('/show/{user:userid}/profile', 'showProfile')->name('show.profile')->can('User Read');
             Route::get('/show/{user:userid}/attendance', 'showAttendance')->name('show.attendance')->can('User Read');
-            Route::get('/show/{user:userid}/break', 'showBreak')->name('show.break')->can('User Read');
 
             Route::post('/shift/{shift}/update/{user}', 'updateShift')->name('shift.update')->can('User Update');
 
+            // user_interaction
+            include_once 'user_interaction/user_interaction.php';
 
             // salary
             include_once 'salary/salary.php';

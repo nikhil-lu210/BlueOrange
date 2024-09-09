@@ -113,12 +113,14 @@
                     Attendance
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/*/break*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.break', ['user' => $user]) }}">
-                    <i class="ti-xs ti ti-hourglass-empty me-1"></i> 
-                    Breaks
-                </a>
-            </li>
+            @can ('User Interaction Read') 
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('settings/user/show/*/user_interaction*') ? 'active' : '' }}" href="{{ route('administration.settings.user.user_interaction.index', ['user' => $user]) }}">
+                        <i class="ti-xs ti ti-users-group me-1"></i> 
+                        User Interactions
+                    </a>
+                </li>
+            @endcan
         </ul>
     </div>
 </div>

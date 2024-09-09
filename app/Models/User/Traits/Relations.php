@@ -159,4 +159,24 @@ trait Relations
     {
         return $this->hasMany(DailyWorkUpdate::class, 'team_leader_id');
     }
+
+    /**
+     * Users that this user is interacting with
+     * Get the interacted_users associated with the user.
+     */
+    public function interacted_users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_interactions', 'user_id', 'interacted_user_id')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Users that are interacting with this user
+     * Get the interacting_users associated with the user.
+     */
+    public function interacting_users(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'user_interactions', 'interacted_user_id', 'user_id')
+                    ->withTimestamps();
+    }
 }

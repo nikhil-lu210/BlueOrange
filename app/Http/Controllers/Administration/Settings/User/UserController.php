@@ -160,15 +160,6 @@ class UserController extends Controller
         return view('administration.settings.user.includes.attendance', compact(['user', 'attendances']));
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function showBreak(User $user)
-    {
-        // dd($user);
-        return view('administration.settings.user.includes.break', compact(['user']));
-    }
-
 
     /**
      * Show the form for editing the specified resource.
