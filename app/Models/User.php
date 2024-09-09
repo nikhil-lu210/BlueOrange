@@ -91,4 +91,22 @@ class User extends Authenticatable implements HasMedia
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+
+    public function hasAllPermissions(array $permissions): bool
+    {
+        foreach ($permissions as $permission) {
+            if (!$this->can($permission)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Define an accessor to get the active_team_leader
+    public function getActiveTeamLeaderAttribute()
+    {
+        // Return the first (and only) active team leader by $user->active_team_leader
+        return $this->employee_team_leaders()->wherePivot('is_active', true)->first();
+    }
 }

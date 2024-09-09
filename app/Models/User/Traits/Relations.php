@@ -2,16 +2,18 @@
 
 namespace App\Models\User\Traits;
 
+use App\Models\User;
 use App\Models\Task\Task;
 use App\Models\Salary\Salary;
+use App\Models\Task\TaskComment;
+use App\Models\Shortcut\Shortcut;
+use App\Models\User\LoginHistory;
 use App\Models\Attendance\Attendance;
 use App\Models\Announcement\Announcement;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
+use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
-use App\Models\Shortcut\Shortcut;
-use App\Models\Task\TaskComment;
-use App\Models\User\LoginHistory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
@@ -120,5 +122,41 @@ trait Relations
     public function task_comments(): HasMany
     {
         return $this->hasMany(TaskComment::class, 'user_id');
+    }
+
+    /**
+     * Get the tl_employees associated with the user (team_leader).
+     */
+    public function tl_employees(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'employee_team_leader', 'team_leader_id', 'employee_id')
+                    ->withPivot('is_active')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get the employee_team_leaders associated with the user (employee).
+     */
+    public function employee_team_leaders(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'employee_team_leader', 'employee_id', 'team_leader_id')
+                    ->withPivot('is_active')
+                    ->withTimestamps();
+    }
+
+    /**
+     * Get the daily_work_updates associated with the user.
+     */
+    public function daily_work_updates(): HasMany
+    {
+        return $this->hasMany(DailyWorkUpdate::class, 'user_id');
+    }
+
+    /**
+     * Get the tl_employees_daily_work_updates associated with the user.
+     */
+    public function tl_employees_daily_work_updates(): HasMany
+    {
+        return $this->hasMany(DailyWorkUpdate::class, 'team_leader_id');
     }
 }
