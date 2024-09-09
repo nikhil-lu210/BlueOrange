@@ -31,7 +31,7 @@ class DailyWorkUpdate extends Model
     protected $casts = [
         'work_update' => PurifyHtmlOnGet::class,
         'note' => PurifyHtmlOnGet::class,
-        'comment' => PurifyHtmlOnGet::class,
+        // 'comment' => PurifyHtmlOnGet::class,
         'date' => 'date'
     ];
 

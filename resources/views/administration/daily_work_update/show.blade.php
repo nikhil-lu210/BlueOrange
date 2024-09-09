@@ -4,10 +4,17 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('Announcement Details'))
+@section('page_title', __('Daily Work Update Details'))
 
 @section('css_links')
     {{--  External CSS  --}}
+    {{-- Select 2 --}}
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
+    
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/quill/typography.css')}}" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/quill/katex.css')}}" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/quill/editor.css')}}" />
 @endsection
 
 @section('custom_css')
@@ -22,16 +29,16 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Announcement Details') }}</b>
+    <b class="text-uppercase">{{ __('Daily Work Update Details') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Announcement') }}</li>
+    <li class="breadcrumb-item">{{ __('Daily Work Update') }}</li>
     <li class="breadcrumb-item">
-        <a href="{{ route('administration.announcement.my') }}">{{ __('My Announcements') }}</a>
+        <a href="{{ route('administration.daily_work_update.my') }}">{{ __('My Daily Work Updates') }}</a>
     </li>
-    <li class="breadcrumb-item active">{{ __('Announcement Details') }}</li>
+    <li class="breadcrumb-item active">{{ __('Daily Work Update Details') }}</li>
 @endsection
 
 
@@ -45,31 +52,31 @@
                 <div class="flex-grow-1 mt-4">
                     <div class="d-flex align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
                         <div class="user-profile-info">
-                            <h4 class="mb-0">{{ $announcement->title }}</h4>
+                            <h4 class="mb-0">
+                                Work Update of 
+                                <span class="text-bold text-primary">{{ $dailyWorkUpdate->user->name }}</span>
+                            </h4>
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
-                                <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Announcer" data-bs-placement="bottom">
+                                <li class="list-inline-item d-flex gap-1 text-bold text-primary" data-bs-toggle="tooltip" title="Team Leader" data-bs-placement="bottom">
                                     <i class="ti ti-crown"></i> 
-                                    {{ $announcement->announcer->name }}
+                                    {{ $dailyWorkUpdate->team_leader->name }}
                                 </li>
-                                <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Announcement Date & Time">
+                                <li class="list-inline-item d-flex gap-1 text-bold" data-bs-toggle="tooltip" title="Work Update Date" data-bs-placement="bottom">
                                     <i class="ti ti-calendar"></i> 
-                                    {{ show_date_time($announcement->created_at) }}
+                                    {{ show_date($dailyWorkUpdate->date) }}
+                                </li>
+                                <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Work Update Submitted At">
+                                    <i class="ti ti-clock"></i> 
+                                    {{ show_date_time($dailyWorkUpdate->created_at) }}
                                 </li>
                             </ul>
-                            @if (!is_null($announcement->recipients)) 
-                                <ul class="list-inline mb-0 mt-3 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-1">
-                                    @foreach ($announcement->recipients as $recipient) 
-                                        <li class="list-inline-item d-flex gap-1 badge bg-black">
-                                            {{ show_user_data($recipient, 'name') }}
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            @endif
                         </div>
-                        @can ('Announcement Update') 
-                            <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-dark btn-icon rounded-pill" data-bs-toggle="tooltip" title="Edit Announcement">
-                                <i class="ti ti-pencil"></i>
-                            </a>
+                        @can ('Daily Work Update Update')
+                            @if (!$dailyWorkUpdate->rating && $dailyWorkUpdate->team_leader_id == auth()->user()->id) 
+                                <button type="button" class="btn btn-success btn-icon" title="Rate This Work Update?" data-bs-toggle="modal" data-bs-target="#markAsReadModal">
+                                    <span class="ti ti-check"></span>
+                                </button>
+                            @endif
                         @endcan
                     </div>
                 </div>
@@ -77,150 +84,159 @@
         </div>
     </div>
 
-    {{-- Announcement Details --}}
-    <div class="col-md-7">
+    {{-- Daily Work Update Details --}}
+    <div class="{{ $dailyWorkUpdate->comment ? 'col-md-7' : 'col-md-12' }}">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Announcement Details</h5>
+                <h5 class="mb-0">Daily Work Update Details</h5>
     
-                <div class="card-header-elements ms-auto">
-                    <button type="button" class="btn btn-primary btn-sm btn-icon rounded-pill" title="Seen & Read By" data-bs-toggle="modal" data-bs-target="#showAnnouncementReadersModal">
-                        <span class="ti ti-eye"></span>
-                    </button>
-                </div>
+                @if ($dailyWorkUpdate->rating) 
+                    <div class="card-header-elements ms-auto">
+                        <div class="btn btn-primary btn-icon rounded-pill p-3" title="Rating {{ $dailyWorkUpdate->rating }} out of 5">
+                            <sup class="text-bold">{{ $dailyWorkUpdate->rating }}</sup>
+                            <span>/</span>
+                            <sub class="text-bold">5</sub>
+                        </div>
+                    </div>
+                @endif
             </div>
             <!-- Account -->
             <div class="card-body">
-                {!! $announcement->description !!}
+                {!! $dailyWorkUpdate->work_update !!}
             </div>
         </div>
     </div>
 
-    {{-- Announcement Comments --}}
-    <div class="col-md-5">
-        <div class="card mb-4">
-            <div class="card-header header-elements">
-                <h5 class="mb-0">Announcement Comments</h5>
-    
-                <div class="card-header-elements ms-auto">
-                    <button type="button" class="btn btn-sm btn-primary" title="Create Comment" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-                        <span class="tf-icon ti ti-message-circle ti-xs me-1"></span>
-                        Comment
-                    </button>
+    {{-- Team Leader Comment --}}
+    @if ($dailyWorkUpdate->comment) 
+        <div class="col-md-5">
+            <div class="card mb-4">
+                <div class="card-header header-elements">
+                    <h5 class="mb-0">Team Leader Comment</h5>
+                </div>
+                <!-- Account -->
+                <div class="card-body">
+                    {!! $dailyWorkUpdate->comment !!}
                 </div>
             </div>
-            <!-- Account -->
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-12">
-                        <form action="{{ route('administration.announcement.comment.store', ['announcement' => $announcement]) }}" method="post">
+        </div>
+    @endif
+</div>
+<!-- End row -->
+
+
+{{-- Mark As Read Modal --}}
+@can ('Daily Work Update Update')
+    @if (!$dailyWorkUpdate->rating && $dailyWorkUpdate->team_leader_id == auth()->user()->id) 
+        <div class="modal fade" data-bs-backdrop="static" id="markAsReadModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-md modal-dialog-centered">
+                <div class="modal-content p-3">
+                    <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-body">
+                        <div class="text-center mb-4">
+                            <h3 class="role-title mb-2">Mark As Read</h3>
+                            <p class="text-muted">Update the work update's status and rating</p>
+                        </div>
+
+                        <form id="workUpdateStatusForm" action="{{ route('administration.daily_work_update.update', ['daily_work_update' => $dailyWorkUpdate]) }}" method="post" enctype="multipart/form-data" autocomplete="off">
                             @csrf
-                            <div class="collapse" id="collapseExample">
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <textarea class="form-control" name="comment" rows="2" placeholder="Ex: Congratulations Jhon Doe." required>{{ old('comment') }}</textarea>
-                                        @error('comment')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
-                                    </div>
-                                    <div class="col-md-12">
-                                        <button type="submit" class="btn btn-primary btn-sm btn-block mt-2 mb-3">
-                                            <i class="ti ti-check"></i>
-                                            Submit Comment
-                                        </button>
-                                    </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-3">
+                                    <label for="rating" class="form-label">Select Rating <strong class="text-danger">*</strong></label>
+                                    <select name="rating" id="rating" class="form-select bootstrap-select w-100 @error('rating') is-invalid @enderror"  data-style="btn-default" required>
+                                        <option value="" {{ is_null(request()->rating) ? 'selected' : '' }}>Select rating</option>
+                                        <option value="1" {{ request()->rating == 1 ? 'selected' : '' }}>1</option>
+                                        <option value="2" {{ request()->rating == 2 ? 'selected' : '' }}>2</option>
+                                        <option value="3" {{ request()->rating == 3 ? 'selected' : '' }}>3</option>
+                                        <option value="4" {{ request()->rating == 4 ? 'selected' : '' }}>4</option>
+                                        <option value="5" {{ request()->rating == 5 ? 'selected' : '' }}>5</option>
+                                    </select>
+                                    @error('rating')
+                                        <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                    @enderror
+                                </div>
+                                
+                                <div class="col-md-12 mb-3">
+                                    <label class="form-label">Comment</label>
+                                    <div name="comment" id="commentEditor">{!! old('comment') !!}</div>
+                                    <textarea class="d-none" name="comment" id="commentEditorInput">{{ old('comment') }}</textarea>
+                                    @error('comment')
+                                        <b class="text-danger">{{ $message }}</b>
+                                    @enderror
+                                </div>
+
+                                <div class="col-12 text-center mt-4">
+                                    <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                    <button type="submit" class="btn btn-primary me-sm-3 me-1">
+                                        <i class="ti ti-check"></i>
+                                        Update Rating & Comment
+                                    </button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
-                
-                <div class="row">
-                    <div class="col-md-12 comments">
-                        <table class="table">
-                            <tbody>
-                                @foreach ($announcement->comments as $comment) 
-                                    <tr class="border-0 border-bottom-0">
-                                        <td class="border-0 border-bottom-0">
-                                            <div class="d-flex justify-content-between align-items-center user-name">
-                                                <div class="d-flex commenter">
-                                                    <div class="avatar-wrapper">
-                                                        <div class="avatar me-2">
-                                                            @if (auth()->user()->hasMedia('avatar'))
-                                                                <img src="{{ $comment->commenter->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $comment->commenter->name }} Avatar" class="h-auto rounded-circle">
-                                                            @else
-                                                                <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $comment->commenter->name }} No Avatar" class="h-auto rounded-circle">
-                                                            @endif
-                                                        </div>
-                                                      </div>
-                                                      <div class="d-flex flex-column">
-                                                        <span class="fw-medium">{{ $comment->commenter->name }}</span>
-                                                        <small class="text-muted">{{ $comment->commenter->roles[0]->name }}</small>
-                                                    </div>
-                                                </div>
-                                                <small class="date-time text-muted">{{ date_time_ago($comment->created_at) }}</small>
-                                            </div>
-                                            <div class="d-flex mt-2">
-                                                <p>{{ $comment->comment }}</p>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
-    </div>
-</div>
-<!-- End row -->
-
-
-{{-- Read By At Modal --}}
-<div class="modal fade" data-bs-backdrop="static" id="showAnnouncementReadersModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content p-3">
-            <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
-            <div class="modal-body">
-                <div class="text-center mb-4">
-                    <h3 class="role-title mb-2">Announcement Readers</h3>
-                    <p class="text-muted">Details of Announcement Readers</p>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-12">
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Read By</th>
-                                    <th>Read At</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach (json_decode($announcement->read_by_at, true) as $readByAt)
-                                    <tr>
-                                        <td>{{ show_user_data($readByAt['read_by'], 'name') }}</td>
-                                        <td>{{ show_date_time($readByAt['read_at']) }}</td>
-                                    </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-{{-- Read By At Modal --}}
+    @endif
+@endcan
+{{-- Mark As Read Modal --}}
 
 @endsection
 
 
 @section('script_links')
     {{--  External Javascript Links --}}
+    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+
+    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
+    <!-- Vendors JS -->
+    <script src="{{asset('assets/vendor/libs/quill/katex.js')}}"></script>
+    <script src="{{asset('assets/vendor/libs/quill/quill.js')}}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
+    <script>
+        // Custom Script Here
+        $(document).ready(function() {
+            $('.bootstrap-select').each(function() {
+                if (!$(this).data('bs.select')) { // Check if it's already initialized
+                    $(this).selectpicker();
+                }
+            });
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            var fullToolbar = [
+                [{ font: [] }, { size: [] }],
+                ["bold", "italic", "underline", "strike"],
+                [{ color: [] }, { background: [] }],
+                [{ script: "super" }, { script: "sub" }],
+                [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
+                [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+            ];
+
+            var commentEditor = new Quill("#commentEditor", {
+                bounds: "#commentEditor",
+                placeholder: "Any Comment Regarding This Work Update...",
+                modules: {
+                    formula: true,
+                    toolbar: fullToolbar,
+                },
+                theme: "snow",
+            });
+
+            // Set the editor content to the old comment if validation fails
+            @if(old('comment'))
+                commentEditor.root.innerHTML = {!! json_encode(old('comment')) !!};
+            @endif
+
+            $('#workUpdateStatusForm').on('submit', function() {
+                $('#commentEditorInput').val(commentEditor.root.innerHTML);
+            });
+        });
+    </script>
 @endsection

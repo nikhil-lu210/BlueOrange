@@ -10,6 +10,7 @@ use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Notifications\Administration\DailyWorkUpdate\DailyWorkUpdateCreateNotification;
+use App\Notifications\Administration\DailyWorkUpdate\DailyWorkUpdateUpdateNotification;
 
 class DailyWorkUpdateController extends Controller
 {
@@ -97,7 +98,8 @@ class DailyWorkUpdateController extends Controller
      */
     public function show(DailyWorkUpdate $dailyWorkUpdate)
     {
-        //
+        // dd($dailyWorkUpdate);
+        return view('administration.daily_work_update.show', compact(['dailyWorkUpdate']));
     }
 
     /**
@@ -113,7 +115,29 @@ class DailyWorkUpdateController extends Controller
      */
     public function update(Request $request, DailyWorkUpdate $dailyWorkUpdate)
     {
-        //
+        // dd($request->all(), $comment);
+        try {
+            DB::transaction(function () use ($request, $dailyWorkUpdate) {
+                $comment = $request->input('comment');
+                // Check if the comment contains only empty tags or line breaks
+                if (trim(strip_tags($comment)) === '') {
+                    $comment = null; // Or handle it as an empty comment
+                }
+
+                $dailyWorkUpdate->update([
+                    'rating' => $request->rating,
+                    'comment' => $comment
+                ]);
+                
+                // Send Notification to System
+                $dailyWorkUpdate->user->notify(new DailyWorkUpdateUpdateNotification($dailyWorkUpdate, auth()->user()));
+            });
+
+            toast('Daily Work Update Has Been Rated Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**
