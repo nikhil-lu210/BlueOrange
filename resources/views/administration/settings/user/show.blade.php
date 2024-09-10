@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
+    {{--  External CSS  --}}
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
 @endsection
 
 @section('custom_css')
@@ -194,8 +196,11 @@
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
-    {{-- <!-- Page JS --> --}}
-    {{-- <script src="{{ asset('assets/js/forms-pickers.js') }}"></script> --}}
+    
+    
+    {{--  External Javascript Links --}}
+    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
 @endsection
 
 @section('custom_script')

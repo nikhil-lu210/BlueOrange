@@ -12,4 +12,6 @@ Route::controller(UserInteractionController::class)
         ->name('user_interaction.')
         ->group(function () {
             Route::get('/', 'index')->name('index')->can('User Interaction Read');
+
+            Route::post('/update_team_leader', 'updateTeamLeader')->name('update_team_leader')->can('User Interaction Create');
         });

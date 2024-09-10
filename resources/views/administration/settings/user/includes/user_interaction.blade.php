@@ -10,7 +10,7 @@
                 <h5 class="mb-0">Team Leader(s)</h5>
         
                 <div class="card-header-elements ms-auto">
-                    <a href="javascript:void(0);" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#assignNewHolidayModal" title="Add/Update Team Leader">
+                    <a href="javascript:void(0);" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#updateTeamLeaderModal" title="Add/Update Team Leader">
                         @if ($user->employee_team_leaders->count() > 0) 
                             <span class="tf-icon ti ti-edit-circle ti-xs me-1"></span>
                             Update
@@ -93,4 +93,17 @@
     </div>
 </div>
 <!--/ User Profile Content -->
+
+
+
+{{-- Update Team Leader Modal --}}
+@include('administration.settings.user.includes.modals.update_team_leader')
+
+{{-- Add Users Modal --}}
+{{-- @include('administration.settings.user.includes.modals.add_users') --}}
+
+{{-- remove Users Modal --}}
+{{-- @include('administration.settings.user.includes.modals.remove_users') --}}
+
+
 @endsection
