@@ -4,6 +4,7 @@ namespace App\Livewire\Administration\Chatting;
 
 use Livewire\Component;
 use App\Models\Chatting\Chatting;
+use Illuminate\Support\Facades\Auth;
 
 class ChatBody extends Component
 {
@@ -21,6 +22,12 @@ class ChatBody extends Component
 
     public function loadMessages()
     {
+        $canInteract = Auth::user()->user_interactions->contains('id', $this->receiver->id);
+        if ($canInteract == false) {
+            toast('You are not authorised to interact with '.$this->receiver->name.'.','warning');
+            return redirect()->route('administration.chatting.index');
+        }
+        
         if ($this->receiver) {
             $this->messages = Chatting::with(['sender.media', 'receiver.media'])->where(function ($query) {
                     $query->where('sender_id', auth()->user()->id)

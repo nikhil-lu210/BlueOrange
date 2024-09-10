@@ -21,6 +21,8 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
+    {{--  External CSS  --}}
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
 @endsection
 
 @section('custom_css')
@@ -113,12 +115,14 @@
                     Attendance
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('settings/user/show/*/break*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.break', ['user' => $user]) }}">
-                    <i class="ti-xs ti ti-hourglass-empty me-1"></i> 
-                    Breaks
-                </a>
-            </li>
+            @can ('User Interaction Read') 
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('settings/user/show/*/user_interaction*') ? 'active' : '' }}" href="{{ route('administration.settings.user.user_interaction.index', ['user' => $user]) }}">
+                        <i class="ti-xs ti ti-users-group me-1"></i> 
+                        User Interactions
+                    </a>
+                </li>
+            @endcan
         </ul>
     </div>
 </div>
@@ -192,8 +196,11 @@
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
-    {{-- <!-- Page JS --> --}}
-    {{-- <script src="{{ asset('assets/js/forms-pickers.js') }}"></script> --}}
+    
+    
+    {{--  External Javascript Links --}}
+    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
 @endsection
 
 @section('custom_script')

@@ -30,6 +30,11 @@ class RolesTableSeeder extends Seeder
                 $permissions = [
                     'Logs Read',
 
+                    'User Interaction Create',
+                    'User Interaction Read',
+                    'User Interaction Update',
+                    'User Interaction Delete',
+
                     'Attendance Create',
                     'Attendance Read',
                     'Attendance Update',
@@ -78,6 +83,11 @@ class RolesTableSeeder extends Seeder
             } elseif ($role === 'Super Admin') {
                 $permissions = [
                     'Logs Read',
+
+                    'User Interaction Create',
+                    'User Interaction Read',
+                    'User Interaction Update',
+                    'User Interaction Delete',
                     
                     'Attendance Create',
                     'Attendance Read',
@@ -128,6 +138,9 @@ class RolesTableSeeder extends Seeder
                 $permissions = [
                     'Attendance Read',
                     
+                    'User Interaction Read',
+                    'User Interaction Update',
+                    
                     'Announcement Read',
 
                     'Task Create',
@@ -159,6 +172,9 @@ class RolesTableSeeder extends Seeder
                 $permissions = [
                     'Attendance Read',
                     
+                    'User Interaction Read',
+                    'User Interaction Update',
+                    
                     'Announcement Read',
                     
                     'Task Read',
@@ -185,6 +201,9 @@ class RolesTableSeeder extends Seeder
             } elseif ($role === 'Team Leader') {
                 $permissions = [
                     'Announcement Read',
+                    
+                    'User Interaction Read',
+                    'User Interaction Update',
                     
                     'Task Read',
 

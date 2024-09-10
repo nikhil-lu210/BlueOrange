@@ -130,7 +130,7 @@ class UserController extends Controller
             }, 5);
 
             toast('A New User Has Been Created.','success');
-            return redirect()->route('administration.settings.user.show.profile', ['user' => $user]);
+            return redirect()->route('administration.settings.user.user_interaction.index', ['user' => $user]);
         } catch (Exception $e) {
             dd($e);
             alert('Opps! Error.', $e->getMessage(), 'error');
@@ -158,15 +158,6 @@ class UserController extends Controller
                         ->distinct()
                         ->get();
         return view('administration.settings.user.includes.attendance', compact(['user', 'attendances']));
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function showBreak(User $user)
-    {
-        // dd($user);
-        return view('administration.settings.user.includes.break', compact(['user']));
     }
 
 

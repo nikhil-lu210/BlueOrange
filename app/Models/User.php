@@ -109,4 +109,18 @@ class User extends Authenticatable implements HasMedia
         // Return the first (and only) active team leader by $user->active_team_leader
         return $this->employee_team_leaders()->wherePivot('is_active', true)->first();
     }
+
+    // Define an accessor to get the user_interactions
+    public function getUserInteractionsAttribute()
+    {
+        // Get users this user has interacted with
+        $interactedUsers = $this->interacted_users()->get();
+
+        // Get users interacting with this user
+        $interactingUsers = $this->interacting_users()->get();
+
+        // Merge the two collections, remove duplicates if any and get by by $user->user_interactions
+        return $interactedUsers->merge($interactingUsers)->unique('id');
+    }
+
 }
