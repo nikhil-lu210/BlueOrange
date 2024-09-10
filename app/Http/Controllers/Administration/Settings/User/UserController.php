@@ -130,7 +130,7 @@ class UserController extends Controller
             }, 5);
 
             toast('A New User Has Been Created.','success');
-            return redirect()->route('administration.settings.user.show.profile', ['user' => $user]);
+            return redirect()->route('administration.settings.user.user_interaction.index', ['user' => $user]);
         } catch (Exception $e) {
             dd($e);
             alert('Opps! Error.', $e->getMessage(), 'error');

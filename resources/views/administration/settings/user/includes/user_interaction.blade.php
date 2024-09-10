@@ -52,16 +52,16 @@
     <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Interacted With User(s)</h5>
+                <h5 class="mb-0">Interactions With User(s)</h5>
         
                 <div class="card-header-elements ms-auto">
                     @if ($user->interacted_users->count() > 0) 
-                        <a href="javascript:void(0);" class="btn btn-sm btn-danger waves-effect" data-bs-toggle="modal" data-bs-target="#assignNewHolidayModal" title="Remove User(s)">
-                            <i class="ti ti-users-minus me-1"></i> 
+                        <a href="javascript:void(0);" class="btn btn-sm btn-danger waves-effect" data-bs-toggle="modal" data-bs-target="#removeUserModal" title="Remove User">
+                            <i class="ti ti-user-minus me-1"></i> 
                             Remove
                         </a>
                     @endif
-                    <a href="javascript:void(0);" class="btn btn-sm btn-primary waves-effect" data-bs-toggle="modal" data-bs-target="#assignNewHolidayModal" title="Add User(s)">
+                    <a href="javascript:void(0);" class="btn btn-sm btn-primary waves-effect" data-bs-toggle="modal" data-bs-target="#addNewUsersModal" title="Add User(s)">
                         <i class="ti ti-users-plus me-1"></i> 
                         Add
                     </a>
@@ -77,9 +77,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($user->interacted_users as $key => $employee) 
+                        @foreach ($user->user_interactions as $key => $employee) 
                             <tr>
-                                <th>{{ serial($employee->interacted_users, $key) }}</th>
+                                <th>{{ serial($employee->user_interactions, $key) }}</th>
                                 <th>
                                     <a href="{{ route('administration.settings.user.show.profile', ['user' => $employee]) }}" target="_blank" class="text-primary text-bold">{{ $employee->name }}</a>
                                 </th>
@@ -100,10 +100,10 @@
 @include('administration.settings.user.includes.modals.update_team_leader')
 
 {{-- Add Users Modal --}}
-{{-- @include('administration.settings.user.includes.modals.add_users') --}}
+@include('administration.settings.user.includes.modals.add_users')
 
 {{-- remove Users Modal --}}
-{{-- @include('administration.settings.user.includes.modals.remove_users') --}}
+@include('administration.settings.user.includes.modals.remove_users')
 
 
 @endsection

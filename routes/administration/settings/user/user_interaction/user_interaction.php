@@ -14,4 +14,6 @@ Route::controller(UserInteractionController::class)
             Route::get('/', 'index')->name('index')->can('User Interaction Read');
 
             Route::post('/update_team_leader', 'updateTeamLeader')->name('update_team_leader')->can('User Interaction Create');
+            Route::post('/add_users', 'addUsers')->name('add_users')->can('User Interaction Create');
+            Route::post('/remove_user', 'removeUser')->name('remove_user')->can('User Interaction Delete');
         });
