@@ -52,6 +52,10 @@ class UserFactory extends Factory
                 // Assign a random team_leader
                 $teamLeader = User::inRandomOrder()->first();
                 $user->employee_team_leaders()->attach($teamLeader->id, ['is_active' => true]);
+                
+                // Assign a random interacted user
+                $interactedUser = User::inRandomOrder()->first();
+                $user->interacted_users()->attach($interactedUser->id);
 
                 // Generate a random start time between 01:00 and 23:00
                 $start_time = Carbon::createFromTime(rand(1, 23), 0, 0);
