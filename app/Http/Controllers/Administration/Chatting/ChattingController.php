@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Chatting\Chatting;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Auth;
 
 class ChattingController extends Controller
 {
@@ -98,10 +99,10 @@ class ChattingController extends Controller
      * Get all active chat contacts
      */
     private function chatContacts() {
-        return User::with(['media'])
-                    ->whereStatus('Active')
-                    ->where('id', '!=', auth()->user()->id)
-                    ->orderBy('name', 'asc')
-                    ->get();
+        $chatContacts = Auth::user()->user_interactions->filter(function($user) {
+            return $user->status === 'Active' && $user->id !== Auth::id();
+        })->sortBy('name');
+        
+        return $chatContacts;
     }
 }

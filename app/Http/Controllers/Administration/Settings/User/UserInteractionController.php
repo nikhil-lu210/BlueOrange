@@ -6,7 +6,6 @@ use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 
 class UserInteractionController extends Controller
@@ -16,7 +15,7 @@ class UserInteractionController extends Controller
      */
     public function index(User $user)
     {
-        // dd($user->user_interactions);
+        // dd($user->user_interactions->pluck('id'));
         $activeTeamLeader = $user->active_team_leader;
 
         $teamLeaders = User::select(['id', 'name'])
