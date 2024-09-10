@@ -55,7 +55,7 @@
                 <h5 class="mb-0">Interactions With User(s)</h5>
         
                 <div class="card-header-elements ms-auto">
-                    @if ($user->interacted_users->count() > 0) 
+                    @if ($user->user_interactions->count() > 0) 
                         <a href="javascript:void(0);" class="btn btn-sm btn-danger waves-effect" data-bs-toggle="modal" data-bs-target="#removeUserModal" title="Remove User">
                             <i class="ti ti-user-minus me-1"></i> 
                             Remove

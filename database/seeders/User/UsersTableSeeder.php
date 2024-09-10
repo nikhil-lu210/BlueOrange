@@ -32,6 +32,8 @@ class UsersTableSeeder extends Seeder
         $developer->assignRole($developerRole);
         // Assign team_leader
         $developer->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
+        // Attach the interaction for this developer
+        $developer->interacted_users()->attach($developer->id);
         // Create associated EmployeeShift
         $developer->employee_shifts()->create([
             'start_time' => '14:00:00',
@@ -56,6 +58,8 @@ class UsersTableSeeder extends Seeder
         $superAdmin->assignRole($superAdminRole);
         // Assign team_leader
         $superAdmin->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
+        // Attach the interaction for this superAdmin
+        $superAdmin->interacted_users()->attach($developer->id);
         // Create associated EmployeeShift
         $superAdmin->employee_shifts()->create([
             'start_time' => '14:00:00',
@@ -80,6 +84,8 @@ class UsersTableSeeder extends Seeder
         $admin->assignRole($adminRole);
         // Assign team_leader
         $admin->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
+        // Attach the interaction for this admin
+        $admin->interacted_users()->attach($developer->id);
         // Create associated EmployeeShift
         $admin->employee_shifts()->create([
             'start_time' => '14:00:00',
@@ -104,6 +110,8 @@ class UsersTableSeeder extends Seeder
         $hr->assignRole($hrRole);
         // Assign team_leader
         $hr->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
+        // Attach the interaction for this hr
+        $hr->interacted_users()->attach($developer->id);
         // Create associated EmployeeShift
         $hr->employee_shifts()->create([
             'start_time' => '14:00:00',
@@ -128,6 +136,8 @@ class UsersTableSeeder extends Seeder
         $tl->assignRole($tlRole);
         // Assign team_leader
         $tl->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
+        // Attach the interaction for this tl
+        $tl->interacted_users()->attach($developer->id);
         // Create associated EmployeeShift
         $tl->employee_shifts()->create([
             'start_time' => '14:00:00',
@@ -152,6 +162,8 @@ class UsersTableSeeder extends Seeder
         $employee->assignRole($employeeRole);
         // Assign team_leader
         $employee->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
+        // Attach the interaction for this employee
+        $employee->interacted_users()->attach($developer->id);
         // Create associated EmployeeShift
         $employee->employee_shifts()->create([
             'start_time' => '14:00:00',

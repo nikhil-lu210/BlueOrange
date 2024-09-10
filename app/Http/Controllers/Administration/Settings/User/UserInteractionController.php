@@ -28,10 +28,16 @@ class UserInteractionController extends Controller
             ->get();
 
         $users = User::whereDoesntHave('interacting_users', function($userQuery) use ($user) {
-            $userQuery->where('user_id', $user->id)->orWhere('interacted_user_id', $user->id);
-        })
-        ->where('id', '!=', $user->id)
-        ->get();
+                            $userQuery->where('user_id', $user->id)
+                                    ->orWhere('interacted_user_id', $user->id);
+                        })
+                        ->whereDoesntHave('interacted_users', function($userQuery) use ($user) {
+                            $userQuery->where('user_id', $user->id)
+                                    ->orWhere('interacted_user_id', $user->id);
+                        })
+                        ->where('id', '!=', $user->id) // Exclude the current user from the list
+                        ->get();
+
 
         $user = User::with([
             'interacted_users',
