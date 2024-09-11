@@ -24,6 +24,8 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
+            $table->enum('role', ['Admin', 'Member'])->default('Member');
+
             $table->timestamps();
             $table->softDeletes();
         });

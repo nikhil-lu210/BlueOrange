@@ -33,6 +33,6 @@ trait ChattingGroupRelations
      */
     public function group_users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->withTimestamps();
+        return $this->belongsToMany(User::class)->withPivot('role')->withTimestamps();
     }
 }
