@@ -159,12 +159,11 @@ class DailyWorkUpdateController extends Controller
     {
         return Role::select(['id', 'name'])
             ->with(['users' => function ($user) {
-                $user->permission('Daily Work Update Create')->select(['id', 'name']);
+                $user->permission('Daily Work Update Create')
+                    ->select(['id', 'name'])
+                    ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                    ->whereStatus('Active');
             }])
-            ->whereHas('users', function ($user) {
-                $user->permission('Daily Work Update Create');
-            })
-            ->distinct()
             ->get();
     }
 
