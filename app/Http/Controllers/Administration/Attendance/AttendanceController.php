@@ -22,7 +22,10 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         // dd($request->filter_attendance);
-        $users = User::select(['id', 'name'])->whereStatus('Active')->distinct()->get();
+        $users = User::select(['id', 'name'])
+                        ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active')
+                        ->get();
 
         $query = Attendance::with([
                                 'user:id,userid,name', 
@@ -92,7 +95,10 @@ class AttendanceController extends Controller
      */
     public function create()
     {
-        $users = User::select(['id', 'name'])->whereStatus('Active')->distinct()->get();
+        $users = User::select(['id', 'name'])
+                        ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active')
+                        ->get();
 
         return view('administration.attendance.create', compact(['users']));
     }
