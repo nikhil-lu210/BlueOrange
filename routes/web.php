@@ -13,6 +13,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/', function () {
+    return view('welcome');
+});
+
 Auth::routes();
 
 
@@ -20,9 +24,5 @@ Auth::routes();
 ======================< Administration Routes >=================
 ==============================================================*/
 Route::middleware(['auth'])->group(function () {
-    Route::get('/', function () {
-        return view('welcome');
-    });
-
     include_once 'administration/administration.php';
 });
