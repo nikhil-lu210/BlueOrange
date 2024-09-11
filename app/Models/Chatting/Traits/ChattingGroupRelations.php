@@ -15,7 +15,7 @@ trait ChattingGroupRelations
      */
     public function group_messages(): HasMany
     {
-        return $this->belongsTo(GroupChatting::class);
+        return $this->hasMany(GroupChatting::class, 'chatting_group_id');
     }
     
     

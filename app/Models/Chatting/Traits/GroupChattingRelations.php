@@ -13,7 +13,7 @@ trait GroupChattingRelations
      */
     public function group(): BelongsTo
     {
-        return $this->belongsTo(ChattingGroup::class);
+        return $this->belongsTo(ChattingGroup::class, 'chatting_group_id');
     }
     
     
