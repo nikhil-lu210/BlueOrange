@@ -27,7 +27,10 @@ class AnnouncementController extends Controller
         $roles = Role::select(['id', 'name'])
                         ->with([
                             'users' => function ($user) {
-                                $user->permission('Announcement Create')->select(['id', 'name']);
+                                $user->permission('Announcement Create')
+                                    ->select(['id', 'name'])
+                                    ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                                    ->whereStatus('Active');
                             }
                         ])
                         ->whereHas('users', function ($user) {
@@ -70,7 +73,14 @@ class AnnouncementController extends Controller
      */
     public function create()
     {
-        $roles = Role::with(['users'])->get();
+        $roles = Role::with([
+            'users' => function ($query) {
+                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active')
+                        ->orderBy('name', 'asc');
+            }
+        ])->get();
+        
         return view('administration.announcement.create', compact(['roles']));
     }
 
@@ -152,8 +162,14 @@ class AnnouncementController extends Controller
      */
     public function edit(Announcement $announcement)
     {
-        // dd($announcement);
-        $roles = Role::with(['users'])->get();
+        $roles = Role::with([
+            'users' => function ($query) {
+                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active')
+                        ->orderBy('name', 'asc');
+            }
+        ])->get();
+        
         return view('administration.announcement.edit', compact(['announcement', 'roles']));
     }
 

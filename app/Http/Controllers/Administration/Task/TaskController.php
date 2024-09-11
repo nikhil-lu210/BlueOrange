@@ -33,7 +33,10 @@ class TaskController extends Controller
         $roles = Role::select(['id', 'name'])
                         ->with([
                             'users' => function ($user) {
-                                $user->permission('Task Create')->select(['id', 'name']);
+                                $user->permission('Task Create')
+                                    ->select(['id', 'name'])
+                                    ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                                    ->whereStatus('Active');
                             }
                         ])
                         ->whereHas('users', function ($user) {
@@ -42,7 +45,11 @@ class TaskController extends Controller
                         ->distinct()
                         ->get();
 
-        $assignees = User::permission('Task Read')->select(['id', 'name'])->get();
+        $assignees = User::permission('Task Read')
+                        ->select(['id', 'name'])
+                        ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active')
+                        ->get();
 
         $query = Task::with([
             'creator' => function($query) {
