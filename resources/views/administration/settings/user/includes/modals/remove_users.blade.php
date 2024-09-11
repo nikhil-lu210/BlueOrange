@@ -15,10 +15,10 @@
                         <label for="user" class="form-label">Select User <strong class="text-danger">*</strong></label>
                         <select name="user" id="user" class="select2 form-select @error('user') is-invalid @enderror" data-allow-clear="true" required>
                             <option value="" selected>Select User</option>
-                            @foreach ($user->user_interactions as $user)
-                                @if ($user->id != auth()->user()->id) 
-                                    <option value="{{ $user->id }}" {{ $user->id == old('user') ? 'selected' : '' }}>
-                                        {{ $user->name }}
+                            @foreach ($user->user_interactions as $userData)
+                                @if ($userData->id != $user->id) 
+                                    <option value="{{ $userData->id }}" {{ $userData->id == old('userData') ? 'selected' : '' }}>
+                                        {{ $userData->name }}
                                     </option>
                                 @endif
                             @endforeach
