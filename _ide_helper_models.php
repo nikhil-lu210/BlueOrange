@@ -163,6 +163,48 @@ namespace App\Models\Chatting{
 	class Chatting extends \Eloquent {}
 }
 
+namespace App\Models\DailyWorkUpdate{
+/**
+ * App\Models\DailyWorkUpdate\DailyWorkUpdate
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $team_leader_id
+ * @property \Illuminate\Support\Carbon $date
+ * @property string|array $work_update Daily Work Update Here.
+ * @property int $progress
+ * @property string|array|null $note Client Respond / Any Issue Note Here.
+ * @property int|null $rating
+ * @property string|null $comment Team Leader Comment Here.
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileMedia\FileMedia> $files
+ * @property-read int|null $files_count
+ * @property-read \App\Models\User $team_leader
+ * @property-read \App\Models\User $user
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate query()
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereComment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereProgress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereRating($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereTeamLeaderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate whereWorkUpdate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate withoutTrashed()
+ */
+	class DailyWorkUpdate extends \Eloquent {}
+}
+
 namespace App\Models\EmployeeShift{
 /**
  * App\Models\EmployeeShift\EmployeeShift
@@ -555,10 +597,20 @@ namespace App\Models{
  * @property-read int|null $attendances_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\Task> $created_tasks
  * @property-read int|null $created_tasks_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DailyWorkUpdate\DailyWorkUpdate> $daily_work_updates
+ * @property-read int|null $daily_work_updates_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EmployeeShift\EmployeeShift> $employee_shifts
  * @property-read int|null $employee_shifts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $employee_team_leaders
+ * @property-read int|null $employee_team_leaders_count
+ * @property-read mixed $active_team_leader
  * @property-read mixed $current_salary
  * @property-read mixed $current_shift
+ * @property-read mixed $user_interactions
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $interacted_users
+ * @property-read int|null $interacted_users_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $interacting_users
+ * @property-read int|null $interacting_users_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User\LoginHistory> $login_logout_histories
  * @property-read int|null $login_logout_histories_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
@@ -579,6 +631,10 @@ namespace App\Models{
  * @property-read int|null $task_comments_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\Task> $tasks
  * @property-read int|null $tasks_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $tl_employees
+ * @property-read int|null $tl_employees_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DailyWorkUpdate\DailyWorkUpdate> $tl_employees_daily_work_updates
+ * @property-read int|null $tl_employees_daily_work_updates_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
@@ -621,11 +677,14 @@ namespace App\Models\User{
  * @property string $user_agent
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory query()
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereLoginIp($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereLoginTime($value)
@@ -634,6 +693,8 @@ namespace App\Models\User{
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereUserAgent($value)
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory withoutTrashed()
  */
 	class LoginHistory extends \Eloquent {}
 }

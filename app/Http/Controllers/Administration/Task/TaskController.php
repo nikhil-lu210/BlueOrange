@@ -103,7 +103,14 @@ class TaskController extends Controller
      */
     public function create()
     {
-        $roles = Role::with(['users'])->get();
+        $roles = Role::with([
+            'users' => function ($query) {
+                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active')
+                        ->orderBy('name', 'asc');
+            }
+        ])->get();
+        
         return view('administration.task.create', compact(['roles']));
     }
 
@@ -196,12 +203,17 @@ class TaskController extends Controller
                         ->where('status', 'Working')
                         ->latest('started_at')
                         ->first();
+
+        $roles = Role::with([
+            'users' => function($query) use ($task) {
+                $query->whereDoesntHave('tasks', function($taskQuery) use ($task) {
+                    $taskQuery->where('task_id', $task->id);
+                })
+                ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                ->whereStatus('Active');
+            }
+        ])->get();
         
-        $roles = Role::with(['users' => function($user) use ($task) {
-            $user->whereDoesntHave('tasks', function($taskQuery) use ($task) {
-                $taskQuery->where('task_id', $task->id);
-            });
-        }])->get();
 
         return view('administration.task.show', compact(['task', 'isWorking', 'lastActiveTaskHistory', 'roles']));
     }
@@ -220,7 +232,14 @@ class TaskController extends Controller
             'You are not authorized to view this task as you are not the assigner, assignee, Developer, or Superadmin.'
         );
         
-        $roles = Role::with(['users'])->get();
+        $roles = Role::with([
+            'users' => function ($query) {
+                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active')
+                        ->orderBy('name', 'asc');
+            }
+        ])->get();
+
         return view('administration.task.edit', compact(['roles', 'task']));
     }
 
