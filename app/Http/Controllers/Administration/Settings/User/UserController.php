@@ -84,6 +84,9 @@ class UserController extends Controller
                     'password' => Hash::make($request->password)
                 ]);
                 
+                // Attach the interaction for this user with himself/herself
+                $user->interacted_users()->attach($user->id);
+                
                 // Upload and associate the avatar with the user
                 // Update the path from App\Services\MediaLibrary\PathGenerators\UserPathGenerator
                 if ($request->hasFile('avatar')) {

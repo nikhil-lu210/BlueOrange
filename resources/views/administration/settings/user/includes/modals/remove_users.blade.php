@@ -16,9 +16,11 @@
                         <select name="user" id="user" class="select2 form-select @error('user') is-invalid @enderror" data-allow-clear="true" required>
                             <option value="" selected>Select User</option>
                             @foreach ($user->user_interactions as $user)
-                                <option value="{{ $user->id }}" {{ $user->id == old('user') ? 'selected' : '' }}>
-                                    {{ $user->name }}
-                                </option>
+                                @if ($user->id != auth()->user()->id) 
+                                    <option value="{{ $user->id }}" {{ $user->id == old('user') ? 'selected' : '' }}>
+                                        {{ $user->name }}
+                                    </option>
+                                @endif
                             @endforeach
                         </select>
                         @error('user')
