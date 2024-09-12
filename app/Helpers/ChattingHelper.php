@@ -45,14 +45,14 @@ if (!function_exists('get_receiver_unread_messages_count')) {
 }
 
 
-if (!function_exists('get_total_unread_messages_count')) {
+if (!function_exists('get_total_unread_private_messages_count')) {
     /**
      * Get the count of unread messages from a specific user.
      *
      * @param  int  $userId
      * @return int
      */
-    function get_total_unread_messages_count($userId = null)
+    function get_total_unread_private_messages_count($userId = null)
     {
         if (is_null($userId)) {
             $userId = auth()->user()->id;

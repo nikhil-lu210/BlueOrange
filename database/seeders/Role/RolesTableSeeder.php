@@ -79,6 +79,11 @@ class RolesTableSeeder extends Seeder
                     'Holiday Read',
                     'Holiday Update',
                     'Holiday Delete',
+                    
+                    'Group Chatting Create',
+                    'Group Chatting Read',
+                    'Group Chatting Update',
+                    'Group Chatting Delete',
                 ];
             } elseif ($role === 'Super Admin') {
                 $permissions = [
@@ -133,6 +138,11 @@ class RolesTableSeeder extends Seeder
                     'Holiday Read',
                     'Holiday Update',
                     'Holiday Delete',
+                    
+                    'Group Chatting Create',
+                    'Group Chatting Read',
+                    'Group Chatting Update',
+                    'Group Chatting Delete',
                 ];
             } elseif ($role === 'Admin') {
                 $permissions = [
@@ -167,6 +177,11 @@ class RolesTableSeeder extends Seeder
                     'Holiday Create',
                     'Holiday Read',
                     'Holiday Update',
+                    
+                    'Group Chatting Create',
+                    'Group Chatting Read',
+                    'Group Chatting Update',
+                    'Group Chatting Delete',
                 ];
             } elseif ($role === 'HR Manager') {
                 $permissions = [
@@ -197,6 +212,11 @@ class RolesTableSeeder extends Seeder
                     'Holiday Create',
                     'Holiday Read',
                     'Holiday Update',
+                    
+                    'Group Chatting Create',
+                    'Group Chatting Read',
+                    'Group Chatting Update',
+                    'Group Chatting Delete',
                 ];
             } elseif ($role === 'Team Leader') {
                 $permissions = [
@@ -216,6 +236,11 @@ class RolesTableSeeder extends Seeder
                     'Salary Read',
                     
                     'Holiday Read',
+                    
+                    'Group Chatting Create',
+                    'Group Chatting Read',
+                    'Group Chatting Update',
+                    'Group Chatting Delete',
                 ];
             } elseif ($role === 'Employee') {
                 $permissions = [
@@ -231,6 +256,8 @@ class RolesTableSeeder extends Seeder
                     'Salary Read',
                     
                     'Holiday Read',
+                    
+                    'Group Chatting Read',
                 ];
             } else {
                 $permissions = [
@@ -246,6 +273,8 @@ class RolesTableSeeder extends Seeder
                     'Salary Read',
                     
                     'Holiday Read',
+                    
+                    'Group Chatting Read',
                 ];
             }
 

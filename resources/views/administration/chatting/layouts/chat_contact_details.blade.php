@@ -4,7 +4,9 @@
             @if ($user->hasMedia('avatar'))
                 <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle" width="40">
             @else
-                <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="rounded-circle" width="40">
+                <span class="avatar-initial rounded-circle bg-dark border border-1">
+                    {{ substr($user->name, 0, 1) }}
+                </span>
             @endif
         </div>
         <h6 class="mt-2 mb-0">{{ $user->name }}</h6>

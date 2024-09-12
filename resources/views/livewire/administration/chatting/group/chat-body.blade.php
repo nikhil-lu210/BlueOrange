@@ -5,31 +5,44 @@
                 <div class="d-flex overflow-hidden align-items-center">
                     <i class="ti ti-menu-2 ti-sm cursor-pointer d-lg-none d-block me-2" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-contacts"></i>
                     <div class="flex-shrink-0 avatar">
-                        @if ($receiver->hasMedia('avatar'))
-                            <img src="{{ $receiver->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-sidebar-right" width="40">
-                        @else
-                            <span class="avatar-initial rounded-circle bg-dark border border-1" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-sidebar-right">
-                                {{ substr($receiver->name, 0, 1) }}
-                            </span>
-                        @endif
+                        <span class="avatar-initial rounded-circle bg-dark border border-1" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-sidebar-right">
+                            {{ substr($chattingGroup->name, 0, 2) }}
+                        </span>
                     </div>
                     <div class="chat-contact-info flex-grow-1 ms-2">
-                        <h6 class="m-0">{{ $receiver->name }}</h6>
-                        <small class="user-status text-muted">{{ $receiver->roles[0]->name }}</small>
+                        <h6 class="m-0">{{ $chattingGroup->name }}</h6>
+                        <small class="user-status text-muted"><b class="text-dark">Creator:</b> {{ $chattingGroup->creator->name }}</small>
                     </div>
                 </div>
-                <div class="d-flex align-items-center">
-                    <div class="dropdown d-flex align-self-center">
-                        <button class="btn p-0" type="button" id="chat-header-actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="ti ti-dots-vertical"></i>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="chat-header-actions">
-                            <a class="dropdown-item confirm-danger" href="javascript:void(0);">Block Contact</a>
-                            <a class="dropdown-item confirm-danger" href="javascript:void(0);">Clear Chat</a>
-                            <a class="dropdown-item confirm-warning" href="javascript:void(0);">Report</a>
+
+                @canany(['Group Chatting Create', 'Group Chatting Delete'])
+                    @if ($chattingGroup->creator_id == auth()->user()->id) 
+                        <div class="d-flex align-items-center">
+                            <div class="dropdown d-flex align-self-center">
+                                <button class="btn p-0" type="button" id="chat-header-actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-dots-vertical"></i>
+                                </button>
+
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="chat-header-actions">
+                                    @can ('Group Chatting Create')
+                                        <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addGroupChattingUsersModal">
+                                            <i class="ti ti-plus"></i>
+                                            Add Users
+                                        </a>
+                                    @endcan
+    
+                                    
+                                    @can ('Group Chatting Delete')
+                                        <a class="dropdown-item text-danger confirm-danger" href="{{ route('administration.chatting.group.destroy', ['group' => $chattingGroup, 'groupid' => $chattingGroup->groupid]) }}">
+                                            <i class="ti ti-trash"></i>
+                                            Delete Group
+                                        </a>
+                                    @endcan
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
+                    @endif
+                @endcanany
             </div>
         </div>
         <div class="chat-history-body bg-body" wire:keep-alive>
@@ -62,13 +75,8 @@
                     @if ($message->sender_id === auth()->user()->id)
                         <li class="chat-message chat-message-right">
                             <div class="d-flex overflow-hidden">
-                                @if (!is_null($message->seen_at))
-                                    <i class="ti ti-checks ti-xs me-1 text-success" data-bs-toggle="tooltip" title="Seen At: {{ show_time($message->seen_at) }}"></i>
-                                @else 
-                                    <i class="ti ti-check ti-xs me-1"></i>
-                                @endif
                                 <div class="chat-message-wrapper flex-grow-1" data-bs-toggle="tooltip" title="{{ show_time($message->created_at) }}">
-                                    @if (!is_null($message->message)) 
+                                    @if (!is_null($message->message))
                                         <div class="chat-message-text">
                                             <p class="mb-0">{!! $message->message !!}</p>
                                         </div>
@@ -90,7 +98,7 @@
                                 <div class="user-avatar flex-shrink-0 ms-3">
                                     <div class="avatar avatar-sm">
                                         @if ($key === 0 || $messages[$key - 1]->sender_id !== $message->sender_id)
-                                            <img src="{{ $imageURL }}" alt="Avatar" class="rounded-circle" />
+                                            <img src="{{ $imageURL }}" alt="Avatar" class="rounded-circle" title="{{ $message->sender->name }}"/>
                                         @endif
                                     </div>
                                 </div>
@@ -102,12 +110,17 @@
                                 <div class="user-avatar flex-shrink-0 me-3">
                                     <div class="avatar avatar-sm">
                                         @if ($key === 0 || $messages[$key - 1]->sender_id !== $message->sender_id)
-                                            <img src="{{ $imageURL }}" alt="Avatar" class="rounded-circle" />
+                                            <img src="{{ $imageURL }}" alt="Avatar" class="rounded-circle" title="{{ $message->sender->name }}"/>
                                         @endif
                                     </div>
                                 </div>
                                 <div class="chat-message-wrapper flex-grow-1" data-bs-toggle="tooltip" title="{{ show_time($message->created_at) }}">
-                                    @if (!is_null($message->message)) 
+                                    @if (!is_null($message->message))
+                                        @if ($key === 0 || $messages[$key - 1]->sender_id !== $message->sender_id)
+                                            <div class="text-muted mt-0">
+                                                <small>{{ $message->sender->name }}</small>
+                                            </div>
+                                        @endif
                                         <div class="chat-message-text">
                                             <p class="mb-0">{!! $message->message !!}</p>
                                         </div>
@@ -126,11 +139,6 @@
                                         </div>
                                     @endif
                                 </div>
-                                @if (!is_null($message->seen_at))
-                                    <i class="ti ti-checks ti-xs me-1 text-success" data-bs-toggle="tooltip" title="Seen At: {{ show_time($message->seen_at) }}"></i>
-                                @else 
-                                    <i class="ti ti-check ti-xs me-1"></i>
-                                @endif
                             </div>
                         </li>
                     @endif

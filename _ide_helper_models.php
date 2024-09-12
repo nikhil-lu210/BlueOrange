@@ -163,6 +163,67 @@ namespace App\Models\Chatting{
 	class Chatting extends \Eloquent {}
 }
 
+namespace App\Models\Chatting{
+/**
+ * App\Models\Chatting\ChattingGroup
+ *
+ * @property int $id
+ * @property string $groupid
+ * @property string $name
+ * @property int $creator_id
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\User $creator
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $group_users
+ * @property-read int|null $group_users_count
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup whereCreatorId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup whereGroupid($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup withoutTrashed()
+ */
+	class ChattingGroup extends \Eloquent {}
+}
+
+namespace App\Models\Chatting{
+/**
+ * App\Models\Chatting\GroupChatting
+ *
+ * @property int $id
+ * @property int $chatting_group_id
+ * @property int $sender_id
+ * @property string|array|null $message
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Chatting\ChattingGroup|null $group
+ * @property-read \App\Models\User $sender
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting query()
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting whereChattingGroupId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting whereMessage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting whereSenderId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting withoutTrashed()
+ */
+	class GroupChatting extends \Eloquent {}
+}
+
 namespace App\Models\DailyWorkUpdate{
 /**
  * App\Models\DailyWorkUpdate\DailyWorkUpdate
@@ -595,6 +656,8 @@ namespace App\Models{
  * @property-read int|null $announcements_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Attendance> $attendances
  * @property-read int|null $attendances_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Chatting\ChattingGroup> $chatting_groups
+ * @property-read int|null $chatting_groups_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\Task> $created_tasks
  * @property-read int|null $created_tasks_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DailyWorkUpdate\DailyWorkUpdate> $daily_work_updates

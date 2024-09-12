@@ -5,7 +5,9 @@
                 @if (auth()->user()->hasMedia('avatar'))
                     <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="user-avatar rounded-circle cursor-pointer" width="40">
                 @else
-                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="user-avatar rounded-circle cursor-pointer" width="40">
+                    <span class="avatar-initial rounded-circle bg-dark cursor-pointer">
+                        {{ substr(auth()->user()->name, 0, 1) }}
+                    </span>
                 @endif
             </div>
             <div class="flex-grow-1 input-group input-group-merge rounded-pill">
@@ -29,7 +31,9 @@
                             @if ($user->hasMedia('avatar'))
                                 <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle cursor-pointer" width="40">
                             @else
-                                <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="rounded-circle cursor-pointer" width="40">
+                                <span class="avatar-initial rounded-circle bg-dark">
+                                    {{ substr($user->name, 0, 1) }}
+                                </span>
                             @endif
                         </div>
                         <div class="chat-contact-info flex-grow-1 ms-2">
@@ -63,7 +67,9 @@
                             @if ($contact->hasMedia('avatar'))
                                 <img src="{{ $contact->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle cursor-pointer" width="40">
                             @else
-                                <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="rounded-circle cursor-pointer" width="40">
+                                <span class="avatar-initial rounded-circle bg-dark">
+                                    {{ substr($contact->name, 0, 1) }}
+                                </span>
                             @endif
                         </div>
                         <div class="chat-contact-info flex-grow-1 ms-2">
