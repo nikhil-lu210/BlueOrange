@@ -71,8 +71,13 @@ class GroupChattingController extends Controller
      */
     public function store(Request $request) 
     {
+        /**
+         * @var ChattingGroup|null $chatGroup
+         */
+        $chatGroup = null;
+
         try {
-            DB::transaction(function () use ($request) {
+            DB::transaction(function () use ($request, &$chatGroup) {
                 $chatGroup = ChattingGroup::create([
                     'name' => $request->name,
                 ]);
@@ -87,11 +92,12 @@ class GroupChattingController extends Controller
             });
 
             toast('Chatting Group Created.', 'success');
-            return redirect()->back();
+            return redirect()->route('administration.chatting.group.show', ['group' => $chatGroup, 'groupid' => $chatGroup->groupid]);
         } catch (Exception $e) {
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
     }
+
 
 
     /**

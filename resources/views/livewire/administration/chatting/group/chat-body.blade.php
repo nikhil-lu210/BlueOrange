@@ -19,16 +19,25 @@
                         <button class="btn p-0" type="button" id="chat-header-actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="ti ti-dots-vertical"></i>
                         </button>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="chat-header-actions">
-                            <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addGroupChattingUsersModal">
-                                <i class="ti ti-plus"></i>
-                                Add Users
-                            </a>
-                            <a class="dropdown-item text-danger confirm-danger" href="javascript:void(0);">
-                                <i class="ti ti-trash"></i>
-                                Delete Group
-                            </a>
-                        </div>
+
+                        @canany(['Group Chatting Create', 'Group Chatting Delete'])
+                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="chat-header-actions">
+                                @can ('Group Chatting Create')
+                                    <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addGroupChattingUsersModal">
+                                        <i class="ti ti-plus"></i>
+                                        Add Users
+                                    </a>
+                                @endcan
+
+                                
+                                @can ('Group Chatting Delete')
+                                    <a class="dropdown-item text-danger confirm-danger" href="{{ route('administration.chatting.group.destroy', ['group' => $chattingGroup, 'groupid' => $chattingGroup->groupid]) }}">
+                                        <i class="ti ti-trash"></i>
+                                        Delete Group
+                                    </a>
+                                @endcan
+                            </div>
+                        @endcanany
                     </div>
                 </div>
             </div>
