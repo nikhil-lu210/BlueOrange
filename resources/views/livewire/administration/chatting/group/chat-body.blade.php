@@ -14,32 +14,35 @@
                         <small class="user-status text-muted"><b class="text-dark">Creator:</b> {{ $chattingGroup->creator->name }}</small>
                     </div>
                 </div>
-                <div class="d-flex align-items-center">
-                    <div class="dropdown d-flex align-self-center">
-                        <button class="btn p-0" type="button" id="chat-header-actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="ti ti-dots-vertical"></i>
-                        </button>
 
-                        @canany(['Group Chatting Create', 'Group Chatting Delete'])
-                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="chat-header-actions">
-                                @can ('Group Chatting Create')
-                                    <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addGroupChattingUsersModal">
-                                        <i class="ti ti-plus"></i>
-                                        Add Users
-                                    </a>
-                                @endcan
+                @canany(['Group Chatting Create', 'Group Chatting Delete'])
+                    @if ($chattingGroup->creator_id == auth()->user()->id) 
+                        <div class="d-flex align-items-center">
+                            <div class="dropdown d-flex align-self-center">
+                                <button class="btn p-0" type="button" id="chat-header-actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="ti ti-dots-vertical"></i>
+                                </button>
 
-                                
-                                @can ('Group Chatting Delete')
-                                    <a class="dropdown-item text-danger confirm-danger" href="{{ route('administration.chatting.group.destroy', ['group' => $chattingGroup, 'groupid' => $chattingGroup->groupid]) }}">
-                                        <i class="ti ti-trash"></i>
-                                        Delete Group
-                                    </a>
-                                @endcan
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="chat-header-actions">
+                                    @can ('Group Chatting Create')
+                                        <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addGroupChattingUsersModal">
+                                            <i class="ti ti-plus"></i>
+                                            Add Users
+                                        </a>
+                                    @endcan
+    
+                                    
+                                    @can ('Group Chatting Delete')
+                                        <a class="dropdown-item text-danger confirm-danger" href="{{ route('administration.chatting.group.destroy', ['group' => $chattingGroup, 'groupid' => $chattingGroup->groupid]) }}">
+                                            <i class="ti ti-trash"></i>
+                                            Delete Group
+                                        </a>
+                                    @endcan
+                                </div>
                             </div>
-                        @endcanany
-                    </div>
-                </div>
+                        </div>
+                    @endif
+                @endcanany
             </div>
         </div>
         <div class="chat-history-body bg-body" wire:keep-alive>

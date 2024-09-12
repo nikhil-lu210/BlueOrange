@@ -6,7 +6,7 @@
                     <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="user-avatar rounded-circle cursor-pointer" width="40">
                 @else
                     <span class="avatar-initial rounded-circle bg-dark cursor-pointer">
-                        {{ substr($user->name, 0, 1) }}
+                        {{ substr(auth()->user()->name, 0, 1) }}
                     </span>
                 @endif
             </div>
@@ -68,7 +68,7 @@
                                 <img src="{{ $contact->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle cursor-pointer" width="40">
                             @else
                                 <span class="avatar-initial rounded-circle bg-dark">
-                                    {{ substr($user->name, 0, 1) }}
+                                    {{ substr($contact->name, 0, 1) }}
                                 </span>
                             @endif
                         </div>
