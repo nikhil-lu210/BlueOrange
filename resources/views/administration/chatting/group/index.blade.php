@@ -5,12 +5,13 @@
 
 @endsection
 
-@section('page_title', __('Chattings'))
+@section('page_title', __('Chatting Groups'))
 
 @section('css_links')
     {{--  External CSS  --}}
     {{-- <!-- Page CSS --> --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/app-chat.css') }}" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
 
     @livewireStyles
 @endsection
@@ -57,12 +58,12 @@
 <div class="app-chat card overflow-hidden">
     <div class="row g-0">
         <!-- Chat Settings Left -->
-        @include('administration.chatting.group.layouts.chat_settings')
+        @include('administration.chatting.group.layouts.create_chat_group')
         <!-- /Chat Settings Left-->
 
-        <!-- Chat & Contacts -->
-        @include('administration.chatting.group.layouts.chat_contacts')
-        <!-- /Chat contacts -->
+        <!-- Chat Groups -->
+        @include('administration.chatting.group.layouts.chat_groups')
+        <!-- Chat Groups -->
 
         <!-- Chat Body (History) -->
         @if ($hasChat == false)
@@ -95,6 +96,8 @@
     {{-- Vendors JS --}}
     <script src="{{ asset('assets/vendor/libs/bootstrap-maxlength/bootstrap-maxlength.js') }}"></script>
     {{-- <script src="{{ asset('assets/js/app-chat.js') }}"></script> --}}
+    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
 
     @livewireScripts
 @endsection

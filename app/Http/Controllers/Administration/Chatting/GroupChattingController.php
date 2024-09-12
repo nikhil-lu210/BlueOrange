@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers\Administration\Chatting;
 
+use Auth;
+use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Chatting\Chatting;
 use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
-use Auth;
+use App\Models\Chatting\ChattingGroup;
+use App\Models\Chatting\GroupChatting;
 
 class GroupChattingController extends Controller
 {
@@ -16,93 +20,90 @@ class GroupChattingController extends Controller
      */
     public function index()
     {
-        $chatUsers = $this->chatUsers(auth()->user());
-
-        $contacts = $this->chatContacts();
+        $roles = $this->getRoleUsers();
+        $chatGroups = $this->chatGroups(auth()->user());
 
         $hasChat = false;
         
-        return view('administration.chatting.index', compact(['chatUsers', 'contacts', 'hasChat']));
+        return view('administration.chatting.group.index', compact(['roles', 'chatGroups', 'hasChat']));
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(User $user, $userid)
+    public function show(ChattingGroup $group, $groupid)
     {
-        abort_if($user->userid !== $userid, 403, 'The user not exists in the database!');
+        abort_if($group->groupid !== $groupid, 403, 'The Group is not exists in the database!');
 
-        abort_if($user->id == auth()->user()->id, 403, 'You cannot chat with yourself.');
-
-        $chatUsers = $this->chatUsers(auth()->user());
-
-        $contacts = $this->chatContacts();
-
+        $roles = $this->getRoleUsers();
+        $chatGroups = $this->chatGroups(auth()->user());
+        
         $hasChat = true;
 
-        $activeUser = $user->id;
+        $activeGroup = $group->id;
+        // dd($activeGroup, $chatGroups[0]);
 
-        // Mark all messages from the receiver as seen
-        Chatting::where('sender_id', $user->id)
-                    ->where('receiver_id', auth()->user()->id)
-                    ->whereNull('seen_at')
-                    ->update(['seen_at' => now()]);
-        
-        return view('administration.chatting.show', compact([
-            'chatUsers', 
-            'contacts', 
-            'hasChat', 
-            'user',
-            'activeUser'
-        ]));
+        return view('administration.chatting.group.show', compact(['group', 'roles', 'chatGroups', 'hasChat', 'activeGroup']));
     }
 
 
     /**
-     * get all users with whom the auth user chatted
+     * Store data 
      */
-    private function chatUsers($authUser) {
-        $chatUsers = User::with(['media'])
-            ->whereExists(function ($query) use ($authUser) {
-                $query->select(DB::raw(1))
-                    ->from('chattings')
-                    ->where(function ($query) use ($authUser) {
-                        $query->where('chattings.sender_id', $authUser->id)
-                            ->whereColumn('chattings.receiver_id', 'users.id')
-                            ->orWhere(function ($query) use ($authUser) {
-                                $query->where('chattings.receiver_id', $authUser->id)
-                                    ->whereColumn('chattings.sender_id', 'users.id');
-                            });
-                    });
-            })
-            ->select('users.userid', 'users.id', 'users.name')
-            ->addSelect([
-                'last_message_time' => Chatting::select('created_at')
-                    ->where(function ($query) use ($authUser) {
-                        $query->whereColumn('chattings.sender_id', 'users.id')
-                            ->where('chattings.receiver_id', $authUser->id)
-                            ->orWhere(function ($query) use ($authUser) {
-                                $query->whereColumn('chattings.receiver_id', 'users.id')
-                                    ->where('chattings.sender_id', $authUser->id);
-                            });
-                    })
-                    ->orderByDesc('created_at')
-                    ->limit(1)
-            ])
-            ->orderByDesc('last_message_time')
-            ->get();
+    public function store(Request $request) 
+    {
+        try {
+            DB::transaction(function () use ($request) {
+                $chatGroup = ChattingGroup::create([
+                    'name' => $request->name,
+                ]);
+                
+                // Assign ChattingGroup creator ID as group_users
+                $chatGroup->group_users()->attach(auth()->user()->id, ['role' => 'Admin']);
 
-        return $chatUsers;
+                // Assign users to the group
+                if ($request->has('users')) {
+                    $chatGroup->group_users()->attach($request->users);
+                }
+            });
+
+            toast('Chatting Group Created.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+
+    /**
+     * Get Roles with Users
+     */
+    private function getRoleUsers() {
+        $roleUsers = Role::select(['id', 'name'])
+                        ->with([
+                            'users' => function ($user) {
+                                $user->permission('Group Chatting Read')
+                                    ->select(['id', 'name'])
+                                    ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                                    ->where('id', '!=', auth()->user()->id)
+                                    ->whereStatus('Active');
+                            }
+                        ])
+                        ->whereHas('users', function ($user) {
+                            $user->permission('Group Chatting Read');
+                        })
+                        ->distinct()
+                        ->get();
+
+        return $roleUsers;
     }
 
     /**
-     * Get all active chat contacts
+     * Get all chatGroups
      */
-    private function chatContacts() {
-        $chatContacts = Auth::user()->user_interactions->filter(function($user) {
-            return $user->status === 'Active' && $user->id !== Auth::id();
-        })->sortBy('name');
+    private function chatGroups() {
+        $chatGroups = Auth::user()->chatting_groups;
         
-        return $chatContacts;
+        return $chatGroups;
     }
 }

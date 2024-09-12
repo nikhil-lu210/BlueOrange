@@ -19,4 +19,20 @@ class ChattingGroup extends Model
         'name',
         'creator_id',
     ];
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($group) {
+            // Combine 'CGID', timestamp
+            $group->groupid = 'CGID' . strtoupper(now()->format('YmdHis'));
+
+            // Store the group creator id
+            if (auth()->check()) {
+                $group->creator_id = auth()->user()->id;
+            }
+        });
+    }
 }
