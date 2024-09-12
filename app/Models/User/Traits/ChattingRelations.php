@@ -12,6 +12,6 @@ trait ChattingRelations
      */
     public function chatting_groups(): BelongsToMany
     {
-        return $this->belongsToMany(ChattingGroup::class)->withTimestamps();
+        return $this->belongsToMany(ChattingGroup::class, 'chatting_group_user')->withTimestamps();
     }
 }

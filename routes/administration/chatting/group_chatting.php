@@ -12,4 +12,7 @@ Route::controller(GroupChattingController::class)->prefix('group')->name('group.
     Route::get('/{group}/{groupid}', 'show')->name('show');
     
     Route::post('/store', 'store')->name('store');
+    Route::post('/store/users/{group:groupid}', 'addUsers')->name('store.users');
+    Route::get('/remove/user/{group:groupid}/{user}', 'removeUser')->name('remove.user');
+    Route::get('/{group}/{groupid}/destroy', 'destroy')->name('destroy');
 });

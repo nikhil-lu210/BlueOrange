@@ -12,7 +12,7 @@ class ChattingGroup extends Model
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, ChattingGroupRelations;
     
-    protected $cascadeDeletes = ['group_chattings'];
+    protected $cascadeDeletes = [];
 
     protected $fillable = [
         'groupid',
@@ -32,6 +32,15 @@ class ChattingGroup extends Model
             // Store the group creator id
             if (auth()->check()) {
                 $group->creator_id = auth()->user()->id;
+            }
+        });
+
+        static::deleting(function ($group) {
+            // If soft deleting, ensure group messages are also soft deleted
+            if ($group->isForceDeleting()) {
+                $group->group_messages()->forceDelete();
+            } else {
+                $group->group_messages()->delete();
             }
         });
     }

@@ -20,9 +20,14 @@
                             <i class="ti ti-dots-vertical"></i>
                         </button>
                         <div class="dropdown-menu dropdown-menu-end" aria-labelledby="chat-header-actions">
-                            <a class="dropdown-item confirm-danger" href="javascript:void(0);">Block Contact</a>
-                            <a class="dropdown-item confirm-danger" href="javascript:void(0);">Clear Chat</a>
-                            <a class="dropdown-item confirm-warning" href="javascript:void(0);">Report</a>
+                            <a class="dropdown-item" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addGroupChattingUsersModal">
+                                <i class="ti ti-plus"></i>
+                                Add Users
+                            </a>
+                            <a class="dropdown-item text-danger confirm-danger" href="javascript:void(0);">
+                                <i class="ti ti-trash"></i>
+                                Delete Group
+                            </a>
                         </div>
                     </div>
                 </div>

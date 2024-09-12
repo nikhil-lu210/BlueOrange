@@ -27,7 +27,6 @@ return new class extends Migration
             $table->enum('role', ['Admin', 'Member'])->default('Member');
 
             $table->timestamps();
-            $table->softDeletes();
         });
     }
 
@@ -37,8 +36,5 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('chatting_group_user');
-        Schema::table("chatting_group_user", function ($table) {
-            $table->dropSoftDeletes();
-        });
     }
 };

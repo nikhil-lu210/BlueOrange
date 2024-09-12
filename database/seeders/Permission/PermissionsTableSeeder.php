@@ -26,6 +26,7 @@ class PermissionsTableSeeder extends Seeder
             'User',
             'Salary',
             'Holiday',
+            'Group Chatting',
         ];
 
         foreach ($modules as $module) {
