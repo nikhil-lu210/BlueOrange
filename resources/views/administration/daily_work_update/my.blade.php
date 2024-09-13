@@ -130,10 +130,20 @@
                     </thead>
                     <tbody>
                         @foreach ($dailyWorkUpdates as $key => $dailyUpdate) 
-                            <tr>
+                            <tr class="@if (is_null($dailyUpdate->rating)) bg-label-danger @endif">
                                 <th>#{{ serial($dailyWorkUpdates, $key) }}</th>
                                 <td>
                                     <b>{{ show_date($dailyUpdate->date) }}</b>
+                                    <br>
+                                    @if (!is_null($dailyUpdate->rating))
+                                        <small class="badge bg-label-primary">
+                                            {{ $dailyUpdate->rating }} out of 5
+                                        </small>
+                                    @else
+                                        <small class="badge bg-danger">
+                                            {{ __('Not Reviewed') }}
+                                        </small>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-start align-items-center user-name">
