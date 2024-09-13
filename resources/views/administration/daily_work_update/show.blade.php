@@ -85,14 +85,14 @@
     </div>
 
     {{-- Daily Work Update Details --}}
-    <div class="{{ $dailyWorkUpdate->comment ? 'col-md-7' : 'col-md-12' }}">
+    <div class="col-md-7">
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Daily Work Update Details</h5>
     
                 @if ($dailyWorkUpdate->rating) 
                     <div class="card-header-elements ms-auto">
-                        <div class="btn btn-primary btn-icon rounded-pill p-3" title="Rating {{ $dailyWorkUpdate->rating }} out of 5">
+                        <div class="btn btn-primary btn-icon p-3" title="Rating {{ $dailyWorkUpdate->rating }} out of 5">
                             <sup class="text-bold">{{ $dailyWorkUpdate->rating }}</sup>
                             <span>/</span>
                             <sub class="text-bold">5</sub>
@@ -100,23 +100,61 @@
                     </div>
                 @endif
             </div>
-            <!-- Account -->
+            
             <div class="card-body">
-                {!! $dailyWorkUpdate->work_update !!}
+                <div class="work-update-description mb-3">
+                    {!! $dailyWorkUpdate->work_update !!}
+                </div>
+
+                <div class="work-update-files">
+                    <div class="row">
+                        @foreach ($dailyWorkUpdate->files as $key => $file)
+                            <div class="col-md-6 mb-4">
+                                <div class="card bg-label-primary card-border-shadow-primary h-100">
+                                    <div class="card-body d-flex justify-content-between align-items-center">
+                                        <div class="card-title mb-0">
+                                            <h6 class="mb-0 me-2">{{ show_content($file->original_name, 20) }}</h6>
+                                            <small>{{ get_file_media_size($file) }}</small>
+                                        </div>
+                                        <a href="{{ file_media_download($file) }}" target="_blank" class="card-icon" title="Download {{ $file->original_name }}">
+                                            <span class="badge bg-primary rounded-pill p-2">
+                                                <i class="ti ti-download ti-sm"></i>
+                                            </span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     {{-- Team Leader Comment --}}
-    @if ($dailyWorkUpdate->comment) 
+    @if ($dailyWorkUpdate->comment)
         <div class="col-md-5">
-            <div class="card mb-4">
-                <div class="card-header header-elements">
-                    <h5 class="mb-0">Team Leader Comment</h5>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <div class="card-header header-elements">
+                            <h5 class="mb-0">Note / Issues</h5>
+                        </div>
+                        <div class="card-body">
+                            {!! $dailyWorkUpdate->note !!}
+                        </div>
+                    </div>
                 </div>
-                <!-- Account -->
-                <div class="card-body">
-                    {!! $dailyWorkUpdate->comment !!}
+
+                <div class="col-md-12">
+                    <div class="card mb-4">
+                        <div class="card-header header-elements">
+                            <h5 class="mb-0">Team Leader Comment</h5>
+                        </div>
+                        <div class="card-body">
+                            {!! $dailyWorkUpdate->comment !!}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
