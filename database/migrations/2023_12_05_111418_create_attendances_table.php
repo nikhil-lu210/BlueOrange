@@ -29,6 +29,10 @@ return new class extends Migration
             $table->dateTime('clock_out')->nullable();
             $table->string('total_time')->nullable();
             $table->enum('type', ['Regular', 'Overtime'])->default('Regular');
+
+            $table->foreignId('qr_clockin_scanner_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('qr_clockout_scanner_id')->nullable()->constrained('users')->onDelete('cascade');
+
             $table->ipAddress('ip_address')->nullable();
             $table->string('country')->nullable();
             $table->string('city')->nullable();

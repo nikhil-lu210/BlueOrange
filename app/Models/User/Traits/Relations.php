@@ -84,6 +84,22 @@ trait Relations
     }
 
     /**
+     * Get the qr_clockins associated with the user.
+     */
+    public function qr_clockins(): HasMany
+    {
+        return $this->hasMany(Attendance::class, 'qr_clockin_scanner_id');
+    }
+
+    /**
+     * Get the qr_clockouts associated with the user.
+     */
+    public function qr_clockouts(): HasMany
+    {
+        return $this->hasMany(Attendance::class, 'qr_clockout_scanner_id');
+    }
+
+    /**
      * Get the announcements associated with the user.
      */
     public function announcements(): HasMany

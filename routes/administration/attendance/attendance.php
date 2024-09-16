@@ -23,5 +23,5 @@ Route::controller(AttendanceController::class)->prefix('attendance')->name('atte
 
 Route::controller(QrCodeAttendanceController::class)->prefix('attendance/qrcode')->name('attendance.qrcode.')->group(function () {
     Route::get('/scan', 'scanner')->name('scanner');
-    Route::get('/scan/{scanner_id}/{qr_code}', 'scanQrCode')->name('scan');
+    Route::get('/scan/{scanner_id}/{qr_code}/{type?}', 'scanQrCode')->name('scan');
 });

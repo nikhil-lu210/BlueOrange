@@ -17,6 +17,22 @@ trait Relations
     }
     
     /**
+     * Get the qr_clockin_scanner for the attendance.
+     */
+    public function qr_clockin_scanner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'qr_clockin_scanner_id');
+    }
+    
+    /**
+     * Get the qr_clockout_scanner for the attendance.
+     */
+    public function qr_clockout_scanner(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'qr_clockout_scanner_id');
+    }
+    
+    /**
      * Get the employee_shift for the attendance.
      */
     public function employee_shift(): BelongsTo

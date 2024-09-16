@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Administration\Attendance;
 
 use Exception;
+use Carbon\Carbon;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance\Attendance;
@@ -15,10 +15,26 @@ class QrCodeAttendanceController extends Controller
     public function scanner()
     {
         $scanner = auth()->user();
-        return view('administration.attendance.qr_scanner', compact(['scanner']));
+
+        // Get the start and end of today
+        $startOfDay = Carbon::today()->startOfDay();
+        $endOfDay = Carbon::today()->endOfDay();
+
+        // Query to get attendances created today
+        $attendances = Attendance::with([
+            'user:id,userid,name', 
+            'user.media', 
+            'user.roles', 
+            'employee_shift:id,start_time,end_time'
+        ])
+        ->whereBetween('created_at', [$startOfDay, $endOfDay])
+        ->orderByDesc('clock_in')
+        ->get();
+
+        return view('administration.attendance.qr_scanner', compact(['scanner', 'attendances']));
     }
 
-    public function scanQrCode($scanner_id, $qr_code)
+    public function scanQrCode($scanner_id, $qr_code, $type = 'Regular')
     {
         if ($scanner_id != auth()->user()->userid) {
             toast('You are not authorized to scan code.', 'warning');
@@ -40,14 +56,12 @@ class QrCodeAttendanceController extends Controller
             return $this->clockOut($user->id, $currentTime);
         } else {
             // No open attendance record, so this should be a clock-in
-            return $this->clockIn($user->id, $currentTime, $currentDate, $scanner_id);
+            return $this->clockIn($user->id, $currentTime, $currentDate, $type);
         }
     }
 
-    private function clockIn($userId, $currentTime, $currentDate, $scannerId)
+    private function clockIn($userId, $currentTime, $currentDate, $type = 'Regular')
     {
-        $type = request()->attendance === 'Overtime' ? 'Overtime' : 'Regular';
-
         // Check if the user has already clocked in today
         $existingAttendance = Attendance::where('user_id', $userId)
             ->where('clock_in_date', $currentDate)
@@ -69,6 +83,7 @@ class QrCodeAttendanceController extends Controller
                     'clock_in_date' => $currentDate,
                     'clock_in' => $currentTime,
                     'type' => $type,
+                    'qr_clockin_scanner_id' => auth()->user()->id,
                     'ip_address' => $location->ip ?? null,
                     'country' => $location->countryName ?? null,
                     'city' => $location->cityName ?? null,
@@ -92,7 +107,6 @@ class QrCodeAttendanceController extends Controller
         // Retrieve the existing attendance record
         $existingAttendance = Attendance::where('user_id', $userId)
             ->whereNull('clock_out')
-            ->whereType('Regular')
             ->first();
 
         if (!$existingAttendance) {
@@ -118,6 +132,7 @@ class QrCodeAttendanceController extends Controller
             $existingAttendance->update([
                 'clock_out' => $clockOutTime,
                 'total_time' => $formattedTotalTime,
+                'qr_clockout_scanner_id' => auth()->user()->id,
             ]);
 
             toast(User::find($userId)->name. ' Clocked Out Successfully.', 'success');

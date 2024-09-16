@@ -33,6 +33,8 @@ class Attendance extends Model
         'clock_out',
         'total_time',
         'type',
+        'qr_clockin_scanner_id',
+        'qr_clockout_scanner_id',
         'ip_address',
         'country',
         'city',
