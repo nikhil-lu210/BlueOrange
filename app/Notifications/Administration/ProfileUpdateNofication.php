@@ -39,7 +39,7 @@ class ProfileUpdateNofication extends Notification
      */
     public function toArray(object $notifiable): array
     {
-        $url = URL::route('administration.settings.user.show.profile', ['user' => $this->user->id]);
+        $url = URL::route('administration.settings.user.show.profile', ['user' => $this->user]);
         return [
             'url'   => $url,
             'icon'   => 'user',
