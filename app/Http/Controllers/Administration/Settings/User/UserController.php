@@ -199,6 +199,7 @@ class UserController extends Controller
                     }
                     
                     // Add the updated avatar
+                    // Update the path from App\Services\MediaLibrary\PathGenerators\UserPathGenerator
                     $user->addMedia($request->avatar)->toMediaCollection('avatar');
                 }
 
@@ -291,10 +292,11 @@ class UserController extends Controller
         Storage::disk('public')->put($qrCodePath, $qrCode->getString());
 
         // Save the QR code file as a media item
+        // Update the path from App\Services\MediaLibrary\PathGenerators\UserPathGenerator
         $user->addMedia(storage_path('app/public/' . $qrCodePath))
              ->toMediaCollection('qrcode');
 
-        toast('User Has Already QR Code.', 'warning');
+        toast('QR Code Generated Successfully.', 'success');
         return redirect()->back();
     }
 }
