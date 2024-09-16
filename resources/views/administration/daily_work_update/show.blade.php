@@ -132,20 +132,20 @@
     </div>
 
     {{-- Team Leader Comment --}}
-    @if ($dailyWorkUpdate->comment)
-        <div class="col-md-5">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="card mb-4">
-                        <div class="card-header header-elements">
-                            <h5 class="mb-0">Note / Issues</h5>
-                        </div>
-                        <div class="card-body">
-                            {!! $dailyWorkUpdate->note !!}
-                        </div>
+    <div class="col-md-5">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card mb-4">
+                    <div class="card-header header-elements">
+                        <h5 class="mb-0">Note / Issues</h5>
+                    </div>
+                    <div class="card-body">
+                        {!! $dailyWorkUpdate->note !!}
                     </div>
                 </div>
-
+            </div>
+            
+            @if ($dailyWorkUpdate->comment)
                 <div class="col-md-12">
                     <div class="card mb-4">
                         <div class="card-header header-elements">
@@ -156,9 +156,9 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            @endif
         </div>
-    @endif
+    </div>
 </div>
 <!-- End row -->
 
