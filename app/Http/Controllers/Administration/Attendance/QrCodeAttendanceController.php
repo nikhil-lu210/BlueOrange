@@ -55,7 +55,7 @@ class QrCodeAttendanceController extends Controller
             ->first();
 
         if ($existingAttendance) {
-            toast(User::find($userId)->name. ' has been already '.$type.' clocked in today.', 'warning');
+            toast(User::find($userId)->name. ' has already been '.$type.' clocked in today.', 'warning');
             return redirect()->back();
         }
 
@@ -96,7 +96,7 @@ class QrCodeAttendanceController extends Controller
             ->first();
 
         if (!$existingAttendance) {
-            toast(User::find($userId)->name. 'Has not regular clocked in today.', 'warning');
+            toast(User::find($userId)->name. ' has not been regular clocked in today.', 'warning');
             return redirect()->back();
         }
 
@@ -120,7 +120,7 @@ class QrCodeAttendanceController extends Controller
                 'total_time' => $formattedTotalTime,
             ]);
 
-            toast(User::find($userId)->name. 'Clocked Out Successfully.', 'success');
+            toast(User::find($userId)->name. ' Clocked Out Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
