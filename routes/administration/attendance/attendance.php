@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Administration\Attendance\AttendanceController;
-
+use App\Http\Controllers\Administration\Attendance\QrCodeAttendanceController;
 
 /* ==============================================
 ===============< Attendance Routes >==============
@@ -19,4 +19,9 @@ Route::controller(AttendanceController::class)->prefix('attendance')->name('atte
     Route::post('/update/{attendance}', 'update')->name('update');
     
     Route::get('/export', 'export')->name('export');
+});
+
+Route::controller(QrCodeAttendanceController::class)->prefix('attendance/qrcode')->name('attendance.qrcode.')->group(function () {
+    Route::get('/scan', 'scanner')->name('scanner');
+    Route::get('/scan/{scanner_id}/{qr_code}', 'scanQrCode')->name('scan');
 });

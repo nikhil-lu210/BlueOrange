@@ -10,5 +10,3 @@ use App\Http\Controllers\Administration\Dashboard\DashboardController;
 Route::controller(DashboardController::class)->prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/', 'index')->name('index');
 });
-
-Route::get('/test/qr/{qr}', [DashboardController::class, 'testqr']);

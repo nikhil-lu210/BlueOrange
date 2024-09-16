@@ -118,20 +118,6 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        
-        <!-- Button to trigger QR code scanner -->
-        <button id="scanQrBtn" class="btn btn-primary">Scan QR Code</button>
-
-        <!-- Div for displaying the camera feed -->
-        <div id="qr-reader" style="width: 300px; height: 300px; display: none;"></div>
-
-        <!-- Div to display scanning results -->
-        <div id="qr-reader-results"></div>
-    </div>
-</div>
-
 <!-- End row -->
 @endsection
 
@@ -143,52 +129,7 @@
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
-<!-- Add this script tag for html5-qrcode library before your script -->
-{{-- <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script> --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
-
-
-<script>
-    document.getElementById('scanQrBtn').addEventListener('click', function () {
-        // Show the QR code reader div
-        document.getElementById('qr-reader').style.display = 'block';
-
-        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-            // Handle success when QR code is scanned
-            document.getElementById('qr-reader-results').innerHTML = `Scanned result: ${decodedText}`;
-
-            // Assuming decodedText is the userID, redirect to the attendance route
-            let attendanceUrl = `/test/qr/${decodedText}`;
-            window.location.href = attendanceUrl;
-
-            // Stop the scanning once the code is found
-            html5QrCode.stop().then(() => {
-                console.log("QR Code scanning stopped.");
-            }).catch((err) => {
-                console.error("Error stopping scanning: ", err);
-            });
-        };
-
-        const qrCodeErrorCallback = (errorMessage) => {
-            // Optionally handle errors (e.g., no QR code found)
-            console.warn(`QR Code scan error: ${errorMessage}`);
-        };
-
-        const html5QrCode = new Html5Qrcode("qr-reader");
-
-        // Start the QR code scanner
-        html5QrCode.start(
-            { facingMode: "environment" }, // Use the back camera
-            {
-                fps: 10,    // Frames per second
-                qrbox: { width: 250, height: 250 } // Scanning box size
-            },
-            qrCodeSuccessCallback,
-            qrCodeErrorCallback
-        ).catch((err) => {
-            console.error("Error starting QR code scanner: ", err);
-        });
-    });
-</script>
-
+    <script>
+        // Custom Script Here
+    </script>
 @endsection
