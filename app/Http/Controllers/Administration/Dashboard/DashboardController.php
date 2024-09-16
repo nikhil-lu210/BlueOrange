@@ -15,6 +15,10 @@ class DashboardController extends Controller
         return view('administration.dashboard.index');
     }
 
+    public function testqr($qrcode) {
+        dd($qrcode);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
