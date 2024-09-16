@@ -20,6 +20,11 @@ class QrCodeAttendanceController extends Controller
 
     public function scanQrCode($scanner_id, $qr_code)
     {
+        if ($scanner_id != auth()->user()->userid) {
+            toast('You are not authorized to scan code.', 'warning');
+            return redirect()->back();
+        }
+
         $user = User::where('userid', $qr_code)->firstOrFail();
         $currentTime = now();
         $currentDate = $currentTime->toDateString();
