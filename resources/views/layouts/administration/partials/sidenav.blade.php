@@ -67,7 +67,7 @@
                         </li>
                     @endcan
                     @can('Attendance Create')
-                        <li class="menu-item {{ request()->is('attendance/qr-code*') ? 'active' : '' }}">
+                        <li class="menu-item {{ request()->is('attendance/qrcode*') ? 'active' : '' }}">
                             <a href="{{ route('administration.attendance.qrcode.scanner') }}" class="menu-link">{{ __('QR Code Attendance') }}</a>
                         </li>
                     @endcan
