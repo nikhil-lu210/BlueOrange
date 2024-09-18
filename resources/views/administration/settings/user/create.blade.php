@@ -168,16 +168,16 @@
                                 <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
                             </div>
                         </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="start_time" class="form-label">{{ __('Shift Start Time') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="start_time" name="start_time" value="{{ old('start_time') }}" placeholder="HH:MM" class="form-control time-picker @error('start_time') is-invalid @enderror" required/>
+                        <div class="mb-3 col-md-3">
+                            <label for="start_time" class="form-label">{{ __('Shift Start & End Time') }} <strong class="text-danger">*</strong></label>
+                            <div class="input-group">
+                                <input type="text" id="start_time" name="start_time" value="{{ old('start_time') }}" placeholder="HH:MM" class="form-control time-picker @error('start_time') is-invalid @enderror" required/>
+                                <small class="input-group-text text-uppercase">To</small>
+                                <input type="text" id="end_time" name="end_time" value="{{ old('end_time') }}" placeholder="HH:MM" class="form-control time-picker @error('end_time') is-invalid @enderror" required/>
+                            </div>
                             @error('start_time')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="end_time" class="form-label">{{ __('Shift End Time') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="end_time" name="end_time" value="{{ old('end_time') }}" placeholder="HH:MM" class="form-control time-picker @error('end_time') is-invalid @enderror" required/>
                             @error('end_time')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
