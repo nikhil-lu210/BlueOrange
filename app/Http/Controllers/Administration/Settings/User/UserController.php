@@ -218,6 +218,18 @@ class UserController extends Controller
                 $role = Role::findOrFail($request->role_id);
                 $user->syncRoles([$role]);
 
+                // update associated employee for the user
+                $user->employee()->update([
+                    'joining_date' => $request->joining_date,
+                    'alias_name' => $request->alias_name,
+                    'father_name' => $request->father_name,
+                    'mother_name' => $request->mother_name,
+                    'personal_email' => $request->personal_email,
+                    'official_email' => $request->official_email,
+                    'personal_contact_no' => $request->personal_contact_no,
+                    'official_contact_no' => $request->official_contact_no,
+                ]);
+
                 $authUser = Auth::user();
 
                 // Send Notification to that User

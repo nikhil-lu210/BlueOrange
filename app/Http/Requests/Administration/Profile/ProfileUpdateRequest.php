@@ -22,15 +22,25 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules()
     {
-        $id = auth()->user()->id;
+        $employeeId = auth()->user()->employee->id;
+        
         return [
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
-            'first_name' => ['required', 'string'],
-            'last_name' => ['required', 'string'],
-            'email' => [
-                'nullable', 
+            'avatar' => ['sometimes', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'first_name' => ['sometimes', 'string'],
+            'last_name' => ['sometimes', 'string'],
+            
+            // for employees table
+            'father_name' => ['sometimes', 'string'],
+            'mother_name' => ['sometimes', 'string'],
+            'personal_email' => [
+                'sometimes', 
                 'email',
-                Rule::unique('users')->ignore($id)
+                Rule::unique('employees')->ignore($employeeId)
+            ],
+            'personal_contact_no' => [
+                'sometimes', 
+                'string',
+                Rule::unique('employees')->ignore($employeeId)
             ],
         ];
     }
