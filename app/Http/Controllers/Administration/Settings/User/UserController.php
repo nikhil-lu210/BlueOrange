@@ -92,7 +92,20 @@ class UserController extends Controller
                     $user->addMedia($request->avatar)
                          ->toMediaCollection('avatar');
                 }
+
+                // Create associated employee for the user
+                $user->employee()->create([
+                    'joining_date' => $request->joining_date,
+                    'alias_name' => $request->alias_name,
+                    'father_name' => $request->father_name,
+                    'mother_name' => $request->mother_name,
+                    'personal_email' => $request->personal_email,
+                    'official_email' => $request->official_email,
+                    'personal_contact_no' => $request->personal_contact_no,
+                    'official_contact_no' => $request->official_contact_no,
+                ]);
                 
+                // Create associated employee_shift for the user
                 EmployeeShift::create([
                     'user_id' => $user->id,
                     'start_time' => $request->start_time,
