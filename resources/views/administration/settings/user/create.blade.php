@@ -137,10 +137,10 @@
                             @enderror
                         </div>                        
                         <div class="mb-3 col-md-4">
-                            <label for="email" class="form-label">{{ __('Email') }} <strong class="text-danger">*</strong></label>
+                            <label for="email" class="form-label">{{ __('Login Email') }} <strong class="text-danger">*</strong></label>
                             <div class="input-group input-group-merge">
                                 <span class="input-group-text"><i class="ti ti-mail"></i></span>
-                                <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="{{ __('Email') }}" class="form-control @error('email') is-invalid @enderror" required/>
+                                <input type="email" id="email" name="email" value="{{ old('email') }}" placeholder="{{ __('Login Email') }}" class="form-control @error('email') is-invalid @enderror" required/>
                             </div>
                             @error('email')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
