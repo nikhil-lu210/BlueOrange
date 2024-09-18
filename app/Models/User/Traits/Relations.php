@@ -14,11 +14,22 @@ use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
+use App\Models\User\Employee\Employee;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 trait Relations
 {    
+    /**
+     * Get the employee associated with the user.
+     */
+    public function employee(): HasOne
+    {
+        return $this->hasOne(Employee::class);
+    }
+    
+    
     /**
      * Get the login_logout_histories associated with the user.
      */

@@ -72,6 +72,18 @@ class UserFactory extends Factory
                     'end_time' => $formatted_end_time,
                     'implemented_from' => now()->format('Y-m-d'),
                 ]);
+
+                // Create associated employee for the user
+                $user->employee()->create([
+                    'joining_date' => $this->faker->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+                    'alias_name' => $this->faker->firstNameMale(),
+                    'father_name' => $this->faker->name('male'),
+                    'mother_name' => $this->faker->name('female'),
+                    'personal_email' => $this->faker->unique()->safeEmail,
+                    'official_email' => $this->faker->email(),
+                    'personal_contact_no' => $this->faker->phoneNumber(),
+                    'official_contact_no' => $this->faker->unique()->phoneNumber(),
+                ]);
             }, 5);
         });
     }

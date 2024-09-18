@@ -88,6 +88,8 @@ namespace App\Models\Attendance{
  * @property \Illuminate\Support\Carbon|null $clock_out
  * @property string|null $total_time
  * @property string $type
+ * @property int|null $qr_clockin_scanner_id
+ * @property int|null $qr_clockout_scanner_id
  * @property string|null $ip_address
  * @property string|null $country
  * @property string|null $city
@@ -99,6 +101,8 @@ namespace App\Models\Attendance{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\EmployeeShift\EmployeeShift $employee_shift
+ * @property-read \App\Models\User|null $qr_clockin_scanner
+ * @property-read \App\Models\User|null $qr_clockout_scanner
  * @property-read \App\Models\User $user
  * @method static \Database\Factories\Attendance\AttendanceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance newModelQuery()
@@ -117,6 +121,8 @@ namespace App\Models\Attendance{
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereIpAddress($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereLatitude($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereLongitude($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereQrClockinScannerId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereQrClockoutScannerId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereTimeZone($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereTotalTime($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance whereType($value)
@@ -175,6 +181,8 @@ namespace App\Models\Chatting{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \App\Models\User $creator
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Chatting\GroupChatting> $group_messages
+ * @property-read int|null $group_messages_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $group_users
  * @property-read int|null $group_users_count
  * @method static \Illuminate\Database\Eloquent\Builder|ChattingGroup newModelQuery()
@@ -205,7 +213,7 @@ namespace App\Models\Chatting{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Chatting\ChattingGroup|null $group
+ * @property-read \App\Models\Chatting\ChattingGroup $group
  * @property-read \App\Models\User $sender
  * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting newQuery()
@@ -662,6 +670,7 @@ namespace App\Models{
  * @property-read int|null $created_tasks_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DailyWorkUpdate\DailyWorkUpdate> $daily_work_updates
  * @property-read int|null $daily_work_updates_count
+ * @property-read \App\Models\User\Employee\Employee|null $employee
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\EmployeeShift\EmployeeShift> $employee_shifts
  * @property-read int|null $employee_shifts_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $employee_team_leaders
@@ -684,6 +693,10 @@ namespace App\Models{
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
  * @property-read int|null $permissions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Attendance> $qr_clockins
+ * @property-read int|null $qr_clockins_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Attendance> $qr_clockouts
+ * @property-read int|null $qr_clockouts_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
  * @property-read int|null $roles_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Salary\Salary> $salaries
@@ -725,6 +738,21 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User withoutTrashed()
  */
 	class User extends \Eloquent implements \Spatie\MediaLibrary\HasMedia {}
+}
+
+namespace App\Models\User\Employee{
+/**
+ * App\Models\User\Employee\Employee
+ *
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee withoutTrashed()
+ */
+	class Employee extends \Eloquent {}
 }
 
 namespace App\Models\User{

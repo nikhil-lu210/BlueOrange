@@ -40,6 +40,17 @@ class UsersTableSeeder extends Seeder
             'end_time' => '22:00:00',
             'implemented_from' => date('Y-m-d'),
         ]);
+        // Create associated employee for the developer
+        $developer->employee()->create([
+            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'alias_name' => fake()->name('male'),
+            'father_name' => fake()->name('male'),
+            'mother_name' => fake()->name('female'),
+            'personal_email' => fake()->unique()->safeEmail,
+            'official_email' => fake()->email(),
+            'personal_contact_no' => fake()->phoneNumber(),
+            'official_contact_no' => fake()->unique()->phoneNumber(),
+        ]);
         
         
         // Create a superAdmin
@@ -65,6 +76,17 @@ class UsersTableSeeder extends Seeder
             'start_time' => '14:00:00',
             'end_time' => '22:00:00',
             'implemented_from' => date('Y-m-d'),
+        ]);
+        // Create associated employee for the superAdmin
+        $superAdmin->employee()->create([
+            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'alias_name' => fake()->name('male'),
+            'father_name' => fake()->name('male'),
+            'mother_name' => fake()->name('female'),
+            'personal_email' => fake()->unique()->safeEmail,
+            'official_email' => fake()->email(),
+            'personal_contact_no' => fake()->phoneNumber(),
+            'official_contact_no' => fake()->unique()->phoneNumber(),
         ]);
         
         
@@ -92,6 +114,17 @@ class UsersTableSeeder extends Seeder
             'end_time' => '22:00:00',
             'implemented_from' => date('Y-m-d'),
         ]);
+        // Create associated employee for the admin
+        $admin->employee()->create([
+            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'alias_name' => fake()->name('male'),
+            'father_name' => fake()->name('male'),
+            'mother_name' => fake()->name('female'),
+            'personal_email' => fake()->unique()->safeEmail,
+            'official_email' => fake()->email(),
+            'personal_contact_no' => fake()->phoneNumber(),
+            'official_contact_no' => fake()->unique()->phoneNumber(),
+        ]);
         
         
         // Create a HR Manager
@@ -117,6 +150,17 @@ class UsersTableSeeder extends Seeder
             'start_time' => '14:00:00',
             'end_time' => '22:00:00',
             'implemented_from' => date('Y-m-d'),
+        ]);
+        // Create associated employee for the hr
+        $hr->employee()->create([
+            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'alias_name' => fake()->name('male'),
+            'father_name' => fake()->name('male'),
+            'mother_name' => fake()->name('female'),
+            'personal_email' => fake()->unique()->safeEmail,
+            'official_email' => fake()->email(),
+            'personal_contact_no' => fake()->phoneNumber(),
+            'official_contact_no' => fake()->unique()->phoneNumber(),
         ]);
         
         
@@ -144,6 +188,17 @@ class UsersTableSeeder extends Seeder
             'end_time' => '22:00:00',
             'implemented_from' => date('Y-m-d'),
         ]);
+        // Create associated employee for the tl
+        $tl->employee()->create([
+            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'alias_name' => fake()->name('male'),
+            'father_name' => fake()->name('male'),
+            'mother_name' => fake()->name('female'),
+            'personal_email' => fake()->unique()->safeEmail,
+            'official_email' => fake()->email(),
+            'personal_contact_no' => fake()->phoneNumber(),
+            'official_contact_no' => fake()->unique()->phoneNumber(),
+        ]);
         
         
         // Create a Employee
@@ -169,6 +224,17 @@ class UsersTableSeeder extends Seeder
             'start_time' => '14:00:00',
             'end_time' => '22:00:00',
             'implemented_from' => date('Y-m-d'),
+        ]);
+        // Create associated employee for the employee
+        $employee->employee()->create([
+            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'alias_name' => fake()->firstNameMale(),
+            'father_name' => fake()->name('male'),
+            'mother_name' => fake()->name('female'),
+            'personal_email' => fake()->unique()->safeEmail,
+            'official_email' => fake()->email(),
+            'personal_contact_no' => fake()->phoneNumber(),
+            'official_contact_no' => fake()->unique()->phoneNumber(),
         ]);
     }
 }
