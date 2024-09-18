@@ -72,12 +72,11 @@ class UserController extends Controller
         $user = NULL;
         try {
             DB::transaction(function() use ($request, &$user) {
-                $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
+                $fullName = $request->first_name .' '. $request->last_name;
                 
                 $user = User::create([
                     'userid' => $request->userid,
                     'first_name' => $request->first_name,
-                    'middle_name' => $request->middle_name,
                     'last_name' => $request->last_name,
                     'name' => $fullName,
                     'email' => $request->email,
@@ -181,11 +180,10 @@ class UserController extends Controller
     {
         try {
             DB::transaction(function() use ($request, $user) {
-                $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
+                $fullName = $request->first_name .' '. $request->last_name;
                 
                 $user->update([
                     'first_name' => $request->first_name,
-                    'middle_name' => $request->middle_name,
                     'last_name' => $request->last_name,
                     'name' => $fullName,
                     'email' => $request->email,

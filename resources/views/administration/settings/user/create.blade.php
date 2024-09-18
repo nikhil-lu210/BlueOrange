@@ -130,16 +130,16 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="middle_name" class="form-label">{{ __('Middle Name') }}</label>
-                            <input type="text" id="middle_name" name="middle_name" value="{{ old('middle_name') }}" placeholder="{{ __('Middle Name') }}" class="form-control @error('middle_name') is-invalid @enderror"/>
-                            @error('middle_name')
+                            <label for="last_name" class="form-label">{{ __('Surname / Family Name / Last Name') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" placeholder="{{ __('Surname / Family Name / Last Name') }}" class="form-control @error('last_name') is-invalid @enderror" required/>
+                            @error('last_name')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="last_name" class="form-label">{{ __('Surname / Family Name / Last Name') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="last_name" name="last_name" value="{{ old('last_name') }}" placeholder="{{ __('Surname / Family Name / Last Name') }}" class="form-control @error('last_name') is-invalid @enderror" required/>
-                            @error('last_name')
+                            <label for="alias_name" class="form-label">{{ __('Alias Name') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="alias_name" name="alias_name" value="{{ old('alias_name') }}" placeholder="{{ __('Alias Name') }}" class="form-control @error('alias_name') is-invalid @enderror" required/>
+                            @error('alias_name')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
@@ -172,7 +172,7 @@
                             <label for="start_time" class="form-label">{{ __('Shift Start & End Time') }} <strong class="text-danger">*</strong></label>
                             <div class="input-group">
                                 <input type="text" id="start_time" name="start_time" value="{{ old('start_time') }}" placeholder="HH:MM" class="form-control time-picker @error('start_time') is-invalid @enderror" required/>
-                                <small class="input-group-text text-uppercase">To</small>
+                                <small class="input-group-text text-muted text-uppercase fs-tiny">To</small>
                                 <input type="text" id="end_time" name="end_time" value="{{ old('end_time') }}" placeholder="HH:MM" class="form-control time-picker @error('end_time') is-invalid @enderror" required/>
                             </div>
                             @error('start_time')

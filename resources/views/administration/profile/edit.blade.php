@@ -127,16 +127,16 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="middle_name" class="form-label">{{ __('Middle Name') }}</label>
-                            <input type="text" id="middle_name" name="middle_name" value="{{ old('middle_name', $user->middle_name) }}" placeholder="{{ __('Middle Name') }}" class="form-control @error('middle_name') is-invalid @enderror"/>
-                            @error('middle_name')
+                            <label for="last_name" class="form-label">{{ __('Surname / Family Name / Last Name') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="last_name" name="last_name" value="{{ old('last_name', $user->last_name) }}" placeholder="{{ __('Surname / Family Name / Last Name') }}" class="form-control @error('last_name') is-invalid @enderror" required/>
+                            @error('last_name')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="last_name" class="form-label">{{ __('Surname / Family Name / Last Name') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="last_name" name="last_name" value="{{ old('last_name', $user->last_name) }}" placeholder="{{ __('Surname / Family Name / Last Name') }}" class="form-control @error('last_name') is-invalid @enderror" required/>
-                            @error('last_name')
+                            <label for="alias_name" class="form-label">{{ __('Alias Name') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="alias_name" name="alias_name" value="{{ old('alias_name', optional($user->employee)->alias_name) }}" placeholder="{{ __('Alias Name') }}" class="form-control @error('alias_name') is-invalid @enderror" required/>
+                            @error('alias_name')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>

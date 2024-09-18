@@ -26,7 +26,6 @@ class UserUpdateRequest extends FormRequest
         return [
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'first_name' => ['required', 'string'],
-            'middle_name' => ['nullable', 'string'],
             'last_name' => ['required', 'string'],
             'email' => [
                 'required', 

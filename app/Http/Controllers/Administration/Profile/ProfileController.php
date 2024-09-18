@@ -62,11 +62,10 @@ class ProfileController extends Controller
         $user = Auth::user();
         try {
             DB::transaction(function() use ($request, $user) {
-                $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
+                $fullName = $request->first_name .' '. $request->last_name;
                 
                 $user->update([
                     'first_name' => $request->first_name,
-                    'middle_name' => $request->middle_name,
                     'last_name' => $request->last_name,
                     'name' => $fullName,
                 ]);

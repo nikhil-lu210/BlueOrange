@@ -41,12 +41,14 @@ class UserStoreRequest extends FormRequest
                 'unique_userid:users,userid', // Custom validation rule
             ],
             'first_name' => ['required', 'string'],
-            'middle_name' => ['nullable', 'string'],
             'last_name' => ['required', 'string'],
             'email' => ['required', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i'],
+
+            // for employees table
+            'alias_name' => ['required', 'string'],
         ];
     }
 
