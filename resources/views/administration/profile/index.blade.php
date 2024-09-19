@@ -55,7 +55,7 @@
                 <div class="flex-grow-1 mt-3 mt-sm-5">
                     <div class="d-flex align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
                         <div class="user-profile-info">
-                            <h4 class="mb-0">{{ $user->name }}</h4>
+                            <h4 class="mb-0">{{ get_employee_name($user) }}</h4>
                             <p class="fw-bold text-dark mb-1">
                                 <span class="text-primary" data-bs-toggle="tooltip" title="Employee ID" data-bs-placement="right">{{ $user->userid }}</span>
                             </p>

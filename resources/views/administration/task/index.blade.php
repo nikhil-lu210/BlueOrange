@@ -72,7 +72,7 @@
                                     <optgroup label="{{ $role->name }}">
                                         @foreach ($role->users as $creator)
                                             <option value="{{ $creator->id }}" {{ $creator->id == request()->creator_id ? 'selected' : '' }}>
-                                                {{ $creator->name }}
+                                                {{ get_employee_name($creator) }}
                                             </option>
                                         @endforeach
                                     </optgroup>
@@ -88,7 +88,7 @@
                                 <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>Select Assignee</option>
                                 @foreach ($assignees as $user)
                                     <option value="{{ $user->id }}" {{ $user->id == request()->user_id ? 'selected' : '' }}>
-                                        {{ $user->name }}
+                                        {{ get_employee_name($user) }}
                                     </option>
                                 @endforeach
                             </select>

@@ -44,7 +44,7 @@
     <li class="breadcrumb-item">
         <a href="{{ route('administration.settings.user.index') }}">{{ __('All Users') }}</a>
     </li>
-    <li class="breadcrumb-item active">{{ $user->name }}</li>
+    <li class="breadcrumb-item active">{{ get_employee_name($user) }}</li>
 @endsection
 
 
@@ -66,7 +66,7 @@
                 <div class="flex-grow-1 mt-3 mt-sm-5">
                     <div class="d-flex align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
                         <div class="user-profile-info">
-                            <h4 class="mb-0">{{ $user->name }}</h4>
+                            <h4 class="mb-0">{{ get_employee_name($user) }}</h4>
                             <p class="fw-bold text-dark mb-1">ID: <span class="text-primary">{{ $user->userid }}</span></p>
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
                                 <li class="list-inline-item d-flex gap-1">

@@ -37,7 +37,7 @@
                             @endif
                         </div>
                         <div class="chat-contact-info flex-grow-1 ms-2">
-                            <h6 class="chat-contact-name text-truncate m-0">{{ $user->name }}</h6>
+                            <h6 class="chat-contact-name text-truncate m-0">{{ get_employee_name($user) }}</h6>
                             @if (get_receiver_last_message($user->id))
                                 <small class="text-muted mb-auto float-start">{{ show_content(get_receiver_last_message($user->id)->message, 15) }}</small>
                                 <small class="text-muted mb-auto float-end">{{ date_time_ago(get_receiver_last_message($user->id)->created_at) }}</small>
@@ -63,7 +63,7 @@
             @forelse ($contacts as $contact) 
                 <li class="chat-contact-list-item {{ (isset($activeUser) && $activeUser === $contact->id) ? 'active' : '' }}">
                     <a href="{{ route('administration.chatting.show', ['user' => $contact, 'userid' => $contact->userid]) }}" class="d-flex align-items-center">
-                        <div class="flex-shrink-0 avatar avatar-offline">
+                        <div class="flex-shrink-0 avatar avatar-offline" title="{{ get_employee_name($contact) }}">
                             @if ($contact->hasMedia('avatar'))
                                 <img src="{{ $contact->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle cursor-pointer" width="40">
                             @else
@@ -73,7 +73,7 @@
                             @endif
                         </div>
                         <div class="chat-contact-info flex-grow-1 ms-2">
-                            <h6 class="chat-contact-name text-truncate m-0">{{ $contact->name }}</h6>
+                            <h6 class="chat-contact-name text-truncate m-0">{{ get_employee_name($contact) }}</h6>
                             <p class="chat-contact-status text-muted text-truncate mb-0">{{ $contact->roles[0]->name }}</p>
                         </div>
                     </a>

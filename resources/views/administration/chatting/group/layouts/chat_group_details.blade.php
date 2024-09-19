@@ -40,7 +40,7 @@
                         <ul class="list-group">
                             @foreach ($group->group_users as $user)
                                 <li class="list-group-item d-flex justify-content-between align-items-center" style="padding: 5px 10px;">
-                                    {{ show_content($user->name, 17) }}
+                                    <span class="text-truncate">{{ get_employee_name($user) }}</span>
                                     @if ($group->creator_id != $user->id) 
                                         @if ($group->creator_id == auth()->user()->id) 
                                             @can ('Group Chatting Delete') 

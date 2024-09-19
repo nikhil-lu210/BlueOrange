@@ -70,7 +70,7 @@
                                 <option value="" {{ is_null(request()->creator_id) ? 'selected' : '' }}>Select Creator</option>
                                 @foreach ($creators as $creator)
                                     <option value="{{ $creator->id }}" {{ $creator->id == request()->creator_id ? 'selected' : '' }}>
-                                        {{ $creator->name }}
+                                        {{ get_employee_name($creator) }}
                                     </option>
                                 @endforeach
                             </select>

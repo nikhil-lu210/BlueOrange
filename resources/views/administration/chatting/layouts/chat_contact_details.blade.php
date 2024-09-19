@@ -9,7 +9,7 @@
                 </span>
             @endif
         </div>
-        <h6 class="mt-2 mb-0">{{ $user->name }}</h6>
+        <h6 class="mt-2 mb-0">{{ get_employee_name($user) }}</h6>
         <span>{{ $user->roles->first()->name }}</span>
         <i class="ti ti-x ti-sm cursor-pointer close-sidebar d-block" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-sidebar-right"></i>
     </div>
@@ -19,7 +19,7 @@
             <ul class="list-unstyled d-grid gap-2 mt-3">
                 <li class="d-flex align-items-center">
                     <i class="ti ti-mail ti-sm"></i>
-                    <span class="align-middle ms-2">{{ $user->email }}</span>
+                    <span class="align-middle ms-2">{{ optional($user->employee)->official_email }}</span>
                 </li>
                 <li class="d-flex align-items-center">
                     <i class="ti ti-phone-call ti-sm"></i>

@@ -115,3 +115,27 @@ if (!function_exists('show_user_name_and_avatar')) {
         return $html;
     }
 }
+
+
+if (!function_exists('get_employee_name')) {
+
+    /**
+     * Get the employee alias name if available, otherwise return the user's full name.
+     * If the alias name is present, return it in the format "alias_name (full_name)".
+     *
+     * @param  \App\Models\User  $user
+     * @return string  The formatted name.
+     */
+    function get_employee_name($user)
+    {
+        // Check if the user has an employee and alias_name is present
+        $aliasName = optional($user->employee)->alias_name;
+
+        // Return the formatted name based on the presence of alias_name
+        if (is_null($aliasName)) {
+            return $user->name; // Return the user's full name if alias_name is null
+        }
+
+        return $aliasName . ' (' . $user->name . ')'; // Return alias_name with full name in parentheses
+    }
+}
