@@ -10,6 +10,7 @@
 @section('css_links')
     {{--  External CSS  --}}
     <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -125,17 +126,73 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="middle_name" class="form-label">{{ __('Middle Name') }}</label>
-                            <input type="text" id="middle_name" name="middle_name" value="{{ old('middle_name', $user->middle_name) }}" placeholder="{{ __('Middle Name') }}" class="form-control @error('middle_name') is-invalid @enderror"/>
-                            @error('middle_name')
-                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-4">
                             <label for="last_name" class="form-label">{{ __('Surname / Family Name / Last Name') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="last_name" name="last_name" value="{{ old('last_name', $user->last_name) }}" placeholder="{{ __('Surname / Family Name / Last Name') }}" class="form-control @error('last_name') is-invalid @enderror" required/>
                             @error('last_name')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="alias_name" class="form-label">{{ __('Alias Name') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="alias_name" name="alias_name" value="{{ old('alias_name', optional($user->employee)->alias_name) }}" placeholder="{{ __('Alias Name') }}" class="form-control @error('alias_name') is-invalid @enderror"/>
+                            @error('alias_name')
+                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-2">
+                            <label class="form-label">Joining Date <strong class="text-danger">*</strong></label>
+                            <input type="text" name="joining_date" value="{{ old('joining_date', optional($user->employee)->joining_date) }}" class="form-control  date-picker" placeholder="YYYY-MM-DD" required/>
+                            @error('joining_date')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="father_name" class="form-label">{{ __('Father Name') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="father_name" name="father_name" value="{{ old('father_name', optional($user->employee)->father_name) }}" placeholder="{{ __('Father Name') }}" class="form-control @error('father_name') is-invalid @enderror" required/>
+                            @error('father_name')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="mother_name" class="form-label">{{ __('Mother Name') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="mother_name" name="mother_name" value="{{ old('mother_name', optional($user->employee)->mother_name) }}" placeholder="{{ __('Mother Name') }}" class="form-control @error('mother_name') is-invalid @enderror" required/>
+                            @error('mother_name')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-2">
+                            <label class="form-label">Birthdate <strong class="text-danger">*</strong></label>
+                            <input type="text" name="birth_date" value="{{ old('birth_date', optional($user->employee)->birth_date) }}" class="form-control  date-picker" placeholder="YYYY-MM-DD" required/>
+                            @error('birth_date')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-3">
+                            <label for="personal_email" class="form-label">{{ __('Personal Email') }} <strong class="text-danger">*</strong></label>
+                            <input type="email" id="personal_email" name="personal_email" value="{{ old('personal_email', optional($user->employee)->personal_email) }}" placeholder="{{ __('Personal Email') }}" class="form-control @error('personal_email') is-invalid @enderror" required/>
+                            @error('personal_email')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-3">
+                            <label for="official_email" class="form-label">{{ __('Official Email') }}</label>
+                            <input type="email" id="official_email" name="official_email" value="{{ old('official_email', optional($user->employee)->official_email) }}" placeholder="{{ __('Official Email') }}" class="form-control @error('official_email') is-invalid @enderror"/>
+                            @error('official_email')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-3">
+                            <label for="personal_contact_no" class="form-label">{{ __('Personal Contact No.') }} <strong class="text-danger">*</strong></label>
+                            <input type="tel" id="personal_contact_no" name="personal_contact_no" value="{{ old('personal_contact_no', optional($user->employee)->personal_contact_no) }}" placeholder="{{ __('Personal Contact No.') }}" class="form-control @error('personal_contact_no') is-invalid @enderror" required/>
+                            @error('personal_contact_no')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-3">
+                            <label for="official_contact_no" class="form-label">{{ __('Official Contact No.') }}</label>
+                            <input type="tel" id="official_contact_no" name="official_contact_no" value="{{ old('official_contact_no', optional($user->employee)->official_contact_no) }}" placeholder="{{ __('Official Contact No.') }}" class="form-control @error('official_contact_no') is-invalid @enderror"/>
+                            @error('official_contact_no')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                     </div>
@@ -157,6 +214,7 @@
 @section('script_links')
     {{--  External Javascript Links --}}
     <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{asset('assets/js/form-layouts.js')}}"></script>
 @endsection
 
@@ -199,6 +257,18 @@
                 $("#editableInput").addClass("editable-input");
                 
                 $("#email").prop("readonly", true);
+            });
+        });
+    </script>
+
+    <script>
+        // Custom Script Here
+        $(document).ready(function() {
+            $('.date-picker').datepicker({
+                format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                autoclose: true,
+                orientation: 'auto right'
             });
         });
     </script>

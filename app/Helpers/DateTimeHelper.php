@@ -117,6 +117,51 @@ if (!function_exists('date_time_ago')) {
     }
 }
 
+
+
+if (!function_exists('total_day_difference')) {
+
+    /**
+     * Get the total time difference between a start date and an end date in the format "x years y months z days".
+     * 
+     * @param  string|int  $startDate  The start date or timestamp.
+     * @param  string|int|null  $endDate  The end date or timestamp. Defaults to current date if not provided.
+     * @return string
+     */
+    function total_day_difference($startDate, $endDate = null)
+    {
+        // Parse the start date
+        $startDateTime = Carbon::parse($startDate);
+
+        // If no end date is provided, default to the current date
+        $endDateTime = $endDate ? Carbon::parse($endDate) : Carbon::now();
+
+        // Get the difference as an interval
+        $diff = $endDateTime->diff($startDateTime);
+
+        // Create an output string depending on the difference
+        $output = '';
+
+        if ($diff->y > 0) {
+            $output .= $diff->y . ' year' . ($diff->y > 1 ? 's ' : ' ');
+        }
+
+        if ($diff->m > 0) {
+            $output .= $diff->m . ' month' . ($diff->m > 1 ? 's ' : ' ');
+        }
+
+        if ($diff->d > 0 || $output === '') { // Show days if the difference includes days, or no years/months.
+            $output .= $diff->d . ' day' . ($diff->d > 1 ? 's' : '');
+        }
+
+        // Trim any extra spaces and return the result
+        return trim($output);
+    }
+}
+
+
+
+
 if (!function_exists('total_time_difference')) {
 
     /**

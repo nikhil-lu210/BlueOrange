@@ -744,11 +744,37 @@ namespace App\Models\User\Employee{
 /**
  * App\Models\User\Employee\Employee
  *
- * @property-read \App\Models\User|null $user
+ * @property int $id
+ * @property int $user_id
+ * @property string $joining_date
+ * @property string|null $alias_name
+ * @property string|null $father_name
+ * @property string|null $mother_name
+ * @property string|null $personal_email
+ * @property string|null $official_email
+ * @property string|null $personal_contact_no
+ * @property string|null $official_contact_no
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\User $user
  * @method static \Illuminate\Database\Eloquent\Builder|Employee newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Employee newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Employee onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Employee query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereAliasName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereFatherName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereJoiningDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereMotherName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereOfficialContactNo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereOfficialEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee wherePersonalContactNo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee wherePersonalEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee withTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Employee withoutTrashed()
  */

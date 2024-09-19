@@ -149,11 +149,15 @@
                                     <div class="d-flex justify-content-start align-items-center user-name">
                                         <div class="avatar-wrapper">
                                             <div class="avatar me-2">
-                                                @if ($dailyUpdate->user->hasMedia('avatar'))
-                                                    <img src="{{ $dailyUpdate->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->user->name }} Avatar" class="rounded-circle">
-                                                @else
-                                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $dailyUpdate->user->name }} No Avatar" class="rounded-circle">
-                                                @endif
+                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->user]) }}">
+                                                    @if ($dailyUpdate->user->hasMedia('avatar'))
+                                                        <img src="{{ $dailyUpdate->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->user->name }} Avatar" class="rounded-circle">
+                                                    @else
+                                                        <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
+                                                            {{ profile_name_pic($dailyUpdate->user->id) }}
+                                                        </span>
+                                                    @endif
+                                                </a>
                                             </div>
                                         </div>
                                         <div class="d-flex flex-column">
@@ -166,11 +170,15 @@
                                     <div class="d-flex justify-content-start align-items-center user-name">
                                         <div class="avatar-wrapper">
                                             <div class="avatar me-2">
-                                                @if ($dailyUpdate->team_leader->hasMedia('avatar'))
-                                                    <img src="{{ $dailyUpdate->team_leader->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->team_leader->name }} Avatar" class="rounded-circle">
-                                                @else
-                                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $dailyUpdate->team_leader->name }} No Avatar" class="rounded-circle">
-                                                @endif
+                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}">
+                                                    @if ($dailyUpdate->team_leader->hasMedia('avatar'))
+                                                        <img src="{{ $dailyUpdate->team_leader->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->team_leader->name }} Avatar" class="rounded-circle">
+                                                    @else
+                                                        <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
+                                                            {{ profile_name_pic($dailyUpdate->team_leader->id) }}
+                                                        </span>
+                                                    @endif
+                                                </a>
                                             </div>
                                         </div>
                                         <div class="d-flex flex-column">

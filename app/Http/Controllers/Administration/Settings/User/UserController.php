@@ -72,12 +72,11 @@ class UserController extends Controller
         $user = NULL;
         try {
             DB::transaction(function() use ($request, &$user) {
-                $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
+                $fullName = $request->first_name .' '. $request->last_name;
                 
                 $user = User::create([
                     'userid' => $request->userid,
                     'first_name' => $request->first_name,
-                    'middle_name' => $request->middle_name,
                     'last_name' => $request->last_name,
                     'name' => $fullName,
                     'email' => $request->email,
@@ -93,7 +92,21 @@ class UserController extends Controller
                     $user->addMedia($request->avatar)
                          ->toMediaCollection('avatar');
                 }
+
+                // Create associated employee for the user
+                $user->employee()->create([
+                    'joining_date' => $request->joining_date,
+                    'alias_name' => $request->alias_name,
+                    'father_name' => $request->father_name,
+                    'mother_name' => $request->mother_name,
+                    'birth_date' => $request->birth_date,
+                    'personal_email' => $request->personal_email,
+                    'official_email' => $request->official_email,
+                    'personal_contact_no' => $request->personal_contact_no,
+                    'official_contact_no' => $request->official_contact_no,
+                ]);
                 
+                // Create associated employee_shift for the user
                 EmployeeShift::create([
                     'user_id' => $user->id,
                     'start_time' => $request->start_time,
@@ -181,11 +194,10 @@ class UserController extends Controller
     {
         try {
             DB::transaction(function() use ($request, $user) {
-                $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
+                $fullName = $request->first_name .' '. $request->last_name;
                 
                 $user->update([
                     'first_name' => $request->first_name,
-                    'middle_name' => $request->middle_name,
                     'last_name' => $request->last_name,
                     'name' => $fullName,
                     'email' => $request->email,
@@ -206,6 +218,19 @@ class UserController extends Controller
                 // Sync the user's role
                 $role = Role::findOrFail($request->role_id);
                 $user->syncRoles([$role]);
+
+                // update associated employee for the user
+                $user->employee()->update([
+                    'joining_date' => $request->joining_date,
+                    'alias_name' => $request->alias_name,
+                    'father_name' => $request->father_name,
+                    'mother_name' => $request->mother_name,
+                    'birth_date' => $request->birth_date,
+                    'personal_email' => $request->personal_email,
+                    'official_email' => $request->official_email,
+                    'personal_contact_no' => $request->personal_contact_no,
+                    'official_contact_no' => $request->official_contact_no,
+                ]);
 
                 $authUser = Auth::user();
 

@@ -176,21 +176,7 @@
                                     <small class="text-bold text-{{ $attendance->type === 'Regular' ? 'success' : 'primary' }}">{{ $attendance->type }}</small>
                                 </td>
                                 <td>
-                                    <div class="d-flex justify-content-start align-items-center user-name">
-                                        <div class="avatar-wrapper">
-                                            <div class="avatar me-2">
-                                                @if ($attendance->user->hasMedia('avatar'))
-                                                    <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $attendance->user->name }} Avatar" class="rounded-circle">
-                                                @else
-                                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $attendance->user->name }} No Avatar" class="rounded-circle">
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <a href="{{ route('administration.settings.user.show.profile', ['user' => $attendance->user]) }}" target="_blank" class="emp_name text-truncate">{{ $attendance->user->name }}</a>
-                                            <small class="emp_post text-truncate text-muted">{{ $attendance->user->roles[0]->name }}</small>
-                                        </div>
-                                    </div>
+                                    {!! show_user_name_and_avatar($attendance->user) !!}
                                 </td>
                                 <td>
                                     <div class="d-grid">

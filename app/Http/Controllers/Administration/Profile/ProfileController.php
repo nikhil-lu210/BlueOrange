@@ -62,19 +62,13 @@ class ProfileController extends Controller
         $user = Auth::user();
         try {
             DB::transaction(function() use ($request, $user) {
-                $fullName = $request->first_name .' '. $request->middle_name .' '. $request->last_name;
+                $fullName = $request->first_name .' '. $request->last_name;
                 
                 $user->update([
                     'first_name' => $request->first_name,
-                    'middle_name' => $request->middle_name,
                     'last_name' => $request->last_name,
                     'name' => $fullName,
                 ]);
-
-                if(isset($request->email)) {
-                    $user->email = $request->email;
-                    $user->save();
-                }
 
                 // Handle avatar upload
                 if ($request->hasFile('avatar')) {
@@ -87,11 +81,14 @@ class ProfileController extends Controller
                     $user->addMedia($request->avatar)->toMediaCollection('avatar');
                 }
 
-                if(isset($request->role_id)) {
-                    // Sync the user's role
-                    $role = Role::findOrFail($request->role_id);
-                    $user->syncRoles([$role]);
-                }
+                // update associated employee for the user
+                $user->employee()->update([
+                    'father_name' => $request->father_name,
+                    'mother_name' => $request->mother_name,
+                    'birth_date' => $request->birth_date,
+                    'personal_email' => $request->personal_email,
+                    'personal_contact_no' => $request->personal_contact_no
+                ]);
 
                 $notifiableUsers = User::whereHas('roles', function ($query) {
                     $query->whereIn('name', ['Super Admin', 'Admin', 'HR Manager']);

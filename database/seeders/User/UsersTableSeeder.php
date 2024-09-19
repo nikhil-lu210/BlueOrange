@@ -42,10 +42,11 @@ class UsersTableSeeder extends Seeder
         ]);
         // Create associated employee for the developer
         $developer->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
             'alias_name' => fake()->name('male'),
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
+            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
             'personal_email' => fake()->unique()->safeEmail,
             'official_email' => fake()->email(),
             'personal_contact_no' => fake()->phoneNumber(),
@@ -79,10 +80,11 @@ class UsersTableSeeder extends Seeder
         ]);
         // Create associated employee for the superAdmin
         $superAdmin->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
             'alias_name' => fake()->name('male'),
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
+            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
             'personal_email' => fake()->unique()->safeEmail,
             'official_email' => fake()->email(),
             'personal_contact_no' => fake()->phoneNumber(),
@@ -116,10 +118,11 @@ class UsersTableSeeder extends Seeder
         ]);
         // Create associated employee for the admin
         $admin->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
             'alias_name' => fake()->name('male'),
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
+            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
             'personal_email' => fake()->unique()->safeEmail,
             'official_email' => fake()->email(),
             'personal_contact_no' => fake()->phoneNumber(),
@@ -153,10 +156,11 @@ class UsersTableSeeder extends Seeder
         ]);
         // Create associated employee for the hr
         $hr->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
             'alias_name' => fake()->name('male'),
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
+            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
             'personal_email' => fake()->unique()->safeEmail,
             'official_email' => fake()->email(),
             'personal_contact_no' => fake()->phoneNumber(),
@@ -190,10 +194,11 @@ class UsersTableSeeder extends Seeder
         ]);
         // Create associated employee for the tl
         $tl->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
             'alias_name' => fake()->name('male'),
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
+            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
             'personal_email' => fake()->unique()->safeEmail,
             'official_email' => fake()->email(),
             'personal_contact_no' => fake()->phoneNumber(),
@@ -227,10 +232,11 @@ class UsersTableSeeder extends Seeder
         ]);
         // Create associated employee for the employee
         $employee->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
             'alias_name' => fake()->firstNameMale(),
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
+            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
             'personal_email' => fake()->unique()->safeEmail,
             'official_email' => fake()->email(),
             'personal_contact_no' => fake()->phoneNumber(),

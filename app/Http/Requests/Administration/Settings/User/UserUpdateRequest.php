@@ -23,16 +23,36 @@ class UserUpdateRequest extends FormRequest
     public function rules()
     {
         $id = $this->route('user')->id;
+        $employeeId = $this->route('user')->employee->id;
+        
         return [
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
-            'first_name' => ['required', 'string'],
-            'middle_name' => ['nullable', 'string'],
-            'last_name' => ['required', 'string'],
+            'avatar' => ['sometimes', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
+            'first_name' => ['sometimes', 'string'],
+            'last_name' => ['sometimes', 'string'],
             'email' => [
-                'required', 
+                'sometimes', 
                 'email',
                 Rule::unique('users')->ignore($id)
             ],
+            
+            // for employees table
+            'joining_date' => ['sometimes', 'date_format:Y-m-d'],
+            'alias_name' => ['sometimes', 'string'],
+            'father_name' => ['sometimes', 'string'],
+            'mother_name' => ['sometimes', 'string'],
+            'birth_date' => ['sometimes', 'date_format:Y-m-d'],
+            'personal_email' => [
+                'sometimes', 
+                'email',
+                Rule::unique('employees')->ignore($employeeId)
+            ],
+            'official_email' => ['nullable', 'email'],
+            'personal_contact_no' => [
+                'sometimes', 
+                'string',
+                Rule::unique('employees')->ignore($employeeId)
+            ],
+            'official_contact_no' => ['nullable', 'string'],
         ];
     }
 

@@ -41,12 +41,22 @@ class UserStoreRequest extends FormRequest
                 'unique_userid:users,userid', // Custom validation rule
             ],
             'first_name' => ['required', 'string'],
-            'middle_name' => ['nullable', 'string'],
             'last_name' => ['required', 'string'],
             'email' => ['required', 'unique:users'],
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i'],
+            
+            // for employees table
+            'joining_date' => ['required', 'date_format:Y-m-d'],
+            'alias_name' => ['required', 'string'],
+            'father_name' => ['required', 'string'],
+            'mother_name' => ['required', 'string'],
+            'birth_date' => ['required', 'date_format:Y-m-d'],
+            'personal_email' => ['required', 'email', 'unique:employees'],
+            'official_email' => ['nullable', 'email'],
+            'personal_contact_no' => ['required', 'string', 'unique:employees'],
+            'official_contact_no' => ['nullable', 'string'],
         ];
     }
 
