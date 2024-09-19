@@ -37,9 +37,6 @@
             <a href="{{ route('administration.chatting.group.index') }}" class="menu-link">
                 <i class="menu-icon tf-icons ti ti-messages"></i>
                 <div data-i18n="Group Chattings">{{ __('Group Chattings') }}</div>
-                @if (get_total_unread_private_messages_count() > 0) 
-                    <div class="badge bg-danger rounded-pill ms-auto">{{ get_total_unread_private_messages_count() }}</div>
-                @endif
             </a>
         </li>
 
