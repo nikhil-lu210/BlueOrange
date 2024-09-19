@@ -85,9 +85,9 @@
             <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <i class="ti ti-bell ti-md"></i>
-                    @if (Auth::user()->unreadNotifications->count() > 0) 
+                    @if (auth()->user()->unreadNotifications->count() > 0) 
                         <span class="badge bg-danger rounded-pill badge-notifications">
-                            {{ Auth::user()->unreadNotifications->count() }}
+                            {{ auth()->user()->unreadNotifications->count() }}
                         </span>
                     @endif
                 </a>
@@ -95,7 +95,7 @@
                     <li class="dropdown-menu-header border-bottom">
                         <div class="dropdown-header d-flex align-items-center py-3">
                             <h5 class="text-body mb-0 me-auto">{{ __('topnav.notifications') }}</h5>
-                            @if (Auth::user()->unreadNotifications->count() > 0) 
+                            @if (auth()->user()->unreadNotifications->count() > 0) 
                                 <a href="{{ route('administration.notification.mark_all_as_read') }}" class="dropdown-notifications-all text-body confirm-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read">
                                     <i class="ti ti-mail-opened fs-4"></i>
                                 </a>
@@ -104,7 +104,7 @@
                     </li>
                     <li class="dropdown-notifications-list scrollable-container">
                         <ul class="list-group list-group-flush">
-                            @forelse (Auth::user()->unreadNotifications as $notification)
+                            @forelse (auth()->user()->unreadNotifications as $notification)
                                 <li class="list-group-item list-group-item-action dropdown-notifications-item">
                                     <div class="d-flex">
                                         <div class="flex-shrink-0 me-3">
@@ -155,7 +155,9 @@
                         @if (auth()->user()->hasMedia('avatar'))
                             <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="h-auto rounded-circle">
                         @else
-                            <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ auth()->user()->name }} No Avatar" class="h-auto rounded-circle">
+                            <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
+                                {{ profile_name_pic(auth()->user()->id) }}
+                            </span>
                         @endif
                     </div>
                 </a>
@@ -164,17 +166,23 @@
                         <a class="dropdown-item" href="{{ route('administration.my.profile') }}">
                             <div class="d-flex">
                                 <div class="flex-shrink-0 me-3">
-                                    <div class="avatar avatar-online">
+                                    <div class="avatar avatar-online" title="{{ auth()->user()->name }}">
                                         @if (auth()->user()->hasMedia('avatar'))
                                             <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="h-auto rounded-circle">
                                         @else
-                                            <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ auth()->user()->name }} No Avatar" class="h-auto rounded-circle">
+                                            <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
+                                                {{ profile_name_pic(auth()->user()->id) }}
+                                            </span>
                                         @endif
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <span class="fw-medium d-block">{{ Auth::user()->first_name }}</span>
-                                    <small class="text-muted">{{ Auth::user()->roles[0]->name }}</small>
+                                    @if (!is_null(auth()->user()->employee->alias_name)) 
+                                        <span class="fw-medium d-block">{{ auth()->user()->employee->alias_name }}</span>
+                                    @else 
+                                        <span class="fw-medium d-block">{{ auth()->user()->name }}</span>
+                                    @endif
+                                    <small class="text-muted">{{ auth()->user()->roles[0]->name }}</small>
                                 </div>
                             </div>
                         </a>
