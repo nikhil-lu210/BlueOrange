@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('alias_name')->nullable();
             $table->string('father_name')->nullable();
             $table->string('mother_name')->nullable();
+            $table->date('birth_date')->nullable();
             $table->string('personal_email')->unique('personal_email')->nullable();
             $table->string('official_email')->nullable();
             $table->string('personal_contact_no')->unique('personal_contact_no')->nullable();

@@ -76,7 +76,7 @@
                     <dd class="col-sm-8">
                         <span>{{ show_date(optional($user->employee)->joining_date) }}</span>
                         <br>
-                        <small class="badge bg-success mt-1">{{ total_day_difference(optional($user->employee)->joining_date) }}</small>
+                        <small class="badge bg-success text-capitalize mt-1">{{ total_day_difference(optional($user->employee)->joining_date) }}</small>
                     </dd>
                 </dl>
                 <hr>
@@ -142,6 +142,17 @@
                     </dt>
                     <dd class="col-sm-8">
                         <span>{{ optional($user->employee)->mother_name }}</span>  
+                    </dd>
+                </dl>
+                <dl class="row mb-1">
+                    <dt class="col-sm-4 fw-medium text-nowrap">
+                        <i class="ti ti-calendar text-heading"></i>
+                        <span class="fw-medium mx-2 text-heading">Date Of Birth:</span>
+                    </dt>
+                    <dd class="col-sm-8">
+                        <span>{{ show_date(optional($user->employee)->birth_date) }}</span>
+                        <br>
+                        <small class="badge bg-success text-capitalize mt-1">{{ total_day_difference(optional($user->employee)->birth_date) }}</small>
                     </dd>
                 </dl>
             </div>

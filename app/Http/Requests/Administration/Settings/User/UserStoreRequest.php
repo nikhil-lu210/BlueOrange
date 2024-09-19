@@ -52,6 +52,7 @@ class UserStoreRequest extends FormRequest
             'alias_name' => ['required', 'string'],
             'father_name' => ['required', 'string'],
             'mother_name' => ['required', 'string'],
+            'birth_date' => ['required', 'date_format:Y-m-d'],
             'personal_email' => ['required', 'email', 'unique:employees'],
             'official_email' => ['nullable', 'email'],
             'personal_contact_no' => ['required', 'string', 'unique:employees'],

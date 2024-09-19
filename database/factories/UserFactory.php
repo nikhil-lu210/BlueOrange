@@ -79,6 +79,7 @@ class UserFactory extends Factory
                     'alias_name' => $this->faker->firstNameMale(),
                     'father_name' => $this->faker->name('male'),
                     'mother_name' => $this->faker->name('female'),
+                    'birth_date' => $this->faker->dateTimeBetween('-50 years', '-25 years')->format('Y-m-d'),
                     'personal_email' => $this->faker->unique()->safeEmail,
                     'official_email' => $this->faker->email(),
                     'personal_contact_no' => $this->faker->phoneNumber(),

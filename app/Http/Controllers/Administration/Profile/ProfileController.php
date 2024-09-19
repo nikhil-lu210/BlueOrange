@@ -85,6 +85,7 @@ class ProfileController extends Controller
                 $user->employee()->update([
                     'father_name' => $request->father_name,
                     'mother_name' => $request->mother_name,
+                    'birth_date' => $request->birth_date,
                     'personal_email' => $request->personal_email,
                     'personal_contact_no' => $request->personal_contact_no
                 ]);

@@ -139,7 +139,7 @@
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-4">
+                        <div class="mb-3 col-md-2">
                             <label class="form-label">Joining Date <strong class="text-danger">*</strong></label>
                             <input type="text" name="joining_date" value="{{ old('joining_date', optional($user->employee)->joining_date) }}" class="form-control  date-picker" placeholder="YYYY-MM-DD" required/>
                             @error('joining_date')
@@ -158,6 +158,13 @@
                             <input type="text" id="mother_name" name="mother_name" value="{{ old('mother_name', optional($user->employee)->mother_name) }}" placeholder="{{ __('Mother Name') }}" class="form-control @error('mother_name') is-invalid @enderror" required/>
                             @error('mother_name')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-2">
+                            <label class="form-label">Birthdate <strong class="text-danger">*</strong></label>
+                            <input type="text" name="birth_date" value="{{ old('birth_date', optional($user->employee)->birth_date) }}" class="form-control  date-picker" placeholder="YYYY-MM-DD" required/>
+                            @error('birth_date')
+                                <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">

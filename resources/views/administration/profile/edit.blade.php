@@ -10,6 +10,7 @@
 @section('css_links')
     {{--  External CSS  --}}
     <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -96,18 +97,25 @@
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-5">
                             <label for="father_name" class="form-label">{{ __('Father Name') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="father_name" name="father_name" value="{{ old('father_name', optional($user->employee)->father_name) }}" placeholder="{{ __('Father Name') }}" class="form-control @error('father_name') is-invalid @enderror" required/>
                             @error('father_name')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-5">
                             <label for="mother_name" class="form-label">{{ __('Mother Name') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="mother_name" name="mother_name" value="{{ old('mother_name', optional($user->employee)->mother_name) }}" placeholder="{{ __('Mother Name') }}" class="form-control @error('mother_name') is-invalid @enderror" required/>
                             @error('mother_name')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-2">
+                            <label class="form-label">Birthdate <strong class="text-danger">*</strong></label>
+                            <input type="text" name="birth_date" value="{{ old('birth_date', optional($user->employee)->birth_date) }}" class="form-control  date-picker" placeholder="YYYY-MM-DD" required/>
+                            @error('birth_date')
+                                <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-6">
@@ -143,6 +151,7 @@
 @section('script_links')
     {{--  External Javascript Links --}}
     <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{asset('assets/js/form-layouts.js')}}"></script>
 @endsection
 
@@ -185,6 +194,18 @@
                 $("#editableInput").addClass("editable-input");
                 
                 $("#email").prop("readonly", true);
+            });
+        });
+    </script>
+
+    <script>
+        // Custom Script Here
+        $(document).ready(function() {
+            $('.date-picker').datepicker({
+                format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                autoclose: true,
+                orientation: 'auto right'
             });
         });
     </script>

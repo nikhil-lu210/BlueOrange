@@ -32,6 +32,7 @@ class ProfileUpdateRequest extends FormRequest
             // for employees table
             'father_name' => ['sometimes', 'string'],
             'mother_name' => ['sometimes', 'string'],
+            'birth_date' => ['sometimes', 'date_format:Y-m-d'],
             'personal_email' => [
                 'sometimes', 
                 'email',

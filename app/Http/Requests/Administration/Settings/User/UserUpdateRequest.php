@@ -40,6 +40,7 @@ class UserUpdateRequest extends FormRequest
             'alias_name' => ['sometimes', 'string'],
             'father_name' => ['sometimes', 'string'],
             'mother_name' => ['sometimes', 'string'],
+            'birth_date' => ['sometimes', 'date_format:Y-m-d'],
             'personal_email' => [
                 'sometimes', 
                 'email',
