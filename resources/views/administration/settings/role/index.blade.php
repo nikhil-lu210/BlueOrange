@@ -62,13 +62,15 @@
                                     @if ($user->hasMedia('avatar'))
                                         <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
                                     @else
-                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="rounded-circle">
+                                        <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
+                                            {{ profile_name_pic($user->id) }}
+                                        </span>
                                     @endif
                                 </li>
                             @endforeach
                             @if ($role->users->count() > 5)
                                 <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $role->users->count() - 5 }} More" class="avatar avatar-sm pull-up more-user-avatar">
-                                    <small>{{ $role->users->count() - 5 }}+</small>
+                                    <small>{{ ($role->users->count() - 5) < 10 ? $role->users->count() - 5 : '9' }}+</small>
                                 </li>
                             @endif
                         </ul>
