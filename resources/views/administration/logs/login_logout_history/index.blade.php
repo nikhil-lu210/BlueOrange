@@ -117,21 +117,7 @@
                             <tr>
                                 <th>#{{ serial($histories, $key) }}</th>
                                 <td>
-                                    <div class="d-flex justify-content-start align-items-center user-name">
-                                        <div class="avatar-wrapper">
-                                            <div class="avatar me-2">
-                                                @if ($history->user->hasMedia('avatar'))
-                                                    <img src="{{ $history->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $history->user->name }} Avatar" class="rounded-circle">
-                                                @else
-                                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $history->user->name }} No Avatar" class="rounded-circle">
-                                                @endif
-                                            </div>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <a href="{{ route('administration.settings.user.show.profile', ['user' => $history->user]) }}" target="_blank" class="emp_name text-truncate">{{ $history->user->name }}</a>
-                                            <small class="emp_post text-truncate text-muted">{{ $history->user->roles[0]->name }}</small>
-                                        </div>
-                                    </div>
+                                    {!! show_user_name_and_avatar($history->user) !!}
                                 </td>
                                 <td>
                                     <div class="d-grid">

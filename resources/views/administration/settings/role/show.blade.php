@@ -126,25 +126,7 @@
                             <tr>
                                 <th>#{{ serial($role->users, $key) }}</th>
                                 <td>
-                                    <div class="d-flex justify-content-start align-items-center user-name">
-                                        <div class="avatar-wrapper">
-                                            <div class="avatar me-2">
-                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">
-                                                    @if ($user->hasMedia('avatar'))
-                                                        <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $user->name }} Avatar" class="rounded-circle">
-                                                    @else
-                                                        <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
-                                                            {{ profile_name_pic($user->id) }}
-                                                        </span>
-                                                    @endif
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="emp_name text-truncate">{{ $user->name }}</a>
-                                            <small class="emp_post text-truncate text-muted">{{ $user->roles->first()->name }}</small>
-                                        </div>
-                                    </div>
+                                    {!! show_user_name_and_avatar($user) !!}
                                 </td>
                                 <td>{{ $user->email }}</td>
                                 <td>

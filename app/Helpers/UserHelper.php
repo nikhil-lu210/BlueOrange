@@ -67,3 +67,51 @@ if (!function_exists('profile_name_pic')) {
         return $firstInitial . $lastInitial;
     }
 }
+
+
+
+if (!function_exists('show_user_name_and_avatar')) {
+
+    /**
+     * Display the user name and avatar in a consistent layout.
+     *
+     * @param  \App\Models\User  $user
+     * @return string  The HTML output for user name and avatar.
+     */
+    function show_user_name_and_avatar($user)
+    {
+        // Determine the avatar URL or initials
+        $avatarHtml = '';
+        if ($user->hasMedia('avatar')) {
+            $avatarUrl = $user->getFirstMediaUrl('avatar', 'thumb');
+            $avatarHtml = '<img src="' . $avatarUrl . '" alt="' . htmlspecialchars($user->name) . ' Avatar" class="rounded-circle">';
+        } else {
+            $initials = profile_name_pic($user->id);
+            $avatarHtml = '<span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">' . $initials . '</span>';
+        }
+
+        // Generate the full name and alias display
+        $nameHtml = '<a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '" target="_blank" class="text-bold">' . htmlspecialchars($user->name) . '</a>';
+        $aliasName = optional($user->employee)->alias_name ?? '';
+        $roleName = $user->roles[0]->name ?? '';
+
+        // Construct the HTML output
+        $html = '
+        <div class="d-flex justify-content-start align-items-center user-name">
+            <div class="avatar-wrapper">
+                <div class="avatar me-2">
+                    <a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '">
+                        ' . $avatarHtml . '
+                    </a>
+                </div>
+            </div>
+            <div class="d-flex flex-column">
+                ' . $nameHtml . '
+                <small class="text-bold text-dark">' . htmlspecialchars($aliasName) . '</small>
+                <small class="text-truncate text-muted">' . htmlspecialchars($roleName) . '</small>
+            </div>
+        </div>';
+
+        return $html;
+    }
+}
