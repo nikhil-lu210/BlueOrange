@@ -74,9 +74,12 @@
                         <span class="fw-medium mx-2 text-heading">Joining Date:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ show_date(optional($user->employee)->joining_date) }}</span>  
+                        <span>{{ show_date(optional($user->employee)->joining_date) }}</span>
+                        <br>
+                        <small class="badge bg-success mt-1">{{ total_day_difference(optional($user->employee)->joining_date) }}</small>
                     </dd>
                 </dl>
+                <hr>
                 <dl class="row mb-1">
                     <dt class="col-sm-4 fw-medium text-nowrap">
                         <i class="ti ti-qrcode text-heading"></i>
