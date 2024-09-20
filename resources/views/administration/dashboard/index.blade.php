@@ -15,6 +15,15 @@
     {{--  External CSS  --}}
     <style>
     /* Custom CSS Here */
+    @import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+    .birthday-wish > * {
+        font-family: "Satisfy", cursive;
+    }
+    .birthday-wish .birthday-message {
+        font-family: "Indie Flower", cursive;
+        font-size: 24px;
+    }
     </style>
 @endsection
 
@@ -32,6 +41,21 @@
 
 @section('content')
 <!-- Start row -->
+@if (is_today_birthday(optional(auth()->user()->employee)->birth_date)) 
+    <div class="row mb-4 birthday-wish">
+        <div class="col-md-12">
+            <div class="card card-border-shadow-primary">
+                <div class="card-body text-center">
+                    <h1 class="m-0 text-primary text-bold">Happy Birthday</h1>
+                    <h3 class="m-0 text-primary text-bold">{{ get_employee_name(auth()->user()) }}</h3>
+
+                    <p class="birthday-message mt-4 text-bold">This day is as special as you are. Your contributions to our team are invaluable, and your positive energy always brightens our day. Thank you for your hard work and dedication. May this year bring you even greater success and happiness. Enjoy your special day with loved ones and make some unforgettable memories. Cheers to another year of growth and achievement!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+@endif
+
 <div class="row">
     <!-- Statistics -->
     <div class="col-lg-8 mb-4 col-md-12">
