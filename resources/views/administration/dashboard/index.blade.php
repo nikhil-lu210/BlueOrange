@@ -50,6 +50,7 @@
                     <h3 class="m-0 text-primary text-bold">{{ get_employee_name(auth()->user()) }}</h3>
 
                     <p class="birthday-message mt-4 text-bold bg-label-success p-3">{{ $wish }}</p>
+                    <i class="fs-3">{{ __('Team Staff-India') }}</i>
                 </div>
             </div>
         </div>
