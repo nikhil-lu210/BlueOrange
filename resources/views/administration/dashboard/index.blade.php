@@ -49,7 +49,7 @@
                     <h1 class="m-0 text-primary text-bold">Happy Birthday</h1>
                     <h3 class="m-0 text-primary text-bold">{{ get_employee_name(auth()->user()) }}</h3>
 
-                    <p class="birthday-message mt-4 text-bold">This day is as special as you are. Your contributions to our team are invaluable, and your positive energy always brightens our day. Thank you for your hard work and dedication. May this year bring you even greater success and happiness. Enjoy your special day with loved ones and make some unforgettable memories. Cheers to another year of growth and achievement!</p>
+                    <p class="birthday-message mt-4 text-bold bg-label-success p-3">{{ $wish }}</p>
                 </div>
             </div>
         </div>
