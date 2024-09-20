@@ -147,7 +147,15 @@
                     <dd class="col-sm-8">
                         <span>{{ show_date(optional($user->employee)->birth_date) }}</span>
                         <br>
-                        <small class="badge bg-success text-capitalize mt-1">{{ total_day_difference(optional($user->employee)->birth_date) }}</small>
+                        @if (is_today_birthday(optional($user->employee)->birth_date)) 
+                            <small class="mt-1 badge bg-success">
+                                <span class="text-bold text-capitalize">Happy Birthday {{ get_employee_name($user) }}</span>
+                            </small>
+                        @else
+                            <small class="mt-1" title="Upcoming Birthday">
+                                <span class="text-bold text-success">{{ upcoming_birthday(optional($user->employee)->birth_date) }}</span>
+                            </small>
+                        @endif
                     </dd>
                 </dl>
             </div>

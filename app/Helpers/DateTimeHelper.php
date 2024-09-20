@@ -320,3 +320,74 @@ if (!function_exists('total_time')) {
         return $formattedTotalTime;
     }
 }
+
+
+if (!function_exists('upcoming_birthday')) {
+
+    /**
+     * Get the time remaining until the next birthday or print "Happy Birthday" if today is the birthday.
+     *
+     * @param  string  $birthDate  The birthdate in 'Y-m-d' format or any date parsable by Carbon.
+     * @return string  The remaining time until the next birthday, e.g., "11 Months 3 Days to go" or "Happy Birthday".
+     */
+    function upcoming_birthday($birthDate)
+    {
+        // Parse the birthdate and get the current date
+        $birthDate = Carbon::parse($birthDate)->startOfDay();
+        $now = Carbon::now()->startOfDay();
+
+        // Get the birthdate for the current year
+        $nextBirthday = Carbon::create($now->year, $birthDate->month, $birthDate->day);
+
+        // If the birthday has already passed this year, move it to next year
+        if ($nextBirthday->isPast()) {
+            $nextBirthday = $nextBirthday->addYear();
+        }
+
+        // Get the difference between now and the next birthday
+        $diff = $now->diff($nextBirthday);
+
+        // Extract years, months, and days from the difference
+        $years = $diff->y;
+        $months = $diff->m;
+        $days = $diff->d;
+
+        // Prepare the result string
+        $result = [];
+
+        if ($years > 0) {
+            $result[] = $years . ' ' . Str::plural('Year', $years);
+        }
+
+        if ($months > 0) {
+            $result[] = $months . ' ' . Str::plural('Month', $months);
+        }
+
+        if ($days > 0) {
+            $result[] = $days . ' ' . Str::plural('Day', $days);
+        }
+
+        // Return the result string or default message if empty
+        return !empty($result) ? implode(' ', $result) . ' to go' : 'No time difference available';
+    }
+}
+
+
+if (!function_exists('is_today_birthday')) {
+
+    /**
+     * Check if today is the user's birthday.
+     *
+     * @param  string  $birthDate  The birthdate in 'Y-m-d' format.
+     * @return bool  Returns true if today is the birthday, false otherwise.
+     */
+    function is_today_birthday($birthDate)
+    {
+        // Parse the birthdate, ignoring the year and only comparing the month and day
+        $birthDate = Carbon::parse($birthDate);
+        $today = Carbon::now();
+
+        // Check if today is the birthday by comparing month and day
+        return $birthDate->isBirthday($today);
+    }
+}
