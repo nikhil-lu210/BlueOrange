@@ -117,7 +117,7 @@
                     @endif
 
                     @if (!$inBreak) 
-                        <form action="#" method="post" class="confirm-form-success">
+                        <form action="{{ route('administration.daily_break.start') }}" method="post" class="confirm-form-success">
                             @csrf
                             <button type="submit" name="start_break" class="btn btn-sm btn-success" title="{{ __('Start Break Now?') }}">
                                 <span class="tf-icon ti ti-clock-check me-1"></span>
@@ -125,7 +125,7 @@
                             </button>
                         </form>
                     @else
-                        <form action="{{ route('administration.attendance.clockout') }}" method="post" class="confirm-form-danger">
+                        <form action="{{ route('administration.daily_break.stop') }}" method="post" class="confirm-form-danger">
                             @csrf
                             <button type="submit" name="stop_break" class="btn btn-sm btn-danger">
                                 <span class="tf-icon ti ti-clock-off me-1"></span>

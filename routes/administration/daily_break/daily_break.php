@@ -11,8 +11,8 @@ Route::controller(DailyBreakController::class)->prefix('daily_break')->name('dai
     // Route::get('/my', 'myAttendances')->name('my');
     // Route::get('/create', 'create')->name('create');
     // Route::post('/store', 'store')->name('store');
-    // Route::post('/clockin', 'clockIn')->name('clockin');
-    // Route::post('/clockout', 'clockOut')->name('clockout');
+    Route::post('/start', 'startBreak')->name('start');
+    Route::post('/stop', 'stopBreak')->name('stop');
     
     // Route::get('/show/{attendance}', 'show')->name('show');
     // Route::post('/update/{attendance}', 'update')->name('update');
