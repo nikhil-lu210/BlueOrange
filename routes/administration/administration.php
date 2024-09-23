@@ -31,6 +31,9 @@ Route::prefix('')
             // Attendance
             include_once 'attendance/attendance.php';
 
+            // Daily Break
+            include_once 'daily_break/daily_break.php';
+
             // announcement
             include_once 'announcement/announcement.php';
 

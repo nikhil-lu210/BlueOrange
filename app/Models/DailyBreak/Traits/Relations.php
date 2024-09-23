@@ -18,10 +18,10 @@ trait Relations
     
     
     /**
-     * Get the attendance for the daily_break.
+     * Get the attendance for the daily_break, filtering by type 'Regular'.
      */
     public function attendance(): BelongsTo
     {
-        return $this->belongsTo(Attendance::class);
+        return $this->belongsTo(Attendance::class)->where('type', 'Regular');
     }
 }

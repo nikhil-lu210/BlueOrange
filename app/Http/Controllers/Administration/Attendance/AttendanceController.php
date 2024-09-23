@@ -31,7 +31,8 @@ class AttendanceController extends Controller
                                 'user:id,userid,name', 
                                 'user.media', 
                                 'user.roles', 
-                                'employee_shift:id,start_time,end_time'
+                                'employee_shift:id,start_time,end_time',
+                                'daily_breaks'
                             ])
                             ->orderByDesc('clock_in');
 

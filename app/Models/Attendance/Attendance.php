@@ -54,4 +54,25 @@ class Attendance extends Model
     {
         $this->attributes['clock_out'] = $value ? Carbon::parse($value)->setTimezone(config('app.timezone')) : null;
     }
+
+    /**
+     * Get the total number of breaks taken for the attendance.
+     */
+    public function getTotalBreaksTakenAttribute(): int
+    {
+        return $this->daily_breaks()
+            ->whereNotNull('break_out_at') // Only count completed breaks
+            ->count();
+    }
+
+    /**
+     * Get the total break time for the attendance.
+     */
+    public function getTotalBreakTimeAttribute(): string
+    {
+        return $this->daily_breaks()
+            ->whereNotNull('break_out_at') // Only count completed breaks
+            ->selectRaw('SEC_TO_TIME(SUM(TIME_TO_SEC(total_time))) as total_break_time')
+            ->value('total_break_time') ?? '00:00:00';
+    }
 }
