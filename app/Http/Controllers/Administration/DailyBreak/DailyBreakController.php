@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers\Administration\DailyBreak;
 
-use App\Exports\Administration\DailyBreak\DailyBreakExport;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Models\Attendance\Attendance;
 use App\Models\DailyBreak\DailyBreak;
+use App\Exports\Administration\DailyBreak\DailyBreakExport;
 
 class DailyBreakController extends Controller
 {

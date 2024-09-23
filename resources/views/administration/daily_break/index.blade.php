@@ -164,14 +164,18 @@
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="d-grid">
+                                    @isset ($break->break_out_at) 
                                         <span class="text-bold text-success">{{ show_time($break->break_out_at) }}</span>
-                                    </div>
+                                    @else
+                                        <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
+                                    @endisset
                                 </td>
                                 <td>
-                                    <div class="d-grid">
-                                        {{ total_time($break->total_time) }}
-                                    </div>
+                                    @isset ($break->total_time) 
+                                        <span class="text-bold text-warning">{{ total_time($break->total_time) }}</span>
+                                    @else
+                                        <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
+                                    @endisset
                                 </td>
                                 <td class="text-center">
                                     <a href="#" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
