@@ -14,6 +14,7 @@ use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
+use App\Models\DailyBreak\DailyBreak;
 use App\Models\User\Employee\Employee;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -108,6 +109,14 @@ trait Relations
     public function qr_clockouts(): HasMany
     {
         return $this->hasMany(Attendance::class, 'qr_clockout_scanner_id');
+    }
+
+    /**
+     * Get the daily_breaks associated with the user.
+     */
+    public function daily_breaks(): HasMany
+    {
+        return $this->hasMany(DailyBreak::class);
     }
 
     /**

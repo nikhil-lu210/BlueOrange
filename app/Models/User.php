@@ -19,7 +19,7 @@ class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia, Relations, ChattingRelations, SoftDeletes, CascadeSoftDeletes;
     
-    protected $cascadeDeletes = ['employee', 'shortcuts', 'employee_shifts', 'attendances'];
+    protected $cascadeDeletes = ['employee', 'shortcuts', 'employee_shifts', 'attendances', 'daily_breaks'];
     protected $dates = ['deleted_at'];
 
     protected $with = ['roles', 'employee', 'media', 'shortcuts'];

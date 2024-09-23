@@ -14,7 +14,7 @@ class Attendance extends Model
 {
     use HasFactory, Relations, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
     
-    protected $cascadeDeletes = [];
+    protected $cascadeDeletes = ['daily_breaks'];
     protected $dates = ['clock_in', 'clock_out', 'deleted_at'];
     protected $casts = [
         'clock_in' => 'datetime',
