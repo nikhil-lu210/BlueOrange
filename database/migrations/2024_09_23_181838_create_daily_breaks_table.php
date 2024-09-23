@@ -24,6 +24,8 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
+            $table->date('date')->default(now()->toDateString());
+
             $table->dateTime('break_in_at');
             $table->dateTime('break_out_at')->nullable();
             $table->string('total_time')->nullable();

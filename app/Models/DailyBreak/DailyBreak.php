@@ -17,6 +17,7 @@ class DailyBreak extends Model
     protected $cascadeDeletes = [];
     protected $dates = ['break_in_at', 'break_out_at', 'deleted_at'];
     protected $casts = [
+        'date' => 'date',
         'break_in_at' => 'datetime',
         'break_out_at' => 'datetime',
     ];
@@ -29,6 +30,7 @@ class DailyBreak extends Model
     protected $fillable = [
         'user_id',
         'attendance_id',
+        'date',
         'break_in_at',
         'break_out_at',
         'total_time',
