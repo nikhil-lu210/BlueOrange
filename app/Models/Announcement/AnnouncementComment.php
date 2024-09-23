@@ -2,6 +2,7 @@
 
 namespace App\Models\Announcement;
 
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class AnnouncementComment extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes, CommentRelations;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, CommentRelations, HasCustomRouteId;
     
     protected $cascadeDeletes = [];
 

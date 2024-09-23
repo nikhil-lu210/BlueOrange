@@ -2,6 +2,7 @@
 
 namespace App\Models\Holiday;
 
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Holiday\Traits\Relations;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Holiday extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes, Relations;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, Relations, HasCustomRouteId;
     
     protected $cascadeDeletes = [];
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class PermissionModule extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
     
     protected $cascadeDeletes = ['permissions'];
     protected $dates = ['deleted_at'];

@@ -647,7 +647,6 @@ namespace App\Models{
  * @property int $id
  * @property string $userid
  * @property string $first_name
- * @property string|null $middle_name
  * @property string $last_name
  * @property string $name
  * @property string $email
@@ -727,7 +726,6 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|User whereFirstName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereLastName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereMiddleName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
@@ -750,6 +748,7 @@ namespace App\Models\User\Employee{
  * @property string|null $alias_name
  * @property string|null $father_name
  * @property string|null $mother_name
+ * @property string|null $birth_date
  * @property string|null $personal_email
  * @property string|null $official_email
  * @property string|null $personal_contact_no
@@ -763,6 +762,7 @@ namespace App\Models\User\Employee{
  * @method static \Illuminate\Database\Eloquent\Builder|Employee onlyTrashed()
  * @method static \Illuminate\Database\Eloquent\Builder|Employee query()
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereAliasName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereBirthDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereFatherName($value)

@@ -2,6 +2,7 @@
 
 namespace App\Models\Announcement;
 
+use App\Traits\HasCustomRouteId;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Announcement\Traits\Relations;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Announcement extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes, Relations;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, Relations, HasCustomRouteId;
     
     protected $cascadeDeletes = ['comments'];
 

@@ -3,6 +3,7 @@
 namespace App\Models\User;
 
 use App\Models\User;
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class LoginHistory extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
     
     protected $cascadeDeletes = [];
     protected $dates = ['deleted_at'];

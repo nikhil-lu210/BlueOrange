@@ -2,6 +2,7 @@
 
 namespace App\Models\Chatting;
 
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class GroupChatting extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes, GroupChattingRelations;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, GroupChattingRelations, HasCustomRouteId;
     
     protected $cascadeDeletes = ['group_users'];
 

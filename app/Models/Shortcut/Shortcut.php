@@ -2,6 +2,7 @@
 
 namespace App\Models\Shortcut;
 
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Shortcut extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes, ShortcutRelations;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, ShortcutRelations, HasCustomRouteId;
     
     protected $cascadeDeletes = [];
 

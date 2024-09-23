@@ -2,15 +2,16 @@
 
 namespace App\Models\User\Employee;
 
-use App\Models\User\Employee\Traits\EmployeeRelations;
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
+use App\Models\User\Employee\Traits\EmployeeRelations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Employee extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes, EmployeeRelations;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, EmployeeRelations, HasCustomRouteId;
     
     protected $cascadeDeletes = ['user'];
 

@@ -2,6 +2,7 @@
 
 namespace App\Models\Task;
 
+use App\Traits\HasCustomRouteId;
 use Spatie\MediaLibrary\HasMedia;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\MediaLibrary\InteractsWithMedia;
@@ -13,7 +14,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class TaskComment extends Model implements HasMedia
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes, InteractsWithMedia, TaskCommentRelations;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, InteractsWithMedia, TaskCommentRelations, HasCustomRouteId;
     
     protected $cascadeDeletes = ['files'];
 

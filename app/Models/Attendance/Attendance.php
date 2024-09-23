@@ -2,16 +2,17 @@
 
 namespace App\Models\Attendance;
 
-use App\Models\Attendance\Traits\Relations;
 use Carbon\Carbon;
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Attendance\Traits\Relations;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Attendance extends Model
 {
-    use HasFactory, Relations, SoftDeletes, CascadeSoftDeletes;
+    use HasFactory, Relations, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
     
     protected $cascadeDeletes = [];
     protected $dates = ['clock_in', 'clock_out', 'deleted_at'];

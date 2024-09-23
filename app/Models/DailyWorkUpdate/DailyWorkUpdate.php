@@ -3,6 +3,7 @@
 namespace App\Models\DailyWorkUpdate;
 
 use App\Models\DailyWorkUpdate\Traits\Relations;
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DailyWorkUpdate extends Model
 {
-    use HasFactory, SoftDeletes, CascadeSoftDeletes, Relations;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, Relations, HasCustomRouteId;
     
     protected $cascadeDeletes = [];
 

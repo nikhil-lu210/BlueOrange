@@ -2,15 +2,16 @@
 
 namespace App\Models\EmployeeShift;
 
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\EmployeeShift\Traits\Relations;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\EmployeeShift\Traits\Relations;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class EmployeeShift extends Model
 {
-    use HasFactory, Relations, SoftDeletes, CascadeSoftDeletes;
+    use HasFactory, Relations, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
     
     protected $cascadeDeletes = [];
 

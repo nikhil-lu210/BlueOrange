@@ -21,7 +21,8 @@
         "spatie/laravel-medialibrary": "^10.0.0",
         "spatie/laravel-permission": "^5.11",
         "stevebauman/location": "^7.0",
-        "stevebauman/purify": "^6.2"
+        "stevebauman/purify": "^6.2",
+        "vinkla/hashids": "11.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.8",

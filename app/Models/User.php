@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 
+use App\Traits\HasCustomRouteId;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use App\Models\User\Traits\Relations;
@@ -19,7 +20,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia, Relations, ChattingRelations, SoftDeletes, CascadeSoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia, Relations, ChattingRelations, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
     
     protected $cascadeDeletes = ['employee', 'shortcuts', 'employee_shifts', 'attendances'];
     protected $dates = ['deleted_at'];
