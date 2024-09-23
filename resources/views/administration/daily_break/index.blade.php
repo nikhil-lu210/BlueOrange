@@ -45,12 +45,12 @@
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    <div class="col-md-10">
+    <div class="col-md-8">
         <form action="{{ route('administration.daily_break.index') }}" method="get" autocomplete="off">
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
-                        <div class="mb-3 col-md-5">
+                        <div class="mb-3 col-md-7">
                             <label for="user_id" class="form-label">{{ __('Select Employee') }}</label>
                             <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true">
                                 <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>{{ __('Select Employee') }}</option>
@@ -65,37 +65,25 @@
                             @enderror
                         </div>
                         
-                        <div class="mb-3 col-md-4">
-                            <label class="form-label">{{ __('Attendances Of') }}</label>
+                        <div class="mb-3 col-md-5">
+                            <label class="form-label">{{ __('Breaks Of') }}</label>
                             <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                             @error('created_month_year')
                                 <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3 col-md-3">
-                            <label for="type" class="form-label">{{ __('Select Clockin Type') }}</label>
-                            <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default">
-                                <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ __('Select Type') }}</option>
-                                <option value="Regular" {{ request()->type == 'Regular' ? 'selected' : '' }}>{{ __('Regular') }}</option>
-                                <option value="Overtime" {{ request()->type == 'Overtime' ? 'selected' : '' }}>{{ __('Overtime') }}</option>
-                            </select>
-                            @error('announcer_id')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                     </div>
                     
                     <div class="col-md-12 text-end">
                         @if (request()->user_id || request()->created_month_year) 
-                            <a href="{{ route('administration.attendance.index') }}" class="btn btn-danger confirm-warning">
+                            <a href="{{ route('administration.daily_break.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
                             </a>
                         @endif
-                        <button type="submit" name="filter_attendance" value="true" class="btn btn-primary">
+                        <button type="submit" name="filter_breaks" value="true" class="btn btn-primary">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                            {{ __('Filter Attendances') }}
+                            {{ __('Filter Breaks') }}
                         </button>
                     </div>
                 </div>
@@ -110,44 +98,38 @@
             <div class="card-header header-elements">
                 {{-- $clockinType . 'attendances_backup' . $userName . $monthYear --}}
                 <h5 class="mb-0">
-                    <span>{{ request()->type ?? request()->type }}</span>
-                    <span>Attendances</span>
+                    <span>Daily Breaks</span>
                     <span>of</span>
                     <span class="text-bold">{{ request()->user_id ? show_user_data(request()->user_id, 'name') : 'All Users' }}</span>
                     <sup>(<b>Month: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
                 </h5>
         
                 <div class="card-header-elements ms-auto">
-                    @if ($attendances->count() > 0)
-                        <a href="{{ route('administration.attendance.export', [
+                    @if ($dailyBreaks->count() > 0)
+                        <a href="{{ route('administration.daily_break.export', [
                             'user_id' => request('user_id'), 
                             'created_month_year' => request('created_month_year'),
-                            'type' => request('type'),
-                            'filter_attendance' => request('filter_attendance')
+                            'filter_breaks' => request('filter_breaks')
                         ]) }}" target="_blank" class="btn btn-sm btn-dark me-3">
                             <span class="tf-icon ti ti-download me-1"></span>
                             {{ __('Download') }}
                         </a>
                     @endif
 
-                    @if (!$clockedIn) 
-                        <form action="{{ route('administration.attendance.clockin') }}" method="post">
+                    @if (!$inBreak) 
+                        <form action="#" method="post" class="confirm-form-success">
                             @csrf
-                            <button type="submit" name="attendance" value="Regular" class="btn btn-sm btn-success" title="{{ __('Regular Clockin') }}">
+                            <button type="submit" name="start_break" class="btn btn-sm btn-success" title="{{ __('Start Break Now?') }}">
                                 <span class="tf-icon ti ti-clock-check me-1"></span>
-                                {{ __('Regular') }}
-                            </button>
-                            <button type="submit" name="attendance" value="Overtime" class="btn btn-sm btn-primary" title="{{ __('Overtime Clockin') }}">
-                                <span class="tf-icon ti ti-clock-check me-1"></span>
-                                {{ __('Overtime') }}
+                                {{ __('Start Break') }}
                             </button>
                         </form>
                     @else
-                        <form action="{{ route('administration.attendance.clockout') }}" method="post">
+                        <form action="{{ route('administration.attendance.clockout') }}" method="post" class="confirm-form-danger">
                             @csrf
-                            <button type="submit" name="attendance" value="clock_out" class="btn btn-sm btn-danger">
+                            <button type="submit" name="stop_break" class="btn btn-sm btn-danger">
                                 <span class="tf-icon ti ti-clock-off me-1"></span>
-                                {{ __('Clock Out') }}
+                                {{ __('Stop Break') }}
                             </button>
                         </form>
                     @endif
@@ -160,74 +142,39 @@
                             <th>Sl.</th>
                             <th>Date</th>
                             <th>Name</th>
-                            <th>Clocked IN</th>
-                            <th>Clock Out</th>
+                            <th>Break Started</th>
+                            <th>Break Stopped</th>
                             <th>Total</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($attendances as $key => $attendance) 
+                        @foreach ($dailyBreaks as $key => $break) 
                             <tr>
-                                <th>#{{ serial($attendances, $key) }}</th>
+                                <th>#{{ serial($dailyBreaks, $key) }}</th>
                                 <td>
-                                    {{ show_date($attendance->clock_in_date) }}
-                                    <br>
-                                    <small class="text-bold text-{{ $attendance->type === 'Regular' ? 'success' : 'primary' }}">{{ $attendance->type }}</small>
+                                    {{ show_date($break->date) }}
                                 </td>
                                 <td>
-                                    {!! show_user_name_and_avatar($attendance->user) !!}
+                                    {!! show_user_name_and_avatar($break->user, role: false) !!}
                                 </td>
                                 <td>
                                     <div class="d-grid">
-                                        @php
-                                            if (get_time_only($attendance->clock_in) > $attendance->employee_shift->start_time){
-                                                $clockInColor = 'text-danger';
-                                            } else {
-                                                $clockInColor = 'text-success';
-                                            }
-                                        @endphp
-                                        <span class="text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
-                                        <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="Shift Start Time">{{ show_time($attendance->employee_shift->start_time) }}</small>
+                                        <span class="text-bold text-success">{{ show_time($break->break_in_at) }}</span>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="d-grid">
-                                        @isset($attendance->clock_out)
-                                            @php
-                                                if (get_time_only($attendance->clock_out) < $attendance->employee_shift->end_time){
-                                                    $clockOutColor = 'text-danger';
-                                                } else {
-                                                    $clockOutColor = 'text-success';
-                                                }
-                                            @endphp
-                                            <span class="text-bold {{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
-                                        @else
-                                            <b class="text-success text-uppercase">Running</b>
-                                        @endisset
-                                        <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
+                                        <span class="text-bold text-success">{{ show_time($break->break_out_at) }}</span>
                                     </div>
                                 </td>
                                 <td>
                                     <div class="d-grid">
-                                        @isset($attendance->total_time)
-                                            @php
-                                                $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                            @endphp
-                                            <b>
-                                                {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
-                                            </b>
-                                        @else
-                                            <b class="text-success text-uppercase">Running</b>
-                                        @endisset
-                                        @php
-                                            $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                        @endphp
-                                        <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
+                                        {{ total_time($break->total_time) }}
                                     </div>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="#" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>

@@ -17,5 +17,5 @@ Route::controller(DailyBreakController::class)->prefix('daily_break')->name('dai
     // Route::get('/show/{attendance}', 'show')->name('show');
     // Route::post('/update/{attendance}', 'update')->name('update');
     
-    // Route::get('/export', 'export')->name('export');
+    Route::get('/export', 'export')->name('export');
 });

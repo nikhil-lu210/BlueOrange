@@ -22,6 +22,8 @@ class DailyBreak extends Model
         'break_out_at' => 'datetime',
     ];
 
+    protected $with = ['user'];
+
     /**
      * The attributes that are mass assignable.
      *
