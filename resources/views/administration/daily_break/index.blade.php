@@ -84,7 +84,7 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                    </div>
+                    </div> 
                     
                     <div class="col-md-12 text-end">
                         @if (request()->user_id || request()->created_month_year || request()->type) 
