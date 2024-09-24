@@ -72,6 +72,38 @@
             </li>
         @endcanany
 
+        <!-- Daily Break Management -->
+        @canany(['Daily Break Create', 'Daily Break Read']) 
+            <li class="menu-item {{ request()->is('daily_break*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-clock-2"></i>
+                    <div data-i18n="Daily Break">{{ __('Daily Break') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    @canany(['Daily Break Update', 'Daily Break Delete'])
+                        <li class="menu-item {{ request()->is('daily_break/all*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.daily_break.index') }}" class="menu-link">{{ __('All Daily Breaks') }}</a>
+                        </li>
+                    @endcanany
+                    @can('Daily Break Read') 
+                        <li class="menu-item {{ request()->is('daily_break/my*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.attendance.my') }}" class="menu-link">{{ __('My Daily Breaks') }}</a>
+                        </li>
+                    @endcan
+                    @can('Daily Break Create')
+                        <li class="menu-item {{ request()->is('daily_break/create*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.attendance.create') }}" class="menu-link">{{ __('Assign Daily Break') }}</a>
+                        </li>
+                    @endcan
+                    @can('Daily Break Create')
+                        <li class="menu-item {{ request()->is('daily_break/qrcode*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.attendance.qrcode.scanner') }}" class="menu-link">{{ __('QR Code Daily Break') }}</a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcanany
+
         <!-- Announcement Management -->
         @canany(['Announcement Create', 'Announcement Read']) 
             <li class="menu-item {{ request()->is('announcement*') ? 'active open' : '' }}">

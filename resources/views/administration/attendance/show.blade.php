@@ -37,7 +37,8 @@
     <li class="breadcrumb-item">
         <a href="{{ route('administration.attendance.index') }}">{{ __('All Attendances') }}</a>
     </li>
-    <li class="breadcrumb-item active">{{ __('Attendance Details') }}</li>
+    <li class="breadcrumb-item">{{ __('Attendance Details') }}</li>
+    <li class="breadcrumb-item active">{{ get_date_only($attendance->clock_in_date) }} ({{ $attendance->type }})</li>
 @endsection
 
 
@@ -71,7 +72,7 @@
                                         <span class="fw-medium mx-2 text-heading">Date:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        <span>{{ show_date($attendance->clock_in_date) }}</span>
+                                        <span class="text-bold badge bg-label-dark">{{ show_date($attendance->clock_in_date) }}</span>
                                     </dd>
                                 </dl>
                                 <dl class="row mb-1">
@@ -145,6 +146,9 @@
                                     </dt>
                                     <dd class="col-sm-8">
                                         @isset($attendance->total_time)
+                                            @php
+                                                $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                            @endphp
                                             <b>
                                                 {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
                                             </b>
@@ -224,7 +228,7 @@
                                     @forelse ($attendance->daily_breaks as $key => $break) 
                                         <li class="timeline-item ps-4 {{ $loop->last ? 'border-transparent' : 'border-left-dashed pb-1' }}">
                                             <span class="timeline-indicator-advanced timeline-indicator-{{ $break->type == 'Short' ? 'warning' : 'primary' }}">
-                                                <i class="ti ti-hourglass-high"></i>
+                                                <i class="ti ti-{{ $break->break_out_at ? 'clock-stop' : 'clock-play' }}"></i>
                                             </span>
                                             <div class="timeline-event px-0 pb-0">
                                                 <div class="timeline-header">
