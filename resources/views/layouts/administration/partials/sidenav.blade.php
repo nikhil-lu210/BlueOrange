@@ -87,7 +87,7 @@
                     @endcanany
                     @can('Daily Break Read') 
                         <li class="menu-item {{ request()->is('daily_break/my*') ? 'active' : '' }}">
-                            <a href="{{ route('administration.attendance.my') }}" class="menu-link">{{ __('My Daily Breaks') }}</a>
+                            <a href="{{ route('administration.daily_break.my') }}" class="menu-link">{{ __('My Daily Breaks') }}</a>
                         </li>
                     @endcan
                     @can('Daily Break Create')

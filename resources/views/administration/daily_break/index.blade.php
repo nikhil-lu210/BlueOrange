@@ -45,12 +45,12 @@
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div class="col-md-10">
         <form action="{{ route('administration.daily_break.index') }}" method="get" autocomplete="off">
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
-                        <div class="mb-3 col-md-7">
+                        <div class="mb-3 col-md-6">
                             <label for="user_id" class="form-label">{{ __('Select Employee') }}</label>
                             <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true">
                                 <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>{{ __('Select Employee') }}</option>
@@ -65,17 +65,29 @@
                             @enderror
                         </div>
                         
-                        <div class="mb-3 col-md-5">
+                        <div class="mb-3 col-md-3">
                             <label class="form-label">{{ __('Breaks Of') }}</label>
                             <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                             @error('created_month_year')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
+
+                        <div class="mb-3 col-md-3">
+                            <label for="type" class="form-label">{{ __('Select Break Type') }}</label>
+                            <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default">
+                                <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ __('Select Type') }}</option>
+                                <option value="Short" {{ request()->type == 'Short' ? 'selected' : '' }}>{{ __('Short Break') }}</option>
+                                <option value="Long" {{ request()->type == 'Long' ? 'selected' : '' }}>{{ __('Long Break') }}</option>
+                            </select>
+                            @error('announcer_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
                     </div>
                     
                     <div class="col-md-12 text-end">
-                        @if (request()->user_id || request()->created_month_year) 
+                        @if (request()->user_id || request()->created_month_year || request()->type) 
                             <a href="{{ route('administration.daily_break.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
@@ -98,7 +110,9 @@
             <div class="card-header header-elements">
                 {{-- $clockinType . 'attendances_backup' . $userName . $monthYear --}}
                 <h5 class="mb-0">
-                    <span>Daily Breaks</span>
+                    <span>Daily</span>
+                    <span>{{ request()->type ?? request()->type }}</span>
+                    <span>Breaks</span>
                     <span>of</span>
                     <span class="text-bold">{{ request()->user_id ? show_user_data(request()->user_id, 'name') : 'All Users' }}</span>
                     <sup>(<b>Month: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
@@ -109,6 +123,7 @@
                         <a href="{{ route('administration.daily_break.export', [
                             'user_id' => request('user_id'), 
                             'created_month_year' => request('created_month_year'),
+                            'type' => request('type'),
                             'filter_breaks' => request('filter_breaks')
                         ]) }}" target="_blank" class="btn btn-sm btn-dark">
                             <span class="tf-icon ti ti-download me-1"></span>
@@ -136,6 +151,8 @@
                                 <th>#{{ serial($dailyBreaks, $key) }}</th>
                                 <td>
                                     {{ show_date($break->date) }}
+                                    <br>
+                                    <small class="text-bold text-{{ $break->type === 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</small>
                                 </td>
                                 <td>
                                     {!! show_user_name_and_avatar($break->user, role: false) !!}

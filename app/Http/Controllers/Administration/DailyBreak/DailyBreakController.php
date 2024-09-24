@@ -50,6 +50,10 @@ class DailyBreakController extends Controller
             }
         }
 
+        if ($request->has('type') && !is_null($request->type)) {
+            $query->where('type', $request->type);
+        }
+
         $dailyBreaks = $query->get();
 
         
@@ -58,6 +62,14 @@ class DailyBreakController extends Controller
                                 ->first();
                                 
         return view('administration.daily_break.index', compact(['users', 'dailyBreaks', 'inBreak']));
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function myDailyBreaks(Request $request)
+    {
+        // 
     }
 
     /**
@@ -235,6 +247,13 @@ class DailyBreakController extends Controller
                 ]);
             }
         }
+        
+        // Handle type filter
+        if ($request->has('type') && !is_null($request->type)) {
+            $query->where('type', $request->type);
+            
+            $breakInType = strtolower($request->type). '_';
+        }
 
         // Get the filtered breaks
         $breaks = $query->get();
@@ -245,7 +264,7 @@ class DailyBreakController extends Controller
         }
 
         $downloadMonth = $monthYear ? $monthYear : '_'.date('m_Y');
-        $fileName = 'daily_breaks_backup_of_' . $userName . $downloadMonth . '.xlsx';
+        $fileName = $breakInType . 'daily_breaks_backup_of_' . $userName . $downloadMonth . '.xlsx';
 
         // Return the Excel download with the appropriate filename
         return Excel::download(new DailyBreakExport($breaks), $fileName);

@@ -8,7 +8,7 @@ use App\Http\Controllers\Administration\DailyBreak\DailyBreakController;
 ===============================================*/
 Route::controller(DailyBreakController::class)->prefix('daily_break')->name('daily_break.')->group(function () {
     Route::get('/all', 'index')->name('index');
-    // Route::get('/my', 'myAttendances')->name('my');
+    Route::get('/my', 'myDailyBreaks')->name('my');
     Route::get('/start_stop', 'create')->name('create');
     // Route::post('/store', 'store')->name('store');
     Route::post('/start', 'startBreak')->name('start');

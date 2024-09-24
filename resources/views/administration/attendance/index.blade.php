@@ -87,7 +87,7 @@
                     </div>
                     
                     <div class="col-md-12 text-end">
-                        @if (request()->user_id || request()->created_month_year) 
+                        @if (request()->user_id || request()->created_month_year || request()->type) 
                             <a href="{{ route('administration.attendance.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
