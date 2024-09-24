@@ -30,6 +30,8 @@ return new class extends Migration
             $table->dateTime('break_out_at')->nullable();
             $table->string('total_time')->nullable()->comment('hh:mm:ss');
 
+            $table->enum('type', ['Short', 'Long'])->default('Short');
+
             $table->ipAddress('break_in_ip');
             $table->ipAddress('break_out_ip')->nullable();
 

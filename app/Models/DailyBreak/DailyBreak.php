@@ -36,6 +36,7 @@ class DailyBreak extends Model
         'break_in_at',
         'break_out_at',
         'total_time',
+        'type',
         'break_in_ip',
         'break_out_ip',
         'note',
