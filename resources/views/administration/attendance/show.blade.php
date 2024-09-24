@@ -61,38 +61,7 @@
             </div>
             <div class="card-body">
                 <div class="row justify-content-left">
-                    <div class="col-md-4">
-                        <div class="card">
-                          <div class="card-body text-center">
-                            <div class="rounded-3 text-center mb-3">
-                                @if ($attendance->user->hasMedia('avatar'))
-                                    <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'profile_view') }}" alt="{{ $attendance->user->name }} Avatar" class="img-fluid rounded-3" width="100%">
-                                @else
-                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $attendance->user->name }} No Avatar" class="img-fluid">
-                                @endif
-                            </div>
-                            <h6 class="mb-1 text-center">{{ show_date($attendance->clock_in_date) }}</h6>
-                            <h4 class="mb-1 text-center">
-                                @isset($attendance->total_time)
-                                    @php
-                                        $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                    @endphp
-                                    <b>
-                                        {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
-                                    </b>
-                                @else
-                                    <b class="text-success text-uppercase">Running</b>
-                                @endisset    
-                            </h4>
-                            @php
-                                $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                            @endphp
-                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
-                          </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                         <div class="card mb-4">
                             <div class="card-body">
                                 <small class="card-text text-uppercase">Attendance Details</small>
@@ -240,7 +209,55 @@
                                 </dl>
                             </div>
                         </div>
-                    </div>                    
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex">
+                                    <small class="card-text text-uppercase">Daily Break's Details</small>
+                                    <small class="badge bg-dark ms-auto" title="Total Break Taken" style="margin-top: -5px;">
+                                        {{ total_time($attendance->total_break_time) }}
+                                    </small> 
+                                </div>
+                                <ul class="timeline mb-0 pb-1 mt-4">
+                                    @forelse ($attendance->daily_breaks as $key => $break) 
+                                        <li class="timeline-item ps-4 {{ $loop->last ? 'border-transparent' : 'border-left-dashed pb-1' }}">
+                                            <span class="timeline-indicator-advanced timeline-indicator-{{ $break->type == 'Short' ? 'warning' : 'primary' }}">
+                                                <i class="ti ti-hourglass-high"></i>
+                                            </span>
+                                            <div class="timeline-event px-0 pb-0">
+                                                <div class="timeline-header">
+                                                    <small class="text-uppercase fw-medium" title="Click To See Details">
+                                                        <a href="#" class="text-{{ $break->type == 'Short' ? 'warning' : 'primary' }}">{{ $break->type }} Break</a>
+                                                    </small>
+                                                </div>
+                                                <small class="text-muted mb-0">
+                                                    {{ show_time($break->break_in_at) }}
+                                                    @if (!is_null($break->break_out_at)) 
+                                                        <span>to</span>
+                                                        <span>{{ show_time($break->break_out_at) }}</span>
+                                                    @else
+                                                        -
+                                                        <span class="text-danger">Break Running</span>
+                                                    @endif
+                                                </small>
+                                                <h6 class="mb-1">
+                                                    @if (is_null($break->total_time))
+                                                        <span class="text-danger">Break Running</span>
+                                                    @else
+                                                        <span class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ total_time($break->total_time) }}</span>
+                                                    @endif
+                                                </h6>
+                                            </div>
+                                        </li>
+                                    @empty 
+                                        <div class="text-center text-bold text-muted fs-2">No Breaks</div>
+                                    @endforelse
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>        

@@ -5,6 +5,14 @@
     font-weight: bolder !important;
 }
 
+.float-left, .float-start, .pull-left, .pull-start {
+    float: left !important;
+}
+
+.float-right, .float-end, .pull-right, .pull-end {
+    float: left !important;
+}
+
 .menu-vertical .menu-sub {
     margin-left: 10px;
 }
