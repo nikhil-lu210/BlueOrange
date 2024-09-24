@@ -110,28 +110,10 @@
                             'user_id' => request('user_id'), 
                             'created_month_year' => request('created_month_year'),
                             'filter_breaks' => request('filter_breaks')
-                        ]) }}" target="_blank" class="btn btn-sm btn-dark me-3">
+                        ]) }}" target="_blank" class="btn btn-sm btn-dark">
                             <span class="tf-icon ti ti-download me-1"></span>
                             {{ __('Download') }}
                         </a>
-                    @endif
-
-                    @if (!$inBreak) 
-                        <form action="{{ route('administration.daily_break.start') }}" method="post" class="confirm-form-success">
-                            @csrf
-                            <button type="submit" name="start_break" class="btn btn-sm btn-success" title="{{ __('Start Break Now?') }}">
-                                <span class="tf-icon ti ti-clock-check me-1"></span>
-                                {{ __('Start Break') }}
-                            </button>
-                        </form>
-                    @else
-                        <form action="{{ route('administration.daily_break.stop') }}" method="post" class="confirm-form-danger">
-                            @csrf
-                            <button type="submit" name="stop_break" class="btn btn-sm btn-danger">
-                                <span class="tf-icon ti ti-clock-off me-1"></span>
-                                {{ __('Stop Break') }}
-                            </button>
-                        </form>
                     @endif
                 </div>
             </div>

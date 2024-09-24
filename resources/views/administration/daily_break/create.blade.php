@@ -5,41 +5,34 @@
 
 @endsection
 
-@section('page_title', __('Attendance'))
+@section('page_title', __('Start or Stop Break'))
 
 @section('css_links')
     {{--  External CSS  --}}
-    {{-- Select 2 --}}
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
-    
-    {{-- Bootstrap Datepicker --}}
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/typeahead-js/typeahead.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
 @endsection
 
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
     /* Custom CSS Here */
+    * {
+      user-select: none; /* Standard syntax */
+      -webkit-user-select: none; /* Chrome, Safari */
+      -moz-user-select: none; /* Firefox */
+      -ms-user-select: none; /* IE10+ */
+    }
     </style>
 @endsection
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Assign Attendance') }}</b>
+    <b class="text-uppercase">{{ __('Start or Stop Break') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance') }}</li>
-    <li class="breadcrumb-item active">{{ __('Assign Attendance') }}</li>
+    <li class="breadcrumb-item">{{ __('Daily Break') }}</li>
+    <li class="breadcrumb-item active">{{ __('Start or Stop Break') }}</li>
 @endsection
 
 
@@ -47,80 +40,173 @@
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    <div class="col-md-8">
-        <form action="{{ route('administration.attendance.store') }}" method="POST" autocomplete="off">
-            @csrf
+    @isset ($activeBreak)
+        <div class="col-md-7">
             <div class="card mb-4">
                 <div class="card-header header-elements">
-                    <h5 class="mb-0">Assign Attendance</h5>
-            
-                    <div class="card-header-elements ms-auto">
-                        <a href="{{ route('administration.attendance.index') }}" class="btn btn-sm btn-primary">
-                            <span class="tf-icon ti ti-circle ti-xs me-1"></span>
-                            All Attendances
-                        </a>
-                    </div>
+                    <h5 class="mb-0 text-bold">Running Break</h5>
+                    @isset($activeBreak->break_in_at)
+                        <small class="badge bg-dark fs-6 ms-auto" 
+                            id="runningBreakTime" 
+                            data-break-in-at="{{ $activeBreak->break_in_at->timestamp }}" 
+                            title="Running Break" 
+                            style="margin-top: -5px;">
+                        </small>
+                    @endisset
                 </div>
                 <div class="card-body">
-                    <div class="row">
-                        <div class="mb-3 col-md-6">
-                            <label for="user_id" class="form-label">Select Employee <strong class="text-danger">*</strong></label>
-                            <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true" required>
-                                <option value="" selected>Select Employee</option>
-                                @foreach ($users as $user)
-                                    <option value="{{ $user->id }}" {{ old('user_id') ? 'selected' : '' }}>
-                                        {{ get_employee_name($user) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('user_id')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label class="form-label">Clockin Date <strong class="text-danger">*</strong></label>
-                            <input type="text" name="clock_in_date" value="{{ old('clock_in_date') }}" class="form-control  date-picker" placeholder="YYYY-MM-DD" required/>
-                            @error('clock_in_date')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-4">
-                            <label for="clock_in" class="form-label">{{ __('Clockin Time') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="clock_in" name="clock_in" value="{{ old('clock_in') }}" placeholder="HH:MM" class="form-control time-picker @error('clock_in') is-invalid @enderror" required/>
-                            @error('clock_in')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-4">
-                            <label for="clock_out" class="form-label">{{ __('Clockout Time') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="clock_out" name="clock_out" value="{{ old('clock_out') }}" placeholder="HH:MM" class="form-control time-picker @error('clock_out') is-invalid @enderror" required/>
-                            @error('clock_out')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-4">
-                            <label for="type" class="form-label">Select Clockin Type <strong class="text-danger">*</strong></label>
-                            <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default" required>
-                                <option value="" selected disabled>Select Type</option>
-                                <option value="Regular" {{ old('type') == 'Regular' ? 'selected' : '' }}>Regular</option>
-                                <option value="Overtime" {{ old('type') == 'Overtime' ? 'selected' : '' }}>Overtime</option>
-                            </select>
-                            @error('type')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                    </div>
-                    
-                    <div class="col-md-12 text-end">
-                        <button type="submit" class="btn btn-success">
-                            <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                            Create Attendance
-                        </button>
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                            <i class="ti ti-access-point text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">Break Type:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            @if ($activeBreak->type == 'Short')
+                                <span class="badge bg-primary text-bold">{{ __('Short Break') }}</span>
+                            @else
+                                <span class="badge bg-warning text-bold">{{ __('Long Break') }}</span>
+                            @endif
+                        </dd>
+                    </dl>
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                            <i class="ti ti-clock-play text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">Started At:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span class="text-bold text-primary">{{ show_time($activeBreak->break_in_at) }}</span>
+                        </dd>
+                    </dl>
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                            <i class="ti ti-access-point text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">Break Start IP:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span>{{ $activeBreak->break_in_ip }}</span>
+                        </dd>
+                    </dl>
+                </div>
+    
+                <div class="card-footer">
+                    <div class="text-end">
+                        <form action="{{ route('administration.daily_break.stop') }}" method="post" class="confirm-form-danger">
+                            @csrf
+                            <button type="submit" name="stop_break" class="btn btn-danger">
+                                <span class="tf-icon ti ti-clock-stop me-1"></span>
+                                {{ __('Stop Break') }}
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
-        </form>        
-    </div>
+        </div>
+    @else
+        <div class="col-md-7">
+            <form action="{{ route('administration.daily_break.start') }}" method="POST" autocomplete="off">
+                @csrf
+                <div class="card mb-4">
+                    <div class="card-header header-elements">
+                        <h5 class="mb-0">Start Daily Break</h5>
+                    </div>
+                    <div class="card-body">
+                        <input type="hidden" name="userid" value="{{ auth()->user()->userid }}" required>
+                        <div class="row">
+                            <div class="col-md mb-md-0 mb-2">
+                                <div class="form-check form-check-primary bg-label-primary custom-option custom-option-basic">
+                                    <label class="form-check-label custom-option-content" for="shortBreak">
+                                        <input name="break_type" value="Short" class="form-check-input" type="radio" id="shortBreak" required/>
+                                        <span class="custom-option-header">
+                                            <span class="h6 mb-0 text-uppercase text-bold">Short Break</span>
+                                            <span class="text-bold">15-20 Min</span>
+                                        </span>
+                                        <span class="custom-option-body">
+                                            <small class="text-muted">You Can Take Maximum 2 Short Break.</small>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="form-check form-check-warning bg-label-warning custom-option custom-option-basic">
+                                    <label class="form-check-label custom-option-content" for="longBreak">
+                                        <input name="break_type" value="Long" class="form-check-input" type="radio" id="longBreak" required/>
+                                        <span class="custom-option-header">
+                                            <span class="h6 mb-0 text-uppercase text-bold">Long Break</span>
+                                            <span class="text-bold">30-45 Min</span>
+                                        </span>
+                                        <span class="custom-option-body">
+                                            <small class="text-muted">You Can Take Maximum 1 Long Break.</small>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="card-footer">
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                                Start Break
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </form>        
+        </div>
+    @endisset
+
+    @if ($breaks)
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header header-elements">
+                    <h5 class="mb-0">Start Daily Break</h5>
+                    @isset ($attendance) 
+                        <small class="badge bg-dark ms-auto" title="Total Break Taken" style="margin-top: -5px;">
+                            {{ total_time($attendance->total_break_time) }}
+                        </small>
+                    @endisset
+                </div>
+                <div class="card-body">
+                    <ul class="timeline mb-0 pb-1">
+                        @forelse ($breaks as $key => $break) 
+                            <li class="timeline-item ps-4 {{ $loop->last ? 'border-transparent' : 'border-left-dashed pb-1' }}">
+                                <span class="timeline-indicator-advanced timeline-indicator-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">
+                                    <i class="ti ti-{{ $break->break_out_at ? 'clock-stop' : 'clock-play' }}"></i>
+                                </span>
+                                <div class="timeline-event px-0 pb-0">
+                                    <div class="timeline-header">
+                                        <small class="text-uppercase fw-medium" title="Click To See Details">
+                                            <a href="#" class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</a>
+                                        </small>
+                                    </div>
+                                    <small class="text-muted mb-0">
+                                        {{ show_time($break->break_in_at) }}
+                                        @if (!is_null($break->break_out_at)) 
+                                            <span>to</span>
+                                            <span>{{ show_time($break->break_out_at) }}</span>
+                                        @else
+                                            -
+                                            <span class="text-danger">Break Running</span>
+                                        @endif
+                                    </small>
+                                    <h6 class="mb-1">
+                                        @if (is_null($break->total_time))
+                                            <span class="text-danger">Break Running</span>
+                                        @else
+                                            <span class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ total_time($break->total_time) }}</span>
+                                        @endif
+                                    </h6>
+                                </div>
+                            </li>
+                        @empty 
+                            <div class="text-center text-bold text-muted fs-2">No Breaks</div>
+                        @endforelse
+                    </ul>
+                </div>
+            </div>
+        </div>
+    @endif
 </div>
 <!-- End row -->
 
@@ -130,40 +216,40 @@
 @section('script_links')
     {{--  External Javascript Links --}}
     <script src="{{asset('assets/js/form-layouts.js')}}"></script>
-
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
-    <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
-    
-    <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Custom Script Here
         $(document).ready(function() {
-            $('.bootstrap-select').each(function() {
-                if (!$(this).data('bs.select')) { // Check if it's already initialized
-                    $(this).selectpicker();
+            const runningBreakTimeElement = $('#runningBreakTime');
+            
+            if (runningBreakTimeElement.length) {
+                const breakInAt = parseInt(runningBreakTimeElement.data('break-in-at')) * 1000; // Convert to milliseconds
+                
+                // Function to calculate and display the elapsed time
+                function updateRunningBreakTime() {
+                    const now = new Date().getTime();
+                    const elapsed = now - breakInAt;
+    
+                    // Calculate hours, minutes, and seconds
+                    const hours = Math.floor(elapsed / (1000 * 60 * 60));
+                    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+    
+                    // Format the time as hh:mm:ss
+                    const formattedTime = 
+                        String(hours).padStart(2, '0') + ':' +
+                        String(minutes).padStart(2, '0') + ':' +
+                        String(seconds).padStart(2, '0');
+                    
+                    runningBreakTimeElement.text(formattedTime);
                 }
-            });
-
-            $('.date-picker').datepicker({
-                format: 'yyyy-mm-dd',
-                todayHighlight: true,
-                autoclose: true,
-                orientation: 'auto right'
-            });
-
-            $('.time-picker').flatpickr({
-                enableTime: true,
-                noCalendar: true
-            }); 
+    
+                // Update the time every second
+                updateRunningBreakTime(); // Initial call
+                setInterval(updateRunningBreakTime, 1000); // Update every second
+            }
         });
-    </script>
+    </script>    
 @endsection

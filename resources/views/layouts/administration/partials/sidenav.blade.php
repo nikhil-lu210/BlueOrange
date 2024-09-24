@@ -76,7 +76,7 @@
         @canany(['Daily Break Create', 'Daily Break Read']) 
             <li class="menu-item {{ request()->is('daily_break*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-clock-2"></i>
+                    <i class="menu-icon tf-icons ti ti-clock-play"></i>
                     <div data-i18n="Daily Break">{{ __('Daily Break') }}</div>
                 </a>
                 <ul class="menu-sub">
@@ -91,13 +91,8 @@
                         </li>
                     @endcan
                     @can('Daily Break Create')
-                        <li class="menu-item {{ request()->is('daily_break/create*') ? 'active' : '' }}">
-                            <a href="{{ route('administration.attendance.create') }}" class="menu-link">{{ __('Assign Daily Break') }}</a>
-                        </li>
-                    @endcan
-                    @can('Daily Break Create')
-                        <li class="menu-item {{ request()->is('daily_break/qrcode*') ? 'active' : '' }}">
-                            <a href="{{ route('administration.attendance.qrcode.scanner') }}" class="menu-link">{{ __('QR Code Daily Break') }}</a>
+                        <li class="menu-item {{ request()->is('daily_break/start_stop*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.daily_break.create') }}" class="menu-link">{{ __('Start/Stop Break') }}</a>
                         </li>
                     @endcan
                 </ul>

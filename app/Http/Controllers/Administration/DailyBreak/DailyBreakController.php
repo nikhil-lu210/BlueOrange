@@ -60,6 +60,25 @@ class DailyBreakController extends Controller
         return view('administration.daily_break.index', compact(['users', 'dailyBreaks', 'inBreak']));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $user = auth()->user();
+        $currentDate = now()->toDateString();
+        $attendance = Attendance::where('user_id', $user->id)
+            ->where('clock_in_date', $currentDate)
+            ->whereType('Regular')
+            ->first();
+
+        $breaks = DailyBreak::where('user_id', $user->id)->where('date', $currentDate)->get();
+
+        $activeBreak = DailyBreak::where('user_id', $user->id)->whereNull('break_out_at')->whereNull('total_time')->first();
+        
+        return view('administration.daily_break.create', compact(['attendance', 'breaks', 'activeBreak']));
+    }
+
 
     /**
      * Start break
@@ -69,6 +88,8 @@ class DailyBreakController extends Controller
         $user = auth()->user();
         $currentTime = now();
         $currentDate = $currentTime->toDateString();
+
+        abort_if($request->userid != $user->userid, 403, 'You are not authorized to take the Break. Please take your break from your account');
 
         // Check if the user has an open attendance of today (clocked in as Regular but not clocked out)
         $attendance = Attendance::where('user_id', $user->id)
@@ -82,16 +103,39 @@ class DailyBreakController extends Controller
             return redirect()->back();
         }
 
+        // Check the number of breaks of this type the user has already taken for this attendance
+        $shortBreakCount = DailyBreak::where('user_id', $user->id)
+            ->where('attendance_id', $attendance->id)
+            ->where('type', 'Short')
+            ->count();
+
+        $longBreakCount = DailyBreak::where('user_id', $user->id)
+            ->where('attendance_id', $attendance->id)
+            ->where('type', 'Long')
+            ->count();
+
+        // Check break limits
+        if ($request->break_type == 'Short' && $shortBreakCount >= 2) {
+            toast('You have already took 2 Short Break today.', 'warning');
+            return redirect()->back();
+        }
+
+        if ($request->break_type == 'Long' && $longBreakCount >= 1) {
+            toast('You have already took your Long Break today.', 'warning');
+            return redirect()->back();
+        }
+
         $location = Location::get(get_public_ip());
 
         try {
-            DB::transaction(function() use ($user, $attendance, $currentTime, $location, $currentDate) {
+            DB::transaction(function() use ($user, $attendance, $currentTime, $location, $currentDate, $request) {
                 DailyBreak::create([
                     'user_id' => $user->id,
                     'attendance_id' => $attendance->id,
                     'date' => $currentDate,
                     'break_in_at' => $currentTime,
                     'break_in_ip' => $location->ip ?? 'N/A',
+                    'type' => $request->break_type,
                 ]);
             }, 5);
 
