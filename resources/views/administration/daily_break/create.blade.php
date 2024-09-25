@@ -186,7 +186,7 @@
                                 <div class="timeline-event px-0 pb-0">
                                     <div class="timeline-header">
                                         <small class="text-uppercase fw-medium" title="Click To See Details">
-                                            <a href="#" class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</a>
+                                            <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</a>
                                         </small>
                                     </div>
                                     <small class="text-muted mb-0">

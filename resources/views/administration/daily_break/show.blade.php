@@ -4,19 +4,13 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('Attendance Details'))
+@section('page_title', __('Daily Break Details'))
 
 @section('css_links')
     {{--  External CSS  --}}
     {{-- <!-- Vendors CSS --> --}}
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/typeahead-js/typeahead.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
 @endsection
 
 @section('custom_css')
@@ -28,16 +22,16 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Attendance Details') }}</b>
+    <b class="text-uppercase">{{ __('Daily Break Details') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance') }}</li>
+    <li class="breadcrumb-item">{{ __('Daily Break') }}</li>
     <li class="breadcrumb-item">
-        <a href="{{ route('administration.attendance.index') }}">{{ __('All Attendances') }}</a>
+        <a href="{{ route('administration.daily_break.my') }}">{{ __('My Daily Breaks') }}</a>
     </li>
-    <li class="breadcrumb-item active">{{ __('Attendance Details') }}</li>
+    <li class="breadcrumb-item active">{{ __('Daily Break Details') }}</li>
 @endsection
 
 
@@ -48,61 +42,129 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0"><strong>{{ $attendance->user->name }}</strong> Attendance's Details</h5>
+                <h5 class="mb-0"><b>{{ $break->user->name }}</b> Daily Break's Details</h5>
         
-                @canany(['Attendance Update', 'Attendance Delete'])
+                @canany(['Daily Break Update', 'Daily Break Delete'])
                     <div class="card-header-elements ms-auto">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#editAttendance" class="btn btn-sm btn-primary">
+                        <button type="button" data-bs-toggle="modal" data-bs-target="#editDailyBreak" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-edit ti-xs me-1"></span>
-                            Edit Attendance
+                            Edit Break
                         </button>
                     </div>
                 @endcanany
             </div>
             <div class="card-body">
                 <div class="row justify-content-left">
-                    <div class="col-md-4">
-                        <div class="card">
-                          <div class="card-body text-center">
-                            <div class="rounded-3 text-center mb-3">
-                                @if ($attendance->user->hasMedia('avatar'))
-                                    <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'profile_view') }}" alt="{{ $attendance->user->name }} Avatar" class="img-fluid rounded-3" width="100%">
-                                @else
-                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $attendance->user->name }} No Avatar" class="img-fluid">
-                                @endif
+                    <div class="col-md-6">
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <small class="card-text text-uppercase">Break Details</small>
+                                <dl class="row mt-3 mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-hash"></i>
+                                        <span class="fw-medium mx-2 text-heading">Break Type:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        @if ($break->type == 'Short') 
+                                            <span class="badge bg-primary">{{ __('Short Break') }}</span>
+                                        @else 
+                                            <span class="badge bg-warning">{{ __('Long Break') }}</span>
+                                        @endif
+                                    </dd>
+                                </dl>
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-clock-play"></i>
+                                        <span class="fw-medium mx-2 text-heading">Break Started:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        <span class="text-primary">{{ show_time($break->break_in_at) }}</span>
+                                    </dd>
+                                </dl>
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-clock-stop"></i>
+                                        <span class="fw-medium mx-2 text-heading">Break Started:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        @if (!is_null($break->break_out_at))
+                                            <span class="text-primary">{{ show_time($break->break_out_at) }}</span>
+                                        @else
+                                            <span class="text-success">Break Running</span>
+                                        @endif
+                                    </dd>
+                                </dl>
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-clock-plus"></i>
+                                        <span class="fw-medium mx-2 text-heading">Total Break:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        @if (!is_null($break->total_time))
+                                            <span class="text-warning">{{ total_time($break->total_time) }}</span>
+                                        @else
+                                            <span class="text-success">Break Running</span>
+                                        @endif
+                                    </dd>
+                                </dl>
+                                @isset ($break->over_break) 
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-clock-plus"></i>
+                                            <span class="fw-medium mx-2 text-heading">Over Break:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <span class="text-danger">{{ total_time($break->over_break) }}</span>
+                                        </dd>
+                                    </dl>
+                                @endisset
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-access-point text-heading"></i>
+                                        <span class="fw-medium mx-2 text-heading">Break Start IP:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        <span>{{ $break->break_in_ip }}</span>
+                                    </dd>
+                                </dl>
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-access-point text-heading"></i>
+                                        <span class="fw-medium mx-2 text-heading">Break Stop IP:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        <span>{{ $break->break_out_ip }}</span>
+                                    </dd>
+                                </dl>
+                                @isset ($break->note) 
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-notes text-heading"></i>
+                                            <span class="fw-medium mx-2 text-heading">Note:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <span>{{ $break->note }}</span>
+                                        </dd>
+                                    </dl>
+                                @endisset
                             </div>
-                            <h6 class="mb-1 text-center">{{ show_date($attendance->clock_in_date) }}</h6>
-                            <h4 class="mb-1 text-center">
-                                @isset($attendance->total_time)
-                                    @php
-                                        $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                    @endphp
-                                    <b>
-                                        {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
-                                    </b>
-                                @else
-                                    <b class="text-success text-uppercase">Running</b>
-                                @endisset    
-                            </h4>
-                            @php
-                                $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                            @endphp
-                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
-                          </div>
                         </div>
                     </div>
 
-                    <div class="col-md-8">
+                    <div class="col-md-6">
                         <div class="card mb-4">
                             <div class="card-body">
                                 <small class="card-text text-uppercase">Attendance Details</small>
+                                @php
+                                    $attendance = $break->attendance;
+                                @endphp
                                 <dl class="row mt-3 mb-1">
                                     <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                                         <i class="ti ti-calendar-event text-heading"></i>
                                         <span class="fw-medium mx-2 text-heading">Date:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        <span>{{ show_date($attendance->clock_in_date) }}</span>
+                                        <span class="text-bold badge bg-label-dark">{{ show_date($attendance->clock_in_date) }}</span>
                                     </dd>
                                 </dl>
                                 <dl class="row mb-1">
@@ -176,6 +238,9 @@
                                     </dt>
                                     <dd class="col-sm-8">
                                         @isset($attendance->total_time)
+                                            @php
+                                                $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                            @endphp
                                             <b>
                                                 {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
                                             </b>
@@ -193,54 +258,9 @@
                                         <span>{{ $attendance->ip_address }}</span>
                                     </dd>
                                 </dl>
-                                <dl class="row mb-1">
-                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                        <i class="ti ti-world-latitude text-heading"></i>
-                                        <span class="fw-medium mx-2 text-heading">Latitude:</span>
-                                    </dt>
-                                    <dd class="col-sm-8">
-                                        <span>{{ $attendance->latitude }}</span>
-                                    </dd>
-                                </dl>
-                                <dl class="row mb-1">
-                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                        <i class="ti ti-world-longitude text-heading"></i>
-                                        <span class="fw-medium mx-2 text-heading">Longitude:</span>
-                                    </dt>
-                                    <dd class="col-sm-8">
-                                        <span>{{ $attendance->longitude }}</span>
-                                    </dd>
-                                </dl>
-                                <dl class="row mb-1">
-                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                        <i class="ti ti-world-check text-heading"></i>
-                                        <span class="fw-medium mx-2 text-heading">Country:</span>
-                                    </dt>
-                                    <dd class="col-sm-8">
-                                        <span>{{ $attendance->country }}</span>
-                                    </dd>
-                                </dl>
-                                <dl class="row mb-1">
-                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                        <i class="ti ti-location text-heading"></i>
-                                        <span class="fw-medium mx-2 text-heading">City:</span>
-                                    </dt>
-                                    <dd class="col-sm-8">
-                                        <span>{{ $attendance->city }}</span>
-                                    </dd>
-                                </dl>
-                                <dl class="row mb-1">
-                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                        <i class="ti ti-zip text-heading"></i>
-                                        <span class="fw-medium mx-2 text-heading">Zip Code:</span>
-                                    </dt>
-                                    <dd class="col-sm-8">
-                                        <span>{{ $attendance->zip_code }}</span>
-                                    </dd>
-                                </dl>
                             </div>
                         </div>
-                    </div>                    
+                    </div>
                 </div>
             </div>
         </div>        
@@ -248,33 +268,44 @@
 </div>
 <!-- End row -->
 
-{{-- Modal for Attendance Edit --}}
-@canany(['Attendance Update', 'Attendance Delete'])
-<div class="modal fade" id="editAttendance" tabindex="-1" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
+{{-- Modal for Daily Break Edit --}}
+@canany(['Daily Break Update', 'Daily Break Delete'])
+<div class="modal fade" id="editDailyBreak" tabindex="-1" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <form action="{{ route('administration.attendance.update', ['attendance' => $attendance]) }}" method="post" autocomplete="off">
+            <form action="{{ route('administration.daily_break.update', ['break' => $break]) }}" method="POST" autocomplete="off">
                 @csrf
+                @method('PUT')
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editAttendanceTitle">
+                    <h5 class="modal-title" id="editDailyBreakTitle">
                         <span class="ti ti-edit ti-sm me-1"></span>
-                        Update Attendance
+                        Update Daily Break
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
-                        <div class="mb-3 col-md-6">
-                            <label for="clock_in" class="form-label">{{ __('Clock In') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="clock_in" name="clock_in" value="{{ $attendance->clock_in ?? old('clock_in') }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_in') is-invalid @enderror" required/>
-                            @error('clock_in')
+                        <div class="mb-3 col-md-4">
+                            <label for="break_in_at" class="form-label">{{ __('Break Start') }} <b class="text-danger">*</b></label>
+                            <input type="text" id="break_in_at" name="break_in_at" value="{{ $break->break_in_at ? get_time_only($break->break_in_at) : old('break_in_at') }}" placeholder="HH:MM:SS" class="form-control time-picker @error('break_in_at') is-invalid @enderror" required/>
+                            @error('break_in_at')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="clock_out" class="form-label">{{ __('Clock Out') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="clock_out" name="clock_out" value="{{ $attendance->clock_out ?? '' }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror"/>
-                            @error('clock_out')
+                        <div class="mb-3 col-md-4">
+                            <label for="break_out_at" class="form-label">{{ __('Break Stop') }} <b class="text-danger">*</b></label>
+                            <input type="text" id="break_out_at" name="break_out_at" value="{{ $break->break_out_at ? get_time_only($break->break_out_at) : old('break_out_at') }}" placeholder="HH:MM:SS" class="form-control time-picker @error('break_out_at') is-invalid @enderror" required/>
+                            @error('break_out_at')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="type" class="form-label">{{ __('Break Type') }} <b class="text-danger">*</b></label>
+                            <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default" required>
+                                <option value="Short" {{ $break->type == 'Short' ? 'selected' : '' }}>{{ __('Short Break') }}</option>
+                                <option value="Long" {{ $break->type == 'Long' ? 'selected' : '' }}>{{ __('Long Break') }}</option>
+                            </select>
+                            @error('announcer_id')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
@@ -287,7 +318,7 @@
                     </button>
                     <button type="submit" class="btn btn-success">
                         <i class="ti ti-check"></i>
-                        Update Attendance
+                        Update Break
                     </button>
                 </div>
             </form>
@@ -304,22 +335,23 @@
     {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
-    {{-- <!-- Page JS --> --}}
-    {{-- <script src="{{ asset('assets/js/forms-pickers.js') }}"></script> --}}
+    <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function () {
-            $('.date-time-picker').flatpickr({
+            $('.bootstrap-select').each(function() {
+                if (!$(this).data('bs.select')) { // Check if it's already initialized
+                    $(this).selectpicker();
+                }
+            });
+
+            $('.time-picker').flatpickr({
                 enableTime: true,
-                dateFormat: 'Y-m-d H:i'
-            }); 
+                noCalendar: true,
+            });
         });
     </script>    
 @endsection

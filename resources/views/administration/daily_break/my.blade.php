@@ -31,13 +31,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All Daily Breaks') }}</b>
+    <b class="text-uppercase">{{ __('My Daily Breaks') }}</b>
 @endsection
 
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Daily Break') }}</li>
-    <li class="breadcrumb-item active">{{ __('All Daily Breaks') }}</li>
+    <li class="breadcrumb-item active">{{ __('My Daily Breaks') }}</li>
 @endsection
 
 
@@ -156,7 +156,7 @@
                                     @endisset
                                 </td>
                                 <td class="text-center">
-                                    <a href="#" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>

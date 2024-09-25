@@ -10,12 +10,11 @@ Route::controller(DailyBreakController::class)->prefix('daily_break')->name('dai
     Route::get('/all', 'index')->name('index');
     Route::get('/my', 'myDailyBreaks')->name('my');
     Route::get('/start_stop', 'create')->name('create');
-    // Route::post('/store', 'store')->name('store');
     Route::post('/start', 'startBreak')->name('start');
     Route::post('/stop', 'stopBreak')->name('stop');
     
-    // Route::get('/show/{attendance}', 'show')->name('show');
-    // Route::post('/update/{attendance}', 'update')->name('update');
+    Route::get('/show/{break}', 'show')->name('show');
+    Route::put('/update/{break}', 'update')->name('update');
     
     Route::get('/export', 'export')->name('export');
 });

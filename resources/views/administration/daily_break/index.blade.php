@@ -177,7 +177,7 @@
                                     @endisset
                                 </td>
                                 <td class="text-center">
-                                    <a href="#" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>

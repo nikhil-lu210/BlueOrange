@@ -6,13 +6,14 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Attendance\Attendance;
 use App\Models\DailyBreak\DailyBreak;
-use App\Services\Administration\DailyBreak\BreakStartStopService;
 use App\Exports\Administration\DailyBreak\DailyBreakExport;
 use App\Services\Administration\DailyBreak\BreakExportService;
+use App\Services\Administration\DailyBreak\BreakStartStopService;
 
 class DailyBreakController extends Controller
 {
@@ -99,6 +100,74 @@ class DailyBreakController extends Controller
         return redirect()->back();
     }
 
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(DailyBreak $break)
+    {
+        // dd($break);
+        return view('administration.daily_break.show', compact(['break']));
+    }
+
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, DailyBreak $break)
+    {
+        // Validate incoming request data
+        $validatedData = $request->validate([
+            'break_in_at' => 'required|date_format:H:i', // Validate time input in H:i format
+            'break_out_at' => 'nullable|date_format:H:i', // Validate time input in H:i format (optional)
+            'type' => 'required|string|in:Short,Long', // Ensure type is either Short or Long
+        ]);
+
+        // Combine the input time (H:i) with today's date
+        $todayDate = Carbon::now()->format('Y-m-d');
+
+        // Parse the time inputs as full DateTime using today's date
+        $breakInAt = Carbon::createFromFormat('Y-m-d H:i', $todayDate . ' ' . $validatedData['break_in_at']);
+        $breakOutAt = $validatedData['break_out_at'] ? Carbon::createFromFormat('Y-m-d H:i', $todayDate . ' ' . $validatedData['break_out_at']) : null;
+
+        // Initialize an array for the fields to update
+        $updateData = [
+            'break_in_at' => $breakInAt,
+            'break_out_at' => $breakOutAt,
+            'type' => $validatedData['type'],
+        ];
+
+        DB::transaction(function () use ($break, $updateData, $breakInAt, $breakOutAt) {
+            // Calculate total time if break_out_at is provided
+            if ($breakOutAt) {
+                // Calculate total time in seconds
+                $totalSeconds = $breakOutAt->diffInSeconds($breakInAt);
+
+                // Convert total time to HH:MM:SS format
+                $hours = floor($totalSeconds / 3600);
+                $minutes = floor(($totalSeconds % 3600) / 60);
+                $seconds = $totalSeconds % 60;
+                $formattedTotalTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+
+                // Add total_time to the update data
+                $updateData['total_time'] = $formattedTotalTime;
+            } else {
+                // Reset total_time if break_out_at is not provided
+                $updateData['total_time'] = null;
+            }
+
+            // Update the break record with the prepared data
+            $break->update($updateData);
+
+            // Now calculate and update the over_break value
+            $break->over_break = over_break($break->id); // Assuming this method exists to calculate over_break
+            $break->save(); // Save the updated over_break value
+        });
+
+        // Flash a success message and redirect
+        toast('Daily Break updated successfully.', 'success');
+        return redirect()->back();
+    }
 
     /**
      * export daily_breaks.

@@ -77,6 +77,19 @@
                                 </dl>
                                 <dl class="row mb-1">
                                     <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-hash"></i>
+                                        <span class="fw-medium mx-2 text-heading">Attendance Type:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        @if ($attendance->type == 'Regular') 
+                                            <span class="badge bg-primary">{{ __('Regular Break') }}</span>
+                                        @else 
+                                            <span class="badge bg-warning">{{ __('Overtime Break') }}</span>
+                                        @endif
+                                    </dd>
+                                </dl>
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                                         <i class="ti ti-clock-check text-heading"></i>
                                         <span class="fw-medium mx-2 text-heading">Working Shift:</span>
                                     </dt>
@@ -242,7 +255,7 @@
                                             <div class="timeline-event px-0 pb-0">
                                                 <div class="timeline-header">
                                                     <small class="text-uppercase fw-medium" title="Click To See Details">
-                                                        <a href="#" class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</a>
+                                                        <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</a>
                                                     </small>
                                                 </div>
                                                 <small class="text-muted mb-0">
