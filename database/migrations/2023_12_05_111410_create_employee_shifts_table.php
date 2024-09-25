@@ -27,7 +27,7 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->unique(['user_id', 'start_time', 'implemented_from'], 'user_id_start_time_implemented_from_unique');
+            $table->unique(['user_id', 'start_time', 'end_time', 'implemented_from'], 'user_id_start_time_end_time_implemented_from_unique');
         });
     }
 
