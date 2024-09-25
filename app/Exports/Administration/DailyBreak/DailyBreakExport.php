@@ -24,7 +24,7 @@ class DailyBreakExport extends BaseExportSettings implements FromCollection
                 'name' => $break->user->name,
                 'date' => show_date($break->date),
                 'break_in_at' => show_time($break->break_in_at),
-                'break_out_at' => show_time($break->break_out_at),
+                'break_out_at' => $break->break_out_at ? show_time($break->break_out_at) : NULL,
                 'total_time' => total_time($break->total_time),
                 'over_break' => total_time($break->over_break),
             ];
