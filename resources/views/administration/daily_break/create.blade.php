@@ -162,14 +162,14 @@
                 <div class="card-header header-elements">
                     <h5 class="mb-0">Start Daily Break</h5>
                     @isset ($attendance) 
-                        <div class="ms-auto">
+                        <div class="ms-auto" style="margin-top: -5px;">
                             @isset ($attendance->total_break_time) 
-                                <small class="badge bg-dark" title="Total Break Taken" style="margin-top: -5px;">
+                                <small class="badge bg-dark" title="Total Break Taken">
                                     {{ total_time($attendance->total_break_time) }}
                                 </small>
                             @endisset
                             @isset ($attendance->total_over_break) 
-                                <small class="badge bg-danger" title="Total Over Break" style="margin-top: -5px;">
+                                <small class="badge bg-danger" title="Total Over Break">
                                     {{ total_time($attendance->total_over_break) }}
                                 </small>
                             @endisset

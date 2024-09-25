@@ -220,20 +220,29 @@
                             <div class="card-body">
                                 <div class="d-flex">
                                     <small class="card-text text-uppercase">Daily Break's Details</small>
-                                    <small class="badge bg-dark ms-auto" title="Total Break Taken" style="margin-top: -5px;">
-                                        {{ total_time($attendance->total_break_time) }}
-                                    </small> 
+                                    <div class="ms-auto" style="margin-top: -5px;">
+                                        @isset ($attendance->total_break_time) 
+                                            <small class="badge bg-dark" title="Total Break Taken">
+                                                {{ total_time($attendance->total_break_time) }}
+                                            </small>
+                                        @endisset
+                                        @isset ($attendance->total_over_break) 
+                                            <small class="badge bg-danger" title="Total Over Break">
+                                                {{ total_time($attendance->total_over_break) }}
+                                            </small>
+                                        @endisset
+                                    </div> 
                                 </div>
                                 <ul class="timeline mb-0 pb-1 mt-4">
                                     @forelse ($attendance->daily_breaks as $key => $break) 
                                         <li class="timeline-item ps-4 {{ $loop->last ? 'border-transparent' : 'border-left-dashed pb-1' }}">
-                                            <span class="timeline-indicator-advanced timeline-indicator-{{ $break->type == 'Short' ? 'warning' : 'primary' }}">
+                                            <span class="timeline-indicator-advanced timeline-indicator-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">
                                                 <i class="ti ti-{{ $break->break_out_at ? 'clock-stop' : 'clock-play' }}"></i>
                                             </span>
                                             <div class="timeline-event px-0 pb-0">
                                                 <div class="timeline-header">
                                                     <small class="text-uppercase fw-medium" title="Click To See Details">
-                                                        <a href="#" class="text-{{ $break->type == 'Short' ? 'warning' : 'primary' }}">{{ $break->type }} Break</a>
+                                                        <a href="#" class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</a>
                                                     </small>
                                                 </div>
                                                 <small class="text-muted mb-0">
@@ -251,6 +260,9 @@
                                                         <span class="text-danger">Break Running</span>
                                                     @else
                                                         <span class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ total_time($break->total_time) }}</span>
+                                                        @isset($break->over_break)
+                                                            <small class="text-danger text-bold mt-1" title="Over Break">({{ total_time($break->over_break) }})</small>
+                                                        @endisset
                                                     @endif
                                                 </h6>
                                             </div>
