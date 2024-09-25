@@ -3,7 +3,9 @@
 namespace App\Models\Attendance\Traits;
 
 use App\Models\User;
+use App\Models\DailyBreak\DailyBreak;
 use App\Models\EmployeeShift\EmployeeShift;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait Relations
@@ -38,5 +40,13 @@ trait Relations
     public function employee_shift(): BelongsTo
     {
         return $this->belongsTo(EmployeeShift::class);
+    }
+
+    /**
+     * Get the daily_breaks associated with the attendance.
+     */
+    public function daily_breaks(): HasMany
+    {
+        return $this->hasMany(DailyBreak::class);
     }
 }

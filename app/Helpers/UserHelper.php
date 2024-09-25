@@ -73,48 +73,68 @@ if (!function_exists('profile_name_pic')) {
 if (!function_exists('show_user_name_and_avatar')) {
 
     /**
-     * Display the user name and avatar in a consistent layout.
+     * Display the user name, alias, avatar, and role in a consistent layout.
      *
      * @param  \App\Models\User  $user
-     * @return string  The HTML output for user name and avatar.
+     * @param  bool  $name   Whether to display the user's name.
+     * @param  bool  $alias  Whether to display the user's alias name.
+     * @param  bool  $avatar Whether to display the user's avatar.
+     * @param  bool  $role   Whether to display the user's role.
+     * @return string  The HTML output for user name, alias, avatar, and role.
      */
-    function show_user_name_and_avatar($user)
+    function show_user_name_and_avatar($user, $name = true, $alias = true, $avatar = true, $role = true)
     {
-        // Determine the avatar URL or initials
         $avatarHtml = '';
-        if ($user->hasMedia('avatar')) {
-            $avatarUrl = $user->getFirstMediaUrl('avatar', 'thumb');
-            $avatarHtml = '<img src="' . $avatarUrl . '" alt="' . htmlspecialchars($user->name) . ' Avatar" class="rounded-circle">';
-        } else {
-            $initials = profile_name_pic($user->id);
-            $avatarHtml = '<span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">' . $initials . '</span>';
-        }
-
-        // Generate the full name and alias display
-        $nameHtml = '<a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '" target="_blank" class="text-bold">' . htmlspecialchars($user->name) . '</a>';
-        $aliasName = optional($user->employee)->alias_name ?? '';
-        $roleName = $user->roles[0]->name ?? '';
-
-        // Construct the HTML output
-        $html = '
-        <div class="d-flex justify-content-start align-items-center user-name">
+        if ($avatar) {
+            if ($user->hasMedia('avatar')) {
+                $avatarUrl = $user->getFirstMediaUrl('avatar', 'thumb');
+                $avatarHtml = '<img src="' . $avatarUrl . '" alt="' . htmlspecialchars($user->name) . ' Avatar" class="rounded-circle">';
+            } else {
+                $initials = profile_name_pic($user->id);
+                $avatarHtml = '<span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">' . $initials . '</span>';
+            }
+            $avatarHtml = '
             <div class="avatar-wrapper">
                 <div class="avatar me-2">
                     <a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '">
                         ' . $avatarHtml . '
                     </a>
                 </div>
-            </div>
+            </div>';
+        }
+
+        $nameHtml = '';
+        if ($name) {
+            $nameHtml = '<a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '" target="_blank" class="text-bold">' . htmlspecialchars($user->name) . '</a>';
+        }
+
+        $aliasNameHtml = '';
+        if ($alias) {
+            $aliasName = optional($user->employee)->alias_name ?? '';
+            $aliasNameHtml = '<small class="text-bold text-dark">' . htmlspecialchars($aliasName) . '</small>';
+        }
+
+        $roleHtml = '';
+        if ($role) {
+            $roleName = $user->roles[0]->name ?? '';
+            $roleHtml = '<small class="text-truncate text-muted">' . htmlspecialchars($roleName) . '</small>';
+        }
+
+        // Construct the final HTML output
+        $html = '
+        <div class="d-flex justify-content-start align-items-center user-name">
+            ' . $avatarHtml . '
             <div class="d-flex flex-column">
                 ' . $nameHtml . '
-                <small class="text-bold text-dark">' . htmlspecialchars($aliasName) . '</small>
-                <small class="text-truncate text-muted">' . htmlspecialchars($roleName) . '</small>
+                ' . $aliasNameHtml . '
+                ' . $roleHtml . '
             </div>
         </div>';
 
         return $html;
     }
 }
+
 
 
 if (!function_exists('get_employee_name')) {

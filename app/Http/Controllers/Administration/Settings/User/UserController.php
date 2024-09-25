@@ -250,16 +250,17 @@ class UserController extends Controller
     /**
      * EmployeeShift Update
      */
-    public function updateShift(Request $request, EmployeeShift $employee_shift, User $user) {
+    public function updateShift(Request $request, EmployeeShift $shift, User $user) {
+        // dd($shift, $user);
         $request->validate([
             'start_time' => ['required'],
             'end_time' => ['required'],
         ]);
-        // dd($request->all(), $employee_shift->id, $user->id, date('Y-m-d'));
+        // dd($request->all(), $shift->id, $user->id, date('Y-m-d'));
 
         try {
-            DB::transaction(function() use ($request, $employee_shift, $user) {
-                $employee_shift->update([
+            DB::transaction(function() use ($request, $shift, $user) {
+                $shift->update([
                     'implemented_to' => date('Y-m-d'),
                     'status' => 'Inactive'
                 ]);
@@ -275,6 +276,7 @@ class UserController extends Controller
             toast('User EmployeeShift has been updated.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
+            dd($e->getMessage());
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back()->withInput();
         }

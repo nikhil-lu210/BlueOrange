@@ -100,6 +100,8 @@ namespace App\Models\Attendance{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DailyBreak\DailyBreak> $daily_breaks
+ * @property-read int|null $daily_breaks_count
  * @property-read \App\Models\EmployeeShift\EmployeeShift $employee_shift
  * @property-read \App\Models\User|null $qr_clockin_scanner
  * @property-read \App\Models\User|null $qr_clockout_scanner
@@ -230,6 +232,24 @@ namespace App\Models\Chatting{
  * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting withoutTrashed()
  */
 	class GroupChatting extends \Eloquent {}
+}
+
+namespace App\Models\DailyBreak{
+/**
+ * App\Models\DailyBreak\DailyBreak
+ *
+ * @property-read \App\Models\Attendance\Attendance|null $attendance
+ * @property-write mixed $clock_in
+ * @property-write mixed $clock_out
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyBreak newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyBreak newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyBreak onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyBreak query()
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyBreak withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DailyBreak withoutTrashed()
+ */
+	class DailyBreak extends \Eloquent {}
 }
 
 namespace App\Models\DailyWorkUpdate{
@@ -667,6 +687,8 @@ namespace App\Models{
  * @property-read int|null $chatting_groups_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\Task> $created_tasks
  * @property-read int|null $created_tasks_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DailyBreak\DailyBreak> $daily_breaks
+ * @property-read int|null $daily_breaks_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DailyWorkUpdate\DailyWorkUpdate> $daily_work_updates
  * @property-read int|null $daily_work_updates_count
  * @property-read \App\Models\User\Employee\Employee|null $employee

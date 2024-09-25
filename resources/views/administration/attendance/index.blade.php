@@ -87,7 +87,7 @@
                     </div>
                     
                     <div class="col-md-12 text-end">
-                        @if (request()->user_id || request()->created_month_year) 
+                        @if (request()->user_id || request()->created_month_year || request()->type) 
                             <a href="{{ route('administration.attendance.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
@@ -162,6 +162,7 @@
                             <th>Name</th>
                             <th>Clocked IN</th>
                             <th>Clock Out</th>
+                            <th>Breaks</th>
                             <th>Total</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -171,7 +172,7 @@
                             <tr>
                                 <th>#{{ serial($attendances, $key) }}</th>
                                 <td>
-                                    {{ show_date($attendance->clock_in_date) }}
+                                    <span class="text-truncate">{{ show_date($attendance->clock_in_date) }}</span>
                                     <br>
                                     <small class="text-bold text-{{ $attendance->type === 'Regular' ? 'success' : 'primary' }}">{{ $attendance->type }}</small>
                                 </td>
@@ -187,7 +188,7 @@
                                                 $clockInColor = 'text-success';
                                             }
                                         @endphp
-                                        <span class="text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
+                                        <span class="text-truncate text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
                                         <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="Shift Start Time">{{ show_time($attendance->employee_shift->start_time) }}</small>
                                     </div>
                                 </td>
@@ -201,11 +202,32 @@
                                                     $clockOutColor = 'text-success';
                                                 }
                                             @endphp
-                                            <span class="text-bold {{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
+                                            <span class="text-truncate text-bold {{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
                                         @else
                                             <b class="text-success text-uppercase">Running</b>
                                         @endisset
                                         <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-grid">
+                                        @if ($attendance->type == 'Regular') 
+                                            <b class="text-truncate">
+                                                <span class="text-warning" title="Total Break Time">
+                                                    {{ total_time($attendance->total_break_time) }}
+                                                </span>
+                                                @isset ($attendance->total_over_break) 
+                                                    <small class="text-danger" title="Total Over Break">
+                                                        ({{ total_time($attendance->total_over_break) }})
+                                                    </small>
+                                                @endisset
+                                            </b>
+                                            <small class="text-truncate text-muted">
+                                                Breaks Taken: {{ $attendance->total_breaks_taken }}
+                                            </small>
+                                        @else 
+                                            <b class="text-muted">No Break</b>
+                                        @endif
                                     </div>
                                 </td>
                                 <td>

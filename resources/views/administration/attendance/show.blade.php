@@ -37,7 +37,8 @@
     <li class="breadcrumb-item">
         <a href="{{ route('administration.attendance.index') }}">{{ __('All Attendances') }}</a>
     </li>
-    <li class="breadcrumb-item active">{{ __('Attendance Details') }}</li>
+    <li class="breadcrumb-item">{{ __('Attendance Details') }}</li>
+    <li class="breadcrumb-item active">{{ get_date_only($attendance->clock_in_date) }} ({{ $attendance->type }})</li>
 @endsection
 
 
@@ -61,38 +62,7 @@
             </div>
             <div class="card-body">
                 <div class="row justify-content-left">
-                    <div class="col-md-4">
-                        <div class="card">
-                          <div class="card-body text-center">
-                            <div class="rounded-3 text-center mb-3">
-                                @if ($attendance->user->hasMedia('avatar'))
-                                    <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'profile_view') }}" alt="{{ $attendance->user->name }} Avatar" class="img-fluid rounded-3" width="100%">
-                                @else
-                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $attendance->user->name }} No Avatar" class="img-fluid">
-                                @endif
-                            </div>
-                            <h6 class="mb-1 text-center">{{ show_date($attendance->clock_in_date) }}</h6>
-                            <h4 class="mb-1 text-center">
-                                @isset($attendance->total_time)
-                                    @php
-                                        $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                    @endphp
-                                    <b>
-                                        {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
-                                    </b>
-                                @else
-                                    <b class="text-success text-uppercase">Running</b>
-                                @endisset    
-                            </h4>
-                            @php
-                                $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                            @endphp
-                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
-                          </div>
-                        </div>
-                    </div>
-
-                    <div class="col-md-8">
+                    <div class="col-md-7">
                         <div class="card mb-4">
                             <div class="card-body">
                                 <small class="card-text text-uppercase">Attendance Details</small>
@@ -102,7 +72,20 @@
                                         <span class="fw-medium mx-2 text-heading">Date:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        <span>{{ show_date($attendance->clock_in_date) }}</span>
+                                        <span class="text-bold badge bg-label-dark">{{ show_date($attendance->clock_in_date) }}</span>
+                                    </dd>
+                                </dl>
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-hash"></i>
+                                        <span class="fw-medium mx-2 text-heading">Attendance Type:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        @if ($attendance->type == 'Regular') 
+                                            <span class="badge bg-primary">{{ __('Regular Break') }}</span>
+                                        @else 
+                                            <span class="badge bg-warning">{{ __('Overtime Break') }}</span>
+                                        @endif
                                     </dd>
                                 </dl>
                                 <dl class="row mb-1">
@@ -176,6 +159,9 @@
                                     </dt>
                                     <dd class="col-sm-8">
                                         @isset($attendance->total_time)
+                                            @php
+                                                $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                            @endphp
                                             <b>
                                                 {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
                                             </b>
@@ -240,7 +226,67 @@
                                 </dl>
                             </div>
                         </div>
-                    </div>                    
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="d-flex">
+                                    <small class="card-text text-uppercase">Daily Break's Details</small>
+                                    <div class="ms-auto" style="margin-top: -5px;">
+                                        @isset ($attendance->total_break_time) 
+                                            <small class="badge bg-dark" title="Total Break Taken">
+                                                {{ total_time($attendance->total_break_time) }}
+                                            </small>
+                                        @endisset
+                                        @isset ($attendance->total_over_break) 
+                                            <small class="badge bg-danger" title="Total Over Break">
+                                                {{ total_time($attendance->total_over_break) }}
+                                            </small>
+                                        @endisset
+                                    </div> 
+                                </div>
+                                <ul class="timeline mb-0 pb-1 mt-4">
+                                    @forelse ($attendance->daily_breaks as $key => $break) 
+                                        <li class="timeline-item ps-4 {{ $loop->last ? 'border-transparent' : 'border-left-dashed pb-1' }}">
+                                            <span class="timeline-indicator-advanced timeline-indicator-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">
+                                                <i class="ti ti-{{ $break->break_out_at ? 'clock-stop' : 'clock-play' }}"></i>
+                                            </span>
+                                            <div class="timeline-event px-0 pb-0">
+                                                <div class="timeline-header">
+                                                    <small class="text-uppercase fw-medium" title="Click To See Details">
+                                                        <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</a>
+                                                    </small>
+                                                </div>
+                                                <small class="text-muted mb-0">
+                                                    {{ show_time($break->break_in_at) }}
+                                                    @if (!is_null($break->break_out_at)) 
+                                                        <span>to</span>
+                                                        <span>{{ show_time($break->break_out_at) }}</span>
+                                                    @else
+                                                        -
+                                                        <span class="text-danger">Break Running</span>
+                                                    @endif
+                                                </small>
+                                                <h6 class="mb-1">
+                                                    @if (is_null($break->total_time))
+                                                        <span class="text-danger">Break Running</span>
+                                                    @else
+                                                        <span class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ total_time($break->total_time) }}</span>
+                                                        @isset($break->over_break)
+                                                            <small class="text-danger text-bold mt-1" title="Over Break">({{ total_time($break->over_break) }})</small>
+                                                        @endisset
+                                                    @endif
+                                                </h6>
+                                            </div>
+                                        </li>
+                                    @empty 
+                                        <div class="text-center text-bold text-muted fs-2">No Breaks</div>
+                                    @endforelse
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>        

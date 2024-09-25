@@ -40,6 +40,11 @@ class RolesTableSeeder extends Seeder
                     'Attendance Update',
                     'Attendance Delete',
 
+                    'Daily Break Create',
+                    'Daily Break Read',
+                    'Daily Break Update',
+                    'Daily Break Delete',
+
                     'Announcement Create',
                     'Announcement Read',
                     'Announcement Update',
@@ -99,6 +104,11 @@ class RolesTableSeeder extends Seeder
                     'Attendance Update',
                     'Attendance Delete',
 
+                    'Daily Break Create',
+                    'Daily Break Read',
+                    'Daily Break Update',
+                    'Daily Break Delete',
+
                     'Announcement Create',
                     'Announcement Read',
                     'Announcement Update',
@@ -146,10 +156,13 @@ class RolesTableSeeder extends Seeder
                 ];
             } elseif ($role === 'Admin') {
                 $permissions = [
-                    'Attendance Read',
-                    
                     'User Interaction Read',
                     'User Interaction Update',
+                    
+                    'Attendance Read',
+
+                    'Daily Break Create',
+                    'Daily Break Read',
                     
                     'Announcement Read',
 
@@ -185,10 +198,13 @@ class RolesTableSeeder extends Seeder
                 ];
             } elseif ($role === 'HR Manager') {
                 $permissions = [
-                    'Attendance Read',
-                    
                     'User Interaction Read',
                     'User Interaction Update',
+                    
+                    'Attendance Read',
+
+                    'Daily Break Create',
+                    'Daily Break Read',
                     
                     'Announcement Read',
                     
@@ -225,6 +241,11 @@ class RolesTableSeeder extends Seeder
                     'User Interaction Read',
                     'User Interaction Update',
                     
+                    'Attendance Read',
+
+                    'Daily Break Create',
+                    'Daily Break Read',
+                    
                     'Task Read',
 
                     'Daily Work Update Create',
@@ -246,6 +267,11 @@ class RolesTableSeeder extends Seeder
                 $permissions = [
                     'Announcement Read',
                     
+                    'Attendance Read',
+
+                    'Daily Break Create',
+                    'Daily Break Read',
+                    
                     'Task Read',
 
                     'Daily Work Update Create',
@@ -262,6 +288,11 @@ class RolesTableSeeder extends Seeder
             } else {
                 $permissions = [
                     'Announcement Read',
+                    
+                    'Attendance Read',
+
+                    'Daily Break Create',
+                    'Daily Break Read',
                     
                     'Task Read',
 

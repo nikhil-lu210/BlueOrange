@@ -70,6 +70,7 @@
                             <th>Date</th>
                             <th>Clocked IN</th>
                             <th>Clock Out</th>
+                            <th>Breaks</th>
                             <th>Total</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -107,6 +108,20 @@
                                             <b class="text-success text-uppercase">Running</b>
                                         @endisset
                                         <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-grid">
+                                        @if ($attendance->type == 'Regular') 
+                                            <b class="text-warning" title="Total Break Time">
+                                                {{ total_time($attendance->total_break_time) }}
+                                            </b>
+                                            <small class="text-truncate text-muted">
+                                                Breaks Taken: {{ $attendance->total_breaks_taken }}
+                                            </small>
+                                        @else 
+                                            <b class="text-muted">No Break</b>
+                                        @endif
                                     </div>
                                 </td>
                                 <td>

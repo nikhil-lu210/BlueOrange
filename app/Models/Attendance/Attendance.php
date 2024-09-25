@@ -14,7 +14,7 @@ class Attendance extends Model
 {
     use HasFactory, Relations, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
     
-    protected $cascadeDeletes = [];
+    protected $cascadeDeletes = ['daily_breaks'];
     protected $dates = ['clock_in', 'clock_out', 'deleted_at'];
     protected $casts = [
         'clock_in' => 'datetime',
@@ -53,5 +53,37 @@ class Attendance extends Model
     public function setClockOutAttribute($value)
     {
         $this->attributes['clock_out'] = $value ? Carbon::parse($value)->setTimezone(config('app.timezone')) : null;
+    }
+
+    /**
+     * Get the total number of breaks taken for the attendance.
+     */
+    public function getTotalBreaksTakenAttribute(): int
+    {
+        return $this->daily_breaks()
+            ->whereNotNull('break_out_at') // Only count completed breaks
+            ->count();
+    }
+
+    /**
+     * Get the total break time for the attendance.
+     */
+    public function getTotalBreakTimeAttribute()
+    {
+        return $this->daily_breaks()
+            ->whereNotNull('break_out_at') // Only count completed breaks
+            ->selectRaw('SEC_TO_TIME(SUM(TIME_TO_SEC(total_time))) as total_break_time')
+            ->value('total_break_time') ?? NULL;
+    }
+
+    /**
+     * Get the total over break time for the attendance.
+     */
+    public function getTotalOverBreakAttribute()
+    {
+        return $this->daily_breaks()
+            ->whereNotNull('break_out_at') // Only count completed breaks
+            ->selectRaw('SEC_TO_TIME(SUM(TIME_TO_SEC(over_break))) as total_over_break')
+            ->value('total_over_break') ?? NULL;
     }
 }
