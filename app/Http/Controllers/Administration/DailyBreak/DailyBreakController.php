@@ -26,71 +26,18 @@ class DailyBreakController extends Controller
                         ->whereStatus('Active')
                         ->get();
 
-        $query = DailyBreak::with([
-                                'user:id,userid,name', 
-                                'user.media', 
-                                'user.roles'
-                            ])
-                            ->orderByDesc('break_in_at');
-
-        if ($request->has('user_id') && !is_null($request->user_id)) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
-            $query->whereYear('date', $monthYear->year)
-                ->whereMonth('date', $monthYear->month);
-        } else {
-            if (!$request->has('filter_breaks')) {
-                $query->whereBetween('date', [
-                    Carbon::now()->startOfMonth()->format('Y-m-d'),
-                    Carbon::now()->endOfMonth()->format('Y-m-d')
-                ]);
-            }
-        }
-
-        if ($request->has('type') && !is_null($request->type)) {
-            $query->where('type', $request->type);
-        }
-
-        $dailyBreaks = $query->get();
-                                
+        $dailyBreaks = $this->getDailyBreaksQuery($request)->get();
+                                        
         return view('administration.daily_break.index', compact(['users', 'dailyBreaks']));
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the user's daily breaks.
      */
     public function myDailyBreaks(Request $request)
     {
-        $query = DailyBreak::with([
-                                'user:id,userid,name', 
-                                'user.media', 
-                                'user.roles'
-                            ])
-                            ->whereUserId(auth()->user()->id)
-                            ->orderByDesc('break_in_at');
-
-        if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
-            $query->whereYear('date', $monthYear->year)
-                ->whereMonth('date', $monthYear->month);
-        } else {
-            if (!$request->has('filter_breaks')) {
-                $query->whereBetween('date', [
-                    Carbon::now()->startOfMonth()->format('Y-m-d'),
-                    Carbon::now()->endOfMonth()->format('Y-m-d')
-                ]);
-            }
-        }
-
-        if ($request->has('type') && !is_null($request->type)) {
-            $query->where('type', $request->type);
-        }
-
-        $dailyBreaks = $query->get();
-                                
+        $dailyBreaks = $this->getDailyBreaksQuery($request, auth()->user()->id)->get();
+                                    
         return view('administration.daily_break.my', compact(['dailyBreaks']));
     }
 
@@ -336,5 +283,49 @@ class DailyBreakController extends Controller
 
         // Return the Excel download with the appropriate filename
         return Excel::download(new DailyBreakExport($breaks), $fileName);
+    }
+
+    /**
+     * Build the query for retrieving daily breaks.
+     *
+     * @param Request $request
+     * @param int|null $userId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function getDailyBreaksQuery(Request $request, int $userId = null)
+    {
+        $query = DailyBreak::with([
+                                'user:id,userid,name', 
+                                'user.media', 
+                                'user.roles'
+                            ])
+                            ->orderByDesc('break_in_at');
+
+        // Apply user ID filter if provided
+        if ($userId) {
+            $query->whereUserId($userId);
+        }
+
+        // Handle month/year filtering
+        if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
+            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $query->whereYear('date', $monthYear->year)
+                ->whereMonth('date', $monthYear->month);
+        } else {
+            // Default to current month if no specific filter is applied
+            if (!$request->has('filter_breaks')) {
+                $query->whereBetween('date', [
+                    Carbon::now()->startOfMonth()->format('Y-m-d'),
+                    Carbon::now()->endOfMonth()->format('Y-m-d')
+                ]);
+            }
+        }
+
+        // Apply type filter if specified
+        if ($request->has('type') && !is_null($request->type)) {
+            $query->where('type', $request->type);
+        }
+
+        return $query;
     }
 }
