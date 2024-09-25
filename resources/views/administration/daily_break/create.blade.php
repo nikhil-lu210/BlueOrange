@@ -162,9 +162,18 @@
                 <div class="card-header header-elements">
                     <h5 class="mb-0">Start Daily Break</h5>
                     @isset ($attendance) 
-                        <small class="badge bg-dark ms-auto" title="Total Break Taken" style="margin-top: -5px;">
-                            {{ total_time($attendance->total_break_time) }}
-                        </small>
+                        <div class="ms-auto">
+                            @isset ($attendance->total_break_time) 
+                                <small class="badge bg-dark" title="Total Break Taken" style="margin-top: -5px;">
+                                    {{ total_time($attendance->total_break_time) }}
+                                </small>
+                            @endisset
+                            @isset ($attendance->total_over_break) 
+                                <small class="badge bg-danger" title="Total Over Break" style="margin-top: -5px;">
+                                    {{ total_time($attendance->total_over_break) }}
+                                </small>
+                            @endisset
+                        </div>
                     @endisset
                 </div>
                 <div class="card-body">
@@ -195,6 +204,9 @@
                                             <span class="text-danger">Break Running</span>
                                         @else
                                             <span class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ total_time($break->total_time) }}</span>
+                                            @isset($break->over_break)
+                                                <small class="text-danger text-bold mt-1" title="Over Break">({{ total_time($break->over_break) }})</small>
+                                            @endisset
                                         @endif
                                     </h6>
                                 </div>

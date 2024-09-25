@@ -29,6 +29,7 @@ return new class extends Migration
             $table->dateTime('break_in_at');
             $table->dateTime('break_out_at')->nullable();
             $table->string('total_time')->nullable()->comment('hh:mm:ss');
+            $table->string('over_break')->nullable()->comment('hh:mm:ss');
 
             $table->enum('type', ['Short', 'Long'])->default('Short');
 

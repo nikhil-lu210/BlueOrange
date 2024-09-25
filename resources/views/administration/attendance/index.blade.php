@@ -212,8 +212,15 @@
                                 <td>
                                     <div class="d-grid">
                                         @if ($attendance->type == 'Regular') 
-                                            <b class="text-warning" title="Total Break Time">
-                                                {{ total_time($attendance->total_break_time) }}
+                                            <b>
+                                                <span class="text-warning" title="Total Break Time">
+                                                    {{ total_time($attendance->total_break_time) }}
+                                                </span>
+                                                @isset ($attendance->total_over_break) 
+                                                    <small class="text-truncate text-danger" title="Total Over Break">
+                                                        ({{ total_time($attendance->total_over_break) }})
+                                                    </small>
+                                                @endisset
                                             </b>
                                             <small class="text-truncate text-muted">
                                                 Breaks Taken: {{ $attendance->total_breaks_taken }}
