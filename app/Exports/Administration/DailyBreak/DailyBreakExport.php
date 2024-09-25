@@ -25,7 +25,8 @@ class DailyBreakExport extends BaseExportSettings implements FromCollection
                 'date' => show_date($break->date),
                 'break_in_at' => show_time($break->break_in_at),
                 'break_out_at' => show_time($break->break_out_at),
-                'total_time' => total_time($break->total_time)
+                'total_time' => total_time($break->total_time),
+                'over_break' => total_time($break->over_break),
             ];
         });
     }
@@ -42,7 +43,8 @@ class DailyBreakExport extends BaseExportSettings implements FromCollection
             'Date',
             'Break Started',
             'Break Stopped',
-            'Total'
+            'Total',
+            'Over Break',
         ];
     }
 }

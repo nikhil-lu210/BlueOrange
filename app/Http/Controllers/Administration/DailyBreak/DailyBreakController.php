@@ -270,6 +270,7 @@ class DailyBreakController extends Controller
         // Initialize variables for filename parts
         $userName = '';
         $monthYear = '';
+        $breakInType = '';
         
         // Handle user_id filter
         if ($request->has('user_id') && !is_null($request->user_id)) {
