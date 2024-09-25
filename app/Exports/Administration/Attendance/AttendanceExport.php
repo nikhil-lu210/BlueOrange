@@ -26,9 +26,11 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
                 'clock_in_date' => show_date($attendance->clock_in_date),
                 'shift' => show_time($attendance->employee_shift->start_time) . ' to ' . show_time($attendance->employee_shift->end_time),
                 'clock_in' => show_time($attendance->clock_in),
-                'clock_out' => show_time($attendance->clock_out),
+                'clock_out' => $attendance->clock_out ? show_time($attendance->clock_out) : NULL,
                 'total_time' => total_time($attendance->total_time),
                 'type' => $attendance->type,
+                'total_break_time' => total_time($attendance->total_break_time),
+                'total_over_break' => total_time($attendance->total_over_break),
             ];
         });
     }
@@ -48,6 +50,8 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
             'Clockout',
             'Total',
             'Type',
+            'Total Break',
+            'Over Break',
         ];
     }
 }

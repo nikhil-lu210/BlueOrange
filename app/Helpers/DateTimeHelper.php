@@ -301,6 +301,10 @@ if (!function_exists('total_time')) {
      */
     function total_time($totalTime)
     {
+        // dd($totalTime);
+        if (is_null($totalTime)) {
+            return NULL;
+        }
         // Parse the total time string
         $timeComponents = explode(':', $totalTime);
         $hours = (int)$timeComponents[0];
