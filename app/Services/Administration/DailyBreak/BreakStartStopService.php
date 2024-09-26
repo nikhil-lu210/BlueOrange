@@ -191,10 +191,10 @@ class BreakStartStopService
     {
         $lastBreak = DailyBreak::where('user_id', $user->id)
             ->where('attendance_id', $attendance->id)
-            ->orderBy('break_in_at', 'desc')
+            ->orderBy('break_out_at', 'desc')
             ->first();
 
-        if ($lastBreak && $currentTime->diffInHours(Carbon::parse($lastBreak->break_in_at)) < 1) {
+        if ($lastBreak && $currentTime->diffInHours(Carbon::parse($lastBreak->break_out_at)) < 1) {
             throw new Exception('You cannot take another break within 1 hour of your previous break.');
         }
     }
