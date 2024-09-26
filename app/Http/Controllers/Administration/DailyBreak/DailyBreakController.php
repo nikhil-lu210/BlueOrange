@@ -22,15 +22,22 @@ class DailyBreakController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::select(['id', 'name'])
-                        ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->get();
+        $userIds = auth()->user()->user_interactions->pluck('id');
 
-        $dailyBreaks = $this->getDailyBreaksQuery($request)->get();
-                                        
+        // Eager load all necessary relationships
+        $users = User::with(['roles', 'media', 'shortcuts', 'employee'])
+                        ->whereIn('id', $userIds)
+                        ->whereStatus('Active')
+                        ->get(['id', 'name']);
+
+        // Get daily breaks with the pre-loaded users
+        $dailyBreaks = $this->getDailyBreaksQuery($request)
+                            ->whereIn('user_id', $userIds)
+                            ->get();
+
         return view('administration.daily_break.index', compact(['users', 'dailyBreaks']));
     }
+
 
     /**
      * Display a listing of the user's daily breaks.
