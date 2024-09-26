@@ -24,11 +24,14 @@ class BreakStartStopService
             ->first();
 
         if (!$attendance) {
-            throw new Exception('You cannot take any break as you have not clocked in today or already clocked out.');
+            throw new Exception('You cannot take any break as you have not REGULAR clocked in today or already clocked out.');
         }
 
         // Check shift constraints
-        $this->checkShiftConstraints($user, $currentTime);
+        $this->checkShiftTimeConstraints($user, $currentTime);
+
+        // Check clock-in/clock-out constraints
+        $this->checkClockTimeConstraints($user, $currentTime);
 
         // Count breaks
         $this->checkBreakLimits($user, $attendance, $request->break_type);
@@ -101,19 +104,64 @@ class BreakStartStopService
         return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
 
-    private function checkShiftConstraints($user, $currentTime)
+    private function checkShiftTimeConstraints($user, $currentTime)
     {
         $shift = $user->current_shift;
 
         if ($shift) {
+            // Parse the shift start and end times
             $shiftStartTime = Carbon::parse($shift->start_time);
             $shiftEndTime = Carbon::parse($shift->end_time);
 
+            // Check if the break is within the first or last hour of the shift
             if (
                 $currentTime->between($shiftStartTime, $shiftStartTime->copy()->addHour()) ||
                 $currentTime->between($shiftEndTime->copy()->subHour(), $shiftEndTime)
             ) {
                 throw new Exception('You cannot take a break in the first or last hour of your shift.');
+            }
+        }
+    }
+
+    private function checkClockTimeConstraints($user, $currentTime)
+    {
+        $shift = $user->current_shift;
+
+        if ($shift) {
+            // Fetch the latest "Regular" type attendance where clock_out is null
+            $attendance = $user->attendances()
+                ->whereType('Regular')
+                ->whereNull('clock_out')
+                ->latest()
+                ->first();
+
+            // Check if attendance exists
+            if ($attendance) {
+                // Parse the clock_in time from the attendance record
+                $clockInTime = Carbon::parse($attendance->clock_in);
+
+                // Calculate the shift duration (in seconds) using the shift start and end times
+                $shiftStartTime = Carbon::parse($shift->start_time);
+                $shiftEndTime = Carbon::parse($shift->end_time);
+                $shiftDurationInSeconds = $shiftEndTime->diffInSeconds($shiftStartTime);
+
+                // Calculate the expected clock-out time based on the clock-in time and the shift duration
+                $expectedClockOutTime = $clockInTime->copy()->addSeconds($shiftDurationInSeconds);
+
+                // Define the time range where breaks are not allowed
+                $firstHourEnd = $clockInTime->copy()->addHour(); // First hour after clock-in
+                $lastHourStart = $expectedClockOutTime->copy()->subHour(); // Last hour before clock-out
+
+                // Check if the current time is within the first hour after clock-in or the last hour before clock-out
+                if (
+                    $currentTime->between($clockInTime, $firstHourEnd) || // First hour after clock-in
+                    $currentTime->between($lastHourStart, $expectedClockOutTime) // Last hour before clock-out
+                ) {
+                    throw new Exception('You cannot take a break as it is the first or last hour of your today\'s clockin.');
+                }
+            } else {
+                // Optionally handle cases where there is no relevant attendance record
+                throw new Exception('No valid attendance record found for the user.');
             }
         }
     }
