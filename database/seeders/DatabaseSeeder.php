@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use Database\Seeders\Attendance\AttendanceSeeder;
+use Database\Seeders\DailyBreak\DailyBreakSeeder;
 use Illuminate\Database\Seeder;
 use Database\Seeders\Role\RolesTableSeeder;
 use Database\Seeders\User\UsersTableSeeder;
@@ -17,7 +19,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             PermissionsTableSeeder::class,
             RolesTableSeeder::class,
-            UsersTableSeeder::class
+            UsersTableSeeder::class,
+
+            AttendanceSeeder::class,
+            DailyBreakSeeder::class,
         ]);
     }
 }

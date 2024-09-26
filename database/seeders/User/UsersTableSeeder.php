@@ -242,5 +242,9 @@ class UsersTableSeeder extends Seeder
             'personal_contact_no' => fake()->phoneNumber(),
             'official_contact_no' => fake()->unique()->phoneNumber(),
         ]);
+
+
+        // Seed fake users
+        User::factory()->count(100)->create();
     }
 }

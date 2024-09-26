@@ -22,32 +22,25 @@ class DailyBreakFactory extends Factory
      */
     public function definition()
     {
-        // Get a random user who has regular attendance
-        $user = User::whereHas('attendances', function ($query) {
-            $query->where('type', 'Regular')->whereNull('clock_out');
-        })->inRandomOrder()->first();
+        // Get an attendance that is of type 'Regular' and has a null clock_out
+        $attendance = Attendance::where('type', 'Regular')
+            ->inRandomOrder()
+            ->first();
 
-        // If no user found, return an empty array
-        if (!$user) {
-            return [];
-        }
-
-        // Get the latest attendance record for the user
-        $attendance = $user->attendances()->whereType('Regular')->latest()->first();
-
-        // Ensure attendance exists
         if (!$attendance) {
+            // Log a warning or handle the case where no valid attendance is found
+            \Log::warning('No valid attendance found for DailyBreakFactory.');
             return [];
         }
 
-        // Use the attendance clock-in date for break date
-        $breakInAt = Carbon::parse($attendance->clock_in)->addHours(rand(1, 4)); // Ensuring break_in is within working hours
+        // Generate random times for break_in and break_out
+        $breakInAt = Carbon::now()->subHours(rand(1, 4));
         $breakOutAt = (clone $breakInAt)->addMinutes(rand(15, 60)); // Ensure break out is after break in
 
         return [
-            'user_id' => $user->id,
-            'attendance_id' => $attendance->id,
-            'date' => $attendance->clock_in_date, // Match the date with attendance's clock_in_date
+            'user_id' => $attendance->user_id, // Get the user ID from the attendance
+            'attendance_id' => $attendance->id, // Use the selected attendance ID
+            'date' => $breakInAt->toDateString(), // Use the date of break_in_at
             'break_in_at' => $breakInAt, // Random break-in time
             'break_out_at' => $breakOutAt, // Random break-out time
             'total_time' => $this->calculateTotalTime($breakInAt, $breakOutAt), // Calculate total time
