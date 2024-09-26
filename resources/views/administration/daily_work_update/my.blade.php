@@ -154,7 +154,7 @@
                                                         <img src="{{ $dailyUpdate->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->user->name }} Avatar" class="rounded-circle">
                                                     @else
                                                         <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
-                                                            {{ profile_name_pic($dailyUpdate->user->id) }}
+                                                            {{ profile_name_pic($dailyUpdate->user) }}
                                                         </span>
                                                     @endif
                                                 </a>
@@ -175,7 +175,7 @@
                                                         <img src="{{ $dailyUpdate->team_leader->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->team_leader->name }} Avatar" class="rounded-circle">
                                                     @else
                                                         <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
-                                                            {{ profile_name_pic($dailyUpdate->team_leader->id) }}
+                                                            {{ profile_name_pic($dailyUpdate->team_leader) }}
                                                         </span>
                                                     @endif
                                                 </a>

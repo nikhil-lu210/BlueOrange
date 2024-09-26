@@ -37,34 +37,42 @@ if (!function_exists('show_user_data')) {
     }
 }
 
+
 if (!function_exists('profile_name_pic')) {
 
     /**
      * Get the initials (first letter of first name and last name) for a given user.
      *
-     * @param  int  $userId  The user ID.
+     * @param  User  $user  The User object.
      * @return string  The initials.
      */
-    function profile_name_pic($userId)
+    function profile_name_pic($user)
     {
-        // Fetch the user from the database using the user ID
-        $user = User::find($userId);
-
         // Check if user exists
         if (!$user) {
             return '';
         }
 
-        // Get first and last names, assuming they are not empty
+        // Get first and last names
         $firstName = $user->first_name;
         $lastName = $user->last_name;
 
-        // Extract the first letter from each part of the first and last name
-        $firstInitial = $firstName ? strtoupper(substr($firstName, 0, 1)) : '';
-        $lastInitial = $lastName ? strtoupper(substr($lastName, 0, 1)) : '';
+        // Initialize initials
+        $initials = '';
 
-        // Return the concatenated initials
-        return $firstInitial . $lastInitial;
+        // Check if first name and last name exist, otherwise take initials from name
+        if ($firstName && $lastName) {
+            $firstInitial = strtoupper(substr($firstName, 0, 1));
+            $lastInitial = strtoupper(substr($lastName, 0, 1));
+            $initials = $firstInitial . $lastInitial;
+        } else {
+            // Fallback to taking two letters from the name
+            $fullName = $user->name ?? '';
+            $initials = strtoupper(substr($fullName, 0, 2)); // Take the first two letters
+        }
+
+        // Return the initials
+        return $initials;
     }
 }
 
@@ -90,7 +98,7 @@ if (!function_exists('show_user_name_and_avatar')) {
                 $avatarUrl = $user->getFirstMediaUrl('avatar', 'thumb');
                 $avatarHtml = '<img src="' . $avatarUrl . '" alt="' . htmlspecialchars($user->name) . ' Avatar" class="rounded-circle">';
             } else {
-                $initials = profile_name_pic($user->id);
+                $initials = profile_name_pic($user);
                 $avatarHtml = '<span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">' . $initials . '</span>';
             }
             $avatarHtml = '

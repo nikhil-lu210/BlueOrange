@@ -63,7 +63,7 @@
                                         <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
                                     @else
                                         <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
-                                            {{ profile_name_pic($user->id) }}
+                                            {{ profile_name_pic($user) }}
                                         </span>
                                     @endif
                                 </li>

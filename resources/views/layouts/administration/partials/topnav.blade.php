@@ -156,7 +156,7 @@
                             <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="h-auto rounded-circle">
                         @else
                             <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
-                                {{ profile_name_pic(auth()->user()->id) }}
+                                {{ profile_name_pic(auth()->user()) }}
                             </span>
                         @endif
                     </div>
@@ -171,7 +171,7 @@
                                             <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="h-auto rounded-circle">
                                         @else
                                             <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
-                                                {{ profile_name_pic(auth()->user()->id) }}
+                                                {{ profile_name_pic(auth()->user()) }}
                                             </span>
                                         @endif
                                     </div>

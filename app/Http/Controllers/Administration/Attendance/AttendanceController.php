@@ -28,7 +28,7 @@ class AttendanceController extends Controller
                         ->get();
 
         $query = Attendance::with([
-                                'user:id,userid,name', 
+                                'user:id,userid,name,first_name,last_name',
                                 'user.media', 
                                 'user.roles', 
                                 'employee_shift:id,start_time,end_time',

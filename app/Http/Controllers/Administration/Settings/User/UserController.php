@@ -31,7 +31,7 @@ class UserController extends Controller
     {
         $roles = Role::select(['id', 'name'])->distinct()->get();
 
-        $query = User::select(['id','userid','name','email','status'])->with([
+        $query = User::select(['id','userid','first_name','last_name','name','email','status'])->with([
             'media', 
             'roles:id,name'
         ]);

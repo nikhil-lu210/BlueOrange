@@ -155,7 +155,9 @@
                                     <small class="text-bold text-{{ $break->type === 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</small>
                                 </td>
                                 <td>
-                                    {!! show_user_name_and_avatar($break->user, role: false) !!}
+                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $break->user]) }}" target="_blank" class="text-bold text-primary">
+                                        {{ $break->user->name }}
+                                    </a>
                                 </td>
                                 <td>
                                     <div class="d-grid">
