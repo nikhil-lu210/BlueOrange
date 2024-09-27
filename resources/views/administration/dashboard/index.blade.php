@@ -26,7 +26,7 @@
         }
 
         /* Table */
-        .table-borderless th {
+        .table-borderless th, .table-bordered th {
             font-weight: bold;
         }
     </style>
