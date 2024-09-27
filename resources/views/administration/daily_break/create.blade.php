@@ -263,5 +263,5 @@
                 setInterval(updateRunningBreakTime, 1000); // Update every second
             }
         });
-    </script>    
+    </script>
 @endsection
