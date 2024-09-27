@@ -2,17 +2,18 @@
 
 namespace App\Http\Controllers\Administration\Attendance;
 
-use App\Exports\Administration\Attendance\AttendanceExport;
 use Exception;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Attendance\Attendance;
 use Stevebauman\Location\Facades\Location;
+use App\Exports\Administration\Attendance\AttendanceExport;
+use App\Services\Administration\Attendance\AttendanceService;
 use App\Http\Requests\Administration\Attendance\AttendanceUpdateRequest;
-use App\Models\User;
-use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceController extends Controller
 {
@@ -75,8 +76,10 @@ class AttendanceController extends Controller
      */
     public function myAttendances()
     {
+        $user = auth()->user();
+
         $attendances = Attendance::with(['user:id,name', 'employee_shift:id,start_time,end_time'])
-                        ->where('user_id', auth()->user()->id)
+                        ->where('user_id', $user->id)
                         ->latest()
                         ->distinct()
                         ->get();
@@ -84,7 +87,7 @@ class AttendanceController extends Controller
         // Check if the user has already clocked in today
         $currentTime = now();
         $currentDate = $currentTime->toDateString();
-        $clockedIn = Attendance::where('user_id', auth()->user()->id)
+        $clockedIn = Attendance::where('user_id', $user->id)
                                 ->whereNull('clock_out')
                                 ->first();
 

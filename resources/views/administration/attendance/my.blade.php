@@ -42,25 +42,15 @@
             <div class="card-header header-elements">
                 <h5 class="mb-0">My Attendances</h5>
         
-                <div class="card-header-elements ms-auto">
-                    @if (!$clockedIn) 
-                        <form action="{{ route('administration.attendance.clockin') }}" method="post">
-                            @csrf
-                            <button type="submit" name="attendance" value="clock_in" class="btn btn-sm btn-success">
-                                <span class="tf-icon ti ti-clock-check me-1"></span>
-                                Clock In
-                            </button>
-                        </form>
-                    @else
-                        <form action="{{ route('administration.attendance.clockout') }}" method="post">
-                            @csrf
-                            <button type="submit" name="attendance" value="clock_out" class="btn btn-sm btn-danger">
-                                <span class="tf-icon ti ti-clock-off me-1"></span>
-                                Clock Out
-                            </button>
-                        </form>
-                    @endif
-                </div>
+                {{-- <div class="card-header-elements ms-auto" style="margin-top: -5px;">            
+                    <small class="badge bg-dark" title="Total Break Taken">
+                        01h 00m 47s
+                    </small>
+                                                         
+                    <small class="badge bg-danger" title="Total Over Break">
+                        40m 47s
+                    </small>
+                </div> --}}
             </div>
             <div class="card-body">
                 <table class="table data-table table-bordered table-responsive" style="width: 100%;">
