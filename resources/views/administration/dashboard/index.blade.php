@@ -161,10 +161,10 @@
     {{-- Attendances for running month --}}
     <div class="col-md-12 mb-4">
         <div class="card">
-            <h5 class="card-header pb-2">My Attendances Of <b class="text-bold text-primary">{{ date('F Y') }}</b></h5>
-            <div class="card-body p-0">
+            <h5 class="card-header pb-3">My Attendances Of <b class="text-bold text-primary">{{ date('F Y') }}</b></h5>
+            <div class="card-body">
                 <div class="table-responsive text-nowrap">
-                    <table class="table table-borderless">
+                    <table class="table table-bordered">
                         <thead>
                             <tr>
                                 <th class="text-left">Date</th>
