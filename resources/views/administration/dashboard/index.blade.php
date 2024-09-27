@@ -57,63 +57,161 @@
     </div>
 @endif
 
+
 <div class="row">
-    <!-- Statistics -->
-    <div class="col-lg-8 mb-4 col-md-12">
-        <div class="card h-100">
-            <div class="card-header d-flex justify-content-between">
-                <h5 class="card-title mb-0">Statistics</h5>
-                <small class="text-muted">Updated 1 month ago</small>
-            </div>
-            <div class="card-body pt-2">
-                <div class="row gy-3">
-                    <div class="col-md-3 col-6">
-                        <div class="d-flex align-items-center">
-                            <div class="badge rounded-pill bg-label-primary me-3 p-2">
-                                <i class="ti ti-chart-pie-2 ti-sm"></i>
-                            </div>
-                            <div class="card-info">
-                                <h5 class="mb-0">230k</h5>
-                                <small>Sales</small>
+    <div class="col-md-12">
+        <div class="card mb-4 border-0">
+            <div class="card-body row">
+                <div class="col-md-8 card-separator">
+                    <div class="d-flex justify-content-between flex-wrap gap-3 me-3">
+                        <div class="d-flex align-items-center gap-3 me-4 me-sm-0">
+                            <span class="bg-label-success p-2 rounded">
+                                <i class="ti ti-briefcase ti-xl"></i>
+                            </span>
+                            <div class="content-right">
+                                <h5 class="text-success mb-0" title="{{ __('Total Worked') }}" data-bs-placement="left">{{ format_number($totalWorkedDays) }} <small>Days</small></h5>
+                                <small class="mb-0" title="{{ __('Total Days in '). config('app.name') }}" data-bs-placement="left">{{ total_day($user->employee->joining_date) }}</small>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-3 col-6">
-                        <div class="d-flex align-items-center">
-                            <div class="badge rounded-pill bg-label-info me-3 p-2">
-                                <i class="ti ti-users ti-sm"></i>
-                            </div>
-                            <div class="card-info">
-                                <h5 class="mb-0">8.549k</h5>
-                                <small>Customers</small>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="bg-label-primary p-2 rounded">
+                                <i class="ti ti-hourglass-high ti-xl"></i>
+                            </span>
+                            <div class="content-right">
+                                <h5 class="text-primary mb-0">{{ total_time($totalRegularWork) }}</h5>
+                                <small class="mb-0 text-muted">Total Worked (Regular)</small>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-3 col-6">
-                        <div class="d-flex align-items-center">
-                            <div class="badge rounded-pill bg-label-danger me-3 p-2">
-                                <i class="ti ti-shopping-cart ti-sm"></i>
-                            </div>
-                            <div class="card-info">
-                                <h5 class="mb-0">1.423k</h5>
-                                <small>Products</small>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 col-6">
-                        <div class="d-flex align-items-center">
-                            <div class="badge rounded-pill bg-label-success me-3 p-2">
-                                <i class="ti ti-currency-dollar ti-sm"></i>
-                            </div>
-                            <div class="card-info">
-                                <h5 class="mb-0">$9745</h5>
-                                <small>Revenue</small>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="bg-label-warning p-2 rounded">
+                                <i class="ti ti-hourglass-low ti-xl"></i>
+                            </span>
+                            <div class="content-right">
+                                <h5 class="text-warning mb-0">{{ total_time($totalOvertimeWork) }}</h5>
+                                <small class="mb-0 text-muted">Total Worked (Overtime)</small>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-between flex-wrap gap-3 px-2">
+                        <div class="d-flex align-items-center">
+                            <div class="avatar flex-shrink-0 me-2">
+                                <span class="avatar-initial rounded bg-label-primary">
+                                    <i class="ti ti-calendar-time ti-md"></i>
+                                </span>
+                            </div>
+                            <div>
+                                <h5 class="mb-0 text-nowrap live-time text-bold" id="liveTime"></h5>
+                                <small>{{ date('jS M, Y (l)') }}</small>
+                            </div>
+                        </div>
+                        @isset($activeAttendance->clock_in)
+                            <div class="d-flex align-items-center">
+                                <form action="{{ route('administration.attendance.clockout') }}" method="post" class="confirm-form-danger">
+                                    <div class="avatar flex-shrink-0 me-2">
+                                        @csrf
+                                        <button type="submit" name="attendance" value="clock_out" class="avatar-initial rounded bg-danger border-0" data-bs-placement="top" title="Clock Out?">
+                                            <i class="ti ti-clock-off ti-md"></i>
+                                        </button>
+                                    </div>
+                                </form>
+                                <div>
+                                    <h5 class="mb-0 text-nowrap live-working-time text-{{ $activeAttendance->type == 'Regular' ? 'primary' : 'warning' }}" 
+                                        id="liveWorkingTime" 
+                                        data-clock-in-at="{{ $activeAttendance->clock_in->timestamp }}">
+                                    </h5>
+                                    <small class="bg-label-{{ $activeAttendance->type == 'Regular' ? 'primary' : 'warning' }} p-1 px-2 rounded-2 text-bold">{{ $activeAttendance->type }}</small>
+                                </div>
+                            </div>
+                        @else
+                            <form action="{{ route('administration.attendance.clockin') }}" method="post">
+                                @csrf
+                                <div class="d-flex align-items-center mt-1">
+                                    <div class="avatar flex-shrink-0 me-2">
+                                        <button type="button" class="avatar-initial rounded bg-primary border-0 submit-regular" data-bs-placement="top" title="Regular Clockin?">
+                                            <i class="ti ti-clock-check ti-md"></i>
+                                        </button>
+                                    </div>
+                                    <div class="avatar flex-shrink-0 me-2">
+                                        <button type="button" class="avatar-initial rounded bg-warning border-0 submit-overtime" data-bs-placement="top" title="Overtime Clockin?">
+                                            <i class="ti ti-clock-check ti-md"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <!-- Hidden input to store attendance type -->
+                                <input type="hidden" name="attendance" id="attendanceType">
+                            </form>                        
+                        @endisset
+                    </div>
+                </div>
             </div>
-        </div>
+        </div>        
+    </div>
+</div>
+
+
+<div class="row">
+    {{-- Attendances for running month --}}
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <h5 class="card-header pb-2">My Attendances Of <b class="text-bold text-primary">{{ date('F Y') }}</b></h5>
+            <div class="card-body p-0">
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Clock In</th>
+                                <th>Clock Out</th>
+                                <th>Total Worked</th>
+                                <th>Total Break</th>
+                                <th>Type</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($attendances as $attendance) 
+                                <tr>
+                                    <td>
+                                        <span class="fw-medium">{{ get_date_only($attendance->clock_in_date) }}</span>
+                                    </td>
+                                    <td>{{ show_time($attendance->clock_in) }}</td>
+                                    <td>
+                                        @isset ($attendance->clock_out) 
+                                            <span>{{ show_time($attendance->clock_out) }}</span>
+                                        @else 
+                                            <span class="text-bold text-success">Running</span>
+                                        @endisset
+                                    </td>
+                                    <td>
+                                        @isset ($attendance->total_time) 
+                                            <span>{{ total_time($attendance->total_time) }}</span>
+                                        @else 
+                                            <span class="text-bold text-success">Running</span>
+                                        @endisset
+                                    </td>
+                                    <td>
+                                        @isset ($attendance->total_break_time) 
+                                            <span>{{ total_time($attendance->total_break_time) }}</span>
+                                        @else 
+                                            <span class="text-bold text-muted">No Break</span>
+                                        @endisset
+                                    </td>
+                                    <td>
+                                        @if ($attendance->type == 'Regular') 
+                                            <span class="badge bg-label-primary me-1">Regular</span>
+                                        @else 
+                                            <span class="badge bg-label-warning me-1">Overtime</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>        
     </div>
 
     <!-- Orders -->
@@ -155,6 +253,91 @@
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Custom Script Here
+        // ShowLiveTime
+        $(document).ready(function() {
+            // Function to update the clock
+            function updateTime() {
+                var currentTime = new Date();
+                
+                // Format hours, minutes, and seconds with leading zeros
+                var hours = currentTime.getHours();
+                var minutes = currentTime.getMinutes();
+                var seconds = currentTime.getSeconds();
+                
+                // Convert to 12-hour format and determine AM/PM
+                var ampm = hours >= 12 ? 'PM' : 'AM';
+                hours = hours % 12;
+                hours = hours ? hours : 12; // the hour '0' should be '12'
+                
+                // Add leading zeros to minutes and seconds if needed
+                minutes = minutes < 10 ? '0'+minutes : minutes;
+                seconds = seconds < 10 ? '0'+seconds : seconds;
+                
+                // Create the time string in the format HH:MM:SS AM/PM
+                var timeString = hours + ':' + minutes + ':' + seconds + ' ' + ampm;
+                
+                // Update the content of the #liveTime element
+                $('#liveTime').text(timeString);
+            }
+            
+            // Call the updateTime function every second (1000 milliseconds)
+            setInterval(updateTime, 1000);
+            
+            // Call the function initially to show time immediately when the page loads
+            updateTime();
+        });
+    </script>
+    
+    <script>
+        // LiveClockInTimeCount
+        $(document).ready(function() {
+            const liveWorkingTimeElement = $('#liveWorkingTime');
+            
+            if (liveWorkingTimeElement.length) {
+                const clockInAt = parseInt(liveWorkingTimeElement.data('clock-in-at')) * 1000; // Convert to milliseconds
+                
+                // Function to calculate and display the elapsed time
+                function updateliveWorkingTime() {
+                    const now = new Date().getTime();
+                    const elapsed = now - clockInAt;
+    
+                    // Calculate hours, minutes, and seconds
+                    const hours = Math.floor(elapsed / (1000 * 60 * 60));
+                    const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
+    
+                    // Format the time as hh:mm:ss
+                    const formattedTime = 
+                        String(hours).padStart(2, '0') + ':' +
+                        String(minutes).padStart(2, '0') + ':' +
+                        String(seconds).padStart(2, '0');
+                    
+                    liveWorkingTimeElement.text(formattedTime);
+                }
+    
+                // Update the time every second
+                updateliveWorkingTime(); // Initial call
+                setInterval(updateliveWorkingTime, 1000); // Update every second
+            }
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            // $('form').on('submit', function(e) {
+            //     e.preventDefault(); // Prevent default submission
+            // });
+
+            $('.submit-regular').click(function() {
+                $('#attendanceType').val('Regular'); 
+                $(this).closest('form').submit(); 
+            });
+
+            $('.submit-overtime').click(function() {
+                $('#attendanceType').val('Overtime'); 
+                $(this).closest('form').submit(); 
+            });
+        });
+
     </script>
 @endsection

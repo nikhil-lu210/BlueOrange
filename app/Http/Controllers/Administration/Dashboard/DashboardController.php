@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Administration\Dashboard;
 
+use Auth;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
+use App\Models\Attendance\Attendance;
 
 class DashboardController extends Controller
 {
@@ -12,60 +16,98 @@ class DashboardController extends Controller
      */
     public function index()
     {
+        $user = User::with(['employee'])->whereId(auth()->user()->id)->firstOrFail();
         // Pick a random birthday wish
         $wish = $this->randomBirthdayWish();
+        
+        // Get total worked days
+        $totalWorkedDays = $this->calculateTotalWorkedDays($user);
+        
+        // Get total Regular worked days
+        $totalRegularWork = $this->calculateTotalWork($user, 'Regular');
+        
+        // Get total Overtime worked days
+        $totalOvertimeWork = $this->calculateTotalWork($user, 'Overtime');
 
-        return view('administration.dashboard.index', compact('wish'));
+        $activeAttendance = Attendance::select(['id', 'user_id', 'type', 'clock_in', 'clock_out'])
+                                    ->whereUserId($user->id)
+                                    ->whereNull('clock_out')
+                                    ->latest()
+                                    ->first();
+
+        $attendances = Attendance::whereUserId($user->id)
+                                    ->whereBetween('clock_in_date', [
+                                        Carbon::now()->startOfMonth()->format('Y-m-d'),
+                                        Carbon::now()->endOfMonth()->format('Y-m-d')
+                                    ])
+                                    ->orderByDesc('clock_in_date')
+                                    ->orderByDesc('created_at')
+                                    ->get();
+        
+        // dd($attendances);
+
+        return view('administration.dashboard.index', compact([
+            'user', 
+            'wish', 
+            'totalWorkedDays', 
+            'totalRegularWork',
+            'totalOvertimeWork',
+            'activeAttendance',
+            'attendances',
+        ]));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+
+
+    // Method to calculate total worked days
+    private function calculateTotalWorkedDays($user)
     {
-        //
+        // Get the total distinct worked days from the attendances table
+        return Attendance::where('user_id', $user->id)
+            ->distinct('clock_in_date') // Get distinct clock_in_date to count unique days
+            ->count('clock_in_date');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+
+    private function calculateTotalWork($user, $type)
     {
-        //
+        // Fetch all the total_time values for type
+        $totalTimes = Attendance::where('user_id', $user->id)
+            ->where('type', $type)
+            ->whereNotNull('clock_out')
+            ->pluck('total_time'); // Get all the total_time values
+
+        // Initialize the total seconds variable
+        $totalSeconds = 0;
+
+        // Convert each total_time (in HH:MM:SS) to seconds and add it to totalSeconds
+        foreach ($totalTimes as $time) {
+            $totalSeconds += $this->timeToSeconds($time);
+        }
+
+        // Convert total seconds into HH:MM:SS format and return
+        return $this->secondsToTimeFormat($totalSeconds);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
+    private function timeToSeconds($time)
     {
-        //
+        // Split the time into hours, minutes, and seconds
+        list($hours, $minutes, $seconds) = explode(':', $time);
+
+        // Convert the time to seconds
+        return ($hours * 3600) + ($minutes * 60) + $seconds;
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    private function secondsToTimeFormat($totalSeconds)
     {
-        //
+        $hours = floor($totalSeconds / 3600); // Convert total seconds to hours
+        $minutes = floor(($totalSeconds % 3600) / 60); // Remaining minutes
+        $seconds = $totalSeconds % 60; // Remaining seconds
+    
+        // Format the time as HH:MM:SS
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-
+    
 
 
     private function randomBirthdayWish()
