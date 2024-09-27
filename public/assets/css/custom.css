@@ -5,6 +5,18 @@
     font-weight: bolder !important;
 }
 
+.text-left, .text-start {
+    text-align: left !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-right, .text-right {
+    text-align: right !important;
+}
+
 .float-left, .float-start, .pull-left, .pull-start {
     float: left !important;
 }

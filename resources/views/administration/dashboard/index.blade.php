@@ -14,16 +14,21 @@
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
-    /* Custom CSS Here */
-    @import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
-    @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
-    .birthday-wish > * {
-        font-family: "Satisfy", cursive;
-    }
-    .birthday-wish .birthday-message {
-        font-family: "Indie Flower", cursive;
-        font-size: 24px;
-    }
+        /* Custom CSS Here */
+        @import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+        .birthday-wish > * {
+            font-family: "Satisfy", cursive;
+        }
+        .birthday-wish .birthday-message {
+            font-family: "Indie Flower", cursive;
+            font-size: 24px;
+        }
+
+        /* Table */
+        .table-borderless th {
+            font-weight: bold;
+        }
     </style>
 @endsection
 
@@ -154,7 +159,7 @@
 
 <div class="row">
     {{-- Attendances for running month --}}
-    <div class="col-md-8 mb-4">
+    <div class="col-md-12 mb-4">
         <div class="card">
             <h5 class="card-header pb-2">My Attendances Of <b class="text-bold text-primary">{{ date('F Y') }}</b></h5>
             <div class="card-body p-0">
@@ -162,43 +167,55 @@
                     <table class="table table-borderless">
                         <thead>
                             <tr>
-                                <th>Date</th>
-                                <th>Clock In</th>
-                                <th>Clock Out</th>
-                                <th>Total Worked</th>
-                                <th>Total Break</th>
-                                <th>Type</th>
+                                <th class="text-left">Date</th>
+                                <th class="text-center">Clock In</th>
+                                <th class="text-center">Clock Out</th>
+                                <th class="text-center">Total Worked</th>
+                                <th class="text-center">Total Break</th>
+                                <th class="text-center">Over Break</th>
+                                <th class="text-right">Type</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($attendances as $attendance) 
+                            @foreach ($attendances as $key => $attendance) 
                                 <tr>
-                                    <td>
-                                        <span class="fw-medium">{{ get_date_only($attendance->clock_in_date) }}</span>
+                                    <td class="text-left">
+                                        <span class="fw-medium">{{ show_date_month_day($attendance->clock_in_date) }}</span>
                                     </td>
-                                    <td>{{ show_time($attendance->clock_in) }}</td>
-                                    <td>
+                                    <td class="text-center">{{ show_time($attendance->clock_in) }}</td>
+                                    <td class="text-center">
                                         @isset ($attendance->clock_out) 
                                             <span>{{ show_time($attendance->clock_out) }}</span>
                                         @else 
                                             <span class="text-bold text-success">Running</span>
                                         @endisset
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         @isset ($attendance->total_time) 
                                             <span>{{ total_time($attendance->total_time) }}</span>
                                         @else 
                                             <span class="text-bold text-success">Running</span>
                                         @endisset
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         @isset ($attendance->total_break_time) 
                                             <span>{{ total_time($attendance->total_break_time) }}</span>
                                         @else 
-                                            <span class="text-bold text-muted">No Break</span>
+                                            <span class="text-bold text-success" title="No Break Taken" data-bs-placement="right">
+                                                <i class="ti ti-clock-play"></i>
+                                            </span>
                                         @endisset
                                     </td>
-                                    <td>
+                                    <td class="text-center">
+                                        @isset ($attendance->total_over_break) 
+                                            <span class="text-danger">{{ total_time($attendance->total_over_break) }}</span>
+                                        @else 
+                                            <span class="text-bold text-success" title="No Over Break" data-bs-placement="right">
+                                                <i class="ti ti-mood-check"></i>
+                                            </span>
+                                        @endisset
+                                    </td>
+                                    <td class="text-right">
                                         @if ($attendance->type == 'Regular') 
                                             <span class="badge bg-label-primary me-1">Regular</span>
                                         @else 
@@ -212,32 +229,6 @@
                 </div>
             </div>
         </div>        
-    </div>
-
-    <!-- Orders -->
-    <div class="col-lg-2 col-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <div class="badge rounded-pill p-2 bg-label-danger mb-2">
-                    <i class="ti ti-briefcase ti-sm"></i>
-                </div>
-                <h5 class="card-title mb-2">97.8k</h5>
-                <small>Orders</small>
-            </div>
-        </div>
-    </div>
-
-    <!-- Reviews -->
-    <div class="col-lg-2 col-6 mb-4">
-        <div class="card h-100">
-            <div class="card-body text-center">
-                <div class="badge rounded-pill p-2 bg-label-success mb-2">
-                    <i class="ti ti-message-dots ti-sm"></i>
-                </div>
-                <h5 class="card-title mb-2">3.4k</h5>
-                <small>Review</small>
-            </div>
-        </div>
     </div>
 </div>
 
