@@ -5,12 +5,11 @@
 
 @endsection
 
-@section('page_title', __('Create Permission'))
+@section('page_title', __('Create New Permission'))
 
 @section('css_links')
     {{--  External CSS  --}}
-    <!-- Select2 css -->
-    <link href="{{ asset('assets/plugins/select2/select2.min.css') }}" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
 @endsection
 
 @section('custom_css')
@@ -22,119 +21,138 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Create Permission') }}</b>
+    <b class="text-uppercase">{{ __('Create New Permission') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item text-capitalize">{{ __('Settings') }}</li>
-    <li class="breadcrumb-item text-capitalize">{{ __('Permission') }}</li>
-    <li class="breadcrumb-item text-capitalize active">{{ __('Create Permission') }}</li>
+    <li class="breadcrumb-item">{{ __('Role & Permission') }}</li>
+    <li class="breadcrumb-item">{{ __('Permission') }}</li>
+    <li class="breadcrumb-item active">{{ __('Create New Permission') }}</li>
 @endsection
-
-
-@section('breadcrumb_buttons')
-    <a href="{{ route('administration.settings.permission.index') }}" class="btn btn-outline-dark btn-outline-custom fw-bolder">
-        <i class="feather icon-arrow-left"></i>
-        <b>Back</b>
-    </a>
-@endsection
-
 
 
 @section('content')
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    <div class="col-md-12">
-        <div class="card m-b-30">
-            <div class="card-header">                                
-                <h5 class="card-title mb-0">Create New Permission</h5>
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header header-elements">
+                <h5 class="mb-0">Create New Permission</h5>
+        
+                <div class="card-header-elements ms-auto">
+                    <a href="{{ route('administration.settings.rolepermission.permission.index') }}" class="btn btn-sm btn-primary">
+                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
+                        All Permissions
+                    </a>
+                </div>
             </div>
-            <div class="card-body">
-                <form action="#" method="post" autocomplete="off">
-                    @csrf
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="permission_group_id">Permission Group <span class="required">*</span></label>
-                            <select class="select2-single form-control @error('permission_group_id') is-invalid @enderror" name="permission_group_id" required>
-                                <option value="">Select Permission Group</option>
-                                <option value="1">group_name</option>
+            <form action="{{ route('administration.settings.rolepermission.permission.store') }}" method="post" autocomplete="off" name="sumbit_form" id="submitForm">
+                @csrf
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="form-label">Select Module <strong class="text-danger">*</strong></label>
+                            <select class="select2 form-select" name="permission_module_id" data-allow-clear="true" required>
+                                <option value="" selected disabled>Select Module</option>
+                                @foreach ($modules as $module) 
+                                    <option value="{{ $module->id }}">{{ $module->name }}</option>
+                                @endforeach
                             </select>
-                            @error('permission_group_id')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="icon_class">
-                                Feather Icon Class 
-                                <sup>
-                                    <a href="javascript:void(0);" data-toggle="tooltip" data-placement="top" data-html="true" title="Write the Feather Icon Class Name Only. <br> [For Example: <b class='text-info'>icon-info</b>]">
-                                        <i class="feather icon-info"></i>
-                                    </a>
-                                </sup>
-                            </label>
-                            <input type="text" class="form-control @error('icon_class') is-invalid @enderror" name="icon_class" placeholder="Ex: icon-info" required>
-                            @error('icon_class')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="title">Permission Title <sup class="required">*</sup></label>
-                            <input type="text" class="form-control @error('title') is-invalid @enderror" name="title" placeholder="Ex: Post" required>
-                            @error('title')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="col-md-12 text-center">
-                            <hr>
-                            <b>Default Permissions</b>
-                            <p>
-                                <span class="badge badge-outline-dark p-2 border">
-                                    <i class="feather icon-plus"></i>
-                                    Create
-                                </span>
-                                <span class="badge badge-outline-info p-2 border">
-                                    <i class="feather icon-info"></i>
-                                    Read
-                                </span>
-                                <span class="badge badge-outline-primary p-2 border">
-                                    <i class="feather icon-edit"></i>
-                                    Update
-                                </span>
-                                <span class="badge badge-outline-danger p-2 border">
-                                    <i class="feather icon-trash-2"></i>
-                                    Delete
-                                </span>
-                            </p>
+                            <small class="float-end pt-2">
+                                Didn't Find Module? 
+                                <a href="javascript:;" data-bs-toggle="modal" data-bs-target="#addNewPermissionModuleModal" class="text-primary text-bold">Create Module</a>
+                            </small>
+                        </div>                        
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-md-12">
+                            <div class="d-flex">
+                                <div class="form-check me-3 me-lg-5">
+                                    <input class="form-check-input" type="checkbox" checked name="name[Create]" id="permissionCreate" />
+                                    <label class="form-check-label" for="permissionCreate">
+                                        Create
+                                    </label>
+                                </div>
+                                <div class="form-check me-3 me-lg-5">
+                                    <input class="form-check-input" type="checkbox" checked name="name[Read]" id="permissionRead" />
+                                    <label class="form-check-label" for="permissionRead">
+                                        Read
+                                    </label>
+                                </div>
+                                <div class="form-check me-3 me-lg-5">
+                                    <input class="form-check-input" type="checkbox" checked name="name[Update]" id="permissionUpdate" />
+                                    <label class="form-check-label" for="permissionUpdate">
+                                        Update
+                                    </label>
+                                </div>
+                                <div class="form-check me-3 me-lg-5">
+                                    <input class="form-check-input" type="checkbox" checked name="name[Delete]" id="permissionDelete" />
+                                    <label class="form-check-label" for="permissionDelete">
+                                        Delete
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <button type="submit" class="btn btn-outline-primary btn-outline-custom float-right mt-2">
-                        <i class="feather icon-save mr-1"></i>
-                        <span class="text-bold">Create Permission</span>
-                    </button>
+                    <div class="row">
+                        <div class="col-12 mt-4">
+                            <button type="submit" class="btn btn-primary float-end">Create Permissions</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>        
+    </div>
+</div>
+<!-- End row -->
+
+
+<!-- Add New Module Modal -->
+<div class="modal fade" data-bs-backdrop="static" id="addNewPermissionModuleModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content p-3 p-md-5">
+            <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <h3 class="role-title mb-2">Add New Permission</h3>
+                    <p class="text-muted">Create A New Permission Module</p>
+                </div>
+                <!-- Add New Module form -->
+                <form method="post" action="{{ route('administration.settings.rolepermission.permission.module.store') }}" class="row g-3" autocomplete="off">
+                    @csrf
+                    <div class="col-12 mb-4">
+                        <label class="form-label">Module Name <strong class="text-danger">*</strong></label>
+                        <input type="text" name="name" value="{{ old('name') }}" class="form-control" placeholder="Enter a Name" tabindex="-1" required/>
+                        @error('name')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </div>
+                    <div class="col-12 text-center mt-4">
+                        <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                        <button type="submit" class="btn btn-primary me-sm-3 me-1">Create Module</button>
+                    </div>
                 </form>
+                <!--/ Add New Module form -->
             </div>
         </div>
     </div>
 </div>
-<!-- End row -->
+<!--/ Add New Module Modal -->
 
 @endsection
 
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <!-- Select2 js -->
-    <script src="{{ asset('assets/plugins/select2/select2.min.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/custom-form-select.js') }}"></script>
+    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
         // Custom Script Here
-        /* -- Bootstrap Tooltip -- */
-        $('[data-toggle="tooltip"]').tooltip();
     </script>
 @endsection

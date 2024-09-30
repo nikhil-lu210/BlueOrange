@@ -5,121 +5,106 @@
 
 @endsection
 
-@section('page_title', __('Create Role'))
+@section('page_title', __('Create New Role'))
 
 @section('css_links')
     {{--  External CSS  --}}
-    <link href="{{ asset('assets/plugins/vertical-timeline/vertical-timeline.css') }}" rel="stylesheet" type="text/css">
 @endsection
 
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
     /* Custom CSS Here */
-    .button-group-pills .btn {
-        border-radius: 20px;
-        line-height: 1.2;
-        margin-bottom: 15px;
-        margin-left: 10px;
-        border-color: #bbbbbb;
-        background-color: #fff;
-        color: #14a4be;
-    }
-    .button-group-pills .btn.active {
-        border-color: #14a4be;
-        background-color: #14a4be;
-        color: #fff;
-        box-shadow: none;
-    }
-    .button-group-pills .btn:hover {
-        border-color: #158b9f;
-        background-color: #158b9f;
-        color: #fff;
-    }
-    .custom-control-input:focus ~ .custom-control-label::before {
-        box-shadow: none;
-    }
     </style>
 @endsection
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Create Role') }}</b>
+    <b class="text-uppercase">{{ __('Create New Role') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item text-capitalize">{{ __('Settings') }}</li>
-    <li class="breadcrumb-item text-capitalize">{{ __('Role') }}</li>
-    <li class="breadcrumb-item text-capitalize active">{{ __('Create Role') }}</li>
+    <li class="breadcrumb-item">{{ __('Role & Permission') }}</li>
+    <li class="breadcrumb-item">{{ __('Role') }}</li>
+    <li class="breadcrumb-item active">{{ __('Create New Role') }}</li>
 @endsection
-
-
-@section('breadcrumb_buttons')
-    <a href="{{ route('administration.settings.role.index') }}" class="btn btn-outline-dark btn-outline-custom fw-bolder">
-        <i class="feather icon-arrow-left"></i>
-        <b>Back</b>
-    </a>
-@endsection
-
 
 
 @section('content')
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <div class="card m-b-30">
-            <div class="card-header">                                
-                <h5 class="card-title mb-0">Create New Role</h5>
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header header-elements">
+                <h5 class="mb-0">Create New Role</h5>
+        
+                <div class="card-header-elements ms-auto">
+                    <a href="{{ route('administration.settings.rolepermission.role.index') }}" class="btn btn-sm btn-primary">
+                        <span class="tf-icon ti ti-circle ti-xs me-1"></span>
+                        All Roles
+                    </a>
+                </div>
             </div>
             <div class="card-body">
-                <form action="{{ route('administration.settings.role.store') }}" method="post" autocomplete="off">
+                <form action="{{ route('administration.settings.rolepermission.role.store') }}" method="post" autocomplete="off">
                     @csrf
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="name">Role Name <span class="required">*</span></label>
-                            <input type="text" class="form-control @error('name') is-invalid @enderror" name="name" placeholder="Ex: Super Admin" required>
-                            @error('name')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="col-md-12">
-                            <hr>
-                            <b>Select Permissions</b>
-                            <div class="activities-history mt-3">
-                                @foreach ($permissionGroups as $key => $group)
-                                    <div class="activities-history-list">
-                                        <div class="activities-history-item">
-                                            <div class="custom-checkbox-button mt-3 d-flex">
-                                                <div class="form-check-inline checkbox-primary">
-                                                    <input type="checkbox" id="{{ $group->slug }}" name="{{ $group->slug }}">
-                                                    <label class="select-all pl-2" for="{{ $group->slug }}"><h6>{{ $group->name }}</h6></label>
-                                                </div>
-                                            </div>
-                                            <ul class="pl-0 permissions">
-                                                @foreach ($group->permissions as $sl => $permission)
-                                                    <li class="d-inline-block m-1 border rounded p-1">
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input type="checkbox" class="custom-control-input" id="{{ $permission->slug }}" name="{{ $permission->slug }}">
-                                                            <label class="custom-control-label" for="{{ $permission->slug }}">{{ $permission->name }}</label>
-                                                        </div>
-                                                    </li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            </div>
-                        </div>
+                    <div class="col-12 mb-4">
+                        <label class="form-label" for="name">Role Name</label>
+                        <input type="text" id="name" name="name" class="form-control" placeholder="Enter a role name" tabindex="-1" />
                     </div>
-                    <button type="submit" class="btn btn-outline-primary btn-outline-custom float-right mt-2">
-                        <i class="feather icon-save mr-1"></i>
-                        <span class="text-bold">Create Role</span>
-                    </button>
+                    <div class="col-12">
+                        <h5>Role Permissions</h5>
+                        <!-- Permission table -->
+                        <div class="table-responsive">
+                            <table class="table table-flush-spacing">
+                                <thead>
+                                    <tr>
+                                        <td class="bg-white text-nowrap fw-medium">
+                                            Superadmin Access 
+                                            <i class="ti ti-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Allows a full access to the system"></i>
+                                        </td>
+                                        <td class="bg-white" colspan="4">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="selectAllPermissions" />
+                                                <label class="form-check-label" for="selectAllPermissions">
+                                                    Select All Permissions
+                                                </label>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($modules as $key => $module) 
+                                        <tr>
+                                            <td class="text-nowrap fw-medium">{{ $module->name }}</td>
+                                            @foreach ($module->permissions as $sl => $permission) 
+                                                <td>
+                                                    <div class="d-flex">
+                                                        <div class="form-check me-3 me-lg-5">
+                                                            <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" value="{{ $permission->id }}" />
+                                                            <label class="form-check-label" for="permission{{ $permission->id }}">
+                                                                {{ $permission->name }}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            @endforeach
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                        <!-- Permission table -->
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-primary float-end">Add New Role</button>
+                    </div>
                 </form>
+                <!--/ Add role form -->
             </div>
-        </div>
+        </div>        
     </div>
 </div>
 <!-- End row -->
@@ -129,31 +114,29 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <!-- Timeline js -->
-    <script src="{{ asset('assets/plugins/vertical-timeline/vertical-timeline.js') }}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // custom js
         $(document).ready(function () {
-            $(".select-all").click(function () {
-                var groupCheckbox = $(this).prev("input[type=checkbox]");
-                var permissionCheckboxes = $(this).closest(".activities-history-item").find("ul.permissions input[type=checkbox]");
-                permissionCheckboxes.prop("checked", groupCheckbox.prop("checked"));
+            // When the "Select All Permissions" checkbox is clicked
+            $("#selectAllPermissions").click(function () {
+                // Get the state of the "Select All Permissions" checkbox
+                var selectAllChecked = $(this).prop("checked");
+    
+                // Set the state of all other permission checkboxes to match
+                $("input[name='permissions[]']").prop("checked", selectAllChecked);
             });
-
-            $("ul.permissions input[type=checkbox]").click(function () {
-                var permissionCheckbox = $(this);
-                var groupCheckbox = permissionCheckbox.closest(".activities-history-item").find(".select-all").prev("input[type=checkbox]");
-                var allPermissionsChecked = permissionCheckbox.closest("ul.permissions").find("input[type=checkbox]:checked").length === permissionCheckbox.closest("ul.permissions").find("input[type=checkbox]").length;
-                permissionCheckbox.closest(".activities-history-item").find(".select-all").prop("checked", allPermissionsChecked);
-                if (!permissionCheckbox.prop("checked")) {
-                    groupCheckbox.prop("checked", false);
-                }
+    
+            // When any permission checkbox is clicked
+            $("input[name='permissions[]']").click(function () {
+                // Check if any permission checkbox is unchecked
+                var anyUnchecked = $("input[name='permissions[]']:not(:checked)").length > 0;
+    
+                // Update the state of "Select All Permissions" accordingly
+                $("#selectAllPermissions").prop("checked", !anyUnchecked);
             });
         });
-    </script>
-    
+    </script>    
 @endsection

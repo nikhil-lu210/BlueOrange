@@ -1,0 +1,56 @@
+{
+    "Dashboard": "ড্যাশবোর্ড",
+
+    "Chattings": "বার্তালাপ",
+
+    "Attendance": "উপস্থিতি",
+    "All Attendances": "সমস্ত উপস্থিতি",
+    "My Attendances": "আমার উপস্থিতি",
+    "Assign Attendance": "উপস্থিতি যোগ করুন",
+        "Select Employee": "কর্মচারী নির্বাচন করুন",
+        "Attendances Of": "উপস্থিতির মাস",
+        "Select Clockin Type": "ক্লকইন এর ধরণ নির্বাচন করুন",
+        "Select Type": "ধরণ নির্বাচন করুন",
+        "Clockin": "ক্লকইন",
+        "Clock Out": "ক্লকআউট",
+        "Regular": "নিয়মিত",
+        "Regular Clockin": "নিয়মিত ক্লকইন",
+        "Overtime": "ওভারটাইম",
+        "Overtime Clockin": "ওভারটাইম ক্লকইন",
+        "Reset Filters": "ফিল্টার রিসেট করুন",
+        "Filter Attendances": "উপস্থিতি ফিল্টার করুন",
+        "Attendance Details": "উপস্থিতির বিবরণ",
+
+    "Announcement": "ঘোষণা",
+    "All Announcements": "সমস্ত ঘোষণা",
+    "My Announcements": "আমার ঘোষণা",
+    "New Announcement": "নতুন ঘোষণা",
+
+    "Task": "টাস্ক",
+    "All Tasks": "সমস্ত টাস্ক",
+    "My Tasks": "আমার টাস্ক",
+    "New Task": "নতুন টাস্ক",
+
+    "Settings": "সেটিংস",
+
+    "System Settings": "সিস্টেম সেটিংস",
+    "Holidays": "ছুটির দিন",
+
+    "User Management": "ব্যবহারকারী ব্যবস্থাপনা",
+    "All Users": "সমস্ত ব্যবহারকারী",
+    "Create New User": "নতুন ব্যবহারকারী তৈরি করুন",
+
+    "Role & Permission": "ভূমিকা ও অনুমতি",
+    "Roles": "ভূমিকা",
+    "All Roles": "সকল ভূমিকা",
+    "Create Role": "ভূমিকা তৈরী করুন",
+    "Permissions": "অনুমতি",
+    "All Permissions": "সকল অনুমতি",
+    "Create Permission": "অনুমতি তৈরী করুন",
+    
+    "Shortcuts": "শর্টকাটগুলো",
+    "My Shortcuts": "আমার শর্টকাটগুলো",
+    "Add Shortcut": "শর্টকাট যোগ করুন",
+
+    "Download": "ডাউনলোড করুন"
+}

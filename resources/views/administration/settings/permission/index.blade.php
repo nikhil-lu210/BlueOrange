@@ -5,15 +5,13 @@
 
 @endsection
 
-@section('page_title', __('All Permissions'))
+@section('page_title', __('Permissions'))
 
 @section('css_links')
     {{--  External CSS  --}}
     <!-- DataTables css -->
-    <link href="{{ asset('assets/plugins/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-    <link href="{{ asset('assets/plugins/datatables/buttons.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
-    <!-- Responsive Datatable css -->
-    <link href="{{ asset('assets/plugins/datatables/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('custom_css')
@@ -30,67 +28,76 @@
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item text-capitalize">{{ __('Settings') }}</li>
-    <li class="breadcrumb-item text-capitalize">{{ __('Permission') }}</li>
-    <li class="breadcrumb-item text-capitalize active">{{ __('All Permissions') }}</li>
+    <li class="breadcrumb-item">{{ __('Role & Permission') }}</li>
+    <li class="breadcrumb-item">{{ __('Permission') }}</li>
+    <li class="breadcrumb-item active">{{ __('All Permissions') }}</li>
 @endsection
-
-
-@section('breadcrumb_buttons')
-    <a href="{{ route('administration.settings.permission.create') }}" class="btn btn-outline-dark btn-outline-custom fw-bolder">
-        <i class="feather icon-plus"></i>
-        <b>Create Permission</b>
-    </a>
-@endsection
-
 
 
 @section('content')
 
 <!-- Start row -->
 <div class="row">
-    <!-- Start col -->
-    <div class="col-lg-12">
-        <div class="card m-b-30">
-            <div class="card-header">
-                <h5 class="card-title">{{ __('All Permissions') }}</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="default-datatable" class="display table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Sl.</th>
-                                <th>Group</th>
-                                <th>Permission Title</th>
-                                <th>Permission Slug</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th class="fw-bold"><b>#1</b></th>
-                                <td>sdfsdf</td>
-                                <td>sdfsdf</td>
-                                <td>sdfsdf</td>
-                                <td>
-                                    <div class="action-btn-group">
-                                        <a href="#" class="btn btn-outline-danger btn-outline-custom btn-sm" data-toggle="tooltip" data-placement="top" title="{{ __('Delete?') }}" onclick="return confirm('Are You Sure Want To Delete?');">
-                                            <i class="feather icon-trash-2"></i>
-                                        </a>
-                                        <a href="#" class="btn btn-outline-info btn-outline-custom btn-sm" data-toggle="tooltip" data-placement="top" title="{{ __('View?') }}">
-                                            <i class="feather icon-info"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header header-elements">
+                <h5 class="mb-0">All Permissions</h5>
+        
+                <div class="card-header-elements ms-auto">
+                    <a href="{{ route('administration.settings.rolepermission.permission.create') }}" class="btn btn-sm btn-primary">
+                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
+                        Create Permission
+                    </a>
                 </div>
             </div>
-        </div>
+            <div class="card-body">
+                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
+                    <thead>
+                        <tr>
+                            <th>Sl.</th>
+                            <th>Module</th>
+                            <th>Permissions</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($modules as $key => $module) 
+                            <tr>
+                                <th>{{ serial($modules, $key) }}</th>
+                                <td>{{ $module->name }}</td>
+                                <td>
+                                    @foreach ($module->permissions as $permission)
+                                        <span class="badge bg-label-primary">{{ $permission->name }}</span>
+                                    @endforeach
+                                </td>
+                                <td>
+                                    <div class="d-inline-block">
+                                        <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                                            <i class="text-primary ti ti-dots-vertical"></i>
+                                        </a>
+                                        <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                                            <a href="javascript:void(0);" class="dropdown-item">
+                                                <i class="text-primary ti ti-pencil"></i> 
+                                                Edit
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            <a href="javascript:void(0);" class="dropdown-item text-danger delete-record confirm-danger">
+                                                <i class="ti ti-trash"></i> 
+                                                Delete
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <a href="{{ route('administration.settings.rolepermission.permission.module.show', ['module' => $module]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                        <i class="text-primary ti ti-info-hexagon"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>        
     </div>
-    <!-- End col -->
 </div>
 <!-- End row -->
 
@@ -100,26 +107,14 @@
 @section('script_links')
     {{--  External Javascript Links --}}
     <!-- Datatable js -->
-    <script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/dataTables.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/dataTables.buttons.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/buttons.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/jszip.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/pdfmake.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/vfs_fonts.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/buttons.html5.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/buttons.print.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/buttons.colVis.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/dataTables.responsive.min.js') }}"></script>
-    <script src="{{ asset('assets/plugins/datatables/responsive.bootstrap4.min.js') }}"></script>
-    <script src="{{ asset('assets/js/custom/custom-table-datatable.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
         // Custom Script Here
-        /* -- Bootstrap Tooltip -- */
-        $('[data-toggle="tooltip"]').tooltip();
     </script>
 @endsection

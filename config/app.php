@@ -69,7 +69,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC',
+    'timezone' => env('APP_TIMEZONE', 'UTC'),
 
     /*
     |--------------------------------------------------------------------------
@@ -185,16 +185,6 @@ return [
         /*
          * Package Service Providers...
          */
-
-        /*
-         * Application Service Providers...
-         */
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
-
         // laravel-ide-helper (https://github.com/barryvdh/laravel-ide-helper)
         Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class,
 
@@ -204,6 +194,20 @@ return [
         // browner12/helpers (https://github.com/browner12/helpers)
         browner12\helpers\HelperServiceProvider::class,
 
+        // Spatie Permission (https://spatie.be/docs/laravel-permission/v5/installation-laravel)
+        Spatie\Permission\PermissionServiceProvider::class,
+
+        // Laravel Excel (https://laravel-excel.com)
+        Maatwebsite\Excel\ExcelServiceProvider::class,
+
+        /*
+         * Application Service Providers...
+         */
+        App\Providers\AppServiceProvider::class,
+        App\Providers\AuthServiceProvider::class,
+        // App\Providers\BroadcastServiceProvider::class,
+        App\Providers\EventServiceProvider::class,
+        App\Providers\RouteServiceProvider::class,
     ],
 
     /*
@@ -220,6 +224,9 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // RealRashid SweetAlertServiceProvider (https://realrashid.github.io/sweet-alert/install)
         'Alert' => RealRashid\SweetAlert\Facades\Alert::class,
+
+        // Laravel Excel (https://laravel-excel.com)
+        'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ])->toArray(),
 
 ];

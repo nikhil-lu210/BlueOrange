@@ -8,9 +8,12 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('settings')
         ->name('settings.')
         ->group(function () {
-            // role
-            include_once 'role/role.php';
-
-            // permission
-            include_once 'permission/permission.php';
+            // system
+            include_once 'system/system.php';
+            
+            // user
+            include_once 'user/user.php';
+            
+            // rolepermission
+            include_once 'rolepermission/rolepermission.php';
         });

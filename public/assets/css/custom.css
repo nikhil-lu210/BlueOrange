@@ -1,0 +1,48 @@
+.text-bold {
+    font-weight: bold !important;
+}
+.text-bolder {
+    font-weight: bolder !important;
+}
+
+.text-left, .text-start {
+    text-align: left !important;
+}
+
+.text-center {
+    text-align: center !important;
+}
+
+.text-right, .text-right {
+    text-align: right !important;
+}
+
+.float-left, .float-start, .pull-left, .pull-start {
+    float: left !important;
+}
+
+.float-right, .float-end, .pull-right, .pull-end {
+    float: left !important;
+}
+
+.menu-vertical .menu-sub {
+    margin-left: 10px;
+}
+
+.breadcrumb-item a {
+    font-weight: bold !important;
+}
+
+.breadcrumb-item + .breadcrumb-item {
+    padding-left: 0px !important;
+}
+
+.breadcrumb-style1 .breadcrumb-item + .breadcrumb-item::before {
+    width: 10px !important;
+    margin-left: 5px !important;
+}
+
+body.swal2-toast-shown .swal2-container.swal2-top-end, 
+body.swal2-toast-shown .swal2-container.swal2-top-right {
+    z-index: 9999999 !important;
+}

@@ -9,16 +9,26 @@
 
 @section('css_links')
     {{--  External CSS  --}}
-    <link href="{{ asset('assets/plugins/switchery/switchery.min.css') }}" rel="stylesheet" type="text/css">
-    <link href="{{ asset('assets/plugins/vertical-timeline/vertical-timeline.css') }}" rel="stylesheet" type="text/css">
+    <!-- DataTables css -->
+    <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
     /* Custom CSS Here */
-    .timeline-date {
-        width: auto !important;
+    .more-user-avatar {
+        background-color: #dddddd;
+        border-radius: 50px;
+        text-align: center;
+        padding-top: 5px;
+        border: 1px solid #ffffff;
+    }
+    .more-user-avatar small {
+        font-size: 12px;
+        color: #333333;
+        font-weight: bold;
     }
     </style>
 @endsection
@@ -30,63 +40,76 @@
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item text-capitalize">{{ __('Settings') }}</li>
-    <li class="breadcrumb-item text-capitalize">{{ __('Role') }}</li>
-    <li class="breadcrumb-item text-capitalize active">{{ __('All Roles') }}</li>
+    <li class="breadcrumb-item">{{ __('Role & Permission') }}</li>
+    <li class="breadcrumb-item">{{ __('Role') }}</li>
+    <li class="breadcrumb-item active">{{ __('All Roles') }}</li>
 @endsection
-
-
-@section('breadcrumb_buttons')
-    <a href="{{ route('administration.settings.role.create') }}" class="btn btn-outline-dark btn-outline-custom fw-bolder">
-        <i class="feather icon-plus"></i>
-        <b>Create Role</b>
-    </a>
-@endsection
-
 
 
 @section('content')
 
 <!-- Start row -->
-<div class="row">
-    <div class="col-md-4">
-        <div class="card m-b-30">
-            <div class="card-header">
-                <div class="row align-items-center">
-                    <div class="col-7">
-                        <h5 class="card-title mb-0 text-bold">Role Name</h5>
+<div class="row g-4">
+    @foreach ($roles as $role) 
+        <div class="col-xl-4 col-lg-6 col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h6 class="fw-normal mb-2">Total <strong>{{ $role->users()->count() }}</strong> Users</h6>
+                        <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
+                            @foreach ($role->users->take(5) as $user)
+                                <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
+                                    @if ($user->hasMedia('avatar'))
+                                        <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
+                                    @else
+                                        <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
+                                            {{ profile_name_pic($user) }}
+                                        </span>
+                                    @endif
+                                </li>
+                            @endforeach
+                            @if ($role->users->count() > 5)
+                                <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $role->users->count() - 5 }} More" class="avatar avatar-sm pull-up more-user-avatar">
+                                    <small>{{ ($role->users->count() - 5) < 10 ? $role->users->count() - 5 : '9' }}+</small>
+                                </li>
+                            @endif
+                        </ul>
                     </div>
-                    <div class="col-5">
-                        <button class="btn btn-outline-primary btn-sm float-right font-13">
-                            <i class="la la-pencil"></i>
-                            Edit
-                        </button>
+                    <div class="d-flex justify-content-between align-items-end mt-1">
+                        <div class="role-heading">
+                            <h4 class="mb-1">{{ $role->name }}</h4>
+                            <span class="role-edit-modal">
+                                <span>Total Permissions: <strong>{{ $role->permissions->count() }}</strong></span>
+                            </span>
+                        </div>
+                        <div>
+                            <a href="{{ route('administration.settings.rolepermission.role.edit', ['role' => $role]) }}" class="text-muted" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Edit Role">
+                                <i class="ti ti-edit ti-md text-info"></i>
+                            </a>
+                            <a href="{{ route('administration.settings.rolepermission.role.show', ['role' => $role]) }}" class="text-muted" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Show Role Details">
+                                <i class="ti ti-info-hexagon ti-md text-primary"></i>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="card-body">
-                <div class="activities-history">
-                    <div class="activities-history-list">
-                        <div class="activities-history-item">
-                            <h6>Permission_Group_Name</h6>
-                            <p class="mb-0">
-                                <span class="badge badge-dark p-2">Create</span>
-                                <span class="badge badge-info p-2">Read</span>
-                                <span class="badge badge-primary p-2">Update</span>
-                                <span class="badge badge-danger p-2">Delete</span>
-                            </p>
-                        </div>
+        </div>
+    @endforeach
+
+    <div class="col-xl-4 col-lg-6 col-md-6">
+        <div class="card h-100">
+            <div class="row h-100">
+                <div class="col-sm-5">
+                    <div class="d-flex align-items-end h-100 justify-content-center mt-sm-0 mt-3">
+                        <img src="{{ asset('assets/img/illustrations/add-new-roles.png') }}" class="img-fluid mt-sm-4 mt-md-0" alt="add-new-roles" width="83" />
                     </div>
-                    <div class="activities-history-list">
-                        <div class="activities-history-item">
-                            <h6>Permission_Group_Name</h6>
-                            <p class="mb-0">
-                                <span class="badge badge-dark p-2">Create</span>
-                                <span class="badge badge-info p-2">Read</span>
-                                <span class="badge badge-primary p-2">Update</span>
-                                <span class="badge badge-danger p-2">Delete</span>
-                            </p>
-                        </div>
+                </div>
+                <div class="col-sm-7">
+                    <div class="card-body text-sm-end text-center ps-sm-0">
+                        <a href="{{ route('administration.settings.rolepermission.role.create') }}" class="btn btn-primary mb-2 text-nowrap add-new-role">
+                            Add New Role
+                        </a>
+                        <p class="mb-0 mt-1">Add role, if it does not exist</p>
                     </div>
                 </div>
             </div>
@@ -100,8 +123,10 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <!-- Timeline js -->
-    <script src="{{ asset('assets/plugins/vertical-timeline/vertical-timeline.js') }}"></script>
+    <!-- Datatable js -->    
+    <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 @endsection
 
 @section('custom_script')

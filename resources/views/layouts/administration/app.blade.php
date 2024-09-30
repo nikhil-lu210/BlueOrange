@@ -1,62 +1,89 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light-style layout-navbar-fixed layout-menu-fixed layout-compact" dir="ltr" data-theme="theme-default" data-assets-path="/assets/" data-template="">
     <head>
         {{-- Meta Starts --}}
         @include('layouts.administration.partials.metas')
         {{-- Meta Ends --}}
         
-        {{--  Page Title  --}}
-        <title> {{ config('app.name') }} | {{ __('Role_Name') }} | @yield('page_title') </title>
-        <!-- Fevicon -->
-        <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}" />
+        <title>{{ config('app.name') }} || @yield('page_title')</title>
+        <!-- Favicon -->
+        <link rel="icon" type="image/x-icon" href="{{ asset('Logo/logo_white_01.png') }}" />
 
         <!-- Start css -->
         @include('layouts.administration.partials.stylesheet')
         <!-- End css -->
     </head>
 
-    
-    <body class="vertical-layout">
-        <!-- Start Containerbar -->
-        <div id="containerbar">
-            <!-- Start Leftbar -->
-            @include('layouts.administration.partials.sidenav')
-            <!-- End Leftbar -->
-            
-            <!-- Start Rightbar -->
-            <div class="rightbar">
-                <!-- Start Topbar Mobile -->
-                @include('layouts.administration.partials.topnav_mobile')
-                <!-- Start Topbar -->
-                @include('layouts.administration.partials.topnav')
-                <!-- End Topbar -->
+    <body>
+        <!-- Layout wrapper -->
+        <div class="layout-wrapper layout-content-navbar">
+            <div class="layout-container">
+                <!-- Menu -->
+                <!-- Start Sidebar -->
+                @include('layouts.administration.partials.sidenav')
+                <!-- End Sidebar -->
+                <!-- / Menu -->
 
-                <!-- Start Breadcrumbbar -->
-                @include('layouts.administration.partials.breadcrumb')
-                <!-- End Breadcrumbbar -->
+                <!-- Layout container -->
+                <div class="layout-page">
+                    <!-- Start Top Navbar -->
+                    @include('layouts.administration.partials.topnav')
+                    <!-- End Top Navbar -->
 
-                <!-- Start Contentbar -->
-                <div class="contentbar">
-                    <!-- Start row -->
-                        @yield('content')
-                    <!-- End row -->
+                    <!-- Content wrapper -->
+                    <div class="content-wrapper">
+                        <!-- Content -->
+
+                        <div class="container-xxl flex-grow-1 container-p-y">
+                            <!-- Start Breadcrumbbar -->
+                            @include('layouts.administration.partials.breadcrumb')
+                            <!-- End Breadcrumbbar -->
+                            
+                            @if ($errors->any())
+                                <div class="row justify-content-center">
+                                    <div class="col-md-8">
+                                        @foreach ($errors->all() as $error) 
+                                            <div class="alert alert-danger alert-dismissible" role="alert">
+                                                <i class="ti ti-ban mr-3" style="margin-top: -3px;"></i>
+                                                {{ $error }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            <!-- Start row -->
+                            @yield('content')
+                            <!-- End row -->
+                        </div>
+                        <!-- / Content -->
+
+                        <!-- Start Footerbar -->
+                        {{-- @include('layouts.administration.partials.footer') --}}
+                        <!-- End Footerbar -->
+
+                        <div class="content-backdrop fade"></div>
+                    </div>
+                    <!-- Content wrapper -->
                 </div>
-                <!-- End Contentbar -->
-
-                <!-- Start Footerbar -->
-                @include('layouts.administration.partials.footer')
-                <!-- End Footerbar -->
+                <!-- / Layout page -->
             </div>
-            <!-- End Rightbar -->
+
+            <!-- Overlay -->
+            <div class="layout-overlay layout-menu-toggle"></div>
+
+            <!-- Drag Target Area To SlideIn Menu On Small Screens -->
+            <div class="drag-target"></div>
         </div>
-        <!-- End Containerbar -->
-
-
+        <!-- / Layout wrapper -->
 
         <!-- Start js -->
         @include('layouts.administration.partials.scripts')
         <!-- End js -->
 
+        {{-- Sweetalert --}}
         @include('sweetalert::alert')
     </body>
 </html>
