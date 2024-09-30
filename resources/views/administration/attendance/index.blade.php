@@ -106,52 +106,7 @@
 
 
 @if (request()->user_id)
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card mb-4 border-0">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between flex-wrap gap-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="bg-label-primary p-2 rounded">
-                                <i class="ti ti-hourglass-high ti-xl"></i>
-                            </span>
-                            <div class="content-right">
-                                <h5 class="text-primary mb-0">1h 2m 3s</h5>
-                                <small class="mb-0 text-muted">Total Worked (Regular)</small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="bg-label-warning p-2 rounded">
-                                <i class="ti ti-hourglass-low ti-xl"></i>
-                            </span>
-                            <div class="content-right">
-                                <h5 class="text-warning mb-0">2h 3m 5s</h5>
-                                <small class="mb-0 text-muted">Total Worked (Overtime)</small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="bg-label-primary p-2 rounded">
-                                <i class="ti ti-hourglass-high ti-xl"></i>
-                            </span>
-                            <div class="content-right">
-                                <h5 class="text-primary mb-0">1h 2m 3s</h5>
-                                <small class="mb-0 text-muted">Total Break</small>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center gap-3">
-                            <span class="bg-label-warning p-2 rounded">
-                                <i class="ti ti-hourglass-low ti-xl"></i>
-                            </span>
-                            <div class="content-right">
-                                <h5 class="text-warning mb-0">2h 3m 5s</h5>
-                                <small class="mb-0 text-muted">Total Overbreak</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>        
-        </div>
-    </div>
+    @include('administration.attendance.partials._user_stats')
 @endif
 
 

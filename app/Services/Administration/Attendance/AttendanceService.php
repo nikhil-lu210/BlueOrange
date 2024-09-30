@@ -71,6 +71,89 @@ class AttendanceService
         return $this->secondsToTimeFormat($totalSeconds);
     }
 
+
+    /**
+     * Get user's total working hours for a specific month and type.
+     * 
+     * @param  mixed $user
+     * @param  string|null $month
+     * @param  string|null $type ('Regular' or 'Overtime', or null for both)
+     */
+    public function userTotalWorkingHour($user, $type = null, $month = null)
+    {
+        $attendances = Attendance::where('user_id', $user->id)
+            ->whereNotNull('clock_out');
+
+        // Filter by type if provided
+        if ($type) {
+            $attendances->where('type', $type);
+        }
+
+        // Filter by month if provided
+        if ($month) {
+            $attendances->whereBetween('clock_in_date', [
+                Carbon::parse($month)->startOfMonth()->format('Y-m-d'),
+                Carbon::parse($month)->endOfMonth()->format('Y-m-d')
+            ]);
+        }
+
+        // Get all total_time values for the filtered attendances
+        $totalTimes = $attendances->pluck('total_time');
+
+        $totalSeconds = 0;
+        foreach ($totalTimes as $time) {
+            $totalSeconds += $this->timeToSeconds($time);
+        }
+
+        return $this->secondsToTimeFormat($totalSeconds);
+    }
+
+
+    /**
+     * Get the user's total break time.
+     * 
+     * @param  mixed $user
+     * @param  \Illuminate\Support\Collection $attendances
+     */
+    public function userTotalBreakTime($user, $attendances)
+    {
+        $totalSeconds = 0;
+
+        // Loop through the user's attendances and sum the total break time
+        foreach ($attendances as $attendance) {
+            $totalBreakTime = $attendance->total_break_time;
+
+            if ($totalBreakTime) {
+                $totalSeconds += $this->timeToSeconds($totalBreakTime);
+            }
+        }
+
+        return $this->secondsToTimeFormat($totalSeconds);
+    }
+
+    /**
+     * Get the user's total overbreak time.
+     * 
+     * @param  mixed $user
+     * @param  \Illuminate\Support\Collection $attendances
+     */
+    public function userTotalOverBreakTime($user, $attendances)
+    {
+        $totalSeconds = 0;
+
+        // Loop through the user's attendances and sum the total overbreak time
+        foreach ($attendances as $attendance) {
+            $totalOverBreak = $attendance->total_over_break;
+
+            if ($totalOverBreak) {
+                $totalSeconds += $this->timeToSeconds($totalOverBreak);
+            }
+        }
+
+        return $this->secondsToTimeFormat($totalSeconds);
+    }
+
+
     /**
      * Convert time in HH:MM:SS format to seconds.
      */

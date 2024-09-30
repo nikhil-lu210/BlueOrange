@@ -89,6 +89,8 @@
     </div>
 </div>
 
+{{-- User Stats --}}
+@include('administration.attendance.partials._user_stats')
 
 <div class="row">
     <div class="col-md-12">

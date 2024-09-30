@@ -12,6 +12,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Attendance\Attendance;
 use Stevebauman\Location\Facades\Location;
 use App\Exports\Administration\Attendance\AttendanceExport;
+use App\Services\Administration\Attendance\AttendanceService;
 use App\Http\Requests\Administration\Attendance\AttendanceUpdateRequest;
 
 class AttendanceController extends Controller
@@ -37,10 +38,25 @@ class AttendanceController extends Controller
                             ->orderByDesc('clock_in')
                             ->get();
 
+        $total = null;
+        if ($request->user_id) {
+            // Inside your controller
+            $attendanceService = new AttendanceService();
+            $user = User::whereId($request->user_id)->firstOrFail();
+            $month = $request->created_month_year ? Carbon::createFromFormat('F Y', $request->created_month_year) : Carbon::now()->format('Y-m-d');
+
+            $total['regularWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Regular', $month);
+            $total['overtimeWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Overtime', $month);
+            $total['breakTime'] = $attendanceService->userTotalBreakTime($user, $attendances);
+            $total['overBreakTime'] = $attendanceService->userTotalOverBreakTime($user, $attendances);
+
+            // dd($total['regularWorkedHours']);
+        }
+
         // Check if the user has already clocked in today
         $clockedIn = $this->getUserClockedInStatus(auth()->user()->id);
 
-        return view('administration.attendance.index', compact('users', 'attendances', 'clockedIn'));
+        return view('administration.attendance.index', compact('users', 'attendances', 'clockedIn', 'total'));
     }
 
     /**
@@ -48,15 +64,25 @@ class AttendanceController extends Controller
      */
     public function myAttendances(Request $request)
     {
-        $attendances = $this->getAttendancesQuery($request, auth()->user()->id)
+        $user = auth()->user();
+        $attendances = $this->getAttendancesQuery($request, $user->id)
                             ->latest()
                             ->distinct()
                             ->get();
 
-        // Check if the user has already clocked in today
-        $clockedIn = $this->getUserClockedInStatus(auth()->user()->id);
+        // Inside your controller
+        $attendanceService = new AttendanceService();
+        $month = $request->created_month_year ? Carbon::createFromFormat('F Y', $request->created_month_year) : Carbon::now()->format('Y-m-d');
 
-        return view('administration.attendance.my', compact('attendances', 'clockedIn'));
+        $total['regularWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Regular', $month);
+        $total['overtimeWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Overtime', $month);
+        $total['breakTime'] = $attendanceService->userTotalBreakTime($user, $attendances);
+        $total['overBreakTime'] = $attendanceService->userTotalOverBreakTime($user, $attendances);
+
+        // Check if the user has already clocked in today
+        $clockedIn = $this->getUserClockedInStatus($user->id);
+
+        return view('administration.attendance.my', compact('attendances', 'clockedIn', 'total'));
     }
 
     /**
