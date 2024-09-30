@@ -12,84 +12,49 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Attendance\Attendance;
 use Stevebauman\Location\Facades\Location;
 use App\Exports\Administration\Attendance\AttendanceExport;
-use App\Services\Administration\Attendance\AttendanceService;
 use App\Http\Requests\Administration\Attendance\AttendanceUpdateRequest;
 
 class AttendanceController extends Controller
 {
+    protected $timeZone;
+
+    public function __construct() {
+        // Get the current timezone set in the system (PHP default)
+        $this->timeZone = date_default_timezone_get();
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        // dd($request->filter_attendance);
         $users = User::select(['id', 'name'])
-                        ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->get();
+                     ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                     ->whereStatus('Active')
+                     ->get();
 
-        $query = Attendance::with([
-                                'user:id,userid,name,first_name,last_name',
-                                'user.media', 
-                                'user.roles', 
-                                'employee_shift:id,start_time,end_time',
-                                'daily_breaks'
-                            ])
-                            ->orderByDesc('clock_in');
-
-        if ($request->has('user_id') && !is_null($request->user_id)) {
-            $query->where('user_id', $request->user_id);
-        }
-
-        if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
-            $query->whereYear('clock_in', $monthYear->year)
-                ->whereMonth('clock_in', $monthYear->month);
-        } else {
-            // dd(Carbon::now()->startOfMonth()->format('Y-m-d'), Carbon::now()->endOfMonth()->format('Y-m-d'));
-            if (!$request->has('filter_attendance')) {
-                $query->whereBetween('clock_in_date', [
-                    Carbon::now()->startOfMonth()->format('Y-m-d'),
-                    Carbon::now()->endOfMonth()->format('Y-m-d')
-                ]);
-            }
-        }
-
-        if ($request->has('type') && !is_null($request->type)) {
-            $query->where('type', $request->type);
-        }
-
-        $attendances = $query->get();
+        $attendances = $this->getAttendancesQuery($request)
+                            ->orderByDesc('clock_in')
+                            ->get();
 
         // Check if the user has already clocked in today
-        $currentTime = now();
-        $currentDate = $currentTime->toDateString();
-        $clockedIn = Attendance::where('user_id', auth()->user()->id)
-                                ->whereNull('clock_out')
-                                ->first();
+        $clockedIn = $this->getUserClockedInStatus(auth()->user()->id);
 
         return view('administration.attendance.index', compact('users', 'attendances', 'clockedIn'));
     }
-    
-    /**
-     * Display a listing of the resource.
-     */
-    public function myAttendances()
-    {
-        $user = auth()->user();
 
-        $attendances = Attendance::with(['user:id,name', 'employee_shift:id,start_time,end_time'])
-                        ->where('user_id', $user->id)
-                        ->latest()
-                        ->distinct()
-                        ->get();
+    /**
+     * Display a listing of the authenticated user's attendances.
+     */
+    public function myAttendances(Request $request)
+    {
+        $attendances = $this->getAttendancesQuery($request, auth()->user()->id)
+                            ->latest()
+                            ->distinct()
+                            ->get();
 
         // Check if the user has already clocked in today
-        $currentTime = now();
-        $currentDate = $currentTime->toDateString();
-        $clockedIn = Attendance::where('user_id', $user->id)
-                                ->whereNull('clock_out')
-                                ->first();
+        $clockedIn = $this->getUserClockedInStatus(auth()->user()->id);
 
         return view('administration.attendance.my', compact('attendances', 'clockedIn'));
     }
@@ -406,4 +371,60 @@ class AttendanceController extends Controller
         return Excel::download(new AttendanceExport($attendances), $fileName);
     }
 
+
+
+    /**
+     * Build the attendance query based on the request filters.
+     */
+    private function getAttendancesQuery(Request $request, $userId = null)
+    {
+        $query = Attendance::with([
+            'user:id,userid,name,first_name,last_name',
+            'user.media', 
+            'user.roles', 
+            'employee_shift:id,start_time,end_time',
+            'daily_breaks'
+        ]);
+
+        if ($userId) {
+            $query->where('user_id', $userId);
+        }
+
+        // Filter by user_id if provided
+        if ($request->has('user_id') && !is_null($request->user_id)) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Filter by created month and year if provided
+        if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
+            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $query->whereYear('clock_in', $monthYear->year)
+                  ->whereMonth('clock_in', $monthYear->month);
+        } else {
+            // Apply default filter if no filter_attendance is set
+            if (!$request->has('filter_attendance')) {
+                $query->whereBetween('clock_in_date', [
+                    Carbon::now()->startOfMonth()->format('Y-m-d'),
+                    Carbon::now()->endOfMonth()->format('Y-m-d')
+                ]);
+            }
+        }
+
+        // Filter by type if provided
+        if ($request->has('type') && !is_null($request->type)) {
+            $query->where('type', $request->type);
+        }
+
+        return $query;
+    }
+
+    /**
+     * Check if the user has already clocked in today.
+     */
+    private function getUserClockedInStatus($userId)
+    {
+        return Attendance::where('user_id', $userId)
+                         ->whereNull('clock_out')
+                         ->first();
+    }
 }
