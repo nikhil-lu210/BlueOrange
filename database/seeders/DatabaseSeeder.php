@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
             RolesTableSeeder::class,
             UsersTableSeeder::class,
 
-            AttendanceSeeder::class,
-            DailyBreakSeeder::class,
+            // AttendanceSeeder::class,
+            // DailyBreakSeeder::class,
         ]);
     }
 }
