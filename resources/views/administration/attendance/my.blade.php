@@ -134,7 +134,11 @@
                         @foreach ($attendances as $key => $attendance) 
                             <tr>
                                 <th>#{{ serial($attendances, $key) }}</th>
-                                <td>{{ show_date($attendance->clock_in_date) }}</td>
+                                <td>
+                                    <span class="text-truncate">{{ show_date($attendance->clock_in_date) }}</span>
+                                    <br>
+                                    <small class="text-bold text-{{ $attendance->type === 'Regular' ? 'success' : 'primary' }}">{{ $attendance->type }}</small>
+                                </td>
                                 <td>
                                     <div class="d-grid">
                                         @php
