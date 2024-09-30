@@ -6,13 +6,13 @@ use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Attendance\Attendance;
 use Stevebauman\Location\Facades\Location;
 use App\Exports\Administration\Attendance\AttendanceExport;
 use App\Services\Administration\Attendance\AttendanceService;
+use App\Services\Administration\Attendance\AttendanceEntryService;
 use App\Http\Requests\Administration\Attendance\AttendanceUpdateRequest;
 
 class AttendanceController extends Controller
@@ -165,50 +165,11 @@ class AttendanceController extends Controller
     public function clockIn(Request $request)
     {
         $user = auth()->user();
-        $currentTime = now();
-        $currentDate = $currentTime->toDateString();
-
-        $type = $request->attendance === 'Overtime' ? 'Overtime' : 'Regular';
-
-        // Check if the user has an open attendance session (clocked in but not clocked out)
-        $openAttendance = Attendance::where('user_id', $user->id)
-            ->whereNull('clock_out')
-            ->first();
-
-        if ($openAttendance) {
-            toast('You have already clocked in and have not clocked out yet.', 'warning');
-            return redirect()->back();
-        }
-
-        $existingAttendance = Attendance::where('user_id', $user->id)
-            ->where('clock_in_date', $currentDate)
-            ->whereType($type)
-            ->first();
-        // dd($existingAttendance);
-        if ($existingAttendance) {
-            toast('You have already clocked in as '.$type.' today.', 'warning');
-            return redirect()->back();
-        }
-
-        $location = Location::get(get_public_ip());
+        $attendanceType = $request->attendance;
 
         try {
-            DB::transaction(function() use ($user, $currentTime, $location, $currentDate, $type) {
-                Attendance::create([
-                    'user_id' => $user->id,
-                    'employee_shift_id' => $user->current_shift->id,
-                    'clock_in_date' => $currentDate,
-                    'clock_in' => $currentTime,
-                    'type' => $type,
-                    'ip_address' => $location->ip ?? null,
-                    'country' => $location->countryName ?? null,
-                    'city' => $location->cityName ?? null,
-                    'zip_code' => $location->zipCode ?? null,
-                    'time_zone' => $location->timezone ?? null,
-                    'latitude' => $location->latitude ?? null,
-                    'longitude' => $location->longitude ?? null
-                ]);
-            }, 5);
+            $attendanceService = new AttendanceEntryService($user);
+            $attendanceService->clockIn($attendanceType);
 
             toast('Clocked In Successful.', 'success');
             return redirect()->back();
@@ -221,38 +182,11 @@ class AttendanceController extends Controller
     // Clockout
     public function clockOut()
     {
-        $userId = auth()->user()->id;
-        $currentTime = now();
+        $user = auth()->user();
 
-        // Retrieve the existing attendance record
-        $existingAttendance = Attendance::where('user_id', $userId)
-            ->whereNull('clock_out')
-            ->first();
-
-        if (!$existingAttendance) {
-            toast('You have not clocked in today.', 'warning');
-            return redirect()->back();
-        }
-
-        // Update the existing attendance record with clock_out time and calculate total time
         try {
-            $clockOutTime = $currentTime->timestamp; // Use timestamp
-            $clockInTime = $existingAttendance->clock_in->timestamp;
-
-            // Calculate total time in seconds
-            $totalSeconds = $clockOutTime - $clockInTime;
-
-            // Convert total time to HH:MM:SS format
-            $hours = floor($totalSeconds / 3600);
-            $minutes = floor(($totalSeconds % 3600) / 60);
-            $seconds = $totalSeconds % 60;
-
-            $formattedTotalTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-
-            $existingAttendance->update([
-                'clock_out' => $clockOutTime,
-                'total_time' => $formattedTotalTime,
-            ]);
+            $attendanceService = new AttendanceEntryService($user);
+            $attendanceService->clockOut();
 
             toast('Clocked Out Successful.', 'success');
             return redirect()->back();
