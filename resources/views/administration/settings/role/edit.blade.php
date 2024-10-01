@@ -69,11 +69,11 @@
                             <table class="table table-flush-spacing">
                                 <thead>
                                     <tr>
-                                        <td class="bg-white text-nowrap fw-medium">
-                                            Superadmin Access 
+                                        <td class="text-nowrap fw-medium">
+                                            {{ $role->name }} Access 
                                             <i class="ti ti-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Allows a full access to the system"></i>
                                         </td>
-                                        <td class="bg-white" colspan="4">
+                                        <td class="" colspan="4">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="selectAllPermissions" />
                                                 <label class="form-check-label" for="selectAllPermissions">
