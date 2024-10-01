@@ -83,9 +83,12 @@
                             </span>
                         </div>
                         <div>
-                            <a href="{{ route('administration.settings.rolepermission.role.edit', ['role' => $role]) }}" class="text-muted" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Edit Role">
-                                <i class="ti ti-edit ti-md text-info"></i>
-                            </a>
+                            @if (auth()->user()->hasRole('Developer') || ($role->name !== 'Developer' && $role->name !== 'Super Admin'))
+                                <a href="{{ route('administration.settings.rolepermission.role.edit', ['role' => $role]) }}" class="text-muted" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Edit Role">
+                                    <i class="ti ti-edit ti-md text-info"></i>
+                                </a>
+                            @endif
+
                             <a href="{{ route('administration.settings.rolepermission.role.show', ['role' => $role]) }}" class="text-muted" data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="Show Role Details">
                                 <i class="ti ti-info-hexagon ti-md text-primary"></i>
                             </a>
