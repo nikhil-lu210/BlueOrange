@@ -57,8 +57,12 @@ class LoginController extends Controller
         $request->validate([
             'userid' => 'required|string',
             'password' => 'required|string',
+        ], [
+            'userid.required' => 'The Employee ID is required.',
+            'password.required' => 'The password is required.',
         ]);
     }
+
 
     /**
      * Override credentials method to prepend 'UID' to userid.

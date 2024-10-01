@@ -92,8 +92,8 @@
                         <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}" autocomplete="off">
                             @csrf
                             <div class="mb-3">
-                                <label for="userid" class="form-label">User ID <sup class="text-danger">*</sup></label>
-                                <div class="input-group input-group-merge mt-4">
+                                <label for="userid" class="form-label">Employee ID <sup class="text-danger">*</sup></label>
+                                <div class="input-group input-group-merge">
                                     <span class="input-group-text" style="padding-right: 2px; @error('userid') border-color: red; @enderror">UID</span>
                                     <input type="text" id="userid" name="userid" class="form-control @error('userid') is-invalid @enderror" value="{{ old('userid') }}" minlength="8" maxlength="8" placeholder="20110101" autocomplete="off" required/>
                                 </div>
@@ -124,7 +124,12 @@
                                     <label class="form-check-label" for="remember-me"> Remember Me </label>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-dark d-grid w-100">Sign in</button>
+                            <button type="submit" class="btn btn-primary text-uppercase text-bold d-grid w-100">
+                                <span class="fw-bold">
+                                    {{ __('Sign In') }}
+                                    <i class="ti ti-lock-open"></i>
+                                </span>
+                            </button>
                         </form>
 
                         {{-- <p class="text-center">
