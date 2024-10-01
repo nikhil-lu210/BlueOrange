@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -38,4 +39,37 @@ class LoginController extends Controller
     {
         $this->middleware('guest')->except('logout');
     }
+
+    /**
+     * Get the login field to be used by the controller.
+     *
+     * @return string
+     */
+    public function username()
+    {
+        return 'userid';
+    }
+
+    protected function validateLogin(Request $request)
+    {
+        $request->validate([
+            'userid' => 'required|string',
+            'password' => 'required|string',
+        ]);
+    }
+
+    /**
+     * Override credentials method to prepend 'UID' to userid.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return array
+     */
+    protected function credentials(Request $request)
+    {
+        return [
+            'userid' => 'UID' . $request->input('userid'), // Retrieve the input and prepend 'UID' to the userid field
+            'password' => $request->input('password'),
+        ];
+    }
+
 }

@@ -89,12 +89,15 @@
                         <!-- /Logo -->
                         <h3 class="mb-3 text-left"><b>Sign-In</b> to {{ config('app.name') }}</h3>
 
-                        <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}">
+                        <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}" autocomplete="off">
                             @csrf
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email <sup class="text-danger">*</sup></label>
-                                <input type="email" value="{{ old('email') }}" name="email" required autocomplete="off" autofocus tabindex="0" class="form-control @error('email') is-invalid @enderror" placeholder="{{ __('Login Email') }}" />
-                                @error('email')
+                                <label for="userid" class="form-label">User ID <sup class="text-danger">*</sup></label>
+                                <div class="input-group input-group-merge mt-4">
+                                    <span class="input-group-text" style="padding-right: 2px; @error('userid') border-color: red; @enderror">UID</span>
+                                    <input type="text" id="userid" name="userid" class="form-control @error('userid') is-invalid @enderror" value="{{ old('userid') }}" minlength="8" maxlength="8" placeholder="20110101" autocomplete="off" required/>
+                                </div>
+                                @error('userid')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
@@ -103,14 +106,9 @@
                             <div class="mb-3 form-password-toggle">
                                 <div class="d-flex justify-content-between">
                                     <label class="form-label" for="password">Password</label>
-                                    {{-- @if (Route::has('password.request'))
-                                        <a href="{{ route('password.request') }}">
-                                            <small>Forgot Password?</small>
-                                        </a>
-                                    @endif --}}
                                 </div>
                                 <div class="input-group input-group-merge">
-                                    <input type="password" id="password" required autocomplete="off"  tabindex="0" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="*****************" aria-describedby="password" />
+                                    <input type="password" id="password" required autocomplete="off"  tabindex="0" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="********" aria-describedby="password" />
                                     <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
 
                                     @error('password')
