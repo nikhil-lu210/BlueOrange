@@ -18,7 +18,7 @@ class UsersTableSeeder extends Seeder
     {
         // Create a developer
         $developer = User::create([
-            'userid' => strtoupper(Str::random(8)),
+            'userid' => '20230201',
             'first_name' => 'Demo',
             'last_name' => 'Developer',
             'name' => 'Demo Developer',
@@ -56,7 +56,7 @@ class UsersTableSeeder extends Seeder
         
         // Create a superAdmin
         $superAdmin = User::create([
-            'userid' => strtoupper(Str::random(8)),
+            'userid' => '20202020',
             'first_name' => 'Demo',
             'last_name' => 'Super Admin',
             'name' => 'Demo Super Admin',
