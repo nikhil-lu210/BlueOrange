@@ -69,5 +69,8 @@ class Kernel extends HttpKernel
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
 
         'localization' => \App\Http\Middleware\Localization::class,
+
+        // other middlewares...
+        'active_user' => \App\Http\Middleware\CheckActiveUser::class,
     ];
 }
