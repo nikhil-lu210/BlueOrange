@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Providers\RouteServiceProvider;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
 class LoginController extends Controller
@@ -70,6 +72,33 @@ class LoginController extends Controller
             'userid' => 'UID' . $request->input('userid'), // Retrieve the input and prepend 'UID' to the userid field
             'password' => $request->input('password'),
         ];
+    }
+
+    /**
+     * Override the attemptLogin method to check for active status
+     */
+    protected function attemptLogin(Request $request)
+    {
+        // Add status check here
+        return $this->guard()->attempt(
+            array_merge($this->credentials($request), ['status' => 'Active']),
+            $request->filled('remember')
+        );
+    }
+
+    protected function sendFailedLoginResponse(Request $request)
+    {
+        $user = User::where('userid', 'UID' . $request->input('userid'))->first();
+
+        if ($user && $user->status !== 'Active') {
+            return redirect()->back()->withErrors([
+                'userid' => 'Your account is not active. Please contact support.',
+            ]);
+        }
+
+        throw ValidationException::withMessages([
+            $this->username() => [trans('auth.failed')],
+        ]);
     }
 
 }
