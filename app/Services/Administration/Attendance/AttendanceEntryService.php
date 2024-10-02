@@ -32,14 +32,14 @@ class AttendanceEntryService
             throw new Exception('You have already clocked in and have not clocked out yet.');
         }
 
-        // Check if the user has already clocked in today
-        $existingAttendance = Attendance::where('user_id', $this->user->id)
+        // Check if the user has already Regular clocked in today
+        $existingRegularAttendance = Attendance::where('user_id', $this->user->id)
             ->where('clock_in_date', $currentDate)
             ->whereType($type)
             ->first();
-
-        if ($existingAttendance) {
-            throw new Exception('You have already clocked in as ' . $type . ' today.');
+            
+        if ($existingRegularAttendance && $existingRegularAttendance->type === 'Regular') {
+            throw new Exception('You have already clocked in as Regular today.');
         }
 
         $location = Location::get(get_public_ip());

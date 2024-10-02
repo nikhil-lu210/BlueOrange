@@ -43,8 +43,6 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
-
-            $table->unique(['user_id', 'clock_in_date', 'type'], 'user_id_clock_in_date_type_unique');
         });
     }
 
