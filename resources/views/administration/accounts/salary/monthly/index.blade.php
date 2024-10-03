@@ -51,7 +51,7 @@
                             <th>Paid At</th>
                             <th>Employee</th>
                             <th>Base Salary</th>
-                            <th>Salary Paid</th>
+                            <th>Total Payable</th>
                             <th>Status</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -74,7 +74,12 @@
                                         {{ format_number($monthlySalary->salary->total) }}
                                     </a>
                                 </td>
-                                <td>{{ 'total_earning' }}</td>
+                                <td>
+                                    <span class="text-bold" data-bs-toggle="tooltip" title="{{ spell_number($monthlySalary->total_payable) }} taka only">
+                                        <i class="ti ti-currency-taka" style="margin-top: -4px; margin-right: -5px;"></i>
+                                        {{ format_number($monthlySalary->total_payable) }}
+                                    </span>
+                                </td>
                                 <td>
                                     <span class="badge bg-label-{{ $monthlySalary->status == 'Paid' ? 'success' : 'danger' }}">{{ $monthlySalary->status }}</span>
                                 </td>

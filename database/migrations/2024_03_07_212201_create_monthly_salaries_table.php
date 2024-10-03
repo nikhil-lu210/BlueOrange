@@ -24,8 +24,12 @@ return new class extends Migration
                   ->onUpdate('restrict')
                   ->onDelete('restrict');
 
-            // $table->float('salary');
+            $table->string('for_month')->comment('previous month in Y-m format');
+            $table->float('total_payable', 8, 2);
+            $table->foreignId('paid_by')->nullable()->constrained('users');
+
             $table->enum('status', ['Paid', 'Pending', 'Canceled'])->default('Pending');
+
             $table->timestamps();
             $table->softDeletes();
         });

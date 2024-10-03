@@ -2,8 +2,10 @@
 
 namespace App\Models\Salary\Monthly\Traits;
 
-use App\Models\Salary\Salary;
+use App\Models\Salary\Monthly\MonthlySalaryBreakdown;
 use App\Models\User;
+use App\Models\Salary\Salary;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 trait Relations
@@ -22,5 +24,14 @@ trait Relations
     public function salary(): BelongsTo
     {
         return $this->belongsTo(Salary::class);
+    }
+
+
+    /**
+     * Get the monthly_salary_breakdowns associated with the monthly_salary.
+     */
+    public function monthly_salary_breakdowns(): HasMany
+    {
+        return $this->hasMany(MonthlySalaryBreakdown::class);
     }
 }
