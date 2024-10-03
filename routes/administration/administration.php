@@ -49,6 +49,9 @@ Route::prefix('')
             // settings
             include_once 'settings/settings.php';
 
+            // accounts
+            include_once 'accounts/accounts.php';
+
             // shortcut
             include_once 'shortcut/shortcut.php';
         });
