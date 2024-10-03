@@ -15,6 +15,12 @@ class MonthlySalary extends Model
     
     protected $cascadeDeletes = [];
 
+    protected $with = [
+        'user',
+        'salary',
+        'monthly_salary_breakdowns',
+    ];
+
     protected $fillable = [
         'user_id',
         'salary_id',

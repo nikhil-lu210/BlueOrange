@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Administration\Accounts\Salary;
 
 use Illuminate\Http\Request;
-use App\Models\Salary\Salary;
 use App\Http\Controllers\Controller;
 use App\Models\Salary\Monthly\MonthlySalary;
 
@@ -38,15 +37,16 @@ class MonthlySalaryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Salary $salary)
+    public function show(MonthlySalary $monthly_salary)
     {
-        //
+        // dd($monthly_salary);
+        return view('administration.accounts.salary.monthly.show', compact(['monthly_salary']));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Salary $salary)
+    public function edit(MonthlySalary $monthly_salary)
     {
         //
     }
@@ -54,7 +54,7 @@ class MonthlySalaryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Salary $salary)
+    public function update(Request $request, MonthlySalary $monthly_salary)
     {
         //
     }
@@ -62,7 +62,7 @@ class MonthlySalaryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Salary $salary)
+    public function destroy(MonthlySalary $monthly_salary)
     {
         //
     }

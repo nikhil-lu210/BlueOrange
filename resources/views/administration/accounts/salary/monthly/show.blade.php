@@ -35,19 +35,11 @@
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('User Management') }}</li>
-    <li class="breadcrumb-item">{{ __('Users') }}</li>
+    <li class="breadcrumb-item">{{ __('Accounts') }}</li>
+    <li class="breadcrumb-item">{{ __('Salary') }}</li>
     <li class="breadcrumb-item">
-        <a href="{{ route('administration.settings.user.index') }}">{{ __('All Users') }}</a>
-    </li>
-    <li class="breadcrumb-item">
-        <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">
-            {{ $user->name }}
-        </a>
-    </li>
-    <li class="breadcrumb-item">
-        <a href="{{ route('administration.settings.user.salary.monthly.index', ['user' => $user]) }}">
-            {{ __('Monthly Salary History') }}
+        <a href="{{ route('administration.accounts.salary.monthly.index') }}">
+            {{ __('Monthly Salaries') }}
         </a>
     </li>
     <li class="breadcrumb-item active">{{ __('Monthly Salary Details') }}</li>
@@ -61,7 +53,7 @@
     <div class="col-md-12">
         <div class="card invoice-preview-card">
             <div class="card-header border-bottom header-elements">
-                <h5 class="mb-0"><strong>{{ $user->name }}</strong>'s Monthly Salary Details</h5>
+                <h5 class="mb-0"><strong>{{ $monthly_salary->user->name }}</strong>'s Monthly Salary Details</h5>
         
                 <div class="card-header-elements ms-auto">
                     <button type="button" class="btn btn-sm btn-primary">

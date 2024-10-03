@@ -8,4 +8,5 @@ use Illuminate\Support\Facades\Route;
 ===============================================*/
 Route::controller(MonthlySalaryController::class)->prefix('monthly')->name('monthly.')->group(function () {
     Route::get('/all', 'index')->name('index')->can('Salary Read');
+    Route::get('/show/{monthly_salary}', 'show')->name('show')->can('Salary Read');
 });
