@@ -25,10 +25,10 @@ return new class extends Migration
             $table->float('medical_allowance');
             $table->float('night_shift_allowance')->nullable();
             $table->float('other_allowance')->nullable();
+            $table->float('total');
             
             $table->date('implemented_from');
             $table->date('implemented_to')->nullable();
-            $table->float('total');
             $table->enum('status', ['Active', 'Inactive'])->default('Active');
             $table->timestamps();
             $table->softDeletes();

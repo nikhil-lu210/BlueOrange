@@ -111,6 +111,7 @@ class UserController extends Controller
                     'user_id' => $user->id,
                     'start_time' => $request->start_time,
                     'end_time' => $request->end_time,
+                    'total_time' => get_total_time_hh_mm_ss($request->start_time, $request->end_time),
                     'implemented_from' => date('Y-m-d')
                 ]);
 
@@ -269,6 +270,7 @@ class UserController extends Controller
                     'user_id' => $user->id,
                     'start_time' => $request->start_time,
                     'end_time' => $request->end_time,
+                    'total_time' => get_total_time_hh_mm_ss($request->start_time, $request->end_time),
                     'implemented_from' => date('Y-m-d')
                 ]);
             }, 5);

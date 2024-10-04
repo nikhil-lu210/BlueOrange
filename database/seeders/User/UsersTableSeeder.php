@@ -38,6 +38,7 @@ class UsersTableSeeder extends Seeder
         $developer->employee_shifts()->create([
             'start_time' => '14:00:00',
             'end_time' => '22:00:00',
+            'total_time' => '08:00:00',
             'implemented_from' => date('Y-m-d'),
         ]);
         // Create associated employee for the developer
@@ -76,6 +77,7 @@ class UsersTableSeeder extends Seeder
         $superAdmin->employee_shifts()->create([
             'start_time' => '14:00:00',
             'end_time' => '22:00:00',
+            'total_time' => '08:00:00',
             'implemented_from' => date('Y-m-d'),
         ]);
         // Create associated employee for the superAdmin

@@ -21,6 +21,8 @@ return new class extends Migration
                   
             $table->time('start_time');
             $table->time('end_time');
+            $table->string('total_time')->comment('hh:mm:ss format to be store');
+
             $table->date('implemented_from');
             $table->date('implemented_to')->nullable();
             $table->enum('status', ['Active', 'Inactive'])->default('Active');

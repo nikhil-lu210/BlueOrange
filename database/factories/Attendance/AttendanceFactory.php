@@ -44,6 +44,7 @@ class AttendanceFactory extends Factory
             'clock_in' => $clockIn->format('Y-m-d H:i:s'),
             'clock_out' => $clockOut,
             'total_time' => $totalTime,
+            'total_adjusted_time' => $totalTime,
             'type' => $this->faker->randomElement(['Regular', 'Overtime']),
             'ip_address' => $this->faker->ipv4(),
             'country' => $this->faker->country(),

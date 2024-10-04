@@ -21,8 +21,8 @@ return new class extends Migration
 
             $table->foreignId('salary_id')
                   ->constrained()
-                  ->onUpdate('restrict')
-                  ->onDelete('restrict');
+                  ->onUpdate('cascade')
+                  ->onDelete('cascade');
 
             $table->string('for_month')->comment('previous month in Y-m format');
             $table->float('total_payable', 8, 2);

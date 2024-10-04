@@ -181,6 +181,29 @@ if (!function_exists('total_day_difference')) {
 
 
 
+if (!function_exists('get_total_time_hh_mm_ss')) {
+    /**
+     * Calculate the total time difference between two timestamps in hh:mm:ss format.
+     *
+     * @param string $startTime The start time in 'Y-m-d H:i:s' format or 'H:i:s' format.
+     * @param string $endTime The end time in 'Y-m-d H:i:s' format or 'H:i:s' format.
+     * @return string Total time difference in 'hh:mm:ss' format.
+     * @throws Exception if the input format is invalid.
+     */
+    function get_total_time_hh_mm_ss($startTime, $endTime)
+    {
+        // Parse the timestamps to DateTime objects
+        $start = new DateTime($startTime);
+        $end = new DateTime($endTime);
+
+        // Calculate the difference
+        $interval = $start->diff($end);
+
+        // Format the interval as 'hh:mm:ss'
+        return sprintf('%02d:%02d:%02d', $interval->h, $interval->i, $interval->s);
+    }
+}
+
 
 if (!function_exists('total_time_difference')) {
 
