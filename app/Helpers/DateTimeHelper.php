@@ -1,6 +1,8 @@
 <?php
 
 use Carbon\Carbon;
+use App\Models\Holiday\Holiday;
+use App\Models\Weekend\Weekend;
 
 if (!function_exists('get_time_only')) {
 
@@ -411,5 +413,48 @@ if (!function_exists('is_today_birthday')) {
 
         // Check if today is the birthday by comparing month and day
         return $birthDate->isBirthday($today);
+    }
+}
+
+
+
+if (!function_exists('total_regular_working_days')) {
+    /**
+     * Calculate the number of working days in a given month, excluding weekends and holidays.
+     * 
+     * @param string|null $month The month in 'Y-m' format (e.g., '2024-09'). If null, defaults to the previous month.
+     * @return int The number of working days in the specified month.
+     */
+    function total_regular_working_days(string $month = null): int
+    {
+        // If no month is passed, use the previous month
+        if (is_null($month)) {
+            $month = Carbon::now()->subMonth()->format('Y-m');
+        }
+
+        // Get the total number of days in the month
+        $daysInMonth = Carbon::parse($month)->daysInMonth;
+
+        // Get the list of active weekend days (e.g., ['Saturday', 'Sunday'])
+        $weekendDays = Weekend::getActiveWeekendDays();
+
+        // Get the holidays for the specified month
+        $holidays = Holiday::whereMonth('date', Carbon::parse($month)->month)
+                            ->whereYear('date', Carbon::parse($month)->year)
+                            ->pluck('date')
+                            ->toArray();
+
+        // Create a collection of days in the month and filter out the weekends and holidays
+        $workingDays = collect(range(1, $daysInMonth))
+            ->map(function ($day) use ($month) {
+                return Carbon::parse($month . '-' . $day);
+            })
+            ->filter(function ($date) use ($weekendDays, $holidays) {
+                // Exclude weekends and holidays
+                return !in_array($date->format('l'), $weekendDays) && !in_array($date->toDateString(), $holidays);
+            });
+
+        // Return the count of working days
+        return $workingDays->count();
     }
 }

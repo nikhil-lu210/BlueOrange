@@ -13,14 +13,13 @@ class WeekendSeeder extends Seeder
      */
     public function run(): void
     {
-        Weekend::create([
-            'day' => 'Saturday',
-            'is_active' => true,
-        ]);
-        
-        Weekend::create([
-            'day' => 'Sunday',
-            'is_active' => true,
-        ]);
+        $weekends = ['Saturday', 'Sunday'];  // Set your weekends here
+
+        foreach ($weekends as $day) {
+            Weekend::create([
+                'day' => $day,
+                'is_active' => true,
+            ]);
+        }
     }
 }

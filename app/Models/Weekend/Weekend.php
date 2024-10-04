@@ -19,4 +19,10 @@ class Weekend extends Model
         'day',
         'is_active'
     ];
+
+     // Helper function to get active weekends
+     public static function getActiveWeekendDays()
+     {
+         return self::where('is_active', true)->pluck('day')->toArray();
+     }
 }
