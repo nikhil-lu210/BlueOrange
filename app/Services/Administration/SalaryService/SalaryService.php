@@ -18,7 +18,7 @@ class SalaryService
 {
     public function calculateMonthlySalary(User $user, $month = null)
     {
-        if (!$user->current_salary) {
+        if (!$user->current_salary) { // App\Models\User\Traits
             // Skip to the next user if no salary record found
             return;
         }
@@ -91,9 +91,7 @@ class SalaryService
 
     private function getEmployeeShift($user)
     {
-        return EmployeeShift::where('user_id', $user->id)
-            ->where('status', 'Active')
-            ->first();
+        return $user->current_shift; // App\Models\User\Traits
     }
 
     private function getDailyWorkHours($shift)
@@ -108,9 +106,7 @@ class SalaryService
 
     private function getEmployeeSalary($user)
     {
-        return Salary::where('user_id', $user->id)
-            ->where('status', 'Active')
-            ->first();
+        return $user->current_salary; // App\Models\User\Traits
     }
 
     private function calculateHourlyRate($salary, $totalWorkableSeconds)
