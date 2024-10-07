@@ -12,11 +12,17 @@ use App\Models\Attendance\Attendance;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Salary\Monthly\MonthlySalaryBreakdown;
+use App\Models\User;
 
 class SalaryService
 {
-    public function calculateMonthlySalary($userId, $month = null)
+    public function calculateMonthlySalary(User $user, $month = null)
     {
+        if (!$user->current_salary) {
+            // Skip to the next user if no salary record found
+            return;
+        }
+
         $month = $this->getMonth($month);
 
         DB::beginTransaction();
@@ -26,22 +32,22 @@ class SalaryService
             $holidays = $this->getHolidaysForMonth($month);
 
             $workableDays = $this->calculateWorkableDays($month, $activeWeekends, $holidays);
-            $shift = $this->getEmployeeShift($userId);
+            $shift = $this->getEmployeeShift($user);
             $dailyWorkHours = $this->getDailyWorkHours($shift);
             $totalWorkableSeconds = $this->calculateTotalWorkableSeconds($workableDays, $dailyWorkHours);
             
-            $salary = $this->getEmployeeSalary($userId);
+            $salary = $this->getEmployeeSalary($user);
             $hourlyRate = $this->calculateHourlyRate($salary, $totalWorkableSeconds);
 
-            $totalRegularTimeInSeconds = $this->getTotalRegularTimeInSeconds($userId, $month);
-            $totalOvertimeInSeconds = $this->getTotalOvertimeInSeconds($userId, $month);
+            $totalRegularTimeInSeconds = $this->getTotalRegularTimeInSeconds($user, $month);
+            $totalOvertimeInSeconds = $this->getTotalOvertimeInSeconds($user, $month);
             $totalPayable = $this->calculateTotalPayable($totalRegularTimeInSeconds, $totalOvertimeInSeconds, $hourlyRate);
 
-            $totalOverBreakInSeconds = $this->getTotalOverBreakInSeconds($userId, $month);
+            $totalOverBreakInSeconds = $this->getTotalOverBreakInSeconds($user, $month);
             $overBreakPenaltyAmount = $this->calculateOverBreakPenalty($totalOverBreakInSeconds);
             $totalPayable -= $overBreakPenaltyAmount;
 
-            $monthlySalaryId = $this->updateOrCreateMonthlySalary($userId, $salary, $month, $totalPayable);
+            $monthlySalaryId = $this->updateOrCreateMonthlySalary($user, $salary, $month, $totalPayable);
             $this->updateMonthlySalaryBreakdowns($monthlySalaryId, $totalRegularTimeInSeconds, $totalOvertimeInSeconds, $totalOverBreakInSeconds, $hourlyRate, $overBreakPenaltyAmount);
 
             DB::commit();
@@ -83,9 +89,9 @@ class SalaryService
         })->count();
     }
 
-    private function getEmployeeShift($userId)
+    private function getEmployeeShift($user)
     {
-        return EmployeeShift::where('user_id', $userId)
+        return EmployeeShift::where('user_id', $user->id)
             ->where('status', 'Active')
             ->first();
     }
@@ -100,9 +106,9 @@ class SalaryService
         return $workableDays * $dailyWorkHours;
     }
 
-    private function getEmployeeSalary($userId)
+    private function getEmployeeSalary($user)
     {
-        return Salary::where('user_id', $userId)
+        return Salary::where('user_id', $user->id)
             ->where('status', 'Active')
             ->first();
     }
@@ -112,18 +118,18 @@ class SalaryService
         return $salary->total / ($totalWorkableSeconds / 3600);
     }
 
-    private function getTotalRegularTimeInSeconds($userId, $month)
+    private function getTotalRegularTimeInSeconds($user, $month)
     {
-        return Attendance::where('user_id', $userId)
+        return Attendance::where('user_id', $user->id)
             ->where('type', 'Regular')
             ->whereYear('clock_in_date', $month->year)
             ->whereMonth('clock_in_date', $month->month)
             ->sum(DB::raw('TIME_TO_SEC(total_adjusted_time)'));
     }
 
-    private function getTotalOvertimeInSeconds($userId, $month)
+    private function getTotalOvertimeInSeconds($user, $month)
     {
-        return Attendance::where('user_id', $userId)
+        return Attendance::where('user_id', $user->id)
             ->where('type', 'Overtime')
             ->whereYear('clock_in_date', $month->year)
             ->whereMonth('clock_in_date', $month->month)
@@ -136,10 +142,10 @@ class SalaryService
                (($totalOvertimeInSeconds / 3600) * $hourlyRate);
     }
 
-    private function getTotalOverBreakInSeconds($userId, $month)
+    private function getTotalOverBreakInSeconds($user, $month)
     {
         return DB::table('daily_breaks')
-            ->where('user_id', $userId)
+            ->where('user_id', $user->id)
             ->whereYear('date', $month->year)
             ->whereMonth('date', $month->month)
             ->sum(DB::raw('TIME_TO_SEC(over_break)'));
@@ -150,18 +156,18 @@ class SalaryService
         return round(($totalOverBreakInSeconds / 3600) * 6.59, 2);
     }
 
-    private function updateOrCreateMonthlySalary($userId, $salary, $month, $totalPayable)
+    private function updateOrCreateMonthlySalary($user, $salary, $month, $totalPayable)
     {
         $forMonthString = $month->format('Y-m');
 
         // Hard delete any existing salary record for the given user and month
-        MonthlySalary::where('user_id', $userId)
+        MonthlySalary::where('user_id', $user->id)
             ->where('for_month', $forMonthString)
             ->forceDelete(); // Use forceDelete() for hard delete
 
         // Create a new monthly salary record
         $newMonthlySalary = MonthlySalary::create([
-            'user_id' => $userId,
+            'user_id' => $user->id,
             'salary_id' => $salary->id,
             'for_month' => $forMonthString,
             'total_payable' => round($totalPayable, 2),

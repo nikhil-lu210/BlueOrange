@@ -18,7 +18,7 @@ class CalculateMonthlySalaries extends Command
         $salaryService = new SalaryService();
 
         foreach ($users as $user) {
-            $salaryService->calculateMonthlySalary($user->id);
+            $salaryService->calculateMonthlySalary($user);
         }
 
         $this->info('Monthly salaries calculated successfully.');
