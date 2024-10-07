@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Administration\Accounts\Salary;
 
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\Weekend\Weekend;
 use App\Http\Controllers\Controller;
 use App\Models\Salary\Monthly\MonthlySalary;
 
