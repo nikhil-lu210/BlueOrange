@@ -321,7 +321,7 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="clock_out" class="form-label">{{ __('Clock Out') }} <strong class="text-danger">*</strong></label>
+                            <label for="clock_out" class="form-label">{{ __('Clock Out') }}</label>
                             <input type="text" id="clock_out" name="clock_out" value="{{ $attendance->clock_out ?? '' }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror"/>
                             @error('clock_out')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>

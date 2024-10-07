@@ -225,33 +225,67 @@ class AttendanceController extends Controller
             
             if ($request->clock_out) {
                 $attendance->clock_out = $request->clock_out;
-        
+
                 // Calculate total time
                 $clockInTime = Carbon::parse($request->clock_in);
                 $clockOutTime = Carbon::parse($request->clock_out);
-            
+
                 // Check if clock in and clock out are on the same day
                 $isSameDay = $clockInTime->isSameDay($clockOutTime);
-            
+
                 // Calculate total time with consideration for different dates
                 if ($isSameDay) {
                     $totalTime = $clockInTime->diff($clockOutTime);
                 } else {
                     $totalTime = $clockOutTime->diff($clockOutTime->copy()->startOfDay());
                 }
-            
+
                 $formattedTotalTime = sprintf(
                     '%02d:%02d:%02d',
                     $totalTime->h, // total hours
                     $totalTime->i, // total minutes
-                    $totalTime->s // total seconds
+                    $totalTime->s  // total seconds
                 );
-            
+
                 $attendance->total_time = $formattedTotalTime;
+
+                // Calculate total_adjusted_time
+                if ($attendance->type === 'Regular') {
+                    // Retrieve the employee shift associated with this attendance
+                    $employeeShift = $attendance->employee_shift;
+
+                    if ($employeeShift) {
+                        // Convert employee shift total time from HH:MM:SS to seconds for comparison
+                        list($shiftHours, $shiftMinutes, $shiftSeconds) = explode(':', $employeeShift->total_time);
+                        $shiftTotalSeconds = ($shiftHours * 3600) + ($shiftMinutes * 60) + $shiftSeconds;
+
+                        // Convert total time to seconds
+                        $totalSeconds = ($totalTime->h * 3600) + ($totalTime->i * 60) + $totalTime->s;
+
+                        // Compare and set total_adjusted_time
+                        $adjustedTotalSeconds = ($totalSeconds < $shiftTotalSeconds) ? $totalSeconds : $shiftTotalSeconds;
+
+                        // Convert adjusted total time back to HH:MM:SS format
+                        $adjustedHours = floor($adjustedTotalSeconds / 3600);
+                        $adjustedMinutes = floor(($adjustedTotalSeconds % 3600) / 60);
+                        $adjustedSeconds = $adjustedTotalSeconds % 60;
+
+                        $formattedAdjustedTotalTime = sprintf('%02d:%02d:%02d', $adjustedHours, $adjustedMinutes, $adjustedSeconds);
+                    } else {
+                        // If no employee shift found, fallback to the total time
+                        $formattedAdjustedTotalTime = $formattedTotalTime;
+                    }
+                } elseif ($attendance->type === 'Overtime') {
+                    // For Overtime type, set total_adjusted_time directly from total_time
+                    $formattedAdjustedTotalTime = $formattedTotalTime;
+                }
+
+                // Update the adjusted total time in attendance record
+                $attendance->total_adjusted_time = $formattedAdjustedTotalTime;
             }
         
             $attendance->save();
-        
+
             toast('Attendance Record Updated Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
