@@ -17,197 +17,232 @@ class SalaryService
 {
     public function calculateMonthlySalary($userId, $month = null)
     {
-        // If no month is provided, use the previous month
-        if ($month === null) {
-            $month = Carbon::now()->subMonth(); // Get the previous month (Sep 2024 if now is Oct 2024)
-        } else {
-            $month = Carbon::parse($month); // Parse the provided month if not null
-        }
+        $month = $this->getMonth($month);
 
-        // Wrap everything in a transaction
         DB::beginTransaction();
-        
+
         try {
-            // Get all weekend days for the month (e.g., 'Saturday', 'Sunday')
-            $activeWeekends = Weekend::where('is_active', true)->pluck('day')->toArray();
+            $activeWeekends = $this->getActiveWeekends();
+            $holidays = $this->getHolidaysForMonth($month);
+
+            $workableDays = $this->calculateWorkableDays($month, $activeWeekends, $holidays);
+            $shift = $this->getEmployeeShift($userId);
+            $dailyWorkHours = $this->getDailyWorkHours($shift);
+            $totalWorkableSeconds = $this->calculateTotalWorkableSeconds($workableDays, $dailyWorkHours);
             
-            // Get holidays for the month
-            $holidays = Holiday::whereYear('date', $month->year)
-                               ->whereMonth('date', $month->month)
-                               ->where('is_active', true)
-                               ->pluck('date')
-                               ->toArray();
+            $salary = $this->getEmployeeSalary($userId);
+            $hourlyRate = $this->calculateHourlyRate($salary, $totalWorkableSeconds);
 
-            // Total days in the month
-            $daysInMonth = Carbon::parse($month)->daysInMonth;
-            
-            // Get all dates in the month
-            $dates = collect(range(1, $daysInMonth))->map(function ($day) use ($month) {
-                return Carbon::createFromDate($month->year, $month->month, $day);
-            });
+            $totalRegularTimeInSeconds = $this->getTotalRegularTimeInSeconds($userId, $month);
+            $totalOvertimeInSeconds = $this->getTotalOvertimeInSeconds($userId, $month);
+            $totalPayable = $this->calculateTotalPayable($totalRegularTimeInSeconds, $totalOvertimeInSeconds, $hourlyRate);
 
-            // Calculate total workable days (excluding weekends and holidays)
-            $workableDays = $dates->filter(function ($date) use ($activeWeekends, $holidays) {
-                return !in_array($date->format('l'), $activeWeekends) && !in_array($date->toDateString(), $holidays);
-            })->count();
-
-            // Get the employee's shift
-            $shift = EmployeeShift::where('user_id', $userId)
-                                  ->where('status', 'Active')
-                                  ->first();
-
-            // Calculate daily working hours
-            $dailyWorkHours = Carbon::parse($shift->start_time)->diffInSeconds(Carbon::parse($shift->end_time));
-
-            // Total workable hours for the month
-            $totalWorkableSeconds = $workableDays * $dailyWorkHours;
-            
-            // Get employee salary
-            $salary = Salary::where('user_id', $userId)
-                            ->where('status', 'Active')
-                            ->first();
-
-            // Calculate hourly rate
-            $hourlyRate = $salary->total / ($totalWorkableSeconds / 3600);
-
-            // Get total regular and overtime hours from attendances
-            $totalRegularTimeInSeconds = Attendance::where('user_id', $userId)
-                                                   ->where('type', 'Regular')
-                                                   ->whereYear('clock_in_date', $month->year)
-                                                   ->whereMonth('clock_in_date', $month->month)
-                                                   ->sum(DB::raw('TIME_TO_SEC(total_adjusted_time)'));
-
-            $totalOvertimeInSeconds = Attendance::where('user_id', $userId)
-                                                ->where('type', 'Overtime')
-                                                ->whereYear('clock_in_date', $month->year)
-                                                ->whereMonth('clock_in_date', $month->month)
-                                                ->sum(DB::raw('TIME_TO_SEC(total_adjusted_time)'));
-
-            // Calculate total payable salary
-            $totalPayable = (($totalRegularTimeInSeconds / 3600) * $hourlyRate) +
-                            (($totalOvertimeInSeconds / 3600) * $hourlyRate);
-
-            // Get total over break time
-            $totalOverBreakInSeconds = DB::table('daily_breaks')
-                ->where('user_id', $userId)
-                ->whereYear('date', $month->year)
-                ->whereMonth('date', $month->month)
-                ->sum(DB::raw('TIME_TO_SEC(over_break)'));
-
-            // Calculate over break penalty
-            $overBreakPenaltyAmount = round(($totalOverBreakInSeconds / 3600) * 6.59, 2);
-
-            // Update total payable salary by subtracting over break penalty
+            $totalOverBreakInSeconds = $this->getTotalOverBreakInSeconds($userId, $month);
+            $overBreakPenaltyAmount = $this->calculateOverBreakPenalty($totalOverBreakInSeconds);
             $totalPayable -= $overBreakPenaltyAmount;
 
-            // Format month to 'Y-m' string (e.g., '2024-09')
-            $forMonthString = $month->format('Y-m');
+            $monthlySalaryId = $this->updateOrCreateMonthlySalary($userId, $salary, $month, $totalPayable);
+            $this->updateMonthlySalaryBreakdowns($monthlySalaryId, $totalRegularTimeInSeconds, $totalOvertimeInSeconds, $totalOverBreakInSeconds, $hourlyRate, $overBreakPenaltyAmount);
 
-            // Check if there is already a record for this user and month in 'Y-m' format
-            $existingSalary = MonthlySalary::where('user_id', $userId)
-                                           ->where('for_month', $forMonthString) // Compare as string 'Y-m'
-                                           ->first();
+            DB::commit();
+            return round($totalPayable, 2);
+        } catch (Exception $e) {
+            DB::rollBack();
+            throw $e;
+        }
+    }
 
-            if ($existingSalary) {
-                // Update the existing record
-                $existingSalary->update([
-                    'total_payable' => round($totalPayable, 2),
-                    'status' => 'Pending',
-                ]);
+    private function getMonth($month)
+    {
+        return $month === null ? Carbon::now()->subMonth() : Carbon::parse($month);
+    }
 
-                $monthlySalaryId = $existingSalary->id;
-            } else {
-                // Create a new record if none exists
-                $newMonthlySalary = MonthlySalary::create([
-                    'user_id' => $userId,
-                    'salary_id' => $salary->id,
-                    'for_month' => $forMonthString, // Store 'Y-m' format
-                    'total_payable' => round($totalPayable, 2),
-                    'status' => 'Pending',
-                ]);
+    private function getActiveWeekends()
+    {
+        return Weekend::where('is_active', true)->pluck('day')->toArray();
+    }
 
-                $monthlySalaryId = $newMonthlySalary->id;
-            }
+    private function getHolidaysForMonth($month)
+    {
+        return Holiday::whereYear('date', $month->year)
+            ->whereMonth('date', $month->month)
+            ->where('is_active', true)
+            ->pluck('date')
+            ->toArray();
+    }
 
-            // Now insert into monthly_salary_breakdowns table
-            // 1st Breakdown for Regular Work
-            $existingRegularBreakdown = MonthlySalaryBreakdown::where('monthly_salary_id', $monthlySalaryId)
-                ->where('reason', 'LIKE', 'Regular Work%')
+    private function calculateWorkableDays($month, $activeWeekends, $holidays)
+    {
+        $daysInMonth = $month->daysInMonth;
+        $dates = collect(range(1, $daysInMonth))->map(function ($day) use ($month) {
+            return Carbon::createFromDate($month->year, $month->month, $day);
+        });
+
+        return $dates->filter(function ($date) use ($activeWeekends, $holidays) {
+            return !in_array($date->format('l'), $activeWeekends) && !in_array($date->toDateString(), $holidays);
+        })->count();
+    }
+
+    private function getEmployeeShift($userId)
+    {
+        return EmployeeShift::where('user_id', $userId)
+            ->where('status', 'Active')
+            ->first();
+    }
+
+    private function getDailyWorkHours($shift)
+    {
+        return Carbon::parse($shift->start_time)->diffInSeconds(Carbon::parse($shift->end_time));
+    }
+
+    private function calculateTotalWorkableSeconds($workableDays, $dailyWorkHours)
+    {
+        return $workableDays * $dailyWorkHours;
+    }
+
+    private function getEmployeeSalary($userId)
+    {
+        return Salary::where('user_id', $userId)
+            ->where('status', 'Active')
+            ->first();
+    }
+
+    private function calculateHourlyRate($salary, $totalWorkableSeconds)
+    {
+        return $salary->total / ($totalWorkableSeconds / 3600);
+    }
+
+    private function getTotalRegularTimeInSeconds($userId, $month)
+    {
+        return Attendance::where('user_id', $userId)
+            ->where('type', 'Regular')
+            ->whereYear('clock_in_date', $month->year)
+            ->whereMonth('clock_in_date', $month->month)
+            ->sum(DB::raw('TIME_TO_SEC(total_adjusted_time)'));
+    }
+
+    private function getTotalOvertimeInSeconds($userId, $month)
+    {
+        return Attendance::where('user_id', $userId)
+            ->where('type', 'Overtime')
+            ->whereYear('clock_in_date', $month->year)
+            ->whereMonth('clock_in_date', $month->month)
+            ->sum(DB::raw('TIME_TO_SEC(total_adjusted_time)'));
+    }
+
+    private function calculateTotalPayable($totalRegularTimeInSeconds, $totalOvertimeInSeconds, $hourlyRate)
+    {
+        return (($totalRegularTimeInSeconds / 3600) * $hourlyRate) +
+               (($totalOvertimeInSeconds / 3600) * $hourlyRate);
+    }
+
+    private function getTotalOverBreakInSeconds($userId, $month)
+    {
+        return DB::table('daily_breaks')
+            ->where('user_id', $userId)
+            ->whereYear('date', $month->year)
+            ->whereMonth('date', $month->month)
+            ->sum(DB::raw('TIME_TO_SEC(over_break)'));
+    }
+
+    private function calculateOverBreakPenalty($totalOverBreakInSeconds)
+    {
+        return round(($totalOverBreakInSeconds / 3600) * 6.59, 2);
+    }
+
+    private function updateOrCreateMonthlySalary($userId, $salary, $month, $totalPayable)
+    {
+        $forMonthString = $month->format('Y-m');
+
+        // Hard delete any existing salary record for the given user and month
+        MonthlySalary::where('user_id', $userId)
+            ->where('for_month', $forMonthString)
+            ->forceDelete(); // Use forceDelete() for hard delete
+
+        // Create a new monthly salary record
+        $newMonthlySalary = MonthlySalary::create([
+            'user_id' => $userId,
+            'salary_id' => $salary->id,
+            'for_month' => $forMonthString,
+            'total_payable' => round($totalPayable, 2),
+            'status' => 'Pending',
+        ]);
+
+        return $newMonthlySalary->id; // Return the ID of the newly created record
+    }
+
+    private function updateMonthlySalaryBreakdowns($monthlySalaryId, $totalRegularTimeInSeconds, $totalOvertimeInSeconds, $totalOverBreakInSeconds, $hourlyRate, $overBreakPenaltyAmount)
+    {
+        $this->updateOrCreateRegularBreakdown($monthlySalaryId, $totalRegularTimeInSeconds, $hourlyRate);
+        $this->updateOrCreateOvertimeBreakdown($monthlySalaryId, $totalOvertimeInSeconds, $hourlyRate);
+        $this->updateOrCreateOverbreakBreakdown($monthlySalaryId, $totalOverBreakInSeconds, $overBreakPenaltyAmount);
+    }
+
+    private function updateOrCreateRegularBreakdown($monthlySalaryId, $totalRegularTimeInSeconds, $hourlyRate)
+    {
+        $existingRegularBreakdown = MonthlySalaryBreakdown::where('monthly_salary_id', $monthlySalaryId)
+            ->where('reason', 'LIKE', 'Regular Work%')
+            ->first();
+
+        $regularWorkAmount = round(($totalRegularTimeInSeconds / 3600) * $hourlyRate, 2);
+
+        if ($existingRegularBreakdown) {
+            $existingRegularBreakdown->update([
+                'total' => $regularWorkAmount,
+            ]);
+        } else {
+            MonthlySalaryBreakdown::create([
+                'monthly_salary_id' => $monthlySalaryId,
+                'type' => 'Plus (+)',
+                'reason' => 'Regular Work (' . gmdate('H:i:s', $totalRegularTimeInSeconds) . ')',
+                'total' => $regularWorkAmount,
+            ]);
+        }
+    }
+
+    private function updateOrCreateOvertimeBreakdown($monthlySalaryId, $totalOvertimeInSeconds, $hourlyRate)
+    {
+        if ($totalOvertimeInSeconds > 0) {
+            $existingOvertimeBreakdown = MonthlySalaryBreakdown::where('monthly_salary_id', $monthlySalaryId)
+                ->where('reason', 'LIKE', 'Overtime Work%')
                 ->first();
 
-            $regularWorkAmount = round(($totalRegularTimeInSeconds / 3600) * $hourlyRate, 2);
+            $overtimeWorkAmount = round(($totalOvertimeInSeconds / 3600) * $hourlyRate, 2);
 
-            if ($existingRegularBreakdown) {
-                // Update the existing regular work breakdown
-                $existingRegularBreakdown->update([
-                    'total' => $regularWorkAmount,
+            if ($existingOvertimeBreakdown) {
+                $existingOvertimeBreakdown->update([
+                    'total' => $overtimeWorkAmount,
                 ]);
             } else {
-                // Create new breakdown for regular work
                 MonthlySalaryBreakdown::create([
                     'monthly_salary_id' => $monthlySalaryId,
                     'type' => 'Plus (+)',
-                    'reason' => 'Regular Work (' . gmdate('H:i:s', $totalRegularTimeInSeconds) . ')',
-                    'total' => $regularWorkAmount,
+                    'reason' => 'Overtime Work (' . gmdate('H:i:s', $totalOvertimeInSeconds) . ')',
+                    'total' => $overtimeWorkAmount,
                 ]);
             }
+        }
+    }
 
-            // 2nd Breakdown for Overtime Work, only if overtime exists
-            if ($totalOvertimeInSeconds > 0) {
-                $existingOvertimeBreakdown = MonthlySalaryBreakdown::where('monthly_salary_id', $monthlySalaryId)
-                    ->where('reason', 'LIKE', 'Overtime Work%')
-                    ->first();
+    private function updateOrCreateOverbreakBreakdown($monthlySalaryId, $totalOverBreakInSeconds, $overBreakPenaltyAmount)
+    {
+        if ($totalOverBreakInSeconds > 0) {
+            $existingOverBreakBreakdown = MonthlySalaryBreakdown::where('monthly_salary_id', $monthlySalaryId)
+                ->where('reason', 'LIKE', 'Over Break%')
+                ->first();
 
-                $overtimeWorkAmount = round(($totalOvertimeInSeconds / 3600) * $hourlyRate, 2);
-
-                if ($existingOvertimeBreakdown) {
-                    // Update the existing overtime work breakdown
-                    $existingOvertimeBreakdown->update([
-                        'total' => $overtimeWorkAmount,
-                    ]);
-                } else {
-                    // Create new breakdown for overtime work
-                    MonthlySalaryBreakdown::create([
-                        'monthly_salary_id' => $monthlySalaryId,
-                        'type' => 'Plus (+)',
-                        'reason' => 'Overtime Work (' . gmdate('H:i:s', $totalOvertimeInSeconds) . ')',
-                        'total' => $overtimeWorkAmount,
-                    ]);
-                }
+            if ($existingOverBreakBreakdown) {
+                $existingOverBreakBreakdown->update([
+                    'total' => $overBreakPenaltyAmount,
+                ]);
+            } else {
+                MonthlySalaryBreakdown::create([
+                    'monthly_salary_id' => $monthlySalaryId,
+                    'type' => 'Minus (-)',
+                    'reason' => 'Over Break (' . gmdate('H:i:s', $totalOverBreakInSeconds) . ')',
+                    'total' => $overBreakPenaltyAmount,
+                ]);
             }
-
-            // 3rd Breakdown for Overbreak Penalty
-            if ($totalOverBreakInSeconds > 0) {
-                $existingOverbreakBreakdown = MonthlySalaryBreakdown::where('monthly_salary_id', $monthlySalaryId)
-                    ->where('reason', 'LIKE', 'Overbreak Penalty%')
-                    ->first();
-
-                if ($existingOverbreakBreakdown) {
-                    // Update existing overbreak penalty entry
-                    $existingOverbreakBreakdown->update([
-                        'total' => $overBreakPenaltyAmount,
-                        'reason' => 'Overbreak Penalty (' . gmdate('H:i:s', $totalOverBreakInSeconds) . ')',
-                    ]);
-                } else {
-                    // Create a new entry for overbreak penalty
-                    MonthlySalaryBreakdown::create([
-                        'monthly_salary_id' => $monthlySalaryId,
-                        'type' => 'Minus (-)',
-                        'reason' => 'Overbreak Penalty (' . gmdate('H:i:s', $totalOverBreakInSeconds) . ')',
-                        'total' => $overBreakPenaltyAmount,
-                    ]);
-                }
-            }
-
-            // Commit the transaction
-            DB::commit();
-
-            return round($totalPayable, 2);
-
-        } catch (Exception $e) {
-            // Rollback on error
-            DB::rollBack();
-            throw $e;
         }
     }
 }
