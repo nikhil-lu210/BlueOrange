@@ -61,6 +61,7 @@ class MonthlySalaryController extends Controller
         ];
         
         return view('administration.accounts.salary.monthly.show', compact(['monthly_salary', 'salary']));
+        // return view('administration.accounts.salary.monthly.generate_pdf', compact(['monthly_salary', 'salary']));
     }
 
     /**
