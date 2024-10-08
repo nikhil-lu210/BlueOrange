@@ -2,9 +2,12 @@
 namespace App\Services\Administration\Attendance;
 
 use Exception;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\Attendance\Attendance;
 use App\Models\DailyBreak\DailyBreak;
+use App\Models\Holiday\Holiday;
+use App\Models\Weekend\Weekend;
 use Stevebauman\Location\Facades\Location;
 use App\Services\Administration\DailyBreak\BreakStartStopService;
 
@@ -24,12 +27,22 @@ class AttendanceEntryService
         $type = $attendanceType === 'Overtime' ? 'Overtime' : 'Regular';
 
         // Check if the user has an open attendance session
-        $openAttendance = Attendance::where('user_id', $this->user->id)
-            ->whereNull('clock_out')
-            ->first();
+        $openAttendance = Attendance::where('user_id', $this->user->id)->whereNull('clock_out')->first();
 
         if ($openAttendance) {
             throw new Exception('You have already clocked in and have not clocked out yet.');
+        }
+
+        // Check id the current date an weekend
+        $isWeekend = Weekend::where('day', '=', Carbon::parse($currentDate)->format('l'))->where('is_active', true)->exists();
+        if ($isWeekend) {
+            throw new Exception('You cannot Regular clocin on Weekend. Please clockin as Overtime.');
+        }
+
+        // Check if the current date is a holiday
+        $isHoliday = Holiday::where('date', '=', $currentDate)->where('is_active', true)->exists();
+        if ($isHoliday) {
+            throw new Exception('You cannot Regular clocin on Holiday. Please clockin as Overtime.');
         }
 
         // Check if the user has already Regular clocked in today

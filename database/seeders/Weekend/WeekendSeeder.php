@@ -13,12 +13,42 @@ class WeekendSeeder extends Seeder
      */
     public function run(): void
     {
-        $weekends = ['Saturday', 'Sunday'];  // Set your weekends here
+        // Set your weekends here
+        $weekends = json_decode(json_encode([
+            [
+                "day" => "Saturday", 
+                "active" => true
+            ],
+            [
+                "day" => "Sunday", 
+                "active" => true
+            ],
+            [
+                "day" => "Monday", 
+                "active" => false
+            ],
+            [
+                "day" => "Tuesday", 
+                "active" => false
+            ],
+            [
+                "day" => "Wednesday", 
+                "active" => false
+            ],
+            [
+                "day" => "Thursday", 
+                "active" => false
+            ],
+            [
+                "day" => "Friday", 
+                "active" => false
+            ],
+        ]));
 
         foreach ($weekends as $day) {
             Weekend::create([
-                'day' => $day,
-                'is_active' => true,
+                'day' => $day->day,
+                'is_active' => $day->active,
             ]);
         }
     }
