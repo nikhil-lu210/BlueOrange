@@ -193,6 +193,11 @@
                     <div data-i18n="System Settings">{{ __('System Settings') }}</div>
                 </a>
                 <ul class="menu-sub">
+                    @can ('Weekend Read') 
+                        <li class="menu-item {{ request()->is('settings/system/weekend*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.settings.system.weekend.index') }}" class="menu-link">{{ __('Weekends') }}</a>
+                        </li>
+                    @endcan
                     @can ('Holiday Read') 
                         <li class="menu-item {{ request()->is('settings/system/holiday*') ? 'active' : '' }}">
                             <a href="{{ route('administration.settings.system.holiday.index') }}" class="menu-link">{{ __('Holidays') }}</a>

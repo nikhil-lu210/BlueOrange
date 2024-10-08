@@ -79,6 +79,11 @@ class RolesTableSeeder extends Seeder
                     'Salary Update',
                     'Salary Delete',
                     
+                    'Weekend Create',
+                    'Weekend Read',
+                    'Weekend Update',
+                    'Weekend Delete',
+                    
                     'Holiday Create',
                     'Holiday Read',
                     'Holiday Update',
@@ -136,6 +141,11 @@ class RolesTableSeeder extends Seeder
                     'Salary Read',
                     'Salary Update',
                     'Salary Delete',
+                    
+                    'Weekend Create',
+                    'Weekend Read',
+                    'Weekend Update',
+                    'Weekend Delete',
                     
                     'Holiday Create',
                     'Holiday Read',
