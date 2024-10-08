@@ -2,6 +2,7 @@
 
 namespace App\Models\Salary\Monthly;
 
+use Carbon\Carbon;
 use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -15,17 +16,32 @@ class MonthlySalary extends Model
     
     protected $cascadeDeletes = [];
 
-    protected $with = [
-        'user',
-        'salary',
-        'monthly_salary_breakdowns',
-    ];
-
     protected $fillable = [
+        'payslip_id',
         'user_id',
         'salary_id',
         'for_month',
+        'total_workable_days',
+        'total_weekends',
+        'total_holidays',
+        'hourly_rate',
         'total_payable',
         'status',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($monthlySalary) {
+            // Extract year and month from for_month
+            $formattedDate = Carbon::parse($monthlySalary->for_month)->format('Ym'); // Format as Ym
+
+            // Get the user ID without the UID prefix
+            $userId = str_replace('UID', '', $monthlySalary->user->userid);
+
+            // Generate a unique payslip_id with PID prefix
+            $monthlySalary->payslip_id = 'PID' . $userId . $formattedDate;
+        });
+    }
 }

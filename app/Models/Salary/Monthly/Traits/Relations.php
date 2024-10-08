@@ -34,4 +34,12 @@ trait Relations
     {
         return $this->hasMany(MonthlySalaryBreakdown::class);
     }
+    
+    /**
+     * Get the payer for the monthly_salary.
+     */
+    public function payer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'paid_by');
+    }
 }

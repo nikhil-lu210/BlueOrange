@@ -88,6 +88,15 @@ trait Relations
     }
 
     /**
+     * Get the paid_salaries associated with the user.
+     * the salaries has been paid by this user
+     */
+    public function paid_salaries(): HasMany
+    {
+        return $this->hasMany(MonthlySalary::class, 'paid_by');
+    }
+
+    /**
      * Get the attendances associated with the user.
      */
     public function attendances(): HasMany

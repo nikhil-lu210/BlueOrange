@@ -2,9 +2,14 @@
 
 namespace App\Http\Controllers\Administration\Accounts\Salary;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\Holiday\Holiday;
+use App\Models\Weekend\Weekend;
 use App\Http\Controllers\Controller;
+use App\Models\Attendance\Attendance;
 use App\Models\Salary\Monthly\MonthlySalary;
+use App\Services\Administration\Attendance\AttendanceService;
 
 class MonthlySalaryController extends Controller
 {
@@ -39,8 +44,23 @@ class MonthlySalaryController extends Controller
      */
     public function show(MonthlySalary $monthly_salary)
     {
-        // dd($monthly_salary);
-        return view('administration.accounts.salary.monthly.show', compact(['monthly_salary']));
+        $month = Carbon::parse($monthly_salary->for_month);
+
+        // Get total worked hours from the attendances table
+        $attendanceService = new AttendanceService();
+        $totalWorkedRegular = $attendanceService->userTotalWorkingHour($monthly_salary->user, 'Regular', $month);
+        $totalWorkedOvertime = $attendanceService->userTotalWorkingHour($monthly_salary->user, 'Overtime', $month);
+
+        $salary = [
+            'total_worked_regular' => $totalWorkedRegular,
+            'total_worked_overtime' => $totalWorkedOvertime,
+            'earnings' => $monthly_salary->monthly_salary_breakdowns()->whereType('Plus (+)')->get(),
+            'deductions' => $monthly_salary->monthly_salary_breakdowns()->whereType('Minus (-)')->get(),
+            'total_earning' => $monthly_salary->monthly_salary_breakdowns()->whereType('Plus (+)')->sum('total'),
+            'total_deduction' => $monthly_salary->monthly_salary_breakdowns()->whereType('Minus (-)')->sum('total'),
+        ];
+        
+        return view('administration.accounts.salary.monthly.show', compact(['monthly_salary', 'salary']));
     }
 
     /**

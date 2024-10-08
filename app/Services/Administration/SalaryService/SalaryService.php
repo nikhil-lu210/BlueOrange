@@ -44,10 +44,14 @@ class SalaryService
             $totalPayable = $this->calculateTotalPayable($totalRegularTimeInSeconds, $totalOvertimeInSeconds, $hourlyRate);
 
             $totalOverBreakInSeconds = $this->getTotalOverBreakInSeconds($user, $month);
-            $overBreakPenaltyAmount = $this->calculateOverBreakPenalty($totalOverBreakInSeconds);
+            $overBreakPenaltyAmount = $this->calculateOverBreakPenalty($totalOverBreakInSeconds, $hourlyRate);
             $totalPayable -= $overBreakPenaltyAmount;
 
-            $monthlySalaryId = $this->updateOrCreateMonthlySalary($user, $salary, $month, $totalPayable);
+            // Calculate total weekends for the specific month
+            $totalWeekends = $this->calculateTotalWeekendsForMonth($month);
+
+            // Update or create the monthly salary record, including the new fields
+            $monthlySalaryId = $this->updateOrCreateMonthlySalary($user, $salary, $month, $totalPayable, $workableDays, $totalWeekends, count($holidays), $hourlyRate);
             $this->updateMonthlySalaryBreakdowns($monthlySalaryId, $totalRegularTimeInSeconds, $totalOvertimeInSeconds, $totalOverBreakInSeconds, $hourlyRate, $overBreakPenaltyAmount);
 
             DB::commit();
@@ -66,6 +70,26 @@ class SalaryService
     private function getActiveWeekends()
     {
         return Weekend::where('is_active', true)->pluck('day')->toArray();
+    }
+
+    private function calculateTotalWeekendsForMonth($month)
+    {
+        // Get the start and end date of the month
+        $startOfMonth = $month->copy()->startOfMonth();
+        $endOfMonth = $month->copy()->endOfMonth();
+        
+        // Initialize the count of weekends
+        $totalWeekends = 0;
+
+        // Loop through each day of the month
+        for ($date = $startOfMonth; $date->lte($endOfMonth); $date->addDay()) {
+            // Check if the day is Saturday (6) or Sunday (0)
+            if ($date->isSaturday() || $date->isSunday()) {
+                $totalWeekends++;
+            }
+        }
+
+        return $totalWeekends;
     }
 
     private function getHolidaysForMonth($month)
@@ -147,12 +171,18 @@ class SalaryService
             ->sum(DB::raw('TIME_TO_SEC(over_break)'));
     }
 
-    private function calculateOverBreakPenalty($totalOverBreakInSeconds)
+    private function calculateOverBreakPenalty($totalOverBreakInSeconds, $hourlyRate)
     {
-        return round(($totalOverBreakInSeconds / 3600) * 6.59, 2);
+        // Convert total overbreak seconds to hours
+        $totalOverBreakInHours = $totalOverBreakInSeconds / 3600; // Total overbreak in hours
+
+        // Calculate penalty amount
+        $overBreakPenaltyAmount = $totalOverBreakInHours * $hourlyRate; // Penalty based on hourly rate
+
+        return round($overBreakPenaltyAmount, 2); // Return rounded to 2 decimal places
     }
 
-    private function updateOrCreateMonthlySalary($user, $salary, $month, $totalPayable)
+    private function updateOrCreateMonthlySalary($user, $salary, $month, $totalPayable, $totalWorkableDays, $totalWeekends, $totalHolidays, $hourlyRate)
     {
         $forMonthString = $month->format('Y-m');
 
@@ -168,6 +198,10 @@ class SalaryService
             'for_month' => $forMonthString,
             'total_payable' => round($totalPayable, 2),
             'status' => 'Pending',
+            'total_workable_days' => $totalWorkableDays,
+            'total_weekends' => $totalWeekends,        
+            'total_holidays' => $totalHolidays,        
+            'hourly_rate' => $hourlyRate,              
         ]);
 
         return $newMonthlySalary->id; // Return the ID of the newly created record
