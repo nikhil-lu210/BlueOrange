@@ -48,9 +48,7 @@
                             @method('PUT')
                             <input type="hidden" name="id" value="{{ $weekend->id }}">
                             <label class="switch switch-square" style="margin-right: 2rem;">
-                                <input type="checkbox" name="is_active" value="1" class="switch-input" 
-                                    @if($weekend->is_active) checked @endif 
-                                    onchange="document.getElementById('form-{{ $weekend->id }}').submit();">
+                                <input type="checkbox" name="is_active" value="1" class="switch-input" @checked($weekend->is_active) onchange="document.getElementById('form-{{ $weekend->id }}').submit();">
                                 <span class="switch-toggle-slider">
                                     <span class="switch-on"><i class="ti ti-check"></i></span>
                                     <span class="switch-off"><i class="ti ti-x"></i></span>
