@@ -52,18 +52,37 @@
 <div class="row justify-content-center">
     <div class="col-md-12">
         <div class="card invoice-preview-card">
-            <div class="card-header border-bottom header-elements">
-                <h5 class="mb-0"><strong>{{ $monthly_salary->user->name }}</strong>'s Monthly Salary Details</h5>
-        
-                <div class="card-header-elements ms-auto">
-                    <button type="button" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-printer ti-xs me-1"></span>
-                        Print Invoice
-                    </button>
-                    <button type="button" class="btn btn-sm btn-dark">
-                        <span class="tf-icon ti ti-download ti-xs me-1"></span>
-                        Donwload Invoice
-                    </button>
+            <div class="card-header d-flex justify-content-between border-bottom header-elements">
+                <h5 class="card-action-title mb-0"><strong>{{ $monthly_salary->user->name }}</strong>'s Monthly Salary Details</h5>
+                <div class="card-action-element">
+                    <div class="dropdown">
+                        <button type="button" class="btn dropdown-toggle hide-arrow p-0" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="ti ti-dots-vertical text-muted"></i>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <a class="dropdown-item text-primary" href="#">
+                                    <i class="ti ti-plus me-1 fs-5" style="margin-top: -5px;"></i>
+                                    Add Earning
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-danger" href="#">
+                                    <i class="ti ti-minus me-1 fs-5" style="margin-top: -5px;"></i>
+                                    Add Deduction
+                                </a>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider" />
+                            </li>
+                            <li>
+                                <a class="dropdown-item btn btn-warning confirm-warning" href="{{ route('administration.accounts.salary.monthly.regenerate', ['monthly_salary' => $monthly_salary]) }}">
+                                    <i class="ti ti-refresh me-1 fs-5" style="margin-top: -5px;"></i>
+                                    Re-Generate Salary
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="card-body">

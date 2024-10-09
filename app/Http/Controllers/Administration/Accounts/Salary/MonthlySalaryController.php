@@ -9,6 +9,7 @@ use App\Models\Weekend\Weekend;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance\Attendance;
 use App\Models\Salary\Monthly\MonthlySalary;
+use App\Services\Administration\SalaryService\SalaryService;
 use App\Services\Administration\Attendance\AttendanceService;
 
 class MonthlySalaryController extends Controller
@@ -24,19 +25,22 @@ class MonthlySalaryController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Re-Generate Salary.
      */
-    public function create()
+    public function reGenerateSalary(MonthlySalary $monthly_salary)
     {
-        //
-    }
+        $salaryService = new SalaryService();
+        
+        $salaryService->calculateMonthlySalary($monthly_salary->user, $monthly_salary->for_month);
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
+        $updatedMonthlySalary = MonthlySalary::whereUserId($monthly_salary->user_id)
+                                        ->whereSalaryId($monthly_salary->salary_id)
+                                        ->whereForMonth($monthly_salary->for_month)
+                                        ->latest()
+                                        ->firstOrFail();
+                                        
+        toast('Salary of '.$updatedMonthlySalary->user->name.' Has Been Re-Generated Successfully.', 'success');
+        return redirect()->route('administration.accounts.salary.monthly.show', ['monthly_salary' => $updatedMonthlySalary]);
     }
 
     /**
