@@ -12,5 +12,4 @@ Route::controller(MonthlySalaryController::class)
         ->name('monthly.')
         ->group(function () {
             Route::get('/all', 'index')->name('index')->can('Salary Read');
-            Route::get('/show/{monthly_salary}', 'show')->name('show')->can('Salary Read');
         });
