@@ -8,6 +8,20 @@
 
 @section('css_links')
     {{--  External CSS  --}}
+    {{-- Select 2 --}}
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
+    
+    {{-- <!-- Vendors CSS --> --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/typeahead-js/typeahead.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
+
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/app-invoice.css') }}">
 @endsection
 
@@ -60,27 +74,45 @@
                             <i class="ti ti-dots-vertical text-muted"></i>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            <li>
-                                <a class="dropdown-item text-primary" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addEarningModal">
-                                    <i class="ti ti-plus me-1 fs-5" style="margin-top: -5px;"></i>
-                                    Add Earning
-                                </a>
-                            </li>
-                            <li>
-                                <a class="dropdown-item text-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
-                                    <i class="ti ti-minus me-1 fs-5" style="margin-top: -5px;"></i>
-                                    Add Deduction
-                                </a>
-                            </li>
-                            <li>
-                                <hr class="dropdown-divider" />
-                            </li>
-                            <li>
-                                <a class="dropdown-item btn btn-warning confirm-warning" href="{{ route('administration.accounts.salary.monthly.regenerate', ['monthly_salary' => $monthly_salary]) }}">
-                                    <i class="ti ti-refresh me-1 fs-5" style="margin-top: -5px;"></i>
-                                    Re-Generate Salary
-                                </a>
-                            </li>
+                            @if ($monthly_salary->status !== 'Paid')
+                                <li>
+                                    <a class="dropdown-item text-primary" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addEarningModal">
+                                        <i class="ti ti-plus me-1 fs-5" style="margin-top: -5px;"></i>
+                                        Add Earning
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
+                                        <i class="ti ti-minus me-1 fs-5" style="margin-top: -5px;"></i>
+                                        Add Deduction
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li>
+                                    <a class="dropdown-item btn btn-warning confirm-warning" href="{{ route('administration.accounts.salary.monthly.regenerate', ['monthly_salary' => $monthly_salary]) }}">
+                                        <i class="ti ti-refresh me-1 fs-5" style="margin-top: -5px;"></i>
+                                        Re-Generate Salary
+                                    </a>
+                                </li>
+                            @else
+                                <li>
+                                    <a class="dropdown-item text-dark" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
+                                        <i class="ti ti-download me-1 fs-5" style="margin-top: -5px;"></i>
+                                        Download Payslip
+                                    </a>
+                                </li>
+                                <li>
+                                    <hr class="dropdown-divider" />
+                                </li>
+                                <li>
+                                    <a class="dropdown-item btn btn-primary" href="#">
+                                        <i class="ti ti-mail-share me-1 fs-5"></i>
+                                        Send Email (Payslip)
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
                     </div>
                 </div>
@@ -345,13 +377,19 @@
                 </div>
             </div>
 
-            <div class="card-footer border-top pt-4">
-                <div class="row">
-                    <div class="col-12">
-                        <u class="fw-medium">Note:</u>
-                        <span class="text-capitalize">This is a Electronic Generated Payslip, thus no signature or stamp required. Thank You!</span>
-                    </div>
+            <div class="card-footer border-top d-flex justify-content-between pt-4">
+                <div class="payslip-note pt-2">
+                    <u class="fw-medium">Note:</u>
+                    <span class="text-capitalize">This is a Electronic Generated Payslip, thus no signature or stamp required. Thank You!</span>
                 </div>
+                @if ($monthly_salary->status !== 'Paid') 
+                    <div class="footer-action">
+                        <a href="javascrip:void(0);" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#markAsPaidModal">
+                            <i class="ti ti-check me-2"></i>
+                            <span>Mark As Paid</span>
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -359,19 +397,49 @@
 
 
 {{-- Modals --}}
-@include('administration.accounts.salary.monthly.modals._add_earning')
-@include('administration.accounts.salary.monthly.modals._add_deduction')
+@if ($monthly_salary->status !== 'Paid')
+    @include('administration.accounts.salary.monthly.modals._add_earning')
+    @include('administration.accounts.salary.monthly.modals._add_deduction')
+    @include('administration.accounts.salary.monthly.modals._mark_as_paid')
+@endif
 
 @endsection
 
 
 @section('script_links')
     {{--  External Javascript Links --}}
+    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+
+    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
+    
+    {{-- <!-- Vendors JS --> --}}
+    <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Code Here
-    </script>    
+        // Custom Script Here
+        $(document).ready(function() {
+            $('.bootstrap-select').each(function() {
+                if (!$(this).data('bs.select')) { // Check if it's already initialized
+                    $(this).selectpicker();
+                }
+            });
+        });
+        
+        $(document).ready(function () {
+            $('.date-time-picker').flatpickr({
+                enableTime: true,
+                dateFormat: 'Y-m-d H:i:s',
+                defaultDate: new Date()
+            }); 
+        });
+    </script>
 @endsection

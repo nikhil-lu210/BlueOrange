@@ -17,16 +17,20 @@ class MonthlySalary extends Model
     protected $cascadeDeletes = [];
 
     protected $fillable = [
-        'payslip_id',
-        'user_id',
-        'salary_id',
-        'for_month',
-        'total_workable_days',
-        'total_weekends',
-        'total_holidays',
-        'hourly_rate',
-        'total_payable',
-        'status',
+        'payslip_id', // unique
+        'user_id', // from users table
+        'salary_id', // from salaries table
+        'for_month', // Y-m format
+        'total_workable_days', // tinyInteger
+        'total_weekends', // tinyInteger
+        'total_holidays', // tinyInteger (nullable)
+        'hourly_rate', // float (8,2)
+        'total_payable', // float (8,2)
+        'paid_by', // from users table (nullable)
+        'paid_through', // nullable
+        'payment_proof', // nullable
+        'paid_at', // nullable
+        'status', // enum ['Paid', 'Pending', 'Canceled'] (default = Pending)
     ];
 
     protected static function boot()

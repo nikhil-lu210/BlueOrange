@@ -34,6 +34,12 @@ return new class extends Migration
 
             $table->float('total_payable', 8, 2);
             $table->foreignId('paid_by')->nullable()->constrained('users');
+                  
+            $table->string('paid_through')
+                  ->nullable()
+                  ->comment('Paid Through Cash / Bank Transfer / Cheque Book / Mobile Banking (bkash, Nagad, uPay etc.)');
+            $table->tinyText('payment_proof')->nullable();
+            $table->timestamp('paid_at')->nullable();
 
             $table->enum('status', ['Paid', 'Pending', 'Canceled'])->default('Pending');
 

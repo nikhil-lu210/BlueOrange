@@ -87,6 +87,36 @@ class MonthlySalaryController extends Controller
         return $this->updateEarningDeductionMonthlySalary($request, $monthly_salary, 'deduction');
     }
 
+    /**
+     * Mark as "Paid" the monthly salary.
+     */
+    public function markAsPaid(Request $request, MonthlySalary $monthly_salary)
+    {
+        // dd($request->all(), $monthly_salary->toArray());
+        $request->validate([
+            'paid_through' => ['required', 'string', 'max:50'],
+            'paid_at' => ['required', 'date_format:Y-m-d H:i:s'],
+            'payment_proof' => ['required', 'string'],
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $monthly_salary) {
+                $monthly_salary->update([
+                    'paid_by' => auth()->user()->id,
+                    'paid_through' => $request->paid_through,
+                    'paid_at' => $request->paid_at,
+                    'payment_proof' => $request->payment_proof,
+                    'status' => 'Paid'
+                ]);
+            });
+            
+            toast($monthly_salary->user->name . '\'s monthly salary has been paid.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
 
     /**
      * Remove the specified resource from storage.
