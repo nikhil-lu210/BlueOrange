@@ -75,7 +75,7 @@
                                     {!! show_user_name_and_avatar($monthlySalary->user) !!}
                                 </td>
                                 <td>
-                                    <a href="#" target="_blank" class="text-bold" data-bs-toggle="tooltip" title="{{ spell_number($monthlySalary->salary->total) }} taka only">
+                                    <a href="{{ route('administration.settings.user.salary.show', ['salary' => $monthlySalary->salary, 'user' => $monthlySalary->user]) }}" target="_blank" class="text-bold" data-bs-toggle="tooltip" title="{{ spell_number($monthlySalary->salary->total) }} taka only">
                                         <i class="ti ti-currency-taka" style="margin-top: -4px; margin-right: -5px;"></i>
                                         {{ format_number($monthlySalary->salary->total) }}
                                     </a>
