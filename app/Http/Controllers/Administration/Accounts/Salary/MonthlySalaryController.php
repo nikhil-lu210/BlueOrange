@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Salary\Monthly\MonthlySalary;
+use App\Notifications\Administration\Accounts\Salary\MonthlySalaryNotification;
 use App\Services\Administration\SalaryService\SalaryService;
 use App\Services\Administration\Attendance\AttendanceService;
 
@@ -95,7 +96,8 @@ class MonthlySalaryController extends Controller
         // dd($request->all(), $monthly_salary->toArray());
         $request->validate([
             'paid_through' => ['required', 'string', 'max:50'],
-            'paid_at' => ['required', 'date_format:Y-m-d H:i:s'],
+            // 'paid_at' => ['required', 'date_format:Y-m-d H:i:s'],
+            'paid_at' => ['required'],
             'payment_proof' => ['required', 'string'],
         ]);
 
@@ -108,6 +110,9 @@ class MonthlySalaryController extends Controller
                     'payment_proof' => $request->payment_proof,
                     'status' => 'Paid'
                 ]);
+
+                // Send Notification to System
+                $monthly_salary->user->notify(new MonthlySalaryNotification($monthly_salary));
             });
             
             toast($monthly_salary->user->name . '\'s monthly salary has been paid.', 'success');

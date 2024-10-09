@@ -67,7 +67,11 @@
     <div class="col-md-12">
         <div class="card invoice-preview-card">
             <div class="card-header d-flex justify-content-between border-bottom header-elements">
-                <h5 class="card-action-title mb-0"><strong>{{ $monthly_salary->user->name }}</strong>'s Monthly Salary Details</h5>
+                <h5 class="card-action-title mb-0">
+                    <span class="text-dark text-bold">{{ $monthly_salary->user->name }}'s</span> 
+                    <span class="text-muted">Monthly Salary Details of</span> 
+                    <span class="text-dark text-bold">{{ show_month($monthly_salary->for_month) }}</span>
+                </h5>
                 <div class="card-action-element">
                     <div class="dropdown">
                         <button type="button" class="btn dropdown-toggle hide-arrow p-0" data-bs-toggle="dropdown" aria-expanded="false">
