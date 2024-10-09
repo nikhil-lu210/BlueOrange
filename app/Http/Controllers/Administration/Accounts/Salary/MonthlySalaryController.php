@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Administration\Accounts\Salary;
 
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Services\Administration\SalaryService\SalaryService;
@@ -70,20 +72,21 @@ class MonthlySalaryController extends Controller
     }
 
     /**
-     * add earning for monthly salary.
+     * Add earning for monthly salary.
      */
     public function addEarning(Request $request, MonthlySalary $monthly_salary)
     {
-        dd($request->all(), $monthly_salary->toArray());
+        return $this->updateEarningDeductionMonthlySalary($request, $monthly_salary, 'earning');
     }
 
     /**
-     * add Deduction for monthly salary.
+     * Add deduction for monthly salary.
      */
     public function addDeduction(Request $request, MonthlySalary $monthly_salary)
     {
-        dd($request->all(), $monthly_salary->toArray());
+        return $this->updateEarningDeductionMonthlySalary($request, $monthly_salary, 'deduction');
     }
+
 
     /**
      * Remove the specified resource from storage.
@@ -91,5 +94,47 @@ class MonthlySalaryController extends Controller
     public function destroy(MonthlySalary $monthly_salary)
     {
         //
+    }
+
+    
+
+    /**
+     * Update monthly salary by adding earning or deduction.
+     */
+    private function updateEarningDeductionMonthlySalary(Request $request, MonthlySalary $monthly_salary, string $operation)
+    {
+        $request->validate([
+            'total' => ['required', 'numeric', 'min:0.01'],
+            'reason' => ['required', 'string', 'max:50'],
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $monthly_salary, $operation) {
+                // Determine if it’s an addition or subtraction
+                $adjustment = $operation === 'earning' ? $request->total : -$request->total;
+                $updatedTotalPayable = $monthly_salary->total_payable + $adjustment;
+
+                $monthly_salary->update([
+                    'total_payable' => $updatedTotalPayable
+                ]);
+
+                // Determine type label
+                $type = $operation === 'earning' ? 'Plus (+)' : 'Minus (-)';
+
+                // Create the breakdown entry
+                $monthly_salary->monthly_salary_breakdowns()->create([
+                    'type' => $type,
+                    'reason' => $request->reason,
+                    'total' => $request->total,
+                ]);
+            });
+
+            // Set success message based on operation
+            $message = ucfirst($operation) . ' added for ' . $monthly_salary->user->name . '\'s monthly salary.';
+            toast($message, 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
 }
