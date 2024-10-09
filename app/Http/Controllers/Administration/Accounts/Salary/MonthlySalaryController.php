@@ -22,29 +22,6 @@ class MonthlySalaryController extends Controller
     }
 
     /**
-     * Re-Generate Salary.
-     */
-    public function reGenerateSalary(MonthlySalary $monthly_salary)
-    {
-        if ($monthly_salary->status && $monthly_salary->status == 'Paid') {
-            alert('Warning!', 'You cannot re-generate the salary which has been already marked as Paid.', 'warning');
-            return redirect()->back();
-        }
-        $salaryService = new SalaryService();
-        
-        $salaryService->calculateMonthlySalary($monthly_salary->user, $monthly_salary->for_month);
-
-        $updatedMonthlySalary = MonthlySalary::whereUserId($monthly_salary->user_id)
-                                        ->whereSalaryId($monthly_salary->salary_id)
-                                        ->whereForMonth($monthly_salary->for_month)
-                                        ->latest()
-                                        ->firstOrFail();
-                                        
-        toast('Salary of '.$updatedMonthlySalary->user->name.' Has Been Re-Generated Successfully.', 'success');
-        return redirect()->route('administration.accounts.salary.monthly.show', ['monthly_salary' => $updatedMonthlySalary]);
-    }
-
-    /**
      * Display the specified resource.
      */
     public function show(MonthlySalary $monthly_salary)
@@ -70,19 +47,42 @@ class MonthlySalaryController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Re-Generate Salary.
      */
-    public function edit(MonthlySalary $monthly_salary)
+    public function reGenerateSalary(MonthlySalary $monthly_salary)
     {
-        //
+        if ($monthly_salary->status && $monthly_salary->status == 'Paid') {
+            alert('Warning!', 'You cannot re-generate the salary which has been already marked as Paid.', 'warning');
+            return redirect()->back();
+        }
+        $salaryService = new SalaryService();
+        
+        $salaryService->calculateMonthlySalary($monthly_salary->user, $monthly_salary->for_month);
+
+        $updatedMonthlySalary = MonthlySalary::whereUserId($monthly_salary->user_id)
+                                        ->whereSalaryId($monthly_salary->salary_id)
+                                        ->whereForMonth($monthly_salary->for_month)
+                                        ->latest()
+                                        ->firstOrFail();
+                                        
+        toast('Salary of '.$updatedMonthlySalary->user->name.' Has Been Re-Generated Successfully.', 'success');
+        return redirect()->route('administration.accounts.salary.monthly.show', ['monthly_salary' => $updatedMonthlySalary]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * add earning for monthly salary.
      */
-    public function update(Request $request, MonthlySalary $monthly_salary)
+    public function addEarning(Request $request, MonthlySalary $monthly_salary)
     {
-        //
+        dd($request->all(), $monthly_salary->toArray());
+    }
+
+    /**
+     * add Deduction for monthly salary.
+     */
+    public function addDeduction(Request $request, MonthlySalary $monthly_salary)
+    {
+        dd($request->all(), $monthly_salary->toArray());
     }
 
     /**

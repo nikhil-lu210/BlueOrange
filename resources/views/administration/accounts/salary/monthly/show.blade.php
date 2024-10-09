@@ -61,13 +61,13 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
-                                <a class="dropdown-item text-primary" href="#">
+                                <a class="dropdown-item text-primary" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addEarningModal">
                                     <i class="ti ti-plus me-1 fs-5" style="margin-top: -5px;"></i>
                                     Add Earning
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-danger" href="#">
+                                <a class="dropdown-item text-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
                                     <i class="ti ti-minus me-1 fs-5" style="margin-top: -5px;"></i>
                                     Add Deduction
                                 </a>
@@ -356,6 +356,11 @@
         </div>
     </div>
 </div>
+
+
+{{-- Modals --}}
+@include('administration.accounts.salary.monthly.modals._add_earning')
+@include('administration.accounts.salary.monthly.modals._add_deduction')
 
 @endsection
 
