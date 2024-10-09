@@ -4,10 +4,7 @@ namespace App\Http\Controllers\Administration\Accounts\Salary;
 
 use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Models\Holiday\Holiday;
-use App\Models\Weekend\Weekend;
 use App\Http\Controllers\Controller;
-use App\Models\Attendance\Attendance;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Services\Administration\SalaryService\SalaryService;
 use App\Services\Administration\Attendance\AttendanceService;
@@ -29,6 +26,10 @@ class MonthlySalaryController extends Controller
      */
     public function reGenerateSalary(MonthlySalary $monthly_salary)
     {
+        if ($monthly_salary->status && $monthly_salary->status == 'Paid') {
+            alert('Warning!', 'You cannot re-generate the salary which has been already marked as Paid.', 'warning');
+            return redirect()->back();
+        }
         $salaryService = new SalaryService();
         
         $salaryService->calculateMonthlySalary($monthly_salary->user, $monthly_salary->for_month);
