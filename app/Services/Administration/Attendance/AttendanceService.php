@@ -23,16 +23,16 @@ class AttendanceService
      */
     public function calculateTotalWork($user, $type)
     {
-        // Fetch all the total_time values for type
+        // Fetch all the total_adjusted_time values for type
         $totalTimes = Attendance::where('user_id', $user->id)
             ->where('type', $type)
             ->whereNotNull('clock_out')
-            ->pluck('total_time'); // Get all the total_time values
+            ->pluck('total_adjusted_time'); // Get all the total_adjusted_time values
 
         // Initialize the total seconds variable
         $totalSeconds = 0;
 
-        // Convert each total_time (in HH:MM:SS) to seconds and add it to totalSeconds
+        // Convert each total_adjusted_time (in HH:MM:SS) to seconds and add it to totalSeconds
         foreach ($totalTimes as $time) {
             $totalSeconds += $this->timeToSeconds($time);
         }
@@ -49,7 +49,7 @@ class AttendanceService
         // Set the default month to the current month if not provided
         $month = $month ?: date('Y-m-d');
 
-        // Fetch all the total_time values for the given type and month
+        // Fetch all the total_adjusted_time values for the given type and month
         $totalTimes = Attendance::where('user_id', $user->id)
             ->where('type', $type)
             ->whereNotNull('clock_out')
@@ -57,12 +57,12 @@ class AttendanceService
                 Carbon::now()->startOfMonth()->format('Y-m-d'),
                 Carbon::now()->endOfMonth()->format('Y-m-d')
             ])
-            ->pluck('total_time'); // Get all total_time values
+            ->pluck('total_adjusted_time'); // Get all total_adjusted_time values
 
         // Initialize the total seconds variable
         $totalSeconds = 0;
 
-        // Convert each total_time (in HH:MM:SS) to seconds and add to totalSeconds
+        // Convert each total_adjusted_time (in HH:MM:SS) to seconds and add to totalSeconds
         foreach ($totalTimes as $time) {
             $totalSeconds += $this->timeToSeconds($time);
         }
@@ -81,8 +81,7 @@ class AttendanceService
      */
     public function userTotalWorkingHour($user, $type = null, $month = null)
     {
-        $attendances = Attendance::where('user_id', $user->id)
-            ->whereNotNull('clock_out');
+        $attendances = Attendance::where('user_id', $user->id)->whereNotNull('clock_out');
 
         // Filter by type if provided
         if ($type) {
@@ -97,8 +96,8 @@ class AttendanceService
             ]);
         }
 
-        // Get all total_time values for the filtered attendances
-        $totalTimes = $attendances->pluck('total_time');
+        // Get all total_adjusted_time values for the filtered attendances
+        $totalTimes = $attendances->pluck('total_adjusted_time');
 
         $totalSeconds = 0;
         foreach ($totalTimes as $time) {

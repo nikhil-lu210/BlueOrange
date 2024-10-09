@@ -158,12 +158,15 @@
                                         <span class="fw-medium mx-2 text-heading">Total Worked:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        @isset($attendance->total_time)
+                                        @isset($attendance->total_adjusted_time)
                                             @php
                                                 $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
                                             @endphp
                                             <b>
-                                                {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
+                                                {!! total_time_with_min_hour($attendance->total_adjusted_time, $totalWorkingHour) !!}
+                                                @if ($attendance->type == 'Regular')
+                                                    <small class="text-muted" title="Total Attendance Time">({{ total_time($attendance->total_time) }})</small>
+                                                @endif
                                             </b>
                                         @else
                                             <b class="text-success text-uppercase">Running</b>
@@ -318,7 +321,7 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="clock_out" class="form-label">{{ __('Clock Out') }} <strong class="text-danger">*</strong></label>
+                            <label for="clock_out" class="form-label">{{ __('Clock Out') }}</label>
                             <input type="text" id="clock_out" name="clock_out" value="{{ $attendance->clock_out ?? '' }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror"/>
                             @error('clock_out')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>

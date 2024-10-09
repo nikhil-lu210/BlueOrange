@@ -26,6 +26,13 @@
     {{--  External CSS  --}}
     <style>
     /* Custom CSS Here */
+    td.not-allowed {
+        background: #dbdade;
+        color: white !important;
+        text-align: center;
+        text-transform: uppercase;
+        cursor: not-allowed;
+    }
     </style>
 @endsection
 
@@ -146,7 +153,7 @@
                             <th>Name</th>
                             <th>Clocked IN</th>
                             <th>Clock Out</th>
-                            <th>Breaks</th>
+                            <th class="text-center">Breaks</th>
                             <th>Total</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -158,10 +165,10 @@
                                 <td>
                                     <span class="text-truncate">{{ show_date($attendance->clock_in_date) }}</span>
                                     <br>
-                                    <small class="text-bold text-{{ $attendance->type === 'Regular' ? 'success' : 'primary' }}">{{ $attendance->type }}</small>
+                                    <small class="text-bold text-{{ $attendance->type === 'Regular' ? 'success' : 'warning' }}">{{ $attendance->type }}</small>
                                 </td>
                                 <td>
-                                    {!! show_user_name_and_avatar($attendance->user) !!}
+                                    {!! show_user_name_and_avatar($attendance->user, role: null) !!}
                                 </td>
                                 <td>
                                     <div class="d-grid">
@@ -193,9 +200,9 @@
                                         <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
                                     </div>
                                 </td>
-                                <td>
-                                    <div class="d-grid">
-                                        @if ($attendance->type == 'Regular') 
+                                <td class="text-center {{ $attendance->type == 'Overtime' ? 'not-allowed' : '' }}">
+                                    @if ($attendance->type == 'Regular') 
+                                        <div class="d-grid">
                                             <b class="text-truncate">
                                                 <span class="text-warning" title="Total Break Time">
                                                     {{ total_time($attendance->total_break_time) }}
@@ -209,27 +216,30 @@
                                             <small class="text-truncate text-muted">
                                                 Breaks Taken: {{ $attendance->total_breaks_taken }}
                                             </small>
-                                        @else 
-                                            <b class="text-muted">No Break</b>
-                                        @endif
-                                    </div>
+                                        </div>
+                                    @else 
+                                        <b class="text-muted">No Break</b>
+                                    @endif
                                 </td>
                                 <td>
                                     <div class="d-grid">
-                                        @isset($attendance->total_time)
-                                            @php
-                                                $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                            @endphp
-                                            <b>
-                                                {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
+                                        @if ($attendance->type == 'Regular') 
+                                            @isset($attendance->total_adjusted_time)
+                                                @php
+                                                    $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                                @endphp
+                                                <b title="Adjusted Total Time">
+                                                    {!! total_time_with_min_hour($attendance->total_adjusted_time, $totalWorkingHour) !!}
+                                                </b>
+                                            @else
+                                                <b class="text-success text-uppercase">Running</b>
+                                            @endisset
+                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Total Working Time">{{ $attendance->total_time }}</small>
+                                        @else 
+                                            <b class="text-warning">
+                                                {{ total_time($attendance->total_time) }}
                                             </b>
-                                        @else
-                                            <b class="text-success text-uppercase">Running</b>
-                                        @endisset
-                                        @php
-                                            $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                        @endphp
-                                        <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
+                                        @endif
                                     </div>
                                 </td>
                                 <td class="text-center">

@@ -19,6 +19,7 @@ class EmployeeShift extends Model
         'user_id',
         'start_time',
         'end_time',
+        'total_time',
         'implemented_from',
         'implemented_to',
         'status'

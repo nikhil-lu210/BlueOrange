@@ -193,6 +193,11 @@
                     <div data-i18n="System Settings">{{ __('System Settings') }}</div>
                 </a>
                 <ul class="menu-sub">
+                    @can ('Weekend Read') 
+                        <li class="menu-item {{ request()->is('settings/system/weekend*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.settings.system.weekend.index') }}" class="menu-link">{{ __('Weekends') }}</a>
+                        </li>
+                    @endcan
                     @can ('Holiday Read') 
                         <li class="menu-item {{ request()->is('settings/system/holiday*') ? 'active' : '' }}">
                             <a href="{{ route('administration.settings.system.holiday.index') }}" class="menu-link">{{ __('Holidays') }}</a>
@@ -298,6 +303,25 @@
                 </li>
             </ul>
         </li>
+        
+        <!-- Accounts -->
+        @canany (['Salary Create', 'Salary Read'])
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">{{ __('Accounts') }}</span>
+            </li>
+
+            <li class="menu-item {{ request()->is('accounts/salary*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-businessplan"></i>
+                    <div data-i18n="Salary">{{ __('Salary') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('accounts/salary/monthly/all*') ? 'active' : '' }}">
+                        <a href="{{ route('administration.accounts.salary.monthly.index') }}" class="menu-link">{{ __('Monthly Salaries') }}</a>
+                    </li>
+                </ul>
+            </li>
+        @endcanany
         
 
         <!-- Logs -->

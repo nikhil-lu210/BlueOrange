@@ -240,8 +240,9 @@
                         <thead>
                             <tr>
                                 <th>Sl.</th>
-                                <th>Salary Proccessed</th>
-                                <th class="text-center">Status</th>
+                                <th>Payslip ID</th>
+                                <th>Salary Paid At</th>
+                                <th class="text-center">Total Payment</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -249,15 +250,25 @@
                             @foreach ($salary->monthly_salaries as $key => $monthlySalary) 
                                 <tr>
                                     <th>#{{ serial($salary->monthly_salaries, $key) }}</th>
-                                    <td>{{ show_date_time($monthlySalary->created_at) }}</td>
+                                    <th><code class="text-bold">{{ $monthlySalary->payslip_id }}</code></th>
+                                    <td>
+                                        @isset ($monthlySalary->paid_at)
+                                            {{ show_date_time($monthlySalary->paid_at) }}
+                                        @else
+                                            <span class="badge bg-label-{{ $monthlySalary->status == 'Paid' ? 'success' : 'primary' }}">{{ $monthlySalary->status }}</span>
+                                        @endisset
+                                    </td>
                                     <td class="text-center">
-                                        <span class="badge bg-label-{{ $monthlySalary->status == 'Paid' ? 'success' : 'primary' }}">{{ $monthlySalary->status }}</span>
+                                        <span class="text-bold" data-bs-toggle="tooltip" title="{{ spell_number($monthlySalary->total_payable) }} taka only">
+                                            <i class="ti ti-currency-taka" style="margin-top: -4px; margin-right: -5px;"></i>
+                                            {{ format_number($monthlySalary->total_payable) }}
+                                        </span>
                                     </td>
                                     <td class="text-center">
                                         <a href="#" class="btn btn-sm btn-icon confirm-success" data-bs-toggle="tooltip" title="Download Invoice">
                                             <i class="text-dark ti ti-download"></i>
                                         </a>
-                                        <a href="{{ route('administration.settings.user.salary.monthly.show', ['user' => $user, 'monthly_salary' => $monthlySalary]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
+                                        <a href="{{ route('administration.accounts.salary.monthly.show', ['monthly_salary' => $monthlySalary]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
                                             <i class="text-primary ti ti-info-hexagon"></i>
                                         </a>
                                     </td>

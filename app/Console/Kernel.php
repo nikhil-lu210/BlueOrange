@@ -13,6 +13,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+
+        // Schedule to auto calculate monthly salary for all users on every months 1st date at 8:00 AM
+        $schedule->command('salaries:calculate')->monthlyOn(1, '08:00')->timezone(config('app.timezone'));
     }
 
     /**

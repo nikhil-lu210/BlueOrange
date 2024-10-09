@@ -26,6 +26,7 @@ class PermissionsTableSeeder extends Seeder
             'Role',
             'User',
             'Salary',
+            'Weekend',
             'Holiday',
             'Group Chatting',
         ];

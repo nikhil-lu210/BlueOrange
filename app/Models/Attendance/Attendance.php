@@ -33,6 +33,7 @@ class Attendance extends Model
         'clock_in',
         'clock_out',
         'total_time',
+        'total_adjusted_time',
         'type',
         'qr_clockin_scanner_id',
         'qr_clockout_scanner_id',
