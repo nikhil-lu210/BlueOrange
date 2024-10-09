@@ -70,6 +70,25 @@ if (!function_exists('show_date')) {
     }
 }
 
+if (!function_exists('show_month')) {
+
+    /**
+     * Format a given date, datetime, or month (Y-m) to "Month Year" format.
+     *
+     * @param  string|null  $month
+     * @return string
+     */
+    function show_month($month = null)
+    {
+        // If no $month is passed, use the current date
+        $carbon = $month ? Carbon::parse($month) : Carbon::now();
+        
+        // Format to Month Year (e.g., September 2024)
+        return $carbon->format('F Y');
+    }
+}
+
+
 
 
 if (!function_exists('show_date_month_day')) {

@@ -48,7 +48,7 @@
                     <thead>
                         <tr>
                             <th><i class="ti ti-hash"></i></th>
-                            <th>Paid At</th>
+                            <th>Payment For</th>
                             <th>Employee</th>
                             <th>Base Salary</th>
                             <th>Total Payable</th>
@@ -61,9 +61,15 @@
                             <tr>
                                 <th>#{{ serial($monthly_salaries, $key) }}</th>
                                 <td>
-                                    <span class="text-bold">{{ show_date($monthlySalary->created_at) }}</span>
-                                    <br>
-                                    at <span class="text-bold">{{ show_time($monthlySalary->created_at) }}</span>
+                                    <span class="text-bold">{{ show_month($monthlySalary->for_month) }}</span>
+                                    @isset ($monthlySalary->paid_at) 
+                                        <br>
+                                        <span title="Paid At">
+                                            <span class="text-muted">{{ show_date($monthlySalary->paid_at) }}</span>
+                                            <br>
+                                            at <span class="text-muted">{{ show_time($monthlySalary->paid_at) }}</span>
+                                        </span>
+                                    @endisset
                                 </td>
                                 <td>
                                     {!! show_user_name_and_avatar($monthlySalary->user) !!}

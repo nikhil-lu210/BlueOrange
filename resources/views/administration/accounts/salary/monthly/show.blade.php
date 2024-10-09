@@ -165,11 +165,17 @@
                         <div>
                             <h4 class="fw-medium mb-2 text-uppercase">#{{ $monthly_salary->payslip_id }}</h4>
                             <div class="mb-2 pt-1">
-                                <span>Payment Date:</span>
-                                <span class="fw-medium">May 25, 2021</span>
+                                <span class="text-bold text-dark">Payment For:</span>
+                                <span class="fw-medium">{{ show_month($monthly_salary->for_month) }}</span>
                             </div>
+                            @isset ($monthly_salary->paid_at) 
+                                <div class="mb-2 pt-1">
+                                    <span class="text-bold text-dark">Paid At:</span>
+                                    <span class="fw-medium">{{ show_date_time($monthly_salary->paid_at) }}</span>
+                                </div>
+                            @endisset
                             <div class="pt-1">
-                                <span>Pay To:</span>
+                                <span class="text-bold text-dark">Pay To:</span>
                                 <span class="fw-bold">
                                     <a href="{{ route('administration.settings.user.show.profile', ['user' => $monthly_salary->user]) }}" target="_blank">{{ $monthly_salary->user->name }}</a>
                                 </span>
@@ -235,7 +241,7 @@
                         </table>
                     </div>
                     <div class="col-md-6">
-                        <h6 class="mb-3 text-bold">Work Summary <small class="text-muted">(September 2024)</small></h6>
+                        <h6 class="mb-3 text-bold">Work Summary <small class="text-muted">({{ show_month($monthly_salary->for_month) }})</small></h6>
                         <table class="table table-striped">
                             <tbody>
                                 <tr>
@@ -371,6 +377,13 @@
                                 <span class="fw-bold text-success">
                                     <i class="ti ti-currency-taka"></i>{{ format_number($monthly_salary->total_payable) }}
                                 </span>
+                            </dd>
+                        </dl>
+                        <dl class="row">
+                            <dd class="col-12 text-end">
+                                <small class="text-muted text-capitalize">
+                                    <span class="text-dark">{{ spell_number($monthly_salary->total_payable) }}</span> taka only
+                                </small>
                             </dd>
                         </dl>
                     </div>
