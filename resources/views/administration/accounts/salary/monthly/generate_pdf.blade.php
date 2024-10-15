@@ -6,7 +6,7 @@
         @include('layouts.administration.partials.metas')
         {{-- Meta Ends --}}
         
-        <title>{{ config('app.name') }} || Not Authorized</title>
+        <title>{{ config('app.name') }} || Monthly Salary Details</title>
         <!-- Favicon -->
         <link rel="icon" type="image/x-icon" href="{{ asset('Logo/logo_white_01.png') }}" />
 
@@ -22,8 +22,8 @@
     <body>
         <!-- Content -->
 
-        <!-- Not Authorized -->
-        <div class="container-fluid">
+        <!-- Monthly Salary Details -->
+        <div class="container-fluid mt-5 mb-5">
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <div class="card invoice-preview-card">
@@ -75,11 +75,17 @@
                                     <div>
                                         <h4 class="fw-medium mb-2 text-uppercase">#{{ $monthly_salary->payslip_id }}</h4>
                                         <div class="mb-2 pt-1">
-                                            <span>Payment Date:</span>
-                                            <span class="fw-medium">May 25, 2021</span>
+                                            <span class="text-bold text-dark">Payment For:</span>
+                                            <span class="fw-medium">{{ show_month($monthly_salary->for_month) }}</span>
                                         </div>
+                                        @isset ($monthly_salary->paid_at) 
+                                            <div class="mb-2 pt-1">
+                                                <span class="text-bold text-dark">Paid At:</span>
+                                                <span class="fw-medium">{{ show_date_time($monthly_salary->paid_at) }}</span>
+                                            </div>
+                                        @endisset
                                         <div class="pt-1">
-                                            <span>Pay To:</span>
+                                            <span class="text-bold text-dark">Pay To:</span>
                                             <span class="fw-bold">
                                                 <a href="{{ route('administration.settings.user.show.profile', ['user' => $monthly_salary->user]) }}" target="_blank">{{ $monthly_salary->user->name }}</a>
                                             </span>
@@ -145,7 +151,7 @@
                                     </table>
                                 </div>
                                 <div class="col-md-6">
-                                    <h6 class="mb-3 text-bold">Work Summary <small class="text-muted">(September 2024)</small></h6>
+                                    <h6 class="mb-3 text-bold">Work Summary <small class="text-muted">({{ show_month($monthly_salary->for_month) }})</small></h6>
                                     <table class="table table-striped">
                                         <tbody>
                                             <tr>
@@ -283,22 +289,27 @@
                                             </span>
                                         </dd>
                                     </dl>
+                                    <dl class="row">
+                                        <dd class="col-12 text-end">
+                                            <small class="text-muted text-capitalize">
+                                                <span class="text-dark">{{ spell_number($monthly_salary->total_payable) }}</span> taka only
+                                            </small>
+                                        </dd>
+                                    </dl>
                                 </div>
                             </div>
                         </div>
             
-                        <div class="card-footer border-top pt-4">
-                            <div class="row">
-                                <div class="col-12">
-                                    <u class="fw-medium">Note:</u>
-                                    <span class="text-capitalize">This is a Electronic Generated Payslip, thus no signature or stamp required. Thank You!</span>
-                                </div>
+                        <div class="card-footer border-top d-flex justify-content-between pt-4">
+                            <div class="payslip-note pt-2">
+                                <u class="fw-medium">Note:</u>
+                                <span class="text-capitalize">This is a Electronic Generated Payslip, thus no signature or stamp required. Thank You!</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- /Not Authorized -->
+        <!-- /Monthly Salary Details -->
     </body>
 </html>

@@ -4,6 +4,7 @@ namespace App\Services\Administration\SalaryService;
 
 use Exception;
 use Carbon\Carbon;
+use App\Models\User;
 use App\Models\Salary\Salary;
 use App\Models\Holiday\Holiday;
 use App\Models\Weekend\Weekend;
@@ -12,7 +13,7 @@ use App\Models\Attendance\Attendance;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Salary\Monthly\MonthlySalaryBreakdown;
-use App\Models\User;
+use App\Services\Administration\Attendance\AttendanceService;
 
 class SalaryService
 {
@@ -61,6 +62,35 @@ class SalaryService
             throw $e;
         }
     }
+
+
+    public function getSalaryDetails(MonthlySalary $monthly_salary)
+    {
+        $month = Carbon::parse($monthly_salary->for_month);
+
+        // Get total worked hours
+        $attendanceService = new AttendanceService();
+        $totalWorkedRegular = $attendanceService->userTotalWorkingHour($monthly_salary->user, 'Regular', $month);
+        $totalWorkedOvertime = $attendanceService->userTotalWorkingHour($monthly_salary->user, 'Overtime', $month);
+
+        // Fetch earnings and deductions
+        $earnings = $monthly_salary->monthly_salary_breakdowns()->whereType('Plus (+)')->get();
+        $deductions = $monthly_salary->monthly_salary_breakdowns()->whereType('Minus (-)')->get();
+        $totalEarning = $earnings->sum('total');
+        $totalDeduction = $deductions->sum('total');
+
+        return [
+            'total_worked_regular' => $totalWorkedRegular,
+            'total_worked_overtime' => $totalWorkedOvertime,
+            'earnings' => $earnings,
+            'deductions' => $deductions,
+            'total_earning' => $totalEarning,
+            'total_deduction' => $totalDeduction,
+        ];
+    }
+
+
+
 
     private function getMonth($month)
     {

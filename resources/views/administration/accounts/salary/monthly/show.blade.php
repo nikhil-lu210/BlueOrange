@@ -101,12 +101,14 @@
                                     </a>
                                 </li>
                             @else
-                                <li>
-                                    <a class="dropdown-item text-dark" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
-                                        <i class="ti ti-download me-1 fs-5" style="margin-top: -5px;"></i>
-                                        Download Payslip
-                                    </a>
-                                </li>
+                                @isset ($payslip) 
+                                    <li>
+                                        <a class="dropdown-item text-dark" href="{{ file_media_download($payslip) }}" target="_blank">
+                                            <i class="ti ti-download me-1 fs-5" style="margin-top: -5px;"></i>
+                                            Download Payslip
+                                        </a>
+                                    </li>
+                                @endisset
                                 <li>
                                     <hr class="dropdown-divider" />
                                 </li>

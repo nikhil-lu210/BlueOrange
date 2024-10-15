@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\Administration\Accounts\Salary;
 
 use Exception;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Mail\Administration\Accounts\PayslipMail;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Salary\Monthly\MonthlySalary;
-use App\Notifications\Administration\Accounts\Salary\MonthlySalaryNotification;
 use App\Services\Administration\SalaryService\SalaryService;
-use App\Services\Administration\Attendance\AttendanceService;
+use App\Services\Administration\SalaryService\PayslipService;
+use App\Notifications\Administration\Accounts\Salary\MonthlySalaryNotification;
 
 class MonthlySalaryController extends Controller
 {
@@ -29,24 +30,12 @@ class MonthlySalaryController extends Controller
      */
     public function show(MonthlySalary $monthly_salary)
     {
-        $month = Carbon::parse($monthly_salary->for_month);
+        $salaryService = new SalaryService();
+        $salary = $salaryService->getSalaryDetails($monthly_salary);
 
-        // Get total worked hours from the attendances table
-        $attendanceService = new AttendanceService();
-        $totalWorkedRegular = $attendanceService->userTotalWorkingHour($monthly_salary->user, 'Regular', $month);
-        $totalWorkedOvertime = $attendanceService->userTotalWorkingHour($monthly_salary->user, 'Overtime', $month);
-
-        $salary = [
-            'total_worked_regular' => $totalWorkedRegular,
-            'total_worked_overtime' => $totalWorkedOvertime,
-            'earnings' => $monthly_salary->monthly_salary_breakdowns()->whereType('Plus (+)')->get(),
-            'deductions' => $monthly_salary->monthly_salary_breakdowns()->whereType('Minus (-)')->get(),
-            'total_earning' => $monthly_salary->monthly_salary_breakdowns()->whereType('Plus (+)')->sum('total'),
-            'total_deduction' => $monthly_salary->monthly_salary_breakdowns()->whereType('Minus (-)')->sum('total'),
-        ];
+        $payslip = $monthly_salary->files()->first();
         
-        return view('administration.accounts.salary.monthly.show', compact(['monthly_salary', 'salary']));
-        // return view('administration.accounts.salary.monthly.generate_pdf', compact(['monthly_salary', 'salary']));
+        return view('administration.accounts.salary.monthly.show', compact(['monthly_salary', 'salary', 'payslip']));
     }
 
     /**
@@ -109,10 +98,19 @@ class MonthlySalaryController extends Controller
                     'paid_at' => $request->paid_at,
                     'payment_proof' => $request->payment_proof,
                     'status' => 'Paid'
+                    // 'status' => 'Pending'
                 ]);
+
+                $payslipService = new PayslipService();
+
+                // Generate and Upload the Payslip
+                $payslipService->generateAndUploadPayslip($monthly_salary);
 
                 // Send Notification to System
                 $monthly_salary->user->notify(new MonthlySalaryNotification($monthly_salary));
+
+                // Send Mail to the user's email
+                Mail::to($monthly_salary->user->email)->send(new PayslipMail($monthly_salary, $monthly_salary->user));
             });
             
             toast($monthly_salary->user->name . '\'s monthly salary has been paid.', 'success');
