@@ -101,8 +101,9 @@
                                     </a>
                                 </li>
                             @else
+                            
                                 <li>
-                                    <a class="dropdown-item text-dark" href="{{ file_media_download($payslip) }}" target="_blank">
+                                    <a class="dropdown-item text-dark" href="{{ isset($payslip) ?? file_media_download($payslip) }}" target="_blank">
                                         <i class="ti ti-download me-1 fs-5" style="margin-top: -5px;"></i>
                                         Download Payslip
                                     </a>
