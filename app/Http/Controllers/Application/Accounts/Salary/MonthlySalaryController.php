@@ -11,10 +11,12 @@ class MonthlySalaryController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($salary_id, $userid, $id)
+    public function show($payslip_id, $userid, $id)
     {
-        $monthly_salary = MonthlySalary::whereId($id)->whereSalaryId($salary_id)->firstOrFail();
-        
+        $id = decrypt($id);
+        // dd($payslip_id, $userid, $id);
+        $monthly_salary = MonthlySalary::whereId($id)->wherePayslipId($payslip_id)->firstOrFail();
+
         $salaryService = new SalaryService();
         $salary = $salaryService->getSalaryDetails($monthly_salary);
 

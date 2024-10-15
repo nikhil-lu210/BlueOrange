@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Notifications\Administration\Accounts\Salary\MonthlySalaryNotification;
+use App\Services\Administration\SalaryService\PayslipService;
 use App\Services\Administration\SalaryService\SalaryService;
 
 class MonthlySalaryController extends Controller
@@ -29,9 +30,10 @@ class MonthlySalaryController extends Controller
     {
         $salaryService = new SalaryService();
         $salary = $salaryService->getSalaryDetails($monthly_salary);
+
+        $payslip = $monthly_salary->files()->first();
         
-        return view('administration.accounts.salary.monthly.show', compact(['monthly_salary', 'salary']));
-        // return view('administration.accounts.salary.monthly.generate_pdf', compact(['monthly_salary', 'salary']));
+        return view('administration.accounts.salary.monthly.show', compact(['monthly_salary', 'salary', 'payslip']));
     }
 
     /**
@@ -94,7 +96,16 @@ class MonthlySalaryController extends Controller
                     'paid_at' => $request->paid_at,
                     'payment_proof' => $request->payment_proof,
                     'status' => 'Paid'
+                    // 'status' => 'Pending'
                 ]);
+
+                $payslipService = new PayslipService();
+
+                // Generate the PDF
+                $pdfContent = $payslipService->generatePayslip($monthly_salary);
+
+                // Upload the payslip
+                $payslipService->uploadPayslip($pdfContent, $monthly_salary);
 
                 // Send Notification to System
                 $monthly_salary->user->notify(new MonthlySalaryNotification($monthly_salary));
