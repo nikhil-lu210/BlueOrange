@@ -305,14 +305,6 @@
                                 <u class="fw-medium">Note:</u>
                                 <span class="text-capitalize">This is a Electronic Generated Payslip, thus no signature or stamp required. Thank You!</span>
                             </div>
-                            @if ($monthly_salary->status !== 'Paid') 
-                                <div class="footer-action">
-                                    <a href="javascrip:void(0);" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#markAsPaidModal">
-                                        <i class="ti ti-check me-2"></i>
-                                        <span>Mark As Paid</span>
-                                    </a>
-                                </div>
-                            @endif
                         </div>
                     </div>
                 </div>

@@ -10,12 +10,28 @@ use App\Models\Salary\Monthly\MonthlySalary;
 class PayslipService
 {
     /**
+     * Generate and upload a payslip for the given monthly salary.
+     *
+     * @param MonthlySalary $monthly_salary
+     * @return FileMedia
+     */
+    public function generateAndUploadPayslip(MonthlySalary $monthly_salary): FileMedia
+    {
+        // Generate the PDF content
+        $pdfContent = $this->generatePayslip($monthly_salary);
+
+        // Upload the generated PDF and return the FileMedia object
+        return $this->uploadPayslip($pdfContent, $monthly_salary);
+    }
+
+
+    /**
      * Generate a PDF from the payslip view.
      *
      * @param MonthlySalary $monthly_salary
      * @return string PDF content
      */
-    public function generatePayslip(MonthlySalary $monthly_salary): string
+    private function generatePayslip(MonthlySalary $monthly_salary): string
     {
         $payslipId = $monthly_salary->payslip_id;
         $userId = $monthly_salary->user->userid;
@@ -36,7 +52,7 @@ class PayslipService
      * @param MonthlySalary $monthly_salary
      * @return FileMedia
      */
-    public function uploadPayslip(string $pdfContent, MonthlySalary $monthly_salary): FileMedia
+    private function uploadPayslip(string $pdfContent, MonthlySalary $monthly_salary): FileMedia
     {
         $userId = $monthly_salary->user->userid; // Get the uploader's user ID
         $payslipId = $monthly_salary->payslip_id; // Get the monthly salary ID

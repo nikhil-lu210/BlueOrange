@@ -103,11 +103,8 @@ class MonthlySalaryController extends Controller
 
                 $payslipService = new PayslipService();
 
-                // Generate the PDF
-                $pdfContent = $payslipService->generatePayslip($monthly_salary);
-
-                // Upload the payslip
-                $payslipService->uploadPayslip($pdfContent, $monthly_salary);
+                // Generate and Upload the Payslip
+                $payslipService->generateAndUploadPayslip($monthly_salary);
 
                 // Send Notification to System
                 $monthly_salary->user->notify(new MonthlySalaryNotification($monthly_salary));
