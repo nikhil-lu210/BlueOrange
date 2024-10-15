@@ -27,61 +27,6 @@
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <div class="card invoice-preview-card">
-                        <div class="card-header d-flex justify-content-between border-bottom header-elements">
-                            <h5 class="card-action-title mb-0">
-                                <span class="text-dark text-bold">{{ $monthly_salary->user->name }}'s</span> 
-                                <span class="text-muted">Monthly Salary Details of</span> 
-                                <span class="text-dark text-bold">{{ show_month($monthly_salary->for_month) }}</span>
-                            </h5>
-                            <div class="card-action-element">
-                                <div class="dropdown">
-                                    <button type="button" class="btn dropdown-toggle hide-arrow p-0" data-bs-toggle="dropdown" aria-expanded="false">
-                                        <i class="ti ti-dots-vertical text-muted"></i>
-                                    </button>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        @if ($monthly_salary->status !== 'Paid')
-                                            <li>
-                                                <a class="dropdown-item text-primary" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addEarningModal">
-                                                    <i class="ti ti-plus me-1 fs-5" style="margin-top: -5px;"></i>
-                                                    Add Earning
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item text-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
-                                                    <i class="ti ti-minus me-1 fs-5" style="margin-top: -5px;"></i>
-                                                    Add Deduction
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider" />
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item btn btn-warning confirm-warning" href="{{ route('administration.accounts.salary.monthly.regenerate', ['monthly_salary' => $monthly_salary]) }}">
-                                                    <i class="ti ti-refresh me-1 fs-5" style="margin-top: -5px;"></i>
-                                                    Re-Generate Salary
-                                                </a>
-                                            </li>
-                                        @else
-                                            <li>
-                                                <a class="dropdown-item text-dark" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
-                                                    <i class="ti ti-download me-1 fs-5" style="margin-top: -5px;"></i>
-                                                    Download Payslip
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <hr class="dropdown-divider" />
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item btn btn-primary" href="#">
-                                                    <i class="ti ti-mail-share me-1 fs-5"></i>
-                                                    Send Email (Payslip)
-                                                </a>
-                                            </li>
-                                        @endif
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
                         <div class="card-body">
                             <div class="row mt-3">
                                 <div class="col-md-6 text-start">
