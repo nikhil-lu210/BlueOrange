@@ -6,7 +6,7 @@
         @include('layouts.administration.partials.metas')
         {{-- Meta Ends --}}
         
-        <title>{{ config('app.name') }} || Not Authorized</title>
+        <title>{{ config('app.name') }} || Monthly Salary Details</title>
         <!-- Favicon -->
         <link rel="icon" type="image/x-icon" href="{{ asset('Logo/logo_white_01.png') }}" />
 
@@ -22,11 +22,66 @@
     <body>
         <!-- Content -->
 
-        <!-- Not Authorized -->
+        <!-- Monthly Salary Details -->
         <div class="container-fluid">
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <div class="card invoice-preview-card">
+                        <div class="card-header d-flex justify-content-between border-bottom header-elements">
+                            <h5 class="card-action-title mb-0">
+                                <span class="text-dark text-bold">{{ $monthly_salary->user->name }}'s</span> 
+                                <span class="text-muted">Monthly Salary Details of</span> 
+                                <span class="text-dark text-bold">{{ show_month($monthly_salary->for_month) }}</span>
+                            </h5>
+                            <div class="card-action-element">
+                                <div class="dropdown">
+                                    <button type="button" class="btn dropdown-toggle hide-arrow p-0" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="ti ti-dots-vertical text-muted"></i>
+                                    </button>
+                                    <ul class="dropdown-menu dropdown-menu-end">
+                                        @if ($monthly_salary->status !== 'Paid')
+                                            <li>
+                                                <a class="dropdown-item text-primary" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addEarningModal">
+                                                    <i class="ti ti-plus me-1 fs-5" style="margin-top: -5px;"></i>
+                                                    Add Earning
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
+                                                    <i class="ti ti-minus me-1 fs-5" style="margin-top: -5px;"></i>
+                                                    Add Deduction
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item btn btn-warning confirm-warning" href="{{ route('administration.accounts.salary.monthly.regenerate', ['monthly_salary' => $monthly_salary]) }}">
+                                                    <i class="ti ti-refresh me-1 fs-5" style="margin-top: -5px;"></i>
+                                                    Re-Generate Salary
+                                                </a>
+                                            </li>
+                                        @else
+                                            <li>
+                                                <a class="dropdown-item text-dark" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
+                                                    <i class="ti ti-download me-1 fs-5" style="margin-top: -5px;"></i>
+                                                    Download Payslip
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <hr class="dropdown-divider" />
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item btn btn-primary" href="#">
+                                                    <i class="ti ti-mail-share me-1 fs-5"></i>
+                                                    Send Email (Payslip)
+                                                </a>
+                                            </li>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
                         <div class="card-body">
                             <div class="row mt-3">
                                 <div class="col-md-6 text-start">
@@ -75,11 +130,17 @@
                                     <div>
                                         <h4 class="fw-medium mb-2 text-uppercase">#{{ $monthly_salary->payslip_id }}</h4>
                                         <div class="mb-2 pt-1">
-                                            <span>Payment Date:</span>
-                                            <span class="fw-medium">May 25, 2021</span>
+                                            <span class="text-bold text-dark">Payment For:</span>
+                                            <span class="fw-medium">{{ show_month($monthly_salary->for_month) }}</span>
                                         </div>
+                                        @isset ($monthly_salary->paid_at) 
+                                            <div class="mb-2 pt-1">
+                                                <span class="text-bold text-dark">Paid At:</span>
+                                                <span class="fw-medium">{{ show_date_time($monthly_salary->paid_at) }}</span>
+                                            </div>
+                                        @endisset
                                         <div class="pt-1">
-                                            <span>Pay To:</span>
+                                            <span class="text-bold text-dark">Pay To:</span>
                                             <span class="fw-bold">
                                                 <a href="{{ route('administration.settings.user.show.profile', ['user' => $monthly_salary->user]) }}" target="_blank">{{ $monthly_salary->user->name }}</a>
                                             </span>
@@ -145,7 +206,7 @@
                                     </table>
                                 </div>
                                 <div class="col-md-6">
-                                    <h6 class="mb-3 text-bold">Work Summary <small class="text-muted">(September 2024)</small></h6>
+                                    <h6 class="mb-3 text-bold">Work Summary <small class="text-muted">({{ show_month($monthly_salary->for_month) }})</small></h6>
                                     <table class="table table-striped">
                                         <tbody>
                                             <tr>
@@ -283,22 +344,35 @@
                                             </span>
                                         </dd>
                                     </dl>
+                                    <dl class="row">
+                                        <dd class="col-12 text-end">
+                                            <small class="text-muted text-capitalize">
+                                                <span class="text-dark">{{ spell_number($monthly_salary->total_payable) }}</span> taka only
+                                            </small>
+                                        </dd>
+                                    </dl>
                                 </div>
                             </div>
                         </div>
             
-                        <div class="card-footer border-top pt-4">
-                            <div class="row">
-                                <div class="col-12">
-                                    <u class="fw-medium">Note:</u>
-                                    <span class="text-capitalize">This is a Electronic Generated Payslip, thus no signature or stamp required. Thank You!</span>
-                                </div>
+                        <div class="card-footer border-top d-flex justify-content-between pt-4">
+                            <div class="payslip-note pt-2">
+                                <u class="fw-medium">Note:</u>
+                                <span class="text-capitalize">This is a Electronic Generated Payslip, thus no signature or stamp required. Thank You!</span>
                             </div>
+                            @if ($monthly_salary->status !== 'Paid') 
+                                <div class="footer-action">
+                                    <a href="javascrip:void(0);" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#markAsPaidModal">
+                                        <i class="ti ti-check me-2"></i>
+                                        <span>Mark As Paid</span>
+                                    </a>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- /Not Authorized -->
+        <!-- /Monthly Salary Details -->
     </body>
 </html>
