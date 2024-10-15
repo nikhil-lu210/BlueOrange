@@ -122,11 +122,15 @@ class MonthlySalaryController extends Controller
 
 
     /**
-     * Remove the specified resource from storage.
+     * send Mail payslip
      */
-    public function destroy(MonthlySalary $monthly_salary)
+    public function sendMailPayslip(MonthlySalary $monthly_salary)
     {
-        //
+        // Send Mail to the user's email
+        Mail::to($monthly_salary->user->email)->send(new PayslipMail($monthly_salary, $monthly_salary->user));
+
+        toast('Payslip Mail Has Been Sent To ' . $monthly_salary->user->name, 'success');
+        return redirect()->back();
     }
 
     

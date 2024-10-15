@@ -15,4 +15,6 @@ Route::controller(MonthlySalaryController::class)->prefix('monthly')->name('mont
     Route::post('/add_deduction/{monthly_salary}', 'addDeduction')->name('add.deduction')->can('Salary Update');
 
     Route::post('/mark_as_paid/{monthly_salary}', 'markAsPaid')->name('mark.paid')->can('Salary Update');
+
+    Route::get('/send_mail_payslip/{monthly_salary}', 'sendMailPayslip')->name('send.mail.payslip')->can('Salary Update');
 });

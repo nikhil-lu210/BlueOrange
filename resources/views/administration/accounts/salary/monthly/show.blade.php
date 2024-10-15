@@ -113,7 +113,7 @@
                                     <hr class="dropdown-divider" />
                                 </li>
                                 <li>
-                                    <a class="dropdown-item btn btn-primary" href="#">
+                                    <a class="dropdown-item btn btn-primary" href="{{ route('administration.accounts.salary.monthly.send.mail.payslip', ['monthly_salary' => $monthly_salary]) }}">
                                         <i class="ti ti-mail-share me-1 fs-5"></i>
                                         Send Email (Payslip)
                                     </a>
