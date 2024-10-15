@@ -23,7 +23,7 @@
         <!-- Content -->
 
         <!-- Monthly Salary Details -->
-        <div class="container-fluid">
+        <div class="container-fluid mt-5 mb-5">
             <div class="row justify-content-center">
                 <div class="col-md-12">
                     <div class="card invoice-preview-card">
