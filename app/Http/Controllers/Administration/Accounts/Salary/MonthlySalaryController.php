@@ -6,10 +6,12 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Mail\Administration\Accounts\PayslipMail;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Salary\Monthly\MonthlySalary;
-use App\Notifications\Administration\Accounts\Salary\MonthlySalaryNotification;
-use App\Services\Administration\SalaryService\PayslipService;
 use App\Services\Administration\SalaryService\SalaryService;
+use App\Services\Administration\SalaryService\PayslipService;
+use App\Notifications\Administration\Accounts\Salary\MonthlySalaryNotification;
 
 class MonthlySalaryController extends Controller
 {
@@ -109,6 +111,9 @@ class MonthlySalaryController extends Controller
 
                 // Send Notification to System
                 $monthly_salary->user->notify(new MonthlySalaryNotification($monthly_salary));
+
+                // Send Mail to the user's email
+                Mail::to($monthly_salary->user->email)->send(new PayslipMail($monthly_salary, $monthly_salary->user));
             });
             
             toast($monthly_salary->user->name . '\'s monthly salary has been paid.', 'success');
