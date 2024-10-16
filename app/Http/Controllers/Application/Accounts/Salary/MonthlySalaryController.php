@@ -14,8 +14,8 @@ class MonthlySalaryController extends Controller
     public function show($payslip_id, $userid, $id)
     {
         $id = decrypt($id);
-        // dd($payslip_id, $userid, $id);
         $monthly_salary = MonthlySalary::whereId($id)->wherePayslipId($payslip_id)->firstOrFail();
+        // dd($monthly_salary);
 
         $salaryService = new SalaryService();
         $salary = $salaryService->getSalaryDetails($monthly_salary);

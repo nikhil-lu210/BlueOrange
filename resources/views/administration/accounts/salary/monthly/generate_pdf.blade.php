@@ -251,10 +251,8 @@
                                     <b class="border-top pt-2 px-2">Accountant Digital Signature</b>
                                     <br>
                                     <br>
-                                    @isset ($monthly_salary->payer) 
+                                    @isset ($monthly_salary->paid_by) 
                                         <b class="px-2"><span class="text-muted">Paid By:</span> {{ $monthly_salary->payer->name }}</b>
-                                    @else
-                                        <span class="badge bg-primary">PENDING</span>
                                     @endisset
                                 </div>
                                 <div class="col-md-4">
