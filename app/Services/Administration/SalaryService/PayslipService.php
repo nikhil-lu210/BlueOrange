@@ -39,8 +39,13 @@ class PayslipService
 
         $url = route('application.accounts.salary.monthly.show', ['payslip_id' => $payslipId, 'userid' => $userId, 'id' => $id]);
 
+        $nodeBinaryPath = config('browsershot.binary_path');
+        $nodeMemorySize = config('browsershot.memory_size');
+
         return Browsershot::url($url)
             ->format('A3')
+            ->setNodeBinary($nodeBinaryPath)
+            ->setOption('args', ["--max-old-space-size={$nodeMemorySize}"])
             ->showBackground()
             ->pdf();
     }
