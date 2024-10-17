@@ -207,14 +207,6 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Attendance $attendance)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(AttendanceUpdateRequest $request, Attendance $attendance)
@@ -292,14 +284,6 @@ class AttendanceController extends Controller
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back();
         }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Attendance $attendance)
-    {
-        //
     }
 
     /**
