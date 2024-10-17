@@ -20,32 +20,21 @@ class MonthlySalaryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Get the last month (previous month) using Carbon
-        $lastMonth = Carbon::now()->subMonth()->format('Y-m');
-        
-        $monthly_salaries = MonthlySalary::with(['user', 'salary'])
-            ->where('for_month', $lastMonth)
-            ->orderByDesc('status')
-            ->orderByDesc('paid_at')
-            ->get();
+        // Fetch users for the filter dropdown
+        $users = $this->getActiveUsers();
 
-        // Get current time and check the conditions for manual generation
-        $now = Carbon::now();
-        $firstDayOfCurrentMonth = Carbon::now()->firstOfMonth(); // First day of current month at 00:00:00
-        $thresholdTime = $firstDayOfCurrentMonth->copy()->addHours(9); // First day of current month at 09:00 AM
+        // Get the filtered monthly salaries
+        $monthly_salaries = $this->getFilteredMonthlySalaries($request);
 
-        // Check if there are any MonthlySalary records for the last month
-        $hasLastMonthSalaries = MonthlySalary::where('for_month', $lastMonth)->exists();
+        // Check if manual salary generation is allowed
+        $canManuallyGenerate = $this->canManuallyGenerate();
 
-        // Define the $canManuallyGenerate variable
-        $canManuallyGenerate = !$hasLastMonthSalaries && ($now->greaterThan($thresholdTime));
-
-        // dd($firstDayOfCurrentMonth, $thresholdTime, $hasLastMonthSalaries, $canManuallyGenerate);
-
-        return view('administration.accounts.salary.monthly.index', compact('monthly_salaries', 'lastMonth', 'canManuallyGenerate'));
+        // Return the view with filtered data
+        return view('administration.accounts.salary.monthly.index', compact('users', 'monthly_salaries', 'canManuallyGenerate'));
     }
+
 
     /**
      * manuallyGenerateSalary
@@ -219,4 +208,69 @@ class MonthlySalaryController extends Controller
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
     }
+
+
+
+    protected function getActiveUsers()
+    {
+        return User::select(['id', 'name'])
+                    ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                    ->whereStatus('Active')
+                    ->get();
+    }
+
+    protected function getFilteredMonthlySalaries(Request $request)
+    {
+        // Get the last month (previous month) using Carbon
+        $lastMonth = Carbon::now()->subMonth()->format('Y-m');
+
+        // Initialize query for MonthlySalary
+        $query = MonthlySalary::with(['user', 'salary'])
+            ->orderByDesc('status')
+            ->orderByDesc('paid_at');
+
+        // Apply filters based on request inputs
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('for_month')) {
+            try {
+                // Convert "September 2024" to "2024-09"
+                $formattedMonth = Carbon::parse($request->for_month)->format('Y-m');
+                $query->where('for_month', $formattedMonth);
+            } catch (Exception $e) {
+                toast('Invalid date format for for_month.', 'error');
+                return redirect()->back()->withInput();
+            }
+        } else {
+            // Default to last month if no 'for_month' filter is provided
+            $query->where('for_month', $lastMonth);
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Fetch filtered MonthlySalary records
+        return $query->get();
+    }
+
+    protected function canManuallyGenerate()
+    {
+        // Get current time and the first day of the current month at 09:00 AM
+        $now = Carbon::now();
+        $firstDayOfCurrentMonth = Carbon::now()->firstOfMonth();
+        $thresholdTime = $firstDayOfCurrentMonth->copy()->addHours(9);
+
+        // Get the last month (previous month)
+        $lastMonth = Carbon::now()->subMonth()->format('Y-m');
+
+        // Check if there are any MonthlySalary records for the last month
+        $hasLastMonthSalaries = MonthlySalary::where('for_month', $lastMonth)->exists();
+
+        // Determine if manual generation can be done
+        return !$hasLastMonthSalaries && $now->greaterThan($thresholdTime);
+    }
+
 }
