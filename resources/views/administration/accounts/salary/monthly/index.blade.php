@@ -42,6 +42,15 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Monthly Salaries</h5>
+        
+                <div class="card-header-elements ms-auto">
+                    @if ($canManuallyGenerate) 
+                        <a href="{{ route('administration.accounts.salary.monthly.generage') }}" class="btn btn-sm btn-primary confirm-warning">
+                            <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                            Generate {{ show_month($lastMonth) }} Salaries
+                        </a>
+                    @endif
+                </div>
             </div>
             <div class="card-body">
                 <table class="table data-table table-bordered table-responsive" style="width: 100%;">

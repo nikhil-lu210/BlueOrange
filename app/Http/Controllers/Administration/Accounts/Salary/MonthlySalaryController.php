@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Administration\Accounts\Salary;
 
 use Exception;
+use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Mail\Administration\Accounts\PayslipMail;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Salary\Monthly\MonthlySalary;
+use App\Mail\Administration\Accounts\PayslipMail;
 use App\Services\Administration\SalaryService\SalaryService;
 use App\Services\Administration\SalaryService\PayslipService;
 use App\Notifications\Administration\Accounts\Salary\MonthlySalaryNotification;
@@ -20,10 +22,53 @@ class MonthlySalaryController extends Controller
      */
     public function index()
     {
-        $monthly_salaries = MonthlySalary::with(['user', 'salary'])->orderByDesc('created_at')->get();
+        // Get the last month (previous month) using Carbon
+        $lastMonth = Carbon::now()->subMonth()->format('Y-m');
+        
+        $monthly_salaries = MonthlySalary::with(['user', 'salary'])
+            ->where('for_month', $lastMonth)
+            ->orderByDesc('status')
+            ->orderByDesc('paid_at')
+            ->get();
 
-        return view('administration.accounts.salary.monthly.index', compact(['monthly_salaries']));
+        // Get current time and check the conditions for manual generation
+        $now = Carbon::now();
+        $firstDayOfCurrentMonth = Carbon::now()->firstOfMonth(); // First day of current month at 00:00:00
+        $thresholdTime = $firstDayOfCurrentMonth->copy()->addHours(9); // First day of current month at 09:00 AM
+
+        // Check if there are any MonthlySalary records for the last month
+        $hasLastMonthSalaries = MonthlySalary::where('for_month', $lastMonth)->exists();
+
+        // Define the $canManuallyGenerate variable
+        $canManuallyGenerate = !$hasLastMonthSalaries && ($now->greaterThan($thresholdTime));
+
+        // dd($firstDayOfCurrentMonth, $thresholdTime, $hasLastMonthSalaries, $canManuallyGenerate);
+
+        return view('administration.accounts.salary.monthly.index', compact('monthly_salaries', 'lastMonth', 'canManuallyGenerate'));
     }
+
+    /**
+     * manuallyGenerateSalary
+     */
+    public function manuallyGenerateSalary() 
+    {
+        $users = User::select('id')->whereStatus('Active')->get();
+        $salaryService = new SalaryService();
+
+        try {
+            DB::transaction(function () use ($users, $salaryService) {
+                foreach ($users as $user) {
+                    $salaryService->calculateMonthlySalary($user);
+                }
+            });                
+            
+            toast('Monthly salaries has been generated.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
 
     /**
      * Display the specified resource.
