@@ -29,6 +29,15 @@
     {{--  External CSS  --}}
     <style>
     /* Custom CSS Here */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
     </style>
 @endsection
 
@@ -120,6 +129,14 @@
                     <a class="nav-link {{ request()->is('settings/user/show/*/user_interaction*') ? 'active' : '' }}" href="{{ route('administration.settings.user.user_interaction.index', ['user' => $user]) }}">
                         <i class="ti-xs ti ti-users-group me-1"></i> 
                         User Interactions
+                    </a>
+                </li>
+            @endcan
+            @can ('Leave Allowed Read') 
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('settings/user/show/*/allowed_leaves*') ? 'active' : '' }}" href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $user]) }}">
+                        <i class="ti-xs ti ti-calendar-x me-1"></i> 
+                        Allowed Leaves
                     </a>
                 </li>
             @endcan

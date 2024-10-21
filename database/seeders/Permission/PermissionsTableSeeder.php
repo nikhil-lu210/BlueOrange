@@ -29,6 +29,8 @@ class PermissionsTableSeeder extends Seeder
             'Weekend',
             'Holiday',
             'Group Chatting',
+            'Leave Allowed',
+            'Leave History',
         ];
 
         foreach ($modules as $module) {

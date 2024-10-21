@@ -39,6 +39,16 @@ class RolesTableSeeder extends Seeder
                     'Attendance Update',
                     'Attendance Delete',
 
+                    'Leave Allowed Create',
+                    'Leave Allowed Read',
+                    'Leave Allowed Update',
+                    'Leave Allowed Delete',
+
+                    'Leave History Create',
+                    'Leave History Read',
+                    'Leave History Update',
+                    'Leave History Delete',
+
                     'Daily Break Create',
                     'Daily Break Read',
                     'Daily Break Update',
@@ -108,6 +118,16 @@ class RolesTableSeeder extends Seeder
                     'Attendance Update',
                     'Attendance Delete',
 
+                    'Leave Allowed Create',
+                    'Leave Allowed Read',
+                    'Leave Allowed Update',
+                    'Leave Allowed Delete',
+
+                    'Leave History Create',
+                    'Leave History Read',
+                    'Leave History Update',
+                    'Leave History Delete',
+
                     'Daily Break Create',
                     'Daily Break Read',
                     'Daily Break Update',
@@ -162,6 +182,11 @@ class RolesTableSeeder extends Seeder
                     'Announcement Read',
                     
                     'Attendance Read',
+                    
+                    'Leave Allowed Read',
+
+                    'Leave History Create',
+                    'Leave History Read',
 
                     'Daily Break Create',
                     'Daily Break Read',
