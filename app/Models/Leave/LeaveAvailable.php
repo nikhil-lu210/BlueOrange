@@ -6,8 +6,8 @@ use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
-use App\Models\Leave\Traits\LeaveAvailableRelations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Leave\Relations\LeaveAvailableRelations;
 
 class LeaveAvailable extends Model
 {

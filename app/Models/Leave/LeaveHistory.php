@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
-use App\Models\Leave\Traits\LeaveHistoryRelations;
+use App\Models\Leave\Relations\LeaveHistoryRelations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class LeaveHistory extends Model

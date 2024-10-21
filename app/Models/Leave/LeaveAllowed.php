@@ -2,13 +2,13 @@
 
 namespace App\Models\Leave;
 
-use App\Models\Leave\Accessors\LeaveAllowedAccessors;
-use App\Models\Leave\Mutators\LeaveAllowedMutators;
 use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
-use App\Models\Leave\Traits\LeaveAllowedRelations;
+use App\Models\Leave\Mutators\LeaveAllowedMutators;
+use App\Models\Leave\Accessors\LeaveAllowedAccessors;
+use App\Models\Leave\Relations\LeaveAllowedRelations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class LeaveAllowed extends Model

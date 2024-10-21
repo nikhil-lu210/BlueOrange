@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Leave\Traits;
+namespace App\Models\Leave\Relations;
 
 use App\Models\Leave\LeaveHistory;
 use App\Models\User;
