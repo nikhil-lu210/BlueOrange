@@ -21,6 +21,8 @@ class LeaveAllowed extends Model
     // Accessors & Mutators
     use LeaveAllowedAccessors, LeaveAllowedMutators;
 
+    protected $cascadeDeletes = [];
+    
     // Casting attributes
     protected $casts = [
         'is_active' => 'boolean',
