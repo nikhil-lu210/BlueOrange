@@ -2,18 +2,46 @@
 
 namespace App\Http\Controllers\Administration\Leave;
 
-use App\Http\Controllers\Controller;
-use App\Models\Leave\LeaveHistory;
+use Auth;
+use Exception;
+use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Leave\LeaveHistory;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Services\Administration\Leave\LeaveHistoryService;
+use App\Http\Requests\Administration\Leave\LeaveHistoryStoreRequest;
 
 class LeaveHistoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $userIds = auth()->user()->user_interactions->pluck('id');
+
+        // Eager load all necessary relationships
+        $users = User::with(['roles', 'media', 'shortcuts', 'employee'])
+                        ->whereIn('id', $userIds)
+                        ->whereStatus('Active')
+                        ->get(['id', 'name']);
+
+        // Get daily breaks with the pre-loaded users
+        $leaves = $this->getLeavesQuery($request)
+                            ->whereIn('user_id', $userIds)
+                            ->get();
+
+        return view('administration.leave.index', compact(['users', 'leaves']));
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function my()
+    {
+        $user = auth()->user();
     }
 
     /**
@@ -21,15 +49,24 @@ class LeaveHistoryController extends Controller
      */
     public function create()
     {
-        //
+        return view('administration.leave.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(LeaveHistoryStoreRequest $request, LeaveHistoryService $leaveHistoryService)
     {
-        //
+        try {
+            $user = Auth::user();
+            $leaveHistoryService->store($user, $request->validated());
+
+            toast('Leave Application Submitted Successfully.', 'success');
+            return redirect()->route('administration.leave.history.my');
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()->with('error', 'Failed to send leave request. Error: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -62,5 +99,51 @@ class LeaveHistoryController extends Controller
     public function destroy(LeaveHistory $leaveHistory)
     {
         //
+    }
+
+
+
+    /**
+     * Build the query for retrieving daily breaks.
+     *
+     * @param Request $request
+     * @param int|null $userId
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    private function getLeavesQuery(Request $request, int $userId = null)
+    {
+        $query = LeaveHistory::with([
+                                'user:id,userid,name', 
+                                'user.media', 
+                                'user.roles'
+                            ])
+                            ->orderByDesc('date');
+
+        // Apply user ID filter if provided
+        if ($userId) {
+            $query->whereUserId($userId);
+        }
+
+        // Handle month/year filtering
+        if ($request->has('leave_month_year') && !is_null($request->leave_month_year)) {
+            $monthYear = Carbon::createFromFormat('F Y', $request->leave_month_year);
+            $query->whereYear('date', $monthYear->year)
+                ->whereMonth('date', $monthYear->month);
+        } else {
+            // Default to current month if no specific filter is applied
+            if (!$request->has('filter_leaves')) {
+                $query->whereBetween('date', [
+                    Carbon::now()->startOfMonth()->format('Y-m-d'),
+                    Carbon::now()->endOfMonth()->format('Y-m-d')
+                ]);
+            }
+        }
+
+        // Apply type filter if specified
+        if ($request->has('type') && !is_null($request->type)) {
+            $query->where('type', $request->type);
+        }
+
+        return $query;
     }
 }

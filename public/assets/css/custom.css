@@ -33,7 +33,7 @@ input[type="number"] {
 }
 
 .float-right, .float-end, .pull-right, .pull-end {
-    float: left !important;
+    float: right !important;
 }
 
 .menu-vertical .menu-sub {
