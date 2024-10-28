@@ -8,14 +8,6 @@ use Stevebauman\Purify\Facades\Purify;
 trait LeaveHistoryAccessors
 {
     /**
-     * Accessor for total_leave (Convert to CarbonInterval)
-     */
-    public function getTotalLeaveAttribute($value): CarbonInterval
-    {
-        return CarbonInterval::fromString($value);
-    }
-
-    /**
      * Accessor for reason (Sanitize HTML)
      */
     public function getReasonAttribute($value): string

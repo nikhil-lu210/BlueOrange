@@ -117,7 +117,8 @@ class LeaveHistoryController extends Controller
                                 'user.media', 
                                 'user.roles'
                             ])
-                            ->orderByDesc('date');
+                            ->orderByDesc('date')
+                            ->orderBy('created_at');
 
         // Apply user ID filter if provided
         if ($userId) {

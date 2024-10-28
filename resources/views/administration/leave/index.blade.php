@@ -136,54 +136,82 @@
                     <thead>
                         <tr>
                             <th>Sl.</th>
+                            <th>Employee</th>
                             <th>Date</th>
-                            <th>Name</th>
-                            <th>Break Started</th>
-                            <th>Break Stopped</th>
-                            <th>Total</th>
+                            <th>Total Leave</th>
+                            <th>Status</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {{-- @foreach ($leaves as $key => $leave) 
+                        @foreach ($leaves as $key => $leave) 
                             <tr>
                                 <th>#{{ serial($leaves, $key) }}</th>
                                 <td>
-                                    {{ show_date($break->date) }}
+                                    {!! show_user_name_and_avatar($leave->user, role: null) !!}
+                                </td>
+                                <td>
+                                    @php
+                                        switch ($leave->type) {
+                                            case 'Earned':
+                                                $typeBg = 'success';
+                                                break;
+                                            
+                                            case 'Sick':
+                                                $typeBg = 'warning';
+                                                break;
+                                            
+                                            default:
+                                                $typeBg = 'danger';
+                                                break;
+                                        }
+                                    @endphp
+                                    {{ show_date($leave->date) }}
                                     <br>
-                                    <small class="text-bold text-{{ $break->type === 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</small>
+                                    <small class="badge bg-label-{{ $typeBg }}" title="Requested Leave Type">{{ $leave->type }} Leave</small>
                                 </td>
                                 <td>
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $break->user]) }}" target="_blank" class="text-bold text-primary">
-                                        {{ $break->user->name }}
-                                    </a>
+                                    <span class="text-bold">{{ show_hr_min_sec($leave->total_leave) }}</span>
+                                    @if (!is_null($leave->is_paid_leave)) 
+                                        <br>
+                                        @if ($leave->is_paid_leave == true)
+                                            <small class="badge bg-success">Paid</small>
+                                        @else
+                                            <small class="badge bg-danger">Unpaid</small>
+                                        @endif
+                                    @endif
                                 </td>
                                 <td>
-                                    <div class="d-grid">
-                                        <span class="text-bold text-success">{{ show_time($break->break_in_at) }}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    @isset ($break->break_out_at) 
-                                        <span class="text-bold text-success">{{ show_time($break->break_out_at) }}</span>
-                                    @else
-                                        <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
-                                    @endisset
-                                </td>
-                                <td>
-                                    @isset ($break->total_time) 
-                                        <span class="text-bold text-warning">{{ total_time($break->total_time) }}</span>
-                                    @else
-                                        <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
-                                    @endisset
+                                    @php
+                                        switch ($leave->status) {
+                                            case 'Pending':
+                                                $statusBg = 'primary';
+                                                break;
+                                            
+                                            case 'Approved':
+                                                $statusBg = 'success';
+                                                break;
+                                            
+                                            default:
+                                                $statusBg = 'danger';
+                                                break;
+                                        }
+                                    @endphp
+                                    <span class="badge bg-{{ $statusBg }}">{{ $leave->status }}</span>
+                                    @if (!is_null($leave->reviewed_by))
+                                        <br>
+                                        <a href="{{ route('administration.settings.user.show.profile', ['user' => $leave->reviewer]) }}" target="_blank" class="text-bold text-primary" title="Reviewed By">
+                                            {{ $leave->reviewer->name }}
+                                        </a>
+                                    @endif
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="#" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>
                             </tr>
-                        @endforeach --}}
+                        @endforeach
                     </tbody>
                 </table>
             </div>
