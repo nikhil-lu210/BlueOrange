@@ -9,7 +9,11 @@
             <div class="card-header header-elements">
                 <div class="title-and-info">
                     <h5 class="mb-0">Remaining Available Leave</h5>
-                    <small><b class="text-dark">Jan 01, 2024</b> to <b class="text-dark">Dec 31, 2024</b></small>
+                    <small>
+                        <b class="text-dark">{{ date('F d, Y') }}</b> 
+                        to 
+                        <b class="text-dark">{{ $user->allowed_leave->implemented_to->format('F d'). ', ' . date('Y') }}</b>
+                    </small>
                 </div>
             </div>
             <div class="card-body">
@@ -45,7 +49,11 @@
             <div class="card-header header-elements">
                 <div class="title-and-info">
                     <h5 class="mb-0">Allowed Leave</h5>
-                    <small><b class="text-dark">Jan 01</b> to <b class="text-dark">Dec 31</b></small>
+                    <small>
+                        <b class="text-dark">{{ $user->allowed_leave->implemented_from->format('F d') }}</b> 
+                        to 
+                        <b class="text-dark">{{ $user->allowed_leave->implemented_to->format('F d') }}</b>
+                    </small>
                 </div>
         
                 <div class="card-header-elements ms-auto">
@@ -66,15 +74,15 @@
                     <tbody>
                         <tr>
                             <th>Earned Leave</th>
-                            <td>96h 30m 00s</td>
+                            <td>{{ show_hr_min_sec($user->allowed_leave->earned_leave) }}</td>
                         </tr>
                         <tr>
                             <th>Sick Leave</th>
-                            <td>96h 30m 00s</td>
+                            <td>{{ show_hr_min_sec($user->allowed_leave->sick_leave) }}</td>
                         </tr>
                         <tr>
                             <th>Casual Leave</th>
-                            <td>96h 30m 00s</td>
+                            <td>{{ show_hr_min_sec($user->allowed_leave->casual_leave) }}</td>
                         </tr>
                     </tbody>
                 </table>

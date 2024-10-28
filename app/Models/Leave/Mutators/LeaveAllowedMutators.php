@@ -45,27 +45,30 @@ trait LeaveAllowedMutators
 
     /**
      * Mutator for implemented_from.
-     * Converts the given value (date) into 'mm-dd' format and stores it.
+     * Stores the given value directly without parsing it.
      *
-     * @param string|Carbon $value
+     * @param string $value
      * @return void
      */
     public function setImplementedFromAttribute($value): void
     {
-        $this->attributes['implemented_from'] = Carbon::parse($value)->format('m-d');
+        // Assume $value is already in 'mm-dd' format, so just assign it directly.
+        $this->attributes['implemented_from'] = $value;
     }
 
     /**
      * Mutator for implemented_to.
-     * Converts the given value (date) into 'mm-dd' format and stores it.
+     * Stores the given value directly without parsing it.
      *
-     * @param string|Carbon $value
+     * @param string $value
      * @return void
      */
     public function setImplementedToAttribute($value): void
     {
-        $this->attributes['implemented_to'] = Carbon::parse($value)->format('m-d');
+        // Assume $value is already in 'mm-dd' format, so just assign it directly.
+        $this->attributes['implemented_to'] = $value;
     }
+
 
     /**
      * Helper method to convert a time value (CarbonInterval or hh:mm:ss string) into a string format.

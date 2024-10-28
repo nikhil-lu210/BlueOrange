@@ -15,6 +15,9 @@ use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
 use App\Models\DailyBreak\DailyBreak;
+use App\Models\Leave\LeaveAllowed;
+use App\Models\Leave\LeaveAvailable;
+use App\Models\Leave\LeaveHistory;
 use App\Models\User\Employee\Employee;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -61,6 +64,52 @@ trait Relations
     public function getCurrentShiftAttribute()
     {
         return $this->employee_shifts()->where('status', 'active')->latest()->first();
+    }
+
+    
+    /**
+     * Get the leave_alloweds associated with the user.
+     */
+    public function leave_alloweds(): HasMany
+    {
+        return $this->hasMany(LeaveAllowed::class);
+    }
+
+    /**
+     * Get the active allowed leave
+     */
+    public function getAllowedLeaveAttribute()
+    {
+        // Retrieve the first active leave_alloweds entry for the user
+        $activeLeave = $this->leave_alloweds()->where('is_active', true)->first();
+
+        // Check if an active leave entry exists
+        if ($activeLeave) {
+            // Return the entire active leave entry as an object
+            return $activeLeave;
+        }
+
+        // Return null if no active leave is found
+        return null;
+    }
+
+
+    
+    /**
+     * Get the leave_availables associated with the user.
+     */
+    public function leave_availables(): HasMany
+    {
+        return $this->hasMany(LeaveAvailable::class);
+    }
+
+    
+    /**
+     * Get the leave_histories associated with the user.
+     */
+    public function leave_histories(): HasMany
+    {
+        return $this->hasMany(LeaveHistory::class);
     }
     
     /**

@@ -1,3 +1,14 @@
+/* Number type input spin button hide */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
 .text-bold {
     font-weight: bold !important;
 }

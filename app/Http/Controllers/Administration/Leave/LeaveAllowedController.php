@@ -2,10 +2,15 @@
 
 namespace App\Http\Controllers\Administration\Leave;
 
-use App\Http\Controllers\Controller;
-use App\Models\Leave\LeaveAllowed;
+use Exception;
+use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Models\Leave\LeaveAllowed;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\Leave\LeaveAllowedStoreRequest;
+use App\Services\Administration\Leave\LeaveAllowedService;
 
 class LeaveAllowedController extends Controller
 {
@@ -14,7 +19,6 @@ class LeaveAllowedController extends Controller
      */
     public function index(User $user)
     {
-        // dd($user);
         return view('administration.settings.user.includes.leave_allowed', compact(['user']));
     }
 
@@ -29,10 +33,19 @@ class LeaveAllowedController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request, User $user)
+    public function store(LeaveAllowedStoreRequest $request, User $user, LeaveAllowedService $leaveAllowedService)
     {
-        //
+        try {
+            $leaveAllowedService->store($user, $request->validated());
+
+            return redirect()->back()->with('success', 'Leave allowed upgraded successfully.');
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
+
+
 
     /**
      * Display the specified resource.

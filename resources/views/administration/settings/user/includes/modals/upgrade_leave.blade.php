@@ -9,7 +9,7 @@
                     <p class="text-muted">Upgrade allowed leave for <b class="text-primary">{{ $user->name }}</b></p>
                 </div>
                 <!-- Holiday Create form -->
-                <form method="post" action="{{ route('administration.settings.user.user_interaction.add_users', ['user' => $user]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">
+                <form method="post" action="{{ route('administration.settings.user.leave_allowed.store', ['user' => $user]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">
                     @csrf
                     <div class="mb-3 col-md-12">
                         <label for="earned_leave" class="form-label">Earned Leave <strong class="text-danger">*</strong></label>
