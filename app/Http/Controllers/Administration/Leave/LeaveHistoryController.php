@@ -60,6 +60,7 @@ class LeaveHistoryController extends Controller
      */
     public function store(LeaveHistoryStoreRequest $request, LeaveHistoryService $leaveHistoryService)
     {
+        // dd($request->hasFile('files'));
         try {
             $user = Auth::user();
             $leaveHistoryService->store($user, $request->validated());

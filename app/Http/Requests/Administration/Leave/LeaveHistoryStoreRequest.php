@@ -33,6 +33,7 @@ class LeaveHistoryStoreRequest extends FormRequest
             'total_leave.min.*' => ['integer', 'min:0', 'max:59'],
             'total_leave.sec' => ['required', 'array'],
             'total_leave.sec.*' => ['integer', 'min:0', 'max:59'],
+            'files.*' => ['nullable', 'file', 'mimes:jpg,jpeg,png,pdf,doc,docx', 'max:2048'],
         ];
     }
 }

@@ -2,9 +2,11 @@
 
 namespace App\Models\Leave\Relations;
 
-use App\Models\Leave\LeaveAllowed;
 use App\Models\User;
+use App\Models\Leave\LeaveAllowed;
+use App\Models\FileMedia\FileMedia;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait LeaveHistoryRelations
 {
@@ -30,5 +32,13 @@ trait LeaveHistoryRelations
     public function reviewer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_by');
+    }
+
+    /**
+     * Get the files associated with the leave_history.
+     */
+    public function files(): MorphMany
+    {
+        return $this->morphMany(FileMedia::class, 'fileable');
     }
 }
