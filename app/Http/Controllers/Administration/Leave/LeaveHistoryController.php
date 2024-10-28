@@ -8,13 +8,19 @@ use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Leave\LeaveHistory;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Services\Administration\Leave\LeaveHistoryService;
 use App\Http\Requests\Administration\Leave\LeaveHistoryStoreRequest;
 
 class LeaveHistoryController extends Controller
 {
+    protected $leaveHistoryService;
+
+    public function __construct(LeaveHistoryService $leaveHistoryService)
+    {
+        $this->leaveHistoryService = $leaveHistoryService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -24,14 +30,14 @@ class LeaveHistoryController extends Controller
 
         // Eager load all necessary relationships
         $users = User::with(['roles', 'media', 'shortcuts', 'employee'])
-                        ->whereIn('id', $userIds)
-                        ->whereStatus('Active')
-                        ->get(['id', 'name']);
+            ->whereIn('id', $userIds)
+            ->whereStatus('Active')
+            ->get(['id', 'name']);
 
         // Get daily breaks with the pre-loaded users
-        $leaves = $this->getLeavesQuery($request)
-                            ->whereIn('user_id', $userIds)
-                            ->get();
+        $leaves = $this->leaveHistoryService->getLeavesQuery($request)
+            ->whereIn('user_id', $userIds)
+            ->get();
 
         return view('administration.leave.index', compact(['users', 'leaves']));
     }
@@ -42,7 +48,7 @@ class LeaveHistoryController extends Controller
     public function my(Request $request)
     {
         // Get daily breaks with the pre-loaded users
-        $leaves = $this->getLeavesQuery($request, auth()->user()->id)->get();
+        $leaves = $this->leaveHistoryService->getLeavesQuery($request, auth()->user()->id)->get();
 
         return view('administration.leave.my', compact(['leaves']));
     }
@@ -52,18 +58,19 @@ class LeaveHistoryController extends Controller
      */
     public function create()
     {
-        return view('administration.leave.create');
+        $oldLeaveDaysCount = count(old('leave_days.date', []));
+    return view('administration.leave.create', compact('oldLeaveDaysCount'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(LeaveHistoryStoreRequest $request, LeaveHistoryService $leaveHistoryService)
+    public function store(LeaveHistoryStoreRequest $request)
     {
         // dd($request->hasFile('files'));
         try {
             $user = Auth::user();
-            $leaveHistoryService->store($user, $request->validated());
+            $this->leaveHistoryService->store($user, $request->validated());
 
             toast('Leave Application Submitted Successfully.', 'success');
             return redirect()->route('administration.leave.history.my');

@@ -77,17 +77,22 @@
                                 <div class="col-md mb-md-0 mb-2">
                                     <div class="form-check custom-option custom-option-basic">
                                         <label class="form-check-label custom-option-content" for="typeEarned">
-                                            <input name="type" class="form-check-input" type="radio" value="Earned" id="typeEarned" required />
+                                            <input name="type" class="form-check-input" type="radio" value="Earned" id="typeEarned" required 
+                                                {{ old('type') === 'Earned' ? 'checked' : '' }} />
                                             <span class="custom-option-header pb-0">
                                                 <span class="h6 mb-0">Earned</span>
                                             </span>
                                         </label>
+                                        @error('type')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
                                 <div class="col-md">
                                     <div class="form-check custom-option custom-option-basic">
                                         <label class="form-check-label custom-option-content" for="typeSick">
-                                            <input name="type" class="form-check-input" type="radio" value="Sick" id="typeSick" required />
+                                            <input name="type" class="form-check-input" type="radio" value="Sick" id="typeSick" required 
+                                                {{ old('type') === 'Sick' ? 'checked' : '' }} />
                                             <span class="custom-option-header pb-0">
                                                 <span class="h6 mb-0">Sick</span>
                                             </span>
@@ -97,7 +102,8 @@
                                 <div class="col-md">
                                     <div class="form-check custom-option custom-option-basic">
                                         <label class="form-check-label custom-option-content" for="typeCasual">
-                                            <input name="type" class="form-check-input" type="radio" value="Casual" id="typeCasual"  required />
+                                            <input name="type" class="form-check-input" type="radio" value="Casual" id="typeCasual" required 
+                                                {{ old('type') === 'Casual' ? 'checked' : '' }} />
                                             <span class="custom-option-header pb-0">
                                                 <span class="h6 mb-0">Casual</span>
                                             </span>
@@ -124,53 +130,7 @@
                         </div>
 
                         <div class="col-md-12">
-                            <div class="card mb-4 border-1">
-                                <div class="card-header header-elements">
-                                    <h5 class="mb-0">Leave Date(s) and Hour(s)</h5>
-                            
-                                    <div class="card-header-elements ms-auto">
-                                        <button type="button" class="btn btn-sm btn-dark" id="addLeaveDay">
-                                            <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                                            Add Day
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <div class="card-body">
-                                    <!-- This Row Will Be Duplicated on Add Day Button Click -->
-                                    <div class="row leave-day-row">
-                                        <div class="mb-3 col-md-5">
-                                            <label class="form-label">Date <strong class="text-danger">*</strong></label>
-                                            <input type="text" name="leave_days[date][]" value="{{ old('deadline') }}" class="form-control date-picker" placeholder="YYYY-MM-DD" tabindex="-1" required />
-                                            @error('deadline.*')
-                                                <span class="text-danger">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                
-                                        <div class="mb-3 col-md-7">
-                                            <label for="total_leave" class="form-label">Total Leave <strong class="text-danger">*</strong></label>
-                                            <div class="input-group">
-                                                <span class="input-group-text bg-label-primary">Hour:</span>
-                                                <input type="number" min="0" max="240" step="1" name="total_leave[hour][]" value="{{ old('total_leave_hour') }}" class="form-control @error('total_leave_hour.*') is-invalid @enderror" placeholder="HH" aria-label="HH" required>
-                                                <span class="input-group-text bg-label-primary">Min:</span>
-                                                <input type="number" min="0" max="59" step="1" name="total_leave[min][]" value="{{ old('total_leave_min') }}" class="form-control @error('total_leave_min.*') is-invalid @enderror" placeholder="MM" aria-label="MM" required>
-                                                <span class="input-group-text bg-label-primary">Sec:</span>
-                                                <input type="number" min="0" max="59" step="1" name="total_leave[sec][]" value="{{ old('total_leave_sec') }}" class="form-control @error('total_leave_sec.*') is-invalid @enderror" placeholder="SS" aria-label="SS" required>
-                                            </div>
-                                            @error('total_leave.*')
-                                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                                            @enderror
-                                        </div>
-                                        <div class="col-md-12">
-                                            <!-- Hide remove button initially -->
-                                            <button type="button" class="btn btn-danger btn-xs remove-leave-day text-right float-right" style="display: none !important;">
-                                                <i class="fa fa-times" style="margin-right: 5px;"></i>
-                                                Remove
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>                                
-                            </div>                            
+                            @include('administration.leave.includes.leave_days_hours')
                         </div>
                     </div>
                     <div class="mt-2 float-end">
@@ -267,23 +227,32 @@
         });
     });
     </script>
-
+    
     <script>
         $(document).ready(function() {
+            // Counter for dynamic rows
+            let rowCount = {{ count(old('leave_days.date', [])) }}; // Start from the count passed from the controller
+        
             // Add Day button click event
             $('#addLeaveDay').click(function() {
                 // Clone the leave day row
-                var newRow = $('.leave-day-row:first').clone();
-
+                var newRow = $('.leave-day-row:last').clone();
+        
                 // Clear the input values in the cloned row
-                newRow.find('input').val('');
-
-                // Show the remove button for all rows except the first one
+                newRow.find('input[type="text"], input[type="number"]').val('');
+        
+                // Update names for dynamic indexing
+                newRow.find('input[name^="leave_days[date]"]').attr('name', `leave_days[date][${rowCount}]`);
+                newRow.find('input[name^="total_leave[hour]"]').attr('name', `total_leave[hour][${rowCount}]`);
+                newRow.find('input[name^="total_leave[min]"]').attr('name', `total_leave[min][${rowCount}]`);
+                newRow.find('input[name^="total_leave[sec]"]').attr('name', `total_leave[sec][${rowCount}]`);
+        
+                // Show the remove button for all rows
                 newRow.find('.remove-leave-day').show();
-
+        
                 // Append the cloned row to the parent container
                 $('.leave-day-row:first').parent().append(newRow);
-
+        
                 // Reinitialize date-picker on cloned inputs
                 newRow.find('.date-picker').removeClass('hasDatepicker').datepicker({
                     format: 'yyyy-mm-dd',
@@ -291,8 +260,11 @@
                     autoclose: true,
                     orientation: 'auto right'
                 });
+        
+                // Increment row count
+                rowCount++;
             });
-
+        
             // Event delegation for remove button click
             $(document).on('click', '.remove-leave-day', function() {
                 // Check if it's not the remove button of the first row
