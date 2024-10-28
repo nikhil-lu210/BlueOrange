@@ -125,6 +125,11 @@ class LeaveHistoryController extends Controller
             $query->whereUserId($userId);
         }
 
+        // Apply user ID filter if request user_id provided
+        if ($request->user_id) {
+            $query->whereUserId($request->user_id);
+        }
+
         // Handle month/year filtering
         if ($request->has('leave_month_year') && !is_null($request->leave_month_year)) {
             $monthYear = Carbon::createFromFormat('F Y', $request->leave_month_year);
