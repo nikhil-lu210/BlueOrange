@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Daily Break'))
+@section('page_title', __('Leave'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -31,13 +31,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('My Daily Breaks') }}</b>
+    <b class="text-uppercase">{{ __('My Leaves') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Daily Break') }}</li>
-    <li class="breadcrumb-item active">{{ __('My Daily Breaks') }}</li>
+    <li class="breadcrumb-item">{{ __('Leave') }}</li>
+    <li class="breadcrumb-item active">{{ __('My Leaves') }}</li>
 @endsection
 
 
@@ -45,25 +45,26 @@
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    <div class="col-md-6">
-        <form action="{{ route('administration.daily_break.index') }}" method="get" autocomplete="off">
+    <div class="col-md-8">
+        <form action="{{ route('administration.leave.history.my') }}" method="get" autocomplete="off">
             <div class="card mb-4">
                 <div class="card-body">
-                    <div class="row">                        
-                        <div class="mb-3 col-md-5">
-                            <label class="form-label">{{ __('Breaks Of') }}</label>
-                            <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
-                            @error('created_month_year')
+                    <div class="row">
+                        <div class="mb-3 col-md-6">
+                            <label class="form-label">{{ __('Leaves Of') }}</label>
+                            <input type="text" name="leave_month_year" value="{{ request()->leave_month_year ?? old('leave_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
+                            @error('leave_month_year')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <div class="mb-3 col-md-7">
-                            <label for="type" class="form-label">{{ __('Select Break Type') }}</label>
+                        <div class="mb-3 col-md-6">
+                            <label for="type" class="form-label">{{ __('Select Leave Type') }}</label>
                             <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default">
                                 <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ __('Select Type') }}</option>
-                                <option value="Short" {{ request()->type == 'Short' ? 'selected' : '' }}>{{ __('Short Break') }}</option>
-                                <option value="Long" {{ request()->type == 'Long' ? 'selected' : '' }}>{{ __('Long Break') }}</option>
+                                <option value="Earned" {{ request()->type == 'Earned' ? 'selected' : '' }}>{{ __('Earned Leave') }}</option>
+                                <option value="Sick" {{ request()->type == 'Sick' ? 'selected' : '' }}>{{ __('Sick Leave') }}</option>
+                                <option value="Casual" {{ request()->type == 'Casual' ? 'selected' : '' }}>{{ __('Casual Leave') }}</option>
                             </select>
                             @error('announcer_id')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -72,15 +73,15 @@
                     </div> 
                     
                     <div class="col-md-12 text-end">
-                        @if (request()->created_month_year || request()->type) 
-                            <a href="{{ route('administration.daily_break.index') }}" class="btn btn-danger confirm-warning">
+                        @if (request()->leave_month_year || request()->type) 
+                            <a href="{{ route('administration.leave.history.my') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
                             </a>
                         @endif
-                        <button type="submit" name="filter_breaks" value="true" class="btn btn-primary">
+                        <button type="submit" name="filter_leaves" value="true" class="btn btn-primary">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                            {{ __('Filter Breaks') }}
+                            {{ __('Filter Leaves') }}
                         </button>
                     </div>
                 </div>
@@ -93,21 +94,20 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                {{-- $clockinType . 'attendances_backup' . $userName . $monthYear --}}
                 <h5 class="mb-0">
-                    <span>My Daily</span>
+                    <span>My</span>
                     <span>{{ request()->type ?? request()->type }}</span>
-                    <span>Breaks</span>
-                    <sup>(<b>Month: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
+                    <span>Leaves</span>
+                    <sup>(<b>Month: </b> {{ request()->leave_month_year ? request()->leave_month_year : date('F Y') }})</sup>
                 </h5>
         
                 <div class="card-header-elements ms-auto">
-                    @if ($dailyBreaks->count() > 0)
+                    @if ($leaves->count() > 0)
                         <a href="{{ route('administration.daily_break.export', [
-                            'user_id' => auth()->user()->id, 
-                            'created_month_year' => request('created_month_year'),
+                            'user_id' => request('user_id'), 
+                            'leave_month_year' => request('leave_month_year'),
                             'type' => request('type'),
-                            'filter_breaks' => request('filter_breaks')
+                            'filter_leaves' => request('filter_leaves')
                         ]) }}" target="_blank" class="btn btn-sm btn-dark">
                             <span class="tf-icon ti ti-download me-1"></span>
                             {{ __('Download') }}
@@ -121,42 +121,72 @@
                         <tr>
                             <th>Sl.</th>
                             <th>Date</th>
-                            <th>Break Started</th>
-                            <th>Break Stopped</th>
-                            <th>Total</th>
+                            <th>Total Leave</th>
+                            <th>Status</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($dailyBreaks as $key => $break) 
+                        @foreach ($leaves as $key => $leave) 
                             <tr>
-                                <th>#{{ serial($dailyBreaks, $key) }}</th>
+                                <th>#{{ serial($leaves, $key) }}</th>
                                 <td>
-                                    {{ show_date($break->date) }}
+                                    @php
+                                        switch ($leave->type) {
+                                            case 'Earned':
+                                                $typeBg = 'success';
+                                                break;
+                                            
+                                            case 'Sick':
+                                                $typeBg = 'warning';
+                                                break;
+                                            
+                                            default:
+                                                $typeBg = 'danger';
+                                                break;
+                                        }
+                                    @endphp
+                                    {{ show_date($leave->date) }}
                                     <br>
-                                    <small class="text-bold text-{{ $break->type === 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</small>
+                                    <small class="badge bg-label-{{ $typeBg }}" title="Requested Leave Type">{{ $leave->type }} Leave</small>
                                 </td>
                                 <td>
-                                    <div class="d-grid">
-                                        <span class="text-bold text-success">{{ show_time($break->break_in_at) }}</span>
-                                    </div>
+                                    <span class="text-bold">{{ show_hr_min_sec($leave->total_leave) }}</span>
+                                    @if (!is_null($leave->is_paid_leave)) 
+                                        <br>
+                                        @if ($leave->is_paid_leave == true)
+                                            <small class="badge bg-success">Paid</small>
+                                        @else
+                                            <small class="badge bg-danger">Unpaid</small>
+                                        @endif
+                                    @endif
                                 </td>
                                 <td>
-                                    @isset ($break->break_out_at) 
-                                        <span class="text-bold text-success">{{ show_time($break->break_out_at) }}</span>
-                                    @else
-                                        <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
-                                    @endisset
-                                </td>
-                                <td>
-                                    @isset ($break->total_time) 
-                                        <span class="text-bold text-warning">{{ total_time($break->total_time) }}</span>
-                                    @else
-                                        <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
-                                    @endisset
+                                    @php
+                                        switch ($leave->status) {
+                                            case 'Pending':
+                                                $statusBg = 'primary';
+                                                break;
+                                            
+                                            case 'Approved':
+                                                $statusBg = 'success';
+                                                break;
+                                            
+                                            default:
+                                                $statusBg = 'danger';
+                                                break;
+                                        }
+                                    @endphp
+                                    <span class="badge bg-{{ $statusBg }}">{{ $leave->status }}</span>
+                                    @if (!is_null($leave->reviewed_by))
+                                        <br>
+                                        <a href="{{ route('administration.settings.user.show.profile', ['user' => $leave->reviewer]) }}" target="_blank" class="text-bold text-primary" title="Reviewed By">
+                                            {{ $leave->reviewer->name }}
+                                        </a>
+                                    @endif
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="#" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>

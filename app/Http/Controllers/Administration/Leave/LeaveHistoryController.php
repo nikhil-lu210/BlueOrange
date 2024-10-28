@@ -39,9 +39,12 @@ class LeaveHistoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function my()
+    public function my(Request $request)
     {
-        $user = auth()->user();
+        // Get daily breaks with the pre-loaded users
+        $leaves = $this->getLeavesQuery($request, auth()->user()->id)->get();
+
+        return view('administration.leave.my', compact(['leaves']));
     }
 
     /**

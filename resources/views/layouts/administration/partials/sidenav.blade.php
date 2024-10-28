@@ -86,12 +86,12 @@
                         </li>
                     @endcanany
                     @can('Leave History Read') 
-                        <li class="menu-item {{ request()->is('leave/my*') ? 'active' : '' }}">
+                        <li class="menu-item {{ request()->is('leave/history/my*') ? 'active' : '' }}">
                             <a href="{{ route('administration.leave.history.my') }}" class="menu-link">{{ __('My Leaves') }}</a>
                         </li>
                     @endcan
                     @can('Leave History Create')
-                        <li class="menu-item {{ request()->is('leave/create*') ? 'active' : '' }}">
+                        <li class="menu-item {{ request()->is('leave/history/create*') ? 'active' : '' }}">
                             <a href="{{ route('administration.leave.history.create') }}" class="menu-link">{{ __('Apply For Leave') }}</a>
                         </li>
                     @endcan

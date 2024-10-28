@@ -66,7 +66,7 @@
                         </div>
                         
                         <div class="mb-3 col-md-3">
-                            <label class="form-label">{{ __('leaves Of') }}</label>
+                            <label class="form-label">{{ __('Leaves Of') }}</label>
                             <input type="text" name="leave_month_year" value="{{ request()->leave_month_year ?? old('leave_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                             @error('leave_month_year')
                                 <span class="text-danger">{{ $message }}</span>
@@ -89,14 +89,14 @@
                     
                     <div class="col-md-12 text-end">
                         @if (request()->user_id || request()->leave_month_year || request()->type) 
-                            <a href="{{ route('administration.daily_break.index') }}" class="btn btn-danger confirm-warning">
+                            <a href="{{ route('administration.leave.history.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
                             </a>
                         @endif
                         <button type="submit" name="filter_leaves" value="true" class="btn btn-primary">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                            {{ __('Filter Breaks') }}
+                            {{ __('Filter Leaves') }}
                         </button>
                     </div>
                 </div>
