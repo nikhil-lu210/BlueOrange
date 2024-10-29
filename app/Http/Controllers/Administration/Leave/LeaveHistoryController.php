@@ -6,9 +6,12 @@ use Auth;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
+use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 use App\Models\Leave\LeaveHistory;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Leave\LeaveAvailable;
 use App\Services\Administration\Leave\LeaveHistoryService;
 use App\Http\Requests\Administration\Leave\LeaveHistoryStoreRequest;
 
@@ -90,19 +93,77 @@ class LeaveHistoryController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update the specified resource in storage.
      */
-    public function edit(LeaveHistory $leaveHistory)
+    public function approve(Request $request, LeaveHistory $leaveHistory)
     {
-        //
+        // Validate the request
+        $validated = $request->validate([
+            'is_paid_leave' => ['required', 'in:Paid,Unpaid'],
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $leaveHistory) {
+                $user = $leaveHistory->user;
+                $forYear = Carbon::parse($leaveHistory->date)->year;
+
+                $hasLeaveForYear = LeaveAvailable::whereUserId($user->id)->whereForYear($forYear)->first();
+                // dd(isset($hasLeaveForYear));
+                if (!isset($hasLeaveForYear)) {
+                    $leaveAvailable = LeaveAvailable::create([
+                        'user_id' => $user->id, 
+                        'for_year' => $forYear,
+                        'earned_leave' => $leaveHistory->leave_allowed->earned_leave,
+                        'casual_leave' => $leaveHistory->leave_allowed->casual_leave,
+                        'sick_leave' => $leaveHistory->leave_allowed->sick_leave,
+                    ]);
+                } else {
+                    $leaveAvailable = $hasLeaveForYear->update([
+                        'for_year' => $forYear,
+                        'earned_leave' => $leaveHistory->leave_allowed->earned_leave,
+                        'casual_leave' => $leaveHistory->leave_allowed->casual_leave,
+                        'sick_leave' => $leaveHistory->leave_allowed->sick_leave,
+                    ]);
+                }
+                dd($leaveAvailable);
+
+                // Parse the total leave duration correctly
+                $leaveTakenParts = explode(':', $leaveHistory->total_leave);
+                $leaveTaken = CarbonInterval::hours($leaveTakenParts[0])->addMinutes($leaveTakenParts[1])->addSeconds($leaveTakenParts[2]);
+
+                // Retrieve current casual leave as CarbonInterval
+                $currentCasualLeave = CarbonInterval::fromString($leaveAvailable->casual_leave);
+
+                // Perform the subtraction of intervals
+                $newCasualLeave = $currentCasualLeave->subtract($leaveTaken);
+
+                // Update the leave available data
+                $leaveAvailable->casual_leave = $newCasualLeave;
+                $leaveAvailable->save();
+
+                // Update leave history approval status and details
+                $leaveHistory->update([
+                    'status' => 'Approved',
+                    'reviewed_by' => auth()->id(),
+                    'reviewed_at' => Carbon::now(),
+                    'is_paid_leave' => $request->input('is_paid_leave') === 'Paid' ? true : false,
+                ]);
+            });
+
+            return redirect()->back()->with('success', 'Leave approved and leave balance updated successfully.');
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()->with('error', 'Failed to approve leave: ' . $e->getMessage());
+        }
     }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, LeaveHistory $leaveHistory)
+    public function reject(Request $request, LeaveHistory $leaveHistory)
     {
-        //
+        dd($request->all(), $leaveHistory->toArray());
     }
 
     /**

@@ -12,7 +12,7 @@ trait LeaveAvailableAccessors
      */
     public function getEarnedLeaveAttribute($value): CarbonInterval
     {
-        return CarbonInterval::fromString($value);
+        return $this->convertToCarbonInterval($value);
     }
 
     /**
@@ -20,7 +20,7 @@ trait LeaveAvailableAccessors
      */
     public function getCasualLeaveAttribute($value): CarbonInterval
     {
-        return CarbonInterval::fromString($value);
+        return $this->convertToCarbonInterval($value);
     }
 
     /**
@@ -28,7 +28,7 @@ trait LeaveAvailableAccessors
      */
     public function getSickLeaveAttribute($value): CarbonInterval
     {
-        return CarbonInterval::fromString($value);
+        return $this->convertToCarbonInterval($value);
     }
 
     /**
@@ -37,5 +37,24 @@ trait LeaveAvailableAccessors
     public function getForYearAttribute($value): Carbon
     {
         return Carbon::createFromFormat('Y', $value);
+    }
+
+    /**
+     * Convert "HH:MM:SS" format to CarbonInterval
+     */
+    private function convertToCarbonInterval($value): CarbonInterval
+    {
+        $timeParts = explode(':', $value);
+
+        // Ensure the format is valid (HH:MM:SS)
+        if (count($timeParts) === 3) {
+            [$hours, $minutes, $seconds] = $timeParts;
+            $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
+
+            return CarbonInterval::seconds($totalSeconds);
+        }
+
+        // Handle invalid format gracefully
+        return CarbonInterval::hours(0);
     }
 }
