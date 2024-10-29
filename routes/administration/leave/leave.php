@@ -16,6 +16,7 @@ Route::prefix('leave')
                 Route::get('/all', 'index')->name('index')->can('Leave History Update');
                 Route::get('/my', 'my')->name('my')->can('Leave History Read');
                 Route::get('/create', 'create')->name('create')->can('Leave History Create');
+                Route::get('/show/{leaveHistory}', 'show')->name('show')->can('Leave History Read');
                 
                 Route::post('/store', 'store')->name('store')->can('Leave History Create');
             });

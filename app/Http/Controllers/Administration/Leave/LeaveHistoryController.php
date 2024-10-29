@@ -85,7 +85,8 @@ class LeaveHistoryController extends Controller
      */
     public function show(LeaveHistory $leaveHistory)
     {
-        //
+        // dd($leaveHistory);
+        return view('administration.leave.show', compact(['leaveHistory']));
     }
 
     /**
