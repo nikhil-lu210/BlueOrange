@@ -2,10 +2,13 @@
 
 namespace App\Services\Administration\Leave;
 
+use Exception;
 use Carbon\Carbon;
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Models\Leave\LeaveHistory;
 use Illuminate\Support\Facades\DB;
+use App\Models\Leave\LeaveAvailable;
 use Illuminate\Database\Eloquent\Builder;
 
 class LeaveHistoryService
@@ -99,5 +102,114 @@ class LeaveHistoryService
                 }
             }
         }, 5);
+    }
+
+
+    /**
+     * Approve a leave request and update the leave balance.
+     *
+     * @param Request $request
+     * @param LeaveHistory $leaveHistory
+     * @return void
+     * @throws Exception
+     */
+    public function approve(Request $request, LeaveHistory $leaveHistory): void
+    {
+        try {
+            DB::transaction(function () use ($request, $leaveHistory) {
+                $user = $leaveHistory->user;
+                $forYear = Carbon::parse($leaveHistory->date)->year;
+
+                // Retrieve or create leave_available for the specified year
+                $leaveAvailable = LeaveAvailable::firstOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'for_year' => $forYear
+                    ],
+                    [
+                        'earned_leave' => $leaveHistory->leave_allowed->earned_leave,
+                        'casual_leave' => $leaveHistory->leave_allowed->casual_leave,
+                        'sick_leave' => $leaveHistory->leave_allowed->sick_leave,
+                    ]
+                );
+
+                // Calculate the leave taken in seconds
+                $leaveTakenInSeconds = $leaveHistory->total_leave->total('seconds');
+
+                // Update leave balance based on leave type
+                $this->updateLeaveBalance($leaveAvailable, $leaveHistory->type, $leaveTakenInSeconds);
+
+                // Save the updated leave available values
+                $leaveAvailable->save();
+
+                // Update leave history approval status and details
+                $leaveHistory->update([
+                    'status' => 'Approved',
+                    'reviewed_by' => auth()->id(),
+                    'reviewed_at' => Carbon::now(),
+                    'is_paid_leave' => $request->input('is_paid_leave') === 'Paid',
+                ]);
+            });
+        } catch (Exception $e) {
+            throw new Exception('Failed to approve leave: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Update the leave balance based on leave type and taken leave.
+     *
+     * @param LeaveAvailable $leaveAvailable
+     * @param string $leaveType
+     * @param int $leaveTakenInSeconds
+     * @return void
+     * @throws Exception
+     */
+    private function updateLeaveBalance(LeaveAvailable $leaveAvailable, string $leaveType, int $leaveTakenInSeconds): void
+    {
+        switch ($leaveType) {
+            case 'Casual':
+                $currentLeaveInSeconds = $leaveAvailable->casual_leave->total('seconds');
+                $newLeaveInSeconds = $currentLeaveInSeconds - $leaveTakenInSeconds;
+                if ($newLeaveInSeconds < 0) {
+                    throw new Exception('Insufficient casual leave balance.');
+                }
+                $leaveAvailable->casual_leave = $this->formatLeaveTime($newLeaveInSeconds);
+                break;
+
+            case 'Earned':
+                $currentLeaveInSeconds = $leaveAvailable->earned_leave->total('seconds');
+                $newLeaveInSeconds = $currentLeaveInSeconds - $leaveTakenInSeconds;
+                if ($newLeaveInSeconds < 0) {
+                    throw new Exception('Insufficient earned leave balance.');
+                }
+                $leaveAvailable->earned_leave = $this->formatLeaveTime($newLeaveInSeconds);
+                break;
+
+            case 'Sick':
+                $currentLeaveInSeconds = $leaveAvailable->sick_leave->total('seconds');
+                $newLeaveInSeconds = $currentLeaveInSeconds - $leaveTakenInSeconds;
+                if ($newLeaveInSeconds < 0) {
+                    throw new Exception('Insufficient sick leave balance.');
+                }
+                $leaveAvailable->sick_leave = $this->formatLeaveTime($newLeaveInSeconds);
+                break;
+
+            default:
+                throw new Exception('Invalid leave type.');
+        }
+    }
+
+    /**
+     * Format leave time from seconds to HH:MM:SS.
+     *
+     * @param int $totalSeconds
+     * @return string
+     */
+    private function formatLeaveTime(int $totalSeconds): string
+    {
+        $hours = floor($totalSeconds / 3600);
+        $minutes = floor(($totalSeconds % 3600) / 60);
+        $seconds = $totalSeconds % 60;
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
 }

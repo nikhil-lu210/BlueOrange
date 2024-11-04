@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\Leave\LeaveHistory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\Leave\LeaveApprovalRequest;
 use App\Models\Leave\LeaveAvailable;
 use App\Services\Administration\Leave\LeaveHistoryService;
 use App\Http\Requests\Administration\Leave\LeaveHistoryStoreRequest;
@@ -62,7 +63,7 @@ class LeaveHistoryController extends Controller
     public function create()
     {
         $oldLeaveDaysCount = count(old('leave_days.date', []));
-    return view('administration.leave.create', compact('oldLeaveDaysCount'));
+        return view('administration.leave.create', compact('oldLeaveDaysCount'));
     }
 
     /**
@@ -95,109 +96,12 @@ class LeaveHistoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function approve(Request $request, LeaveHistory $leaveHistory)
+    public function approve(LeaveApprovalRequest $request, LeaveHistory $leaveHistory)
     {
-        // Validate the request
-        $validated = $request->validate([
-            'is_paid_leave' => ['required', 'in:Paid,Unpaid'],
-        ]);
-
-        try {
-            DB::transaction(function () use ($request, $leaveHistory) {
-                $user = $leaveHistory->user;
-                $forYear = Carbon::parse($leaveHistory->date)->year;
+        $this->leaveHistoryService->approve($request, $leaveHistory);
         
-                // Retrieve or create leave_available for the specified year
-                $leaveAvailable = LeaveAvailable::firstOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'for_year' => $forYear
-                    ],
-                    [
-                        'earned_leave' => $leaveHistory->leave_allowed->earned_leave,
-                        'casual_leave' => $leaveHistory->leave_allowed->casual_leave,
-                        'sick_leave' => $leaveHistory->leave_allowed->sick_leave,
-                    ]
-                );
-        
-                // Calculate the leave taken as seconds
-                $leaveTakenInSeconds = $leaveHistory->total_leave->total('seconds');
-        
-                // Update the leave balance based on leave type
-                if ($leaveHistory->type === 'Casual') {
-                    $currentCasualLeaveInSeconds = $leaveAvailable->casual_leave->total('seconds');
-                    $newCasualLeaveInSeconds = $currentCasualLeaveInSeconds - $leaveTakenInSeconds;
-        
-                    // Convert to hours, minutes, and seconds
-                    $hours = floor($newCasualLeaveInSeconds / 3600);
-                    $minutes = floor(($newCasualLeaveInSeconds % 3600) / 60);
-                    $seconds = $newCasualLeaveInSeconds % 60;
-        
-                    // Format it as HH:MM:SS
-                    $formattedCasualLeave = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-        
-                    if ($newCasualLeaveInSeconds < 0) {
-                        throw new Exception('Insufficient casual leave balance.');
-                    }
-        
-                    // Store the formatted leave
-                    $leaveAvailable->casual_leave = $formattedCasualLeave;
-        
-                } elseif ($leaveHistory->type === 'Earned') {
-                    $currentEarnedLeaveInSeconds = $leaveAvailable->earned_leave->total('seconds');
-                    $newEarnedLeaveInSeconds = $currentEarnedLeaveInSeconds - $leaveTakenInSeconds;
-        
-                    if ($newEarnedLeaveInSeconds < 0) {
-                        throw new Exception('Insufficient earned leave balance.');
-                    }
-        
-                    // Convert to hours, minutes, and seconds
-                    $hours = floor($newEarnedLeaveInSeconds / 3600);
-                    $minutes = floor(($newEarnedLeaveInSeconds % 3600) / 60);
-                    $seconds = $newEarnedLeaveInSeconds % 60;
-        
-                    // Format it as HH:MM:SS
-                    $formattedEarnedLeave = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-        
-                    // Store the formatted leave
-                    $leaveAvailable->earned_leave = $formattedEarnedLeave;
-        
-                } elseif ($leaveHistory->type === 'Sick') {
-                    $currentSickLeaveInSeconds = $leaveAvailable->sick_leave->total('seconds');
-                    $newSickLeaveInSeconds = $currentSickLeaveInSeconds - $leaveTakenInSeconds;
-        
-                    if ($newSickLeaveInSeconds < 0) {
-                        throw new Exception('Insufficient sick leave balance.');
-                    }
-        
-                    // Convert to hours, minutes, and seconds
-                    $hours = floor($newSickLeaveInSeconds / 3600);
-                    $minutes = floor(($newSickLeaveInSeconds % 3600) / 60);
-                    $seconds = $newSickLeaveInSeconds % 60;
-        
-                    // Format it as HH:MM:SS
-                    $formattedSickLeave = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-        
-                    // Store the formatted leave
-                    $leaveAvailable->sick_leave = $formattedSickLeave;
-                }
-        
-                // Save the updated leave available values
-                $leaveAvailable->save();
-        
-                // Update leave history approval status and details
-                $leaveHistory->update([
-                    'status' => 'Approved',
-                    'reviewed_by' => auth()->id(),
-                    'reviewed_at' => Carbon::now(),
-                    'is_paid_leave' => $request->input('is_paid_leave') === 'Paid',
-                ]);
-            });
-        
-            return redirect()->back()->with('success', 'Leave approved and leave balance updated successfully.');
-        } catch (Exception $e) {
-            return redirect()->back()->with('error', 'Failed to approve leave: ' . $e->getMessage());
-        }
+        toast('Leave request approved and leave balance updated successfully.', 'success');
+        return redirect()->back();
     }
 
 
