@@ -151,7 +151,7 @@
                                     <small class="badge bg-label-{{ $typeBg }}" title="Requested Leave Type">{{ $leave->type }} Leave</small>
                                 </td>
                                 <td>
-                                    <span class="text-bold">{{ show_hr_min_sec($leave->total_leave) }}</span>
+                                    <span class="text-bold">{{ $leave->total_leave->forHumans() }}</span>
                                     @if (!is_null($leave->is_paid_leave)) 
                                         <br>
                                         @if ($leave->is_paid_leave == true)
