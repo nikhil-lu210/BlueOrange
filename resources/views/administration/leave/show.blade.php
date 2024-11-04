@@ -63,6 +63,10 @@
                 <div class="row justify-content-left">
                     <div class="col-md-6">
                         @include('administration.leave.includes.leave_history_details')
+
+                        @if ($leaveHistory->status === 'Pending') 
+                            @include('administration.leave.includes.available_leaves')
+                        @endif
                     </div>
 
                     <div class="col-md-6">

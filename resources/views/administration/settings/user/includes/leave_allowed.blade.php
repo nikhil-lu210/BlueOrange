@@ -29,15 +29,15 @@
                     <tbody>
                         <tr>
                             <th>Earned Leave</th>
-                            <td>96h 30m 00s</td>
+                            <td>{{ $user->available_leaves()->earned_leave }}</td>
                         </tr>
                         <tr>
                             <th>Sick Leave</th>
-                            <td>96h 30m 00s</td>
+                            <td>{{ $user->available_leaves()->sick_leave }}</td>
                         </tr>
                         <tr>
                             <th>Casual Leave</th>
-                            <td>96h 30m 00s</td>
+                            <td>{{ $user->available_leaves()->casual_leave }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -79,15 +79,15 @@
                         <tbody>
                             <tr>
                                 <th>Earned Leave</th>
-                                <td>{{ show_hr_min_sec($user->allowed_leave->earned_leave) }}</td>
+                                <td>{{ $user->allowed_leave->earned_leave->forHumans() }}</td>
                             </tr>
                             <tr>
                                 <th>Sick Leave</th>
-                                <td>{{ show_hr_min_sec($user->allowed_leave->sick_leave) }}</td>
+                                <td>{{ $user->allowed_leave->sick_leave->forHumans() }}</td>
                             </tr>
                             <tr>
                                 <th>Casual Leave</th>
-                                <td>{{ show_hr_min_sec($user->allowed_leave->casual_leave) }}</td>
+                                <td>{{ $user->allowed_leave->casual_leave->forHumans() }}</td>
                             </tr>
                         </tbody>
                     @endisset

@@ -84,13 +84,7 @@ trait Relations
         $activeLeave = $this->leave_alloweds()->where('is_active', true)->first();
 
         // Check if an active leave entry exists
-        if ($activeLeave) {
-            // Return the entire active leave entry as an object
-            return $activeLeave;
-        }
-
-        // Return null if no active leave is found
-        return null;
+        return $activeLeave ?: null; // Return the active leave entry or null if not found
     }
 
 
@@ -101,6 +95,29 @@ trait Relations
     public function leave_availables(): HasMany
     {
         return $this->hasMany(LeaveAvailable::class);
+    }
+
+    /**
+     * Accessor to get available leaves for a given year or the current year.
+     * Falls back to allowed leaves if no available leaves are found.
+     *
+     * @param int|null $year
+     * @return LeaveAvailable|LeaveAllowed|null
+     */
+    public function available_leaves($year = null)
+    {
+        // If no year is provided, use the current year
+        $year = $year ?: now()->year;
+
+        // Retrieve the leave available for the specified year
+        $leaveAvailable = $this->leave_availables()->where('for_year', $year)->first();
+
+        // If no leave available is found, fetch the allowed leaves
+        if (!$leaveAvailable) {
+            return $this->getAllowedLeaveAttribute();
+        }
+
+        return $leaveAvailable;
     }
 
     
