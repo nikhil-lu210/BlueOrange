@@ -103,8 +103,8 @@
         
                 <div class="card-header-elements ms-auto">
                     @if ($leaves->count() > 0)
-                        <a href="{{ route('administration.daily_break.export', [
-                            'user_id' => request('user_id'), 
+                        <a href="{{ route('administration.leave.history.export', [
+                            'user_id' => auth()->user()->id, 
                             'leave_month_year' => request('leave_month_year'),
                             'type' => request('type'),
                             'filter_leaves' => request('filter_leaves')

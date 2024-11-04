@@ -22,5 +22,7 @@ Route::prefix('leave')
                 Route::put('/reject/{leaveHistory}', 'reject')->name('reject')->can('Leave History Update');
                 
                 Route::post('/store', 'store')->name('store')->can('Leave History Create');
+
+                Route::get('/export', 'export')->name('export')->can('Leave History Read');
             });
     });

@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers\Administration\Leave;
 
+use App\Exports\Administration\Leave\LeaveExport;
 use Auth;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
-use Carbon\CarbonInterval;
 use Illuminate\Http\Request;
 use App\Models\Leave\LeaveHistory;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Administration\Leave\LeaveApprovalRequest;
-use App\Models\Leave\LeaveAvailable;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Services\Administration\Leave\LeaveExportService;
 use App\Services\Administration\Leave\LeaveHistoryService;
+use App\Http\Requests\Administration\Leave\LeaveApprovalRequest;
 use App\Http\Requests\Administration\Leave\LeaveHistoryStoreRequest;
 
 class LeaveHistoryController extends Controller
@@ -141,52 +141,23 @@ class LeaveHistoryController extends Controller
 
 
     /**
-     * Build the query for retrieving daily breaks.
-     *
-     * @param Request $request
-     * @param int|null $userId
-     * @return \Illuminate\Database\Eloquent\Builder
+     * export leaves.
      */
-    private function getLeavesQuery(Request $request, int $userId = null)
+    public function export(Request $request, LeaveExportService $leaveExportService)
     {
-        $query = LeaveHistory::with([
-                                'user:id,userid,name', 
-                                'user.media', 
-                                'user.roles'
-                            ])
-                            ->orderByDesc('date')
-                            ->orderBy('created_at');
+        try {
+            $exportData = $leaveExportService->export($request);
 
-        // Apply user ID filter if provided
-        if ($userId) {
-            $query->whereUserId($userId);
-        }
-
-        // Apply user ID filter if request user_id provided
-        if ($request->user_id) {
-            $query->whereUserId($request->user_id);
-        }
-
-        // Handle month/year filtering
-        if ($request->has('leave_month_year') && !is_null($request->leave_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->leave_month_year);
-            $query->whereYear('date', $monthYear->year)
-                ->whereMonth('date', $monthYear->month);
-        } else {
-            // Default to current month if no specific filter is applied
-            if (!$request->has('filter_leaves')) {
-                $query->whereBetween('date', [
-                    Carbon::now()->startOfMonth()->format('Y-m-d'),
-                    Carbon::now()->endOfMonth()->format('Y-m-d')
-                ]);
+            if (is_null($exportData)) {
+                toast('There are no leaves to download.', 'warning');
+                return redirect()->back();
             }
-        }
 
-        // Apply type filter if specified
-        if ($request->has('type') && !is_null($request->type)) {
-            $query->where('type', $request->type);
+            // Return the Excel download with the appropriate filename
+            return Excel::download(new LeaveExport($exportData['leaves']), $exportData['fileName']);
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
         }
-
-        return $query;
     }
 }
