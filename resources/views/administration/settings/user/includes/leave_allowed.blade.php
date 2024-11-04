@@ -9,11 +9,13 @@
             <div class="card-header header-elements">
                 <div class="title-and-info">
                     <h5 class="mb-0">Remaining Available Leave</h5>
-                    <small>
-                        <b class="text-dark">{{ date('F d, Y') }}</b> 
-                        to 
-                        <b class="text-dark">{{ $user->allowed_leave->implemented_to->format('F d'). ', ' . date('Y') }}</b>
-                    </small>
+                    @isset ($user->allowed_leave) 
+                        <small>
+                            <b class="text-dark">{{ date('F d, Y') }}</b> 
+                            to 
+                            <b class="text-dark">{{ $user->allowed_leave->implemented_to->format('F d'). ', ' . date('Y') }}</b>
+                        </small>
+                    @endisset
                 </div>
             </div>
             <div class="card-body">
@@ -49,11 +51,13 @@
             <div class="card-header header-elements">
                 <div class="title-and-info">
                     <h5 class="mb-0">Allowed Leave</h5>
-                    <small>
-                        <b class="text-dark">{{ $user->allowed_leave->implemented_from->format('F d') }}</b> 
-                        to 
-                        <b class="text-dark">{{ $user->allowed_leave->implemented_to->format('F d') }}</b>
-                    </small>
+                    @isset ($user->allowed_leave) 
+                        <small>
+                            <b class="text-dark">{{ $user->allowed_leave->implemented_from->format('F d') }}</b> 
+                            to 
+                            <b class="text-dark">{{ $user->allowed_leave->implemented_to->format('F d') }}</b>
+                        </small>
+                    @endisset
                 </div>
         
                 <div class="card-header-elements ms-auto">
@@ -71,20 +75,22 @@
                             <th class="text-bold">Allowed Leave</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <th>Earned Leave</th>
-                            <td>{{ show_hr_min_sec($user->allowed_leave->earned_leave) }}</td>
-                        </tr>
-                        <tr>
-                            <th>Sick Leave</th>
-                            <td>{{ show_hr_min_sec($user->allowed_leave->sick_leave) }}</td>
-                        </tr>
-                        <tr>
-                            <th>Casual Leave</th>
-                            <td>{{ show_hr_min_sec($user->allowed_leave->casual_leave) }}</td>
-                        </tr>
-                    </tbody>
+                    @isset ($user->allowed_leave) 
+                        <tbody>
+                            <tr>
+                                <th>Earned Leave</th>
+                                <td>{{ show_hr_min_sec($user->allowed_leave->earned_leave) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Sick Leave</th>
+                                <td>{{ show_hr_min_sec($user->allowed_leave->sick_leave) }}</td>
+                            </tr>
+                            <tr>
+                                <th>Casual Leave</th>
+                                <td>{{ show_hr_min_sec($user->allowed_leave->casual_leave) }}</td>
+                            </tr>
+                        </tbody>
+                    @endisset
                 </table>
             </div>
         </div>        

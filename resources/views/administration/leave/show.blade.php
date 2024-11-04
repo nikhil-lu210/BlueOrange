@@ -42,7 +42,7 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0"><b>{{ $leaveHistory->user->name }}</b> Leave History's Details</h5>
+                <h5 class="mb-0"><a href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $leaveHistory->user]) }}" target="_blank" class="text-bold">{{ $leaveHistory->user->name }}</a> Leave History's Details</h5>
         
                 @canany(['Leave History Update', 'Leave History Delete'])
                     <div class="card-header-elements ms-auto">

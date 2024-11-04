@@ -31,7 +31,7 @@
                 <span class="fw-medium mx-2 text-heading">Total Time:</span>
             </dt>
             <dd class="col-sm-8">
-                <span class="text-dark text-bold">{{ show_hr_min_sec($leaveHistory->total_leave) }}</span>
+                <span class="text-dark text-bold">{{ $leaveHistory->total_leave->forHumans() }}</span>
             </dd>
         </dl>
         <dl class="row mb-1">
@@ -66,7 +66,7 @@
                     <span class="fw-medium mx-2 text-heading">Reviewed By:</span>
                 </dt>
                 <dd class="col-sm-8">
-                    {!! show_user_name_and_avatar($leaveHistory->user, name: null) !!}
+                    {!! show_user_name_and_avatar($leaveHistory->reviewer, name: null) !!}
                 </dd>
             </dl>
         @endisset

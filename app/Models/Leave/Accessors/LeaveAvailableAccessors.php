@@ -46,15 +46,12 @@ trait LeaveAvailableAccessors
     {
         $timeParts = explode(':', $value);
 
-        // Ensure the format is valid (HH:MM:SS)
         if (count($timeParts) === 3) {
             [$hours, $minutes, $seconds] = $timeParts;
-            $totalSeconds = ($hours * 3600) + ($minutes * 60) + $seconds;
 
-            return CarbonInterval::seconds($totalSeconds);
+            return CarbonInterval::hours($hours)->minutes($minutes)->seconds($seconds);
         }
 
-        // Handle invalid format gracefully
         return CarbonInterval::hours(0);
     }
 }
