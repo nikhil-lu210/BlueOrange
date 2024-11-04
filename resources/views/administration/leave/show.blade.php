@@ -45,16 +45,18 @@
                 <h5 class="mb-0"><a href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $leaveHistory->user]) }}" target="_blank" class="text-bold">{{ $leaveHistory->user->name }}</a> Leave History's Details</h5>
         
                 @canany(['Leave History Update', 'Leave History Delete'])
-                    <div class="card-header-elements ms-auto">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#approveLeaveModal" class="btn btn-sm btn-success">
-                            <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                            Approve
-                        </button>
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#rejectLeaveModal" class="btn btn-sm btn-danger">
-                            <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                            Reject
-                        </button>
-                    </div>
+                    @if ($leaveHistory->status === 'Pending') 
+                        <div class="card-header-elements ms-auto">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#approveLeaveModal" class="btn btn-sm btn-success">
+                                <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                                Approve
+                            </button>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#rejectLeaveModal" class="btn btn-sm btn-danger">
+                                <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                                Reject
+                            </button>
+                        </div>
+                    @endif
                 @endcanany
             </div>
             <div class="card-body">
@@ -77,10 +79,12 @@
 </div>
 <!-- End row -->
 
-{{-- Approve Modal --}}
-@include('administration.leave.modals.approve')
-{{-- Reject Modal --}}
-@include('administration.leave.modals.reject')
+@if ($leaveHistory->status === 'Pending') 
+    {{-- Approve Modal --}}
+    @include('administration.leave.modals.approve')
+    {{-- Reject Modal --}}
+    @include('administration.leave.modals.reject')
+@endif
 
 @endsection
 

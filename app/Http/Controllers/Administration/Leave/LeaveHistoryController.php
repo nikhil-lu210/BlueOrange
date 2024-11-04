@@ -110,7 +110,24 @@ class LeaveHistoryController extends Controller
      */
     public function reject(Request $request, LeaveHistory $leaveHistory)
     {
-        dd($request->all(), $leaveHistory->toArray());
+        // dd($request->all(), $leaveHistory->toArray());
+        $request->validate([
+            'reviewer_note' => ['required', 'string'],
+        ]);
+
+        try {
+            $leaveHistory->update([
+                'reviewer_note' => $request->reviewer_note,
+                'status' => 'Rejected',
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => Carbon::now(),
+            ]);
+
+            toast('Leave request rejected successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            throw new Exception('Failed to reject leave: ' . $e->getMessage());
+        }
     }
 
     /**
