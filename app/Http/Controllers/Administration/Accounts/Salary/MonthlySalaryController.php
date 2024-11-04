@@ -31,8 +31,10 @@ class MonthlySalaryController extends Controller
         // Check if manual salary generation is allowed
         $canManuallyGenerate = $this->canManuallyGenerate();
 
+        $lastMonth = Carbon::now()->subMonth()->format('Y-m');
+
         // Return the view with filtered data
-        return view('administration.accounts.salary.monthly.index', compact('users', 'monthly_salaries', 'canManuallyGenerate'));
+        return view('administration.accounts.salary.monthly.index', compact('users', 'monthly_salaries', 'canManuallyGenerate', 'lastMonth'));
     }
 
 
