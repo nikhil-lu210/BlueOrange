@@ -28,6 +28,9 @@ Route::controller(UserController::class)
             // user_interaction
             include_once 'user_interaction/user_interaction.php';
 
+            // leave_allowed
+            include_once 'leave_allowed/leave_allowed.php';
+
             // salary
             include_once 'salary/salary.php';
         });

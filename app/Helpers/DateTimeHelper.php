@@ -124,6 +124,54 @@ if (!function_exists('show_time')) {
 }
 
 
+
+if (!function_exists('show_hr_min_sec')) {
+
+    /**
+     * Format a total time string to a human-readable format.
+     *
+     * @param  string  $totaltime
+     * @return string
+     */
+    function show_hr_min_sec($totaltime = '00:00:00')
+    {
+        // Split the total time string into hours, minutes, and seconds
+        list($hours, $minutes, $seconds) = explode(':', $totaltime);
+
+        // Initialize the output string
+        $output = '';
+
+        // Determine the output based on the time components
+        if ($hours == 0 && $minutes == 0 && $seconds == 0) {
+            return NULL;
+        }
+
+        if ($hours > 0) {
+            $output .= $hours . 'hr';
+        }
+
+        if ($minutes > 0) {
+            // Add a space if hours were included
+            if ($output) {
+                $output .= ' ';
+            }
+            $output .= $minutes . 'min';
+        }
+
+        if ($seconds > 0) {
+            // Add a space if hours or minutes were included
+            if ($output) {
+                $output .= ' ';
+            }
+            $output .= $seconds . 'sec';
+        }
+
+        return trim($output); // Trim any extra spaces
+    }
+}
+
+
+
 if (!function_exists('show_date_time')) {
 
     /**

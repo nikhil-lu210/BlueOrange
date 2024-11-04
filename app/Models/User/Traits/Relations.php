@@ -15,6 +15,9 @@ use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
 use App\Models\DailyBreak\DailyBreak;
+use App\Models\Leave\LeaveAllowed;
+use App\Models\Leave\LeaveAvailable;
+use App\Models\Leave\LeaveHistory;
 use App\Models\User\Employee\Employee;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -61,6 +64,69 @@ trait Relations
     public function getCurrentShiftAttribute()
     {
         return $this->employee_shifts()->where('status', 'active')->latest()->first();
+    }
+
+    
+    /**
+     * Get the leave_alloweds associated with the user.
+     */
+    public function leave_alloweds(): HasMany
+    {
+        return $this->hasMany(LeaveAllowed::class);
+    }
+
+    /**
+     * Get the active allowed leave
+     */
+    public function getAllowedLeaveAttribute()
+    {
+        // Retrieve the first active leave_alloweds entry for the user
+        $activeLeave = $this->leave_alloweds()->where('is_active', true)->first();
+
+        // Check if an active leave entry exists
+        return $activeLeave ?: null; // Return the active leave entry or null if not found
+    }
+
+
+    
+    /**
+     * Get the leave_availables associated with the user.
+     */
+    public function leave_availables(): HasMany
+    {
+        return $this->hasMany(LeaveAvailable::class);
+    }
+
+    /**
+     * Accessor to get available leaves for a given year or the current year.
+     * Falls back to allowed leaves if no available leaves are found.
+     *
+     * @param int|null $year
+     * @return LeaveAvailable|LeaveAllowed|null
+     */
+    public function available_leaves($year = null)
+    {
+        // If no year is provided, use the current year
+        $year = $year ?: now()->year;
+
+        // Retrieve the leave available for the specified year
+        $leaveAvailable = $this->leave_availables()->where('for_year', $year)->first();
+
+        // If no leave available is found, fetch the allowed leaves
+        if (!$leaveAvailable) {
+            return $this->getAllowedLeaveAttribute();
+        }
+
+        return $leaveAvailable;
+    }
+
+    
+    /**
+     * Get the leave_histories associated with the user.
+     */
+    public function leave_histories(): HasMany
+    {
+        return $this->hasMany(LeaveHistory::class);
     }
     
     /**
