@@ -10,7 +10,9 @@ use App\Models\Holiday\Holiday;
 use App\Models\Weekend\Weekend;
 use Illuminate\Support\Facades\DB;
 use App\Models\Attendance\Attendance;
+use App\Models\DailyBreak\DailyBreak;
 use App\Models\EmployeeShift\EmployeeShift;
+use App\Models\Leave\LeaveHistory;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Salary\Monthly\MonthlySalaryBreakdown;
 use App\Services\Administration\Attendance\AttendanceService;
@@ -43,6 +45,11 @@ class SalaryService
             $totalRegularTimeInSeconds = $this->getTotalRegularTimeInSeconds($user, $month);
             $totalOvertimeInSeconds = $this->getTotalOvertimeInSeconds($user, $month);
             $totalPayable = $this->calculateTotalPayable($totalRegularTimeInSeconds, $totalOvertimeInSeconds, $hourlyRate);
+            
+            // Get total paid leave in seconds and calculate
+            $totalPaidLeaveInSeconds = $this->getTotalPaidLeaveInSeconds($user, $month);
+            $totalPaidLeaveAmount = $this->calculateTotalPaidLeaveAmount($totalPaidLeaveInSeconds, $hourlyRate);
+            $totalPayable += $totalPaidLeaveAmount;
 
             $totalOverBreakInSeconds = $this->getTotalOverBreakInSeconds($user, $month);
             $overBreakPenaltyAmount = $this->calculateOverBreakPenalty($totalOverBreakInSeconds, $hourlyRate);
@@ -53,7 +60,7 @@ class SalaryService
 
             // Update or create the monthly salary record, including the new fields
             $monthlySalaryId = $this->updateOrCreateMonthlySalary($user, $salary, $month, $totalPayable, $workableDays, $totalWeekends, count($holidays), $hourlyRate);
-            $this->updateMonthlySalaryBreakdowns($monthlySalaryId, $totalRegularTimeInSeconds, $totalOvertimeInSeconds, $totalOverBreakInSeconds, $hourlyRate, $overBreakPenaltyAmount);
+            $this->updateMonthlySalaryBreakdowns($monthlySalaryId, $totalRegularTimeInSeconds, $totalOvertimeInSeconds, $totalOverBreakInSeconds, $totalPaidLeaveInSeconds, $hourlyRate, $overBreakPenaltyAmount);
 
             DB::commit();
             return round($totalPayable, 2);
@@ -192,10 +199,14 @@ class SalaryService
                (($totalOvertimeInSeconds / 3600) * $hourlyRate);
     }
 
+    private function calculateTotalPaidLeaveAmount($totalPaidLeaveInSeconds, $hourlyRate)
+    {
+        return ($totalPaidLeaveInSeconds / 3600) * $hourlyRate;
+    }
+
     private function getTotalOverBreakInSeconds($user, $month)
     {
-        return DB::table('daily_breaks')
-            ->where('user_id', $user->id)
+        return DailyBreak::where('user_id', $user->id)
             ->whereYear('date', $month->year)
             ->whereMonth('date', $month->month)
             ->sum(DB::raw('TIME_TO_SEC(over_break)'));
@@ -237,10 +248,11 @@ class SalaryService
         return $newMonthlySalary->id; // Return the ID of the newly created record
     }
 
-    private function updateMonthlySalaryBreakdowns($monthlySalaryId, $totalRegularTimeInSeconds, $totalOvertimeInSeconds, $totalOverBreakInSeconds, $hourlyRate, $overBreakPenaltyAmount)
+    private function updateMonthlySalaryBreakdowns($monthlySalaryId, $totalRegularTimeInSeconds, $totalOvertimeInSeconds, $totalOverBreakInSeconds, $totalPaidLeaveInSeconds, $hourlyRate, $overBreakPenaltyAmount)
     {
         $this->updateOrCreateRegularBreakdown($monthlySalaryId, $totalRegularTimeInSeconds, $hourlyRate);
         $this->updateOrCreateOvertimeBreakdown($monthlySalaryId, $totalOvertimeInSeconds, $hourlyRate);
+        $this->updateOrCreatePaidLeaveBreakdown($monthlySalaryId, $totalPaidLeaveInSeconds, $hourlyRate);
         $this->updateOrCreateOverbreakBreakdown($monthlySalaryId, $totalOverBreakInSeconds, $overBreakPenaltyAmount);
     }
 
@@ -310,5 +322,42 @@ class SalaryService
                 ]);
             }
         }
+    }
+
+    private function updateOrCreatePaidLeaveBreakdown($monthlySalaryId, $totalPaidLeaveInSeconds, $hourlyRate)
+    {
+        if ($totalPaidLeaveInSeconds > 0) {
+            $existingPaidLeaveBreakdown = MonthlySalaryBreakdown::where('monthly_salary_id', $monthlySalaryId)
+                ->where('reason', 'LIKE', 'Paid Leave%')
+                ->first();
+
+            $paidLeaveAmount = round(($totalPaidLeaveInSeconds / 3600) * $hourlyRate, 2);
+
+            if ($existingPaidLeaveBreakdown) {
+                $existingPaidLeaveBreakdown->update([
+                    'total' => $paidLeaveAmount,
+                ]);
+            } else {
+                MonthlySalaryBreakdown::create([
+                    'monthly_salary_id' => $monthlySalaryId,
+                    'type' => 'Plus (+)',
+                    'reason' => 'Paid Leave (' . gmdate('H:i:s', $totalPaidLeaveInSeconds) . ')',
+                    'total' => $paidLeaveAmount,
+                ]);
+            }
+        }
+    }
+
+    private function getTotalPaidLeaveInSeconds($user, $month)
+    {
+        $startOfMonth = Carbon::parse($month)->startOfMonth()->toDateString();
+        $endOfMonth = Carbon::parse($month)->endOfMonth()->toDateString();
+        
+        $totalLeave = LeaveHistory::where('user_id', $user->id)
+            ->where('is_paid_leave', true)
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->sum(DB::raw('TIME_TO_SEC(total_leave)'));
+
+        return $totalLeave;
     }
 }
