@@ -26,6 +26,7 @@ class LeaveExport extends BaseExportSettings implements FromCollection
                 'type' => $leave->type,
                 'total_leave' => $leave->total_leave,
                 'status' => $leave->status,
+                'is_paid_leave' => $leave->is_paid_leave == true ? 'Paid' : 'Unpaid',
             ];
         });
     }
@@ -43,6 +44,7 @@ class LeaveExport extends BaseExportSettings implements FromCollection
             'Type',
             'Total',
             'Status',
+            'Is Paid',
         ];
     }
 }
