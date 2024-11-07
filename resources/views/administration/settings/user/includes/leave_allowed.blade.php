@@ -26,20 +26,22 @@
                             <th class="text-bold">Available Leave</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <th>Earned Leave</th>
-                            <td>{{ $user->available_leaves()->earned_leave }}</td>
-                        </tr>
-                        <tr>
-                            <th>Sick Leave</th>
-                            <td>{{ $user->available_leaves()->sick_leave }}</td>
-                        </tr>
-                        <tr>
-                            <th>Casual Leave</th>
-                            <td>{{ $user->available_leaves()->casual_leave }}</td>
-                        </tr>
-                    </tbody>
+                    @if ($user->available_leaves()) 
+                        <tbody>
+                            <tr>
+                                <th>Earned Leave</th>
+                                <td>{{ $user->available_leaves()->earned_leave }}</td>
+                            </tr>
+                            <tr>
+                                <th>Sick Leave</th>
+                                <td>{{ $user->available_leaves()->sick_leave }}</td>
+                            </tr>
+                            <tr>
+                                <th>Casual Leave</th>
+                                <td>{{ $user->available_leaves()->casual_leave }}</td>
+                            </tr>
+                        </tbody>
+                    @endif
                 </table>
             </div>
         </div>        
