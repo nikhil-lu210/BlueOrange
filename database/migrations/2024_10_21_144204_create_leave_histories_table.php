@@ -27,13 +27,13 @@ return new class extends Migration
             $table->date('date');
             $table->string('total_leave', 20)->comment('Store as hh:mm:ss format');
             $table->enum('type', ['Earned', 'Casual', 'Sick'])->default('Casual');
-            $table->longText('reason');
+            $table->boolean('is_paid_leave')->nullable();
             $table->enum('status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
+            $table->longText('reason');
             
             $table->foreignId('reviewed_by')->nullable()->constrained('users');
             $table->dateTime('reviewed_at')->nullable();
             $table->text('reviewer_note')->nullable();
-            $table->boolean('is_paid_leave')->nullable();
 
             $table->timestamps();
             $table->softDeletes();

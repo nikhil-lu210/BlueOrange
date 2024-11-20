@@ -229,49 +229,68 @@
     </script>
     
     <script>
-        $(document).ready(function() {
+        $(document).ready(function () {
             // Counter for dynamic rows
-            let rowCount = {{ count(old('leave_days.date', [])) }}; // Start from the count passed from the controller
-        
+            let rowCount = $('.leave-day-row').length; // Start from the current number of rows
+
             // Add Day button click event
-            $('#addLeaveDay').click(function() {
-                // Clone the leave day row
+            $('#addLeaveDay').click(function () {
+                // Clone the last leave day row
                 var newRow = $('.leave-day-row:last').clone();
-        
+
                 // Clear the input values in the cloned row
                 newRow.find('input[type="text"], input[type="number"]').val('');
-        
+
                 // Update names for dynamic indexing
                 newRow.find('input[name^="leave_days[date]"]').attr('name', `leave_days[date][${rowCount}]`);
                 newRow.find('input[name^="total_leave[hour]"]').attr('name', `total_leave[hour][${rowCount}]`);
                 newRow.find('input[name^="total_leave[min]"]').attr('name', `total_leave[min][${rowCount}]`);
                 newRow.find('input[name^="total_leave[sec]"]').attr('name', `total_leave[sec][${rowCount}]`);
-        
+
                 // Show the remove button for all rows
                 newRow.find('.remove-leave-day').show();
-        
+
                 // Append the cloned row to the parent container
-                $('.leave-day-row:first').parent().append(newRow);
-        
+                $('.leave-day-row:last').after(newRow);
+
                 // Reinitialize date-picker on cloned inputs
                 newRow.find('.date-picker').removeClass('hasDatepicker').datepicker({
                     format: 'yyyy-mm-dd',
                     todayHighlight: true,
                     autoclose: true,
-                    orientation: 'auto right'
+                    orientation: 'auto right',
                 });
-        
+
                 // Increment row count
                 rowCount++;
             });
-        
+
             // Event delegation for remove button click
-            $(document).on('click', '.remove-leave-day', function() {
-                // Check if it's not the remove button of the first row
-                if ($(this).closest('.row').index() !== 0) {
+            $(document).on('click', '.remove-leave-day', function () {
+                // Check if it's not the only remaining row
+                if ($('.leave-day-row').length > 1) {
                     // Remove the parent row
                     $(this).closest('.leave-day-row').remove();
+
+                    // Reindex the rows
+                    $('.leave-day-row').each(function (index) {
+                        $(this).find('input[name^="leave_days[date]"]').attr('name', `leave_days[date][${index}]`);
+                        $(this).find('input[name^="total_leave[hour]"]').attr('name', `total_leave[hour][${index}]`);
+                        $(this).find('input[name^="total_leave[min]"]').attr('name', `total_leave[min][${index}]`);
+                        $(this).find('input[name^="total_leave[sec]"]').attr('name', `total_leave[sec][${index}]`);
+                    });
+
+                    // Update row count
+                    rowCount = $('.leave-day-row').length;
                 }
+            });
+
+            // Initial reindexing to ensure first row is included
+            $('.leave-day-row').each(function (index) {
+                $(this).find('input[name^="leave_days[date]"]').attr('name', `leave_days[date][${index}]`);
+                $(this).find('input[name^="total_leave[hour]"]').attr('name', `total_leave[hour][${index}]`);
+                $(this).find('input[name^="total_leave[min]"]').attr('name', `total_leave[min][${index}]`);
+                $(this).find('input[name^="total_leave[sec]"]').attr('name', `total_leave[sec][${index}]`);
             });
         });
     </script>
