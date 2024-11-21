@@ -77,8 +77,8 @@
                     </div>
                     
                     <div class="col-md-12 text-end">
-                        @if (request()->user_id || request()->for_month || request()->status) 
-                            <a href="{{ route('administration.accounts.salary.monthly.index') }}" class="btn btn-danger confirm-warning">
+                        @if (request()->category_id || request()->for_month) 
+                            <a href="{{ route('administration.accounts.income_expense.income.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
                             </a>
