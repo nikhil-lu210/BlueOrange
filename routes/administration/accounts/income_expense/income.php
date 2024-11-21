@@ -8,4 +8,5 @@ use Illuminate\Support\Facades\Route;
 ===============================================*/
 Route::controller(IncomeController::class)->prefix('income')->name('income.')->group(function () {
     Route::get('/all', 'index')->name('index')->can('Income Read');
+    Route::get('/create', 'create')->name('create')->can('Income Create');
 });
