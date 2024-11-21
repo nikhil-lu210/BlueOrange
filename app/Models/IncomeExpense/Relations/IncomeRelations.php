@@ -5,6 +5,7 @@ namespace App\Models\IncomeExpense\Relations;
 use App\Models\User;
 use App\Models\FileMedia\FileMedia;
 use App\Models\IncomeExpense\Income;
+use App\Models\IncomeExpense\IncomeExpenseCategory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
@@ -23,7 +24,7 @@ trait IncomeRelations
      */
     public function category(): BelongsTo
     {
-        return $this->belongsTo(Income::class, 'category_id');
+        return $this->belongsTo(IncomeExpenseCategory::class, 'category_id');
     }
 
     /**

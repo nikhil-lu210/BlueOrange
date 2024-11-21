@@ -75,7 +75,7 @@ class IncomeController extends Controller
      */
     private function getFilteredIncomes(Request $request)
     {
-        $query = Income::query()->orderByDesc('created_at');
+        $query = Income::query()->with(['category'])->orderByDesc('created_at');
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);

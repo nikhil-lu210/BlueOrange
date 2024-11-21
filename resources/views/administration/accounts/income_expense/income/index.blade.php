@@ -115,6 +115,7 @@
                         <tr>
                             <th>Sl.</th>
                             <th>Source</th>
+                            <th>Total</th>
                             <th>Added By</th>
                             <th>Date</th>
                             <th class="text-center">Action</th>
@@ -126,12 +127,21 @@
                                 <th>#{{ serial($incomes, $key) }}</th>
                                 <td>
                                     <b>{{ $income->source }}</b>
+                                    <br>
+                                    <small class="text-muted">{{ $income->category->name }}</small>
+                                </td>
+                                <td>
+                                    <b>{{ format_number($income->total) }} <sup>TK</sup></b>
+                                    <br>
+                                    <small class="text-muted text-capitalize">{{ spell_number($income->total) }}</small>
                                 </td>
                                 <td>
                                     {!! show_user_name_and_avatar($income->creator, name: null) !!}
                                 </td>
                                 <td>
-                                    {{ show_date($income->date) }}
+                                    <b title="Income Date">{{ show_date($income->date) }}</b>
+                                    <br>
+                                    <small class="text-muted" title="Entry Date">{{ date_time_ago($income->created_at) }}</small>
                                 </td>
                                 <td class="text-center">
                                     @can ('Income Delete') 
