@@ -89,6 +89,16 @@ class RolesTableSeeder extends Seeder
                     'Salary Update',
                     'Salary Delete',
                     
+                    'Income Create',
+                    'Income Read',
+                    'Income Update',
+                    'Income Delete',
+                    
+                    'Expense Create',
+                    'Expense Read',
+                    'Expense Update',
+                    'Expense Delete',
+                    
                     'Weekend Create',
                     'Weekend Read',
                     'Weekend Update',
@@ -161,6 +171,16 @@ class RolesTableSeeder extends Seeder
                     'Salary Read',
                     'Salary Update',
                     'Salary Delete',
+                    
+                    'Income Create',
+                    'Income Read',
+                    'Income Update',
+                    'Income Delete',
+                    
+                    'Expense Create',
+                    'Expense Read',
+                    'Expense Update',
+                    'Expense Delete',
                     
                     'Weekend Create',
                     'Weekend Read',
