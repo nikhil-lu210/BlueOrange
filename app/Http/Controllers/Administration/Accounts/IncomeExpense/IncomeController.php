@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Administration\Accounts\IncomeExpense;
 use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Models\IncomeExpense\Income;
 use App\Models\IncomeExpense\IncomeExpenseCategory;
@@ -38,6 +39,7 @@ class IncomeController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request['files']);
         $request->validate([
             'category_id' => ['required','integer','exists:income_expense_categories,id'],
             'date' => ['required','date'],
@@ -47,14 +49,24 @@ class IncomeController extends Controller
         ]);
         
         try {
-            Income::create([
-                'creator_id' => auth()->id(),
-                'category_id' => $request->category_id,
-                'date' => $request->date,
-                'source' => $request->source,
-                'total' => $request->total,
-                'description' => $request->description
-            ]);
+            DB::transaction(function () use ($request) {
+                $income = Income::create([
+                    'creator_id' => auth()->id(),
+                    'category_id' => $request->category_id,
+                    'date' => $request->date,
+                    'source' => $request->source,
+                    'total' => $request->total,
+                    'description' => $request->description
+                ]);
+
+                // Check and store associated files if provided in the 'files' key
+                if (isset($request['files']) && !empty($request['files'])) {
+                    foreach ($request['files'] as $file) {
+                        $directory = 'income_expenses/income';
+                        store_file_media($file, $income, $directory);
+                    }
+                }
+            }, 5);
             
             toast('Income Stored Successfully.', 'success');
             return redirect()->back();
@@ -70,7 +82,7 @@ class IncomeController extends Controller
      */
     public function show(Income $income)
     {
-        dd($income->toArray());
+        return view('administration.accounts.income_expense.income.show', compact(['income']));
     }
 
     /**

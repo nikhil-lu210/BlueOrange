@@ -181,7 +181,7 @@
     <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
     
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
+    {{-- <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script> --}}
 @endsection
 
 @section('custom_script')
