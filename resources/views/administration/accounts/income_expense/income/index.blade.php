@@ -131,7 +131,7 @@
                                     <small class="text-muted">{{ $income->category->name }}</small>
                                 </td>
                                 <td>
-                                    <b>{{ format_number($income->total) }} <sup>TK</sup></b>
+                                    <b>{{ Number::currency($income->total, 'BDT') }}</b>
                                     <br>
                                     <small class="text-muted text-capitalize">{{ spell_number($income->total) }}</small>
                                 </td>
@@ -141,7 +141,7 @@
                                 <td>
                                     <b title="Income Date">{{ show_date($income->date) }}</b>
                                     <br>
-                                    <small class="text-muted" title="Entry Date">{{ date_time_ago($income->created_at) }}</small>
+                                    <small class="text-muted" title="Entry Date ({{ show_date_time($income->created_at) }})">{{ date_time_ago($income->created_at) }}</small>
                                 </td>
                                 <td class="text-center">
                                     @can ('Income Delete') 
