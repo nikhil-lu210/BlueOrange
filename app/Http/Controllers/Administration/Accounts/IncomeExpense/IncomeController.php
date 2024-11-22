@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Administration\Accounts\IncomeExpense;
 
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -27,7 +28,9 @@ class IncomeController extends Controller
      */
     public function create()
     {
-        //
+        $categories = IncomeExpenseCategory::select(['id', 'name', 'is_active'])->whereIsActive(true)->orderBy('name', 'asc')->get();
+
+        return view('administration.accounts.income_expense.income.create', compact(['categories']));
     }
 
     /**
@@ -35,13 +38,37 @@ class IncomeController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'category_id' => ['required','integer','exists:income_expense_categories,id'],
+            'date' => ['required','date'],
+            'source' => ['required','string','min:5', 'max:200'],
+            'total' => ['required', 'numeric', 'min:0.01'],
+            'description' => ['required','string','min:10'],
+        ]);
+        
+        try {
+            Income::create([
+                'creator_id' => auth()->id(),
+                'category_id' => $request->category_id,
+                'date' => $request->date,
+                'source' => $request->source,
+                'total' => $request->total,
+                'description' => $request->description
+            ]);
+            
+            toast('Income Stored Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            // dd($e->getMessage());
+            alert('Error!', $e->getMessage(), 'error');
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Income $income)
     {
         //
     }
@@ -49,7 +76,7 @@ class IncomeController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Income $income)
     {
         //
     }
@@ -57,7 +84,7 @@ class IncomeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Income $income)
     {
         //
     }
@@ -65,7 +92,7 @@ class IncomeController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Income $income)
     {
         //
     }
