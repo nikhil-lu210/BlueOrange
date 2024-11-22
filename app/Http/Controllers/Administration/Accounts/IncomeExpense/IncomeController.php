@@ -70,7 +70,7 @@ class IncomeController extends Controller
      */
     public function show(Income $income)
     {
-        //
+        dd($income->toArray());
     }
 
     /**
@@ -78,7 +78,7 @@ class IncomeController extends Controller
      */
     public function edit(Income $income)
     {
-        //
+        dd($income->toArray());
     }
 
     /**
@@ -86,7 +86,7 @@ class IncomeController extends Controller
      */
     public function update(Request $request, Income $income)
     {
-        //
+        dd($income->toArray(), $request->all());
     }
 
     /**
@@ -94,7 +94,15 @@ class IncomeController extends Controller
      */
     public function destroy(Income $income)
     {
-        //
+        try {
+            $income->delete();
+            
+            toast('Income deleted successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
 
     /**
@@ -102,7 +110,7 @@ class IncomeController extends Controller
      */
     private function getFilteredIncomes(Request $request)
     {
-        $query = Income::query()->with(['category'])->orderByDesc('created_at');
+        $query = Income::query()->with(['category', 'creator'])->orderByDesc('created_at');
 
         if ($request->filled('category_id')) {
             $query->where('category_id', $request->category_id);

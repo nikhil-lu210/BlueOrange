@@ -145,12 +145,12 @@
                                 </td>
                                 <td class="text-center">
                                     @can ('Income Delete') 
-                                        <a href="#" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Income?">
+                                        <a href="{{ route('administration.accounts.income_expense.income.destroy', ['income' => $income]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Income?">
                                             <i class="text-white ti ti-trash"></i>
                                         </a>
                                     @endcan
                                     @can ('Income Read') 
-                                        <a href="#" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                        <a href="{{ route('administration.accounts.income_expense.income.show', ['income' => $income]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                             <i class="text-white ti ti-info-hexagon"></i>
                                         </a>
                                     @endcan
