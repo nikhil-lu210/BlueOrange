@@ -12,8 +12,8 @@ Route::controller(IncomeController::class)->prefix('income')->name('income.')->g
 
     Route::post('/store', 'store')->name('store')->can('Income Create');
 
-    Route::get('/show/{income}', 'show')->name('show')->can('Income Read');
-    Route::get('/edit/{income}', 'edit')->name('edit')->can('Income Update');
+    Route::get('/all/show/{income}', 'show')->name('show')->can('Income Read');
+    Route::get('/all/edit/{income}', 'edit')->name('edit')->can('Income Update');
 
     Route::put('/update/{income}', 'update')->name('update')->can('Income Update');
     Route::get('/destroy/{income}', 'destroy')->name('destroy')->can('Income Delete');

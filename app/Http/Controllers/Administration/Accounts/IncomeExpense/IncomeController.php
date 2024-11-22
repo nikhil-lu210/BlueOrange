@@ -90,7 +90,9 @@ class IncomeController extends Controller
      */
     public function edit(Income $income)
     {
-        dd($income->toArray());
+        $categories = IncomeExpenseCategory::select(['id', 'name', 'is_active'])->whereIsActive(true)->orderBy('name', 'asc')->get();
+        
+        return view('administration.accounts.income_expense.income.edit', compact(['categories', 'income']));
     }
 
     /**
