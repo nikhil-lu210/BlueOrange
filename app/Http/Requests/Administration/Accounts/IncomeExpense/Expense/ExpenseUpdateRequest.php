@@ -28,6 +28,7 @@ class ExpenseUpdateRequest extends FormRequest
             'quantity' => ['sometimes', 'numeric', 'min:1'],
             'price' => ['sometimes', 'numeric', 'min:0.01'],
             'description' => ['sometimes', 'string', 'min:10'],
+            'files.*' => ['file', 'mimes:jpg,jpeg,png,pdf,xls,doc', 'max:2048'],
         ];
     }
 }

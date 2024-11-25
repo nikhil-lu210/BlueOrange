@@ -6,14 +6,13 @@ use App\Models\IncomeExpense\Expense;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\IncomeExpense\Income;
 use Illuminate\Support\Facades\Auth;
 use App\Models\IncomeExpense\IncomeExpenseCategory;
 
 class ExpenseService
 {
     /**
-     * Fetch active income categories.
+     * Fetch active expense categories.
      *
      * @return \Illuminate\Support\Collection
      */
@@ -101,7 +100,7 @@ class ExpenseService
             // Store associated files if any
             if ($request->has('files') && is_array($request->files)) {
                 foreach ($request->files as $file) {
-                    $directory = 'income_expenses/income';
+                    $directory = 'income_expenses/expense';
                     store_file_media($file, $expense, $directory);
                 }
             }
@@ -133,7 +132,7 @@ class ExpenseService
             // Store associated files if any
             if ($request->has('files') && is_array($request->files)) {
                 foreach ($request->files as $file) {
-                    $directory = 'income_expenses/income';
+                    $directory = 'income_expenses/expense';
                     store_file_media($file, $expense, $directory);
                 }
             }

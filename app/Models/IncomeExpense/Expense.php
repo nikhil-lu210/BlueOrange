@@ -26,6 +26,7 @@ class Expense extends Model
 
     protected $casts = [
         'description' => PurifyHtmlOnGet::class,
+        'date' => 'date',
     ];
 
     protected $fillable = [
