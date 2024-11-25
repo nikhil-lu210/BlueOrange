@@ -56,51 +56,53 @@
                 @endif
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Notification</th>
-                            <th>Notified At</th>
-                            <th>Read At</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($notifications as $key => $notification) 
-                            <tr class="@if (is_null($notification->read_at)) bg-label-primary text-bold @endif">
-                                <th>#{{ serial($notifications, $key) }}</th>
-                                <td>{{ $notification->data['message'] }}</td>
-                                <td>{{ date_time_ago($notification->created_at) }}</td>
-                                <td>
-                                    @if (!is_null($notification->read_at)) 
-                                        {{ date_time_ago($notification->read_at) }}
-                                    @else 
-                                        <b class="text-primary">Unread</b>
-                                    @endif
-                                </td>
-                                <td>
-                                    {{-- Delete Notification Icon --}}
-                                    <a href="{{ route('administration.notification.destroy', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon confirm-danger" data-bs-toggle="tooltip" title="Delete Notification?">
-                                        <i class="text-danger ti ti-trash"></i>
-                                    </a>
-
-                                    {{-- Mark as read & show notification icon --}}
-                                    <a href="{{ route('administration.notification.mark_as_read_and_redirect', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Notification">
-                                        <i class="text-primary ti ti-info-hexagon"></i>
-                                    </a>
-
-                                    {{-- Mark as read notification icon --}}
-                                    @if (is_null($notification->read_at)) 
-                                        <a href="{{ route('administration.notification.mark_as_read', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Mark As Read?">
-                                            <i class="text-success ti ti-check"></i>
-                                        </a>
-                                    @endif
-                                </td>
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Sl.</th>
+                                <th>Notification</th>
+                                <th>Notified At</th>
+                                <th>Read At</th>
+                                <th>Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($notifications as $key => $notification) 
+                                <tr class="@if (is_null($notification->read_at)) bg-label-primary text-bold @endif">
+                                    <th>#{{ serial($notifications, $key) }}</th>
+                                    <td>{{ $notification->data['message'] }}</td>
+                                    <td>{{ date_time_ago($notification->created_at) }}</td>
+                                    <td>
+                                        @if (!is_null($notification->read_at)) 
+                                            {{ date_time_ago($notification->read_at) }}
+                                        @else 
+                                            <b class="text-primary">Unread</b>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{-- Delete Notification Icon --}}
+                                        <a href="{{ route('administration.notification.destroy', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon confirm-danger" data-bs-toggle="tooltip" title="Delete Notification?">
+                                            <i class="text-danger ti ti-trash"></i>
+                                        </a>
+    
+                                        {{-- Mark as read & show notification icon --}}
+                                        <a href="{{ route('administration.notification.mark_as_read_and_redirect', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Notification">
+                                            <i class="text-primary ti ti-info-hexagon"></i>
+                                        </a>
+    
+                                        {{-- Mark as read notification icon --}}
+                                        @if (is_null($notification->read_at)) 
+                                            <a href="{{ route('administration.notification.mark_as_read', ['notification_id' => $notification->id]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Mark As Read?">
+                                                <i class="text-success ti ti-check"></i>
+                                            </a>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>

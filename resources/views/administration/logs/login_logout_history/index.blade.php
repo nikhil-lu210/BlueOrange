@@ -101,87 +101,89 @@
                 </h5>
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Employee</th>
-                            <th>Clockin</th>
-                            <th>Clockout</th>
-                            <th>IP Address</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($histories as $key => $history) 
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
                             <tr>
-                                <th>#{{ serial($histories, $key) }}</th>
-                                <td>
-                                    {!! show_user_name_and_avatar($history->user) !!}
-                                </td>
-                                <td>
-                                    <div class="d-grid">
-                                        <small>
-                                            <span class="text-bold">Date:</span>
-                                            {{ show_date($history->login_time) }}
-                                        </small>
-                                        <small>
-                                            <span class="text-bold">Time:</span>
-                                            {{ show_time($history->login_time) }}
-                                        </small>
-                                    </div>
-                                </td>
-                                <td>
-                                    @if (!is_null($history->logout_time)) 
+                                <th>Sl.</th>
+                                <th>Employee</th>
+                                <th>Clockin</th>
+                                <th>Clockout</th>
+                                <th>IP Address</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($histories as $key => $history) 
+                                <tr>
+                                    <th>#{{ serial($histories, $key) }}</th>
+                                    <td>
+                                        {!! show_user_name_and_avatar($history->user) !!}
+                                    </td>
+                                    <td>
                                         <div class="d-grid">
                                             <small>
                                                 <span class="text-bold">Date:</span>
-                                                {{ show_date($history->logout_time) }}
+                                                {{ show_date($history->login_time) }}
                                             </small>
                                             <small>
                                                 <span class="text-bold">Time:</span>
-                                                {{ show_time($history->logout_time) }}
+                                                {{ show_time($history->login_time) }}
                                             </small>
                                         </div>
-                                    @else 
-                                        <span class="badge bg-warning">No History</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="d-grid">
-                                        <small>
-                                            <span class="text-bold">Login:</span>
-                                            <code>{{ $history->login_ip }}</code>
-                                        </small>
-                                        @if (!is_null($history->logout_ip)) 
-                                            <small>
-                                                <span class="text-bold">Logout:</span>
-                                                <code>{{ $history->logout_ip }}</code>
-                                            </small>
+                                    </td>
+                                    <td>
+                                        @if (!is_null($history->logout_time)) 
+                                            <div class="d-grid">
+                                                <small>
+                                                    <span class="text-bold">Date:</span>
+                                                    {{ show_date($history->logout_time) }}
+                                                </small>
+                                                <small>
+                                                    <span class="text-bold">Time:</span>
+                                                    {{ show_time($history->logout_time) }}
+                                                </small>
+                                            </div>
+                                        @else 
+                                            <span class="badge bg-warning">No History</span>
                                         @endif
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <a href="javascript:void(0);" 
-                                    class="btn btn-sm btn-icon btn-primary" 
-                                    title="Show Details" 
-                                    data-bs-toggle="modal" 
-                                    data-bs-target="#showHistoryModal" 
-                                    data-history="{{ json_encode([
-                                        'user_name' => $history->user->name,
-                                        'login_time' => show_date_time($history->login_time),
-                                        'logout_time' => $history->logout_time ? show_date_time($history->logout_time) : "No History",
-                                        'login_ip' => $history->login_ip,
-                                        'logout_ip' => $history->logout_ip ?? "No History",
-                                        'user_agent' => $history->user_agent
-                                    ]) }}">
-                                        <i class="ti ti-info-hexagon"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                    </td>
+                                    <td>
+                                        <div class="d-grid">
+                                            <small>
+                                                <span class="text-bold">Login:</span>
+                                                <code>{{ $history->login_ip }}</code>
+                                            </small>
+                                            @if (!is_null($history->logout_ip)) 
+                                                <small>
+                                                    <span class="text-bold">Logout:</span>
+                                                    <code>{{ $history->logout_ip }}</code>
+                                                </small>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="javascript:void(0);" 
+                                        class="btn btn-sm btn-icon btn-primary" 
+                                        title="Show Details" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#showHistoryModal" 
+                                        data-history="{{ json_encode([
+                                            'user_name' => $history->user->name,
+                                            'login_time' => show_date_time($history->login_time),
+                                            'logout_time' => $history->logout_time ? show_date_time($history->logout_time) : "No History",
+                                            'login_ip' => $history->login_ip,
+                                            'logout_ip' => $history->logout_ip ?? "No History",
+                                            'user_agent' => $history->user_agent
+                                        ]) }}">
+                                            <i class="ti ti-info-hexagon"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>

@@ -52,59 +52,61 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Announced At</th>
-                            <th>Announcement</th>
-                            <th>Announcer</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($announcements as $key => $announcement) 
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
                             <tr>
-                                <th>#{{ serial($announcements, $key) }}</th>
-                                <td>{{ show_date($announcement->created_at) }}</td>
-                                <td>
-                                    <b>{{ $announcement->title }}</b>
-                                    <br>
-                                    @if (!is_null($announcement->recipients))
-                                        <small class="text-primary text-bold cursor-pointer text-left" title="
-                                            @foreach ($announcement->recipients as $recipient)
-                                                <small>{{ show_user_data($recipient, 'name') }}</small>
-                                                <br>
-                                            @endforeach
-                                        ">
-                                            {{ count($announcement->recipients) }} Recipients
-                                        </small>
-                                    @else
-                                        <small class="text-muted">All Recipients</small>
-                                    @endif
-                                </td>
-                                <td>{{ $announcement->announcer->name }}</td>
-                                <td class="text-center">
-                                    @can ('Announcement Delete') 
-                                        <a href="{{ route('administration.announcement.destroy', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Announcement?">
-                                            <i class="text-white ti ti-trash"></i>
-                                        </a>
-                                    @endcan
-                                    @can ('Announcement Update') 
-                                        <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Announcement?">
-                                            <i class="text-white ti ti-pencil"></i>
-                                        </a>
-                                    @endcan
-                                    @can ('Announcement Read') 
-                                        <a href="{{ route('administration.announcement.show', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
-                                            <i class="text-white ti ti-info-hexagon"></i>
-                                        </a>
-                                    @endcan
-                                </td>
+                                <th>Sl.</th>
+                                <th>Announced At</th>
+                                <th>Announcement</th>
+                                <th>Announcer</th>
+                                <th class="text-center">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($announcements as $key => $announcement) 
+                                <tr>
+                                    <th>#{{ serial($announcements, $key) }}</th>
+                                    <td>{{ show_date($announcement->created_at) }}</td>
+                                    <td>
+                                        <b>{{ $announcement->title }}</b>
+                                        <br>
+                                        @if (!is_null($announcement->recipients))
+                                            <small class="text-primary text-bold cursor-pointer text-left" title="
+                                                @foreach ($announcement->recipients as $recipient)
+                                                    <small>{{ show_user_data($recipient, 'name') }}</small>
+                                                    <br>
+                                                @endforeach
+                                            ">
+                                                {{ count($announcement->recipients) }} Recipients
+                                            </small>
+                                        @else
+                                            <small class="text-muted">All Recipients</small>
+                                        @endif
+                                    </td>
+                                    <td>{{ $announcement->announcer->name }}</td>
+                                    <td class="text-center">
+                                        @can ('Announcement Delete') 
+                                            <a href="{{ route('administration.announcement.destroy', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Announcement?">
+                                                <i class="text-white ti ti-trash"></i>
+                                            </a>
+                                        @endcan
+                                        @can ('Announcement Update') 
+                                            <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Announcement?">
+                                                <i class="text-white ti ti-pencil"></i>
+                                            </a>
+                                        @endcan
+                                        @can ('Announcement Read') 
+                                            <a href="{{ route('administration.announcement.show', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                                <i class="text-white ti ti-info-hexagon"></i>
+                                            </a>
+                                        @endcan
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>

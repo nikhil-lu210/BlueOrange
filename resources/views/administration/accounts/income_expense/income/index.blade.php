@@ -119,55 +119,57 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Source</th>
-                            <th>Total</th>
-                            <th>Added By</th>
-                            <th>Date</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($incomes as $key => $income) 
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
                             <tr>
-                                <th>#{{ serial($incomes, $key) }}</th>
-                                <td>
-                                    <b>{{ $income->source }}</b>
-                                    <br>
-                                    <small class="text-muted">{{ $income->category->name }}</small>
-                                </td>
-                                <td>
-                                    <b>{{ Number::currency($income->total, 'BDT') }}</b>
-                                    <br>
-                                    <small class="text-muted text-capitalize">{{ spell_number($income->total) }}</small>
-                                </td>
-                                <td>
-                                    {!! show_user_name_and_avatar($income->creator, name: null) !!}
-                                </td>
-                                <td>
-                                    <b title="Income Date">{{ show_date($income->date) }}</b>
-                                    <br>
-                                    <small class="text-muted" title="Entry Date ({{ show_date_time($income->created_at) }})">{{ date_time_ago($income->created_at) }}</small>
-                                </td>
-                                <td class="text-center">
-                                    @can ('Income Delete') 
-                                        <a href="{{ route('administration.accounts.income_expense.income.destroy', ['income' => $income]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Income?">
-                                            <i class="text-white ti ti-trash"></i>
-                                        </a>
-                                    @endcan
-                                    @can ('Income Read') 
-                                        <a href="{{ route('administration.accounts.income_expense.income.show', ['income' => $income]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
-                                            <i class="text-white ti ti-info-hexagon"></i>
-                                        </a>
-                                    @endcan
-                                </td>
+                                <th>Sl.</th>
+                                <th>Source</th>
+                                <th>Total</th>
+                                <th>Added By</th>
+                                <th>Date</th>
+                                <th class="text-center">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($incomes as $key => $income) 
+                                <tr>
+                                    <th>#{{ serial($incomes, $key) }}</th>
+                                    <td>
+                                        <b>{{ $income->source }}</b>
+                                        <br>
+                                        <small class="text-muted">{{ $income->category->name }}</small>
+                                    </td>
+                                    <td>
+                                        <b>{{ Number::currency($income->total, 'BDT') }}</b>
+                                        <br>
+                                        <small class="text-muted text-capitalize">{{ spell_number($income->total) }}</small>
+                                    </td>
+                                    <td>
+                                        {!! show_user_name_and_avatar($income->creator, name: null) !!}
+                                    </td>
+                                    <td>
+                                        <b title="Income Date">{{ show_date($income->date) }}</b>
+                                        <br>
+                                        <small class="text-muted" title="Entry Date ({{ show_date_time($income->created_at) }})">{{ date_time_ago($income->created_at) }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        @can ('Income Delete') 
+                                            <a href="{{ route('administration.accounts.income_expense.income.destroy', ['income' => $income]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Income?">
+                                                <i class="text-white ti ti-trash"></i>
+                                            </a>
+                                        @endcan
+                                        @can ('Income Read') 
+                                            <a href="{{ route('administration.accounts.income_expense.income.show', ['income' => $income]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                                <i class="text-white ti ti-info-hexagon"></i>
+                                            </a>
+                                        @endcan
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>
