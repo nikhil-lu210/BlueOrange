@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Administration\Accounts\IncomeExpense;
 
 use Exception;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Administration\Accounts\IncomeExpense\Income\IncomeStoreRequest;
+use App\Http\Requests\Administration\Accounts\IncomeExpense\Income\IncomeUpdateRequest;
 use App\Models\IncomeExpense\Income;
-use App\Models\IncomeExpense\IncomeExpenseCategory;
 use App\Services\Administration\Accounts\IncomeExpense\IncomeService;
 
 class IncomeController extends Controller
@@ -74,7 +72,7 @@ class IncomeController extends Controller
      */
     public function edit(Income $income)
     {
-        $this->incomeService->getActiveCategories();
+        $categories = $this->incomeService->getActiveCategories();
         
         return view('administration.accounts.income_expense.income.edit', compact(['categories', 'income']));
     }
@@ -82,40 +80,14 @@ class IncomeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Income $income)
+    public function update(IncomeUpdateRequest $request, Income $income)
     {
-        // dd($income->toArray(), $request->all());
-        $request->validate([
-            'category_id' => ['sometimes','integer','exists:income_expense_categories,id'],
-            'date' => ['sometimes','date'],
-            'source' => ['sometimes','string','min:5', 'max:200'],
-            'total' => ['sometimes', 'numeric', 'min:0.01'],
-            'description' => ['sometimes','string','min:10'],
-        ]);
-
         try {
-            DB::transaction(function () use ($request, $income) {
-                $income->update([
-                    'category_id' => $request->category_id,
-                    'date' => $request->date,
-                    'source' => $request->source,
-                    'total' => $request->total,
-                    'description' => $request->description
-                ]);
+            $this->incomeService->updateIncome($request, $income);
 
-                // Check and store associated files if provided in the 'files' key
-                if (isset($request['files']) && !empty($request['files'])) {
-                    foreach ($request['files'] as $file) {
-                        $directory = 'income_expenses/income';
-                        store_file_media($file, $income, $directory);
-                    }
-                }
-            }, 5);
-            
             toast('Income Updated Successfully.', 'success');
             return redirect()->route('administration.accounts.income_expense.income.show', ['income' => $income]);
         } catch (Exception $e) {
-            // dd($e->getMessage());
             alert('Error!', $e->getMessage(), 'error');
             return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
         }

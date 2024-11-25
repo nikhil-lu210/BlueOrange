@@ -104,4 +104,34 @@ class IncomeService
             }
         }, 5);
     }
+
+    /**
+     * Update an existing income record along with associated files.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Models\IncomeExpense\Income $income
+     * @return void
+     * @throws \Exception
+     */
+    public function updateIncome(Request $request, Income $income): void
+    {
+        DB::transaction(function () use ($request, $income) {
+            // Update the income record
+            $income->update([
+                'category_id' => $request->category_id,
+                'date' => $request->date,
+                'source' => $request->source,
+                'total' => $request->total,
+                'description' => $request->description,
+            ]);
+
+            // Store associated files if any
+            if ($request->has('files') && is_array($request->files)) {
+                foreach ($request->files as $file) {
+                    $directory = 'income_expenses/income';
+                    store_file_media($file, $income, $directory);
+                }
+            }
+        }, 5);
+    }
 }

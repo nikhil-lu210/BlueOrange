@@ -11,7 +11,7 @@ class IncomeUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class IncomeUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'category_id' => ['sometimes','integer','exists:income_expense_categories,id'],
+            'date' => ['sometimes','date'],
+            'source' => ['sometimes','string','min:5', 'max:200'],
+            'total' => ['sometimes', 'numeric', 'min:0.01'],
+            'description' => ['sometimes','string','min:10'],
         ];
     }
 }
