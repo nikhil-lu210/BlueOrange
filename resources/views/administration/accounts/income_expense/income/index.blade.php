@@ -94,11 +94,20 @@
     </div>
 </div>
 
+
+@include('administration.accounts.income_expense.income.partials._income_stats')
+
+
 <div class="row">
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">All Incomes</h5>
+                <h5 class="mb-0">
+                    All Incomes
+                    @isset ($incomes) 
+                        <sup class="text-bold" title="Total Income">({{ Number::currency( $total['income'], 'BDT') }})</sup>
+                    @endisset
+                </h5>
         
                 <div class="card-header-elements ms-auto">
                     @can(['Income Create'])

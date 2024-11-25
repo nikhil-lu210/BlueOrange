@@ -30,7 +30,18 @@ class IncomeController extends Controller
         $categories = $this->incomeService->getActiveCategories();
         $incomes = $this->incomeService->getFilteredIncomes($request);
 
-        return view('administration.accounts.income_expense.income.index', compact(['categories', 'incomes']));
+        $total_overall_income = Income::getTotalOverallIncome();
+        $last_month_total_income = Income::getLastMonthTotalIncome();
+        $current_month_total_income = Income::getCurrentMonthTotalIncome();
+
+        $total = [
+            'overall_income' => Income::getTotalOverallIncome(),
+            'last_month_income' => Income::getLastMonthTotalIncome(),
+            'current_month_income' => Income::getCurrentMonthTotalIncome(),
+            'income' => $incomes->sum('total'),
+        ];
+
+        return view('administration.accounts.income_expense.income.index', compact(['categories', 'incomes', 'total']));
     }
 
     /**
