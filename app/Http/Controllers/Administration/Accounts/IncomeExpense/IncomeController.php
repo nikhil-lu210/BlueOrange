@@ -100,7 +100,41 @@ class IncomeController extends Controller
      */
     public function update(Request $request, Income $income)
     {
-        dd($income->toArray(), $request->all());
+        // dd($income->toArray(), $request->all());
+        $request->validate([
+            'category_id' => ['sometimes','integer','exists:income_expense_categories,id'],
+            'date' => ['sometimes','date'],
+            'source' => ['sometimes','string','min:5', 'max:200'],
+            'total' => ['sometimes', 'numeric', 'min:0.01'],
+            'description' => ['sometimes','string','min:10'],
+        ]);
+
+        try {
+            DB::transaction(function () use ($request, $income) {
+                $income->update([
+                    'category_id' => $request->category_id,
+                    'date' => $request->date,
+                    'source' => $request->source,
+                    'total' => $request->total,
+                    'description' => $request->description
+                ]);
+
+                // Check and store associated files if provided in the 'files' key
+                if (isset($request['files']) && !empty($request['files'])) {
+                    foreach ($request['files'] as $file) {
+                        $directory = 'income_expenses/income';
+                        store_file_media($file, $income, $directory);
+                    }
+                }
+            }, 5);
+            
+            toast('Income Updated Successfully.', 'success');
+            return redirect()->route('administration.accounts.income_expense.income.show', ['income' => $income]);
+        } catch (Exception $e) {
+            // dd($e->getMessage());
+            alert('Error!', $e->getMessage(), 'error');
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**

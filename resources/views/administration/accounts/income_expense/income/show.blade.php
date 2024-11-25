@@ -83,7 +83,7 @@
                                 </dl>
                                 <dl class="row mb-1">
                                     <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                        <i class="ti ti-currency-taka"></i>
+                                        <i class="ti ti-currency-taka" style="margin-top: -5px;"></i>
                                         <span class="fw-medium mx-2 text-heading">Total Income:</span>
                                     </dt>
                                     <dd class="col-sm-8">
