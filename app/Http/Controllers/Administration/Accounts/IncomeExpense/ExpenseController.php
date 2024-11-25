@@ -75,7 +75,7 @@ class ExpenseController extends Controller
      */
     public function show(Expense $expense)
     {
-        return view('administration.accounts.income_expense.expense.show', compact(['income']));
+        return view('administration.accounts.income_expense.expense.show', compact(['expense']));
     }
 
     /**
@@ -85,7 +85,7 @@ class ExpenseController extends Controller
     {
         $categories = $this->expenseService->getActiveCategories();
         
-        return view('administration.accounts.income_expense.expense.edit', compact(['categories', 'income']));
+        return view('administration.accounts.income_expense.expense.edit', compact(['categories', 'expense']));
     }
 
     /**
@@ -112,7 +112,7 @@ class ExpenseController extends Controller
         try {
             $expense->delete();
             
-            toast('Income deleted successfully.', 'success');
+            toast('Expense deleted successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
