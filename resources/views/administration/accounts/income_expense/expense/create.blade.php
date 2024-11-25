@@ -4,7 +4,7 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('Create Income'))
+@section('page_title', __('Create Expense'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -40,13 +40,13 @@
 @endsection
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Create Income') }}</b>
+    <b class="text-uppercase">{{ __('Create Expense') }}</b>
 @endsection
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Income & Expense') }}</li>
-    <li class="breadcrumb-item">{{ __('Income') }}</li>
-    <li class="breadcrumb-item active">{{ __('Create Income') }}</li>
+    <li class="breadcrumb-item">{{ __('Expense') }}</li>
+    <li class="breadcrumb-item active">{{ __('Create Expense') }}</li>
 @endsection
 
 @section('content')
@@ -56,31 +56,31 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">{{ __('Create New Income Record') }}</h5>
+                <h5 class="mb-0">{{ __('Create New Expense Record') }}</h5>
         
                 <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.accounts.income_expense.income.index') }}" class="btn btn-sm btn-primary">
+                    <a href="{{ route('administration.accounts.income_expense.expense.index') }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-circle ti-xs me-1"></span>
-                        All Incomes
+                        All Expenses
                     </a>
                 </div>
             </div>
             <!-- Account -->
             <div class="card-body">
-                <form id="workUpdateForm" action="{{ route('administration.accounts.income_expense.income.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
+                <form id="workUpdateForm" action="{{ route('administration.accounts.income_expense.expense.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
                     @csrf                    
                     <div class="row justify-content-center">
-                        <div class="mb-3 col-md-3">
-                            <label class="form-label">Income Date <strong class="text-danger">*</strong></label>
-                            <input type="text" name="date" value="{{ old('date', date('Y-m-d')) }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
-                            @error('date')
+                        <div class="mb-3 col-md-9">
+                            <label class="form-label">Expense Reason <strong class="text-danger">*</strong></label>
+                            <input type="text" name="title" value="{{ old('title') }}" class="form-control" placeholder="Ex: Sold Old Gadgets" required/>
+                            @error('title')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-9">
-                            <label class="form-label">Income Source <strong class="text-danger">*</strong></label>
-                            <input type="text" name="source" value="{{ old('source') }}" class="form-control" placeholder="Ex: Sold Old Gadgets" required/>
-                            @error('source')
+                        <div class="mb-3 col-md-3">
+                            <label class="form-label">Expense Date <strong class="text-danger">*</strong></label>
+                            <input type="text" name="date" value="{{ old('date', date('Y-m-d')) }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
+                            @error('date')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
@@ -96,17 +96,24 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-3">
-                            <label class="form-label">Total Income <strong class="text-danger">*</strong></label>
-                            <div class="input-group input-group-merge">
-                                <input type="number" min="0" name="total" value="{{ old('total') }}" placeholder="Ex: 50000" class="form-control" required>
-                                <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
-                            </div>
-                            @error('total')
+                        <div class="mb-3 col-md-2">
+                            <label class="form-label">Total Unit <strong class="text-danger">*</strong></label>
+                            <input type="number" min="0" name="quantity" value="{{ old('quantity') }}" placeholder="Ex: 5" class="form-control" required>
+                            @error('quantity')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-5">
+                        <div class="mb-3 col-md-2">
+                            <label class="form-label">Price Per Unit <strong class="text-danger">*</strong></label>
+                            <div class="input-group input-group-merge">
+                                <input type="number" min="0" name="price" value="{{ old('price') }}" placeholder="Ex: 1500" class="form-control" required>
+                                <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
+                            </div>
+                            @error('price')
+                                <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-4">
                             <label for="files[]" class="form-label">{{ __('Files') }}</label>
                             <input type="file" id="files[]" name="files[]" value="{{ old('files[]') }}" placeholder="{{ __('Files') }}" class="form-control @error('files[]') is-invalid @enderror" multiple/>
                             @error('files[]')
@@ -116,17 +123,17 @@
                     </div>
                     <div class="row">
                         <div class="mb-3 col-md-12">
-                            <label class="form-label">Income Description <strong class="text-danger">*</strong></label>
-                            <div name="description" id="incomeDescriptionEditor">{!! old('description') !!}</div>
-                            <textarea class="d-none" name="description" id="incomeDescriptionInput">{{ old('description') }}</textarea>
+                            <label class="form-label">Expense Description <strong class="text-danger">*</strong></label>
+                            <div name="description" id="expenseDescriptionEditor">{!! old('description') !!}</div>
+                            <textarea class="d-none" name="description" id="expenseDescriptionInput">{{ old('description') }}</textarea>
                             @error('description')
                                 <b class="text-danger">{{ $message }}</b>
                             @enderror
                         </div>
                     </div>
                     <div class="mt-2 float-end">
-                        <a href="{{ route('administration.accounts.income_expense.income.create') }}" class="btn btn-outline-danger me-2 confirm-danger">Reset Form</a>
-                        <button type="submit" class="btn btn-primary">Create Income Record</button>
+                        <a href="{{ route('administration.accounts.income_expense.expense.create') }}" class="btn btn-outline-danger me-2 confirm-danger">Reset Form</a>
+                        <button type="submit" class="btn btn-primary">Create Expense Record</button>
                     </div>
                 </form>
             </div>
@@ -176,9 +183,9 @@
                 [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
             ];
 
-            var incomeDescriptionEditor = new Quill("#incomeDescriptionEditor", {
-                bounds: "#incomeDescriptionEditor",
-                placeholder: "Your Income Description Here...",
+            var expenseDescriptionEditor = new Quill("#expenseDescriptionEditor", {
+                bounds: "#expenseDescriptionEditor",
+                placeholder: "Your Expense Description Here...",
                 modules: {
                     formula: true,
                     toolbar: fullToolbar,
@@ -188,11 +195,11 @@
 
             // Set the editor content to the old description if validation fails
             @if(old('description'))
-                incomeDescriptionEditor.root.innerHTML = {!! json_encode(old('description')) !!};
+                expenseDescriptionEditor.root.innerHTML = {!! json_encode(old('description')) !!};
             @endif
 
             $('#workUpdateForm').on('submit', function() {
-                $('#incomeDescriptionInput').val(incomeDescriptionEditor.root.innerHTML);
+                $('#expenseDescriptionInput').val(expenseDescriptionEditor.root.innerHTML);
             });
         });
     </script>

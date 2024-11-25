@@ -46,7 +46,13 @@
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Income & Expense') }}</li>
     <li class="breadcrumb-item">{{ __('Income') }}</li>
-    <li class="breadcrumb-item active">{{ __('Create Income') }}</li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('administration.accounts.income_expense.income.index') }}">{{ __('All Incomes') }}</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('administration.accounts.income_expense.income.show', ['income' => $income]) }}">{{ __('Income Details') }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ __('Edit Income') }}</li>
 @endsection
 
 @section('content')
@@ -56,7 +62,7 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">{{ __('Create New Income Record') }}</h5>
+                <h5 class="mb-0">{{ __('Submit Daily Work Update') }}</h5>
         
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.accounts.income_expense.income.index') }}" class="btn btn-sm btn-primary">
@@ -67,19 +73,20 @@
             </div>
             <!-- Account -->
             <div class="card-body">
-                <form id="workUpdateForm" action="{{ route('administration.accounts.income_expense.income.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
-                    @csrf                    
+                <form id="workUpdateForm" action="{{ route('administration.accounts.income_expense.income.update', ['income' => $income]) }}" method="post" enctype="multipart/form-data" autocomplete="off">
+                    @csrf
+                    @method('PUT')
                     <div class="row justify-content-center">
                         <div class="mb-3 col-md-3">
                             <label class="form-label">Income Date <strong class="text-danger">*</strong></label>
-                            <input type="text" name="date" value="{{ old('date', date('Y-m-d')) }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
+                            <input type="text" name="date" value="{{ old('date', $income->date->format('Y-m-d')) }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
                             @error('date')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-9">
                             <label class="form-label">Income Source <strong class="text-danger">*</strong></label>
-                            <input type="text" name="source" value="{{ old('source') }}" class="form-control" placeholder="Ex: Sold Old Gadgets" required/>
+                            <input type="text" name="source" value="{{ old('source', $income->source) }}" class="form-control" placeholder="Ex: Sold Old Gadgets" required/>
                             @error('source')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
@@ -89,7 +96,10 @@
                             <select name="category_id" class="select2 form-select @error('category_id') is-invalid @enderror" data-allow-clear="true" required autofocus>
                                 <option value="" selected disabled>Select Category</option>
                                 @foreach ($categories as $category)
-                                    <option value="{{ $category->id }}" @selected(old('category_id') == $category->id)>{{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" 
+                                        @selected(old('category_id', $income->category_id) == $category->id)>
+                                        {{ $category->name }}
+                                    </option>
                                 @endforeach
                             </select>
                             @error('category_id')
@@ -99,7 +109,7 @@
                         <div class="mb-3 col-md-3">
                             <label class="form-label">Total Income <strong class="text-danger">*</strong></label>
                             <div class="input-group input-group-merge">
-                                <input type="number" min="0" name="total" value="{{ old('total') }}" placeholder="Ex: 50000" class="form-control" required>
+                                <input type="number" min="0" name="total" value="{{ old('total', $income->total) }}" placeholder="Ex: 50000" class="form-control" required>
                                 <span class="input-group-text"><i class="ti ti-currency-taka"></i></span>
                             </div>
                             @error('total')
@@ -117,8 +127,8 @@
                     <div class="row">
                         <div class="mb-3 col-md-12">
                             <label class="form-label">Income Description <strong class="text-danger">*</strong></label>
-                            <div name="description" id="incomeDescriptionEditor">{!! old('description') !!}</div>
-                            <textarea class="d-none" name="description" id="incomeDescriptionInput">{{ old('description') }}</textarea>
+                            <div name="description" id="incomeDescriptionEditor">{!! old('description', $income->description) !!}</div>
+                            <textarea class="d-none" name="description" id="incomeDescriptionInput">{{ old('description', $income->description) }}</textarea>
                             @error('description')
                                 <b class="text-danger">{{ $message }}</b>
                             @enderror
@@ -126,7 +136,7 @@
                     </div>
                     <div class="mt-2 float-end">
                         <a href="{{ route('administration.accounts.income_expense.income.create') }}" class="btn btn-outline-danger me-2 confirm-danger">Reset Form</a>
-                        <button type="submit" class="btn btn-primary">Create Income Record</button>
+                        <button type="submit" class="btn btn-primary">Submit Work Update</button>
                     </div>
                 </form>
             </div>
