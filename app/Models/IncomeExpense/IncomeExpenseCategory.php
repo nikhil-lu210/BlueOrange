@@ -18,6 +18,7 @@ class IncomeExpenseCategory extends Model
 
     protected $casts = [
         'description' => PurifyHtmlOnGet::class,
+        'is_active' => 'boolean'
     ];
 
     protected $fillable = [

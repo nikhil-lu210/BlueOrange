@@ -42,6 +42,6 @@ if (!function_exists('format_currency')) {
      */
     function format_currency(?float $number, string $currencyCode = 'BDT'): string
     {
-        return $number === null ? '' : Number::currency($number, $currencyCode);
+        return $number === null ? $currencyCode.' 0.00' : Number::currency($number, $currencyCode);
     }
 }

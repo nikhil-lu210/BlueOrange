@@ -13,7 +13,7 @@ trait IncomeExpenseCategoryRelations
      */
     public function incomes(): HasMany
     {
-        return $this->hasMany(Income::class);
+        return $this->hasMany(Income::class, 'category_id');
     }
     
     /**
@@ -21,6 +21,6 @@ trait IncomeExpenseCategoryRelations
      */
     public function expenses(): HasMany
     {
-        return $this->hasMany(Expense::class);
+        return $this->hasMany(Expense::class, 'category_id');
     }
 }
