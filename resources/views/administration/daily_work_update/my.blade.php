@@ -117,100 +117,102 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Date</th>
-                            <th>Employee</th>
-                            <th>Team Leader</th>
-                            <th>Submitted At</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($dailyWorkUpdates as $key => $dailyUpdate) 
-                            <tr class="@if (is_null($dailyUpdate->rating)) bg-label-danger @endif">
-                                <th>#{{ serial($dailyWorkUpdates, $key) }}</th>
-                                <td>
-                                    <b>{{ show_date($dailyUpdate->date) }}</b>
-                                    <br>
-                                    @if (!is_null($dailyUpdate->rating))
-                                        <small class="badge bg-label-primary">
-                                            {{ $dailyUpdate->rating }} out of 5
-                                        </small>
-                                    @else
-                                        <small class="badge bg-danger">
-                                            {{ __('Not Reviewed') }}
-                                        </small>
-                                    @endif
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-start align-items-center user-name">
-                                        <div class="avatar-wrapper">
-                                            <div class="avatar me-2">
-                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->user]) }}">
-                                                    @if ($dailyUpdate->user->hasMedia('avatar'))
-                                                        <img src="{{ $dailyUpdate->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->user->name }} Avatar" class="rounded-circle">
-                                                    @else
-                                                        <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
-                                                            {{ profile_name_pic($dailyUpdate->user) }}
-                                                        </span>
-                                                    @endif
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->user]) }}" target="_blank" class="emp_name text-truncate">{{ $dailyUpdate->user->name }}</a>
-                                            <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->user->roles[0]->name }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-start align-items-center user-name">
-                                        <div class="avatar-wrapper">
-                                            <div class="avatar me-2">
-                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}">
-                                                    @if ($dailyUpdate->team_leader->hasMedia('avatar'))
-                                                        <img src="{{ $dailyUpdate->team_leader->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->team_leader->name }} Avatar" class="rounded-circle">
-                                                    @else
-                                                        <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
-                                                            {{ profile_name_pic($dailyUpdate->team_leader) }}
-                                                        </span>
-                                                    @endif
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <div class="d-flex flex-column">
-                                            <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}" target="_blank" class="emp_name text-truncate">{{ $dailyUpdate->team_leader->name }}</a>
-                                            <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->team_leader->roles[0]->name }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <small class="text-bold">{{ show_date($dailyUpdate->created_at) }}</small>
-                                    <br>
-                                    <span>
-                                        at
-                                        <small class="text-bold">{{ show_time($dailyUpdate->created_at) }}</small>
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    @can ('Daily Work Update Delete') 
-                                        <a href="{{ route('administration.daily_work_update.destroy', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Daily Work Update?">
-                                            <i class="text-white ti ti-trash"></i>
-                                        </a>
-                                    @endcan
-                                    @can ('Daily Work Update Read') 
-                                        <a href="{{ route('administration.daily_work_update.show', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
-                                            <i class="text-white ti ti-info-hexagon"></i>
-                                        </a>
-                                    @endcan
-                                </td>
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Sl.</th>
+                                <th>Date</th>
+                                <th>Employee</th>
+                                <th>Team Leader</th>
+                                <th>Submitted At</th>
+                                <th class="text-center">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($dailyWorkUpdates as $key => $dailyUpdate) 
+                                <tr class="@if (is_null($dailyUpdate->rating)) bg-label-danger @endif">
+                                    <th>#{{ serial($dailyWorkUpdates, $key) }}</th>
+                                    <td>
+                                        <b>{{ show_date($dailyUpdate->date) }}</b>
+                                        <br>
+                                        @if (!is_null($dailyUpdate->rating))
+                                            <small class="badge bg-label-primary">
+                                                {{ $dailyUpdate->rating }} out of 5
+                                            </small>
+                                        @else
+                                            <small class="badge bg-danger">
+                                                {{ __('Not Reviewed') }}
+                                            </small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-start align-items-center user-name">
+                                            <div class="avatar-wrapper">
+                                                <div class="avatar me-2">
+                                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->user]) }}">
+                                                        @if ($dailyUpdate->user->hasMedia('avatar'))
+                                                            <img src="{{ $dailyUpdate->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->user->name }} Avatar" class="rounded-circle">
+                                                        @else
+                                                            <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
+                                                                {{ profile_name_pic($dailyUpdate->user) }}
+                                                            </span>
+                                                        @endif
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->user]) }}" target="_blank" class="emp_name text-truncate">{{ $dailyUpdate->user->name }}</a>
+                                                <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->user->roles[0]->name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex justify-content-start align-items-center user-name">
+                                            <div class="avatar-wrapper">
+                                                <div class="avatar me-2">
+                                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}">
+                                                        @if ($dailyUpdate->team_leader->hasMedia('avatar'))
+                                                            <img src="{{ $dailyUpdate->team_leader->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->team_leader->name }} Avatar" class="rounded-circle">
+                                                        @else
+                                                            <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
+                                                                {{ profile_name_pic($dailyUpdate->team_leader) }}
+                                                            </span>
+                                                        @endif
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}" target="_blank" class="emp_name text-truncate">{{ $dailyUpdate->team_leader->name }}</a>
+                                                <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->team_leader->roles[0]->name }}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <small class="text-bold">{{ show_date($dailyUpdate->created_at) }}</small>
+                                        <br>
+                                        <span>
+                                            at
+                                            <small class="text-bold">{{ show_time($dailyUpdate->created_at) }}</small>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        @can ('Daily Work Update Delete') 
+                                            <a href="{{ route('administration.daily_work_update.destroy', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Daily Work Update?">
+                                                <i class="text-white ti ti-trash"></i>
+                                            </a>
+                                        @endcan
+                                        @can ('Daily Work Update Read') 
+                                            <a href="{{ route('administration.daily_work_update.show', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                                <i class="text-white ti ti-info-hexagon"></i>
+                                            </a>
+                                        @endcan
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>

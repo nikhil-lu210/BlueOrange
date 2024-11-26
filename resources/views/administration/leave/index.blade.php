@@ -132,88 +132,90 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Employee</th>
-                            <th>Date</th>
-                            <th>Total Leave</th>
-                            <th>Status</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($leaves as $key => $leave) 
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
                             <tr>
-                                <th>#{{ serial($leaves, $key) }}</th>
-                                <td>
-                                    {!! show_user_name_and_avatar($leave->user, role: null) !!}
-                                </td>
-                                <td>
-                                    @php
-                                        switch ($leave->type) {
-                                            case 'Earned':
-                                                $typeBg = 'success';
-                                                break;
-                                            
-                                            case 'Sick':
-                                                $typeBg = 'warning';
-                                                break;
-                                            
-                                            default:
-                                                $typeBg = 'danger';
-                                                break;
-                                        }
-                                    @endphp
-                                    {{ show_date($leave->date) }}
-                                    <br>
-                                    <small class="badge bg-label-{{ $typeBg }}" title="Requested Leave Type">{{ $leave->type }} Leave</small>
-                                </td>
-                                <td>
-                                    <span class="text-bold">{{ $leave->total_leave->forHumans() }}</span>
-                                    @if (!is_null($leave->is_paid_leave)) 
-                                        <br>
-                                        @if ($leave->is_paid_leave == true)
-                                            <small class="badge bg-success">Paid</small>
-                                        @else
-                                            <small class="badge bg-danger">Unpaid</small>
-                                        @endif
-                                    @endif
-                                </td>
-                                <td>
-                                    @php
-                                        switch ($leave->status) {
-                                            case 'Pending':
-                                                $statusBg = 'primary';
-                                                break;
-                                            
-                                            case 'Approved':
-                                                $statusBg = 'success';
-                                                break;
-                                            
-                                            default:
-                                                $statusBg = 'danger';
-                                                break;
-                                        }
-                                    @endphp
-                                    <span class="badge bg-{{ $statusBg }}">{{ $leave->status }}</span>
-                                    @if (!is_null($leave->reviewed_by))
-                                        <br>
-                                        <a href="{{ route('administration.settings.user.show.profile', ['user' => $leave->reviewer]) }}" target="_blank" class="text-bold text-primary" title="Reviewed By">
-                                            {{ $leave->reviewer->name }}
-                                        </a>
-                                    @endif
-                                </td>
-                                <td class="text-center">
-                                    <a href="{{ route('administration.leave.history.show', ['leaveHistory' => $leave]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                        <i class="text-primary ti ti-info-hexagon"></i>
-                                    </a>
-                                </td>
+                                <th>Sl.</th>
+                                <th>Employee</th>
+                                <th>Date</th>
+                                <th>Total Leave</th>
+                                <th>Status</th>
+                                <th class="text-center">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($leaves as $key => $leave) 
+                                <tr>
+                                    <th>#{{ serial($leaves, $key) }}</th>
+                                    <td>
+                                        {!! show_user_name_and_avatar($leave->user, role: null) !!}
+                                    </td>
+                                    <td>
+                                        @php
+                                            switch ($leave->type) {
+                                                case 'Earned':
+                                                    $typeBg = 'success';
+                                                    break;
+                                                
+                                                case 'Sick':
+                                                    $typeBg = 'warning';
+                                                    break;
+                                                
+                                                default:
+                                                    $typeBg = 'danger';
+                                                    break;
+                                            }
+                                        @endphp
+                                        {{ show_date($leave->date) }}
+                                        <br>
+                                        <small class="badge bg-label-{{ $typeBg }}" title="Requested Leave Type">{{ $leave->type }} Leave</small>
+                                    </td>
+                                    <td>
+                                        <span class="text-bold">{{ $leave->total_leave->forHumans() }}</span>
+                                        @if (!is_null($leave->is_paid_leave)) 
+                                            <br>
+                                            @if ($leave->is_paid_leave == true)
+                                                <small class="badge bg-success">Paid</small>
+                                            @else
+                                                <small class="badge bg-danger">Unpaid</small>
+                                            @endif
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                            switch ($leave->status) {
+                                                case 'Pending':
+                                                    $statusBg = 'primary';
+                                                    break;
+                                                
+                                                case 'Approved':
+                                                    $statusBg = 'success';
+                                                    break;
+                                                
+                                                default:
+                                                    $statusBg = 'danger';
+                                                    break;
+                                            }
+                                        @endphp
+                                        <span class="badge bg-{{ $statusBg }}">{{ $leave->status }}</span>
+                                        @if (!is_null($leave->reviewed_by))
+                                            <br>
+                                            <a href="{{ route('administration.settings.user.show.profile', ['user' => $leave->reviewer]) }}" target="_blank" class="text-bold text-primary" title="Reviewed By">
+                                                {{ $leave->reviewer->name }}
+                                            </a>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ route('administration.leave.history.show', ['leaveHistory' => $leave]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                            <i class="text-primary ti ti-info-hexagon"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>

@@ -133,60 +133,62 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Date</th>
-                            <th>Name</th>
-                            <th>Break Started</th>
-                            <th>Break Stopped</th>
-                            <th>Total</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($dailyBreaks as $key => $break) 
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
                             <tr>
-                                <th>#{{ serial($dailyBreaks, $key) }}</th>
-                                <td>
-                                    {{ show_date($break->date) }}
-                                    <br>
-                                    <small class="text-bold text-{{ $break->type === 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</small>
-                                </td>
-                                <td>
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $break->user]) }}" target="_blank" class="text-bold text-primary">
-                                        {{ $break->user->name }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <div class="d-grid">
-                                        <span class="text-bold text-success">{{ show_time($break->break_in_at) }}</span>
-                                    </div>
-                                </td>
-                                <td>
-                                    @isset ($break->break_out_at) 
-                                        <span class="text-bold text-success">{{ show_time($break->break_out_at) }}</span>
-                                    @else
-                                        <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
-                                    @endisset
-                                </td>
-                                <td>
-                                    @isset ($break->total_time) 
-                                        <span class="text-bold text-warning">{{ total_time($break->total_time) }}</span>
-                                    @else
-                                        <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
-                                    @endisset
-                                </td>
-                                <td class="text-center">
-                                    <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                        <i class="text-primary ti ti-info-hexagon"></i>
-                                    </a>
-                                </td>
+                                <th>Sl.</th>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Break Started</th>
+                                <th>Break Stopped</th>
+                                <th>Total</th>
+                                <th class="text-center">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($dailyBreaks as $key => $break) 
+                                <tr>
+                                    <th>#{{ serial($dailyBreaks, $key) }}</th>
+                                    <td>
+                                        {{ show_date($break->date) }}
+                                        <br>
+                                        <small class="text-bold text-{{ $break->type === 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</small>
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('administration.settings.user.show.profile', ['user' => $break->user]) }}" target="_blank" class="text-bold text-primary">
+                                            {{ $break->user->name }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="d-grid">
+                                            <span class="text-bold text-success">{{ show_time($break->break_in_at) }}</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @isset ($break->break_out_at) 
+                                            <span class="text-bold text-success">{{ show_time($break->break_out_at) }}</span>
+                                        @else
+                                            <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
+                                        @endisset
+                                    </td>
+                                    <td>
+                                        @isset ($break->total_time) 
+                                            <span class="text-bold text-warning">{{ total_time($break->total_time) }}</span>
+                                        @else
+                                            <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
+                                        @endisset
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                            <i class="text-primary ti ti-info-hexagon"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>
