@@ -96,8 +96,8 @@ class IncomeService
             ]);
 
             // Store associated files if any
-            if ($request->has('files') && is_array($request->files)) {
-                foreach ($request->files as $file) {
+            if ($request->has('files') && is_array($request->file('files'))) {
+                foreach ($request->file('files') as $file) {
                     $directory = 'income_expenses/income';
                     store_file_media($file, $income, $directory);
                 }
@@ -126,8 +126,8 @@ class IncomeService
             ]);
 
             // Store associated files if any
-            if ($request->has('files') && is_array($request->files)) {
-                foreach ($request->files as $file) {
+            if ($request->has('files') && is_array($request->file('files'))) {
+                foreach ($request->file('files') as $file) {
                     $directory = 'income_expenses/income';
                     store_file_media($file, $income, $directory);
                 }

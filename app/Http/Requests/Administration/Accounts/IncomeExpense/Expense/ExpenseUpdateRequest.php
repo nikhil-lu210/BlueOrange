@@ -28,7 +28,12 @@ class ExpenseUpdateRequest extends FormRequest
             'quantity' => ['sometimes', 'numeric', 'min:1'],
             'price' => ['sometimes', 'numeric', 'min:0.01'],
             'description' => ['sometimes', 'string', 'min:10'],
-            'files.*' => ['file', 'mimes:jpg,jpeg,png,pdf,xls,doc', 'max:2048'],
+            'files.*' => [
+                            'sometimes',
+                            'file',
+                            'mimes:jpg,jpeg,png,gif,webp,pdf,xls,xlsx,doc,docx,txt,csv,zip,rar',
+                            'max:10240' // Max size in kilobytes (10 MB here)
+                        ],
         ];
     }
 }

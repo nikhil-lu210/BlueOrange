@@ -115,8 +115,8 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label for="files[]" class="form-label">{{ __('Files') }}</label>
-                            <input type="file" id="files[]" name="files[]" value="{{ old('files[]') }}" placeholder="{{ __('Files') }}" class="form-control @error('files[]') is-invalid @enderror" multiple/>
-                            @error('files[]')
+                            <input type="file" id="files[]" name="files[]" class="form-control @error('files') is-invalid @enderror" multiple accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.xls,.xlsx,.doc,.docx,.txt,.csv,.zip,.rar"/>
+                            @error('files.*')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>

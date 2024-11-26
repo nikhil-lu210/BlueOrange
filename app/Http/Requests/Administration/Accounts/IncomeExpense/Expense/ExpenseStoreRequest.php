@@ -28,6 +28,12 @@ class ExpenseStoreRequest extends FormRequest
             'quantity' => ['required', 'numeric', 'min:1'],
             'price' => ['required', 'numeric', 'min:0.01'],
             'description' => ['required', 'string', 'min:10'],
+            'files.*' => [
+                            'nullable',
+                            'file',
+                            'mimes:jpg,jpeg,png,gif,webp,pdf,xls,xlsx,doc,docx,txt,csv,zip,rar',
+                            'max:10240' // Max size in kilobytes (10 MB here)
+                        ],
         ];
     }
 }
