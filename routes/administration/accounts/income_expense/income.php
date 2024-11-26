@@ -17,4 +17,6 @@ Route::controller(IncomeController::class)->prefix('income')->name('income.')->g
 
     Route::put('/update/{income}', 'update')->name('update')->can('Income Update');
     Route::get('/destroy/{income}', 'destroy')->name('destroy')->can('Income Delete');
+
+    Route::get('/export', 'export')->name('export')->can('Income Read');
 });

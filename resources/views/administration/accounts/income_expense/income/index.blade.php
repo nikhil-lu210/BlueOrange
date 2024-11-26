@@ -111,10 +111,16 @@
         
                 <div class="card-header-elements ms-auto">
                     @can(['Income Create'])
-                        <a href="{{ route('administration.accounts.income_expense.income.create') }}" class="btn btn-sm btn-primary confirm-warning">
-                            <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                            Create Income
-                        </a>
+                        @if ($incomes->count() > 0)
+                            <a href="{{ route('administration.accounts.income_expense.income.export', [
+                                'category_id' => request('category_id'),
+                                'for_month' => request('for_month'),
+                                'filter_incomes' => request('filter_incomes')
+                            ]) }}" target="_blank" class="btn btn-sm btn-dark">
+                                <span class="tf-icon ti ti-download me-1"></span>
+                                {{ __('Download') }}
+                            </a>
+                        @endif
                     @endcan
                 </div>
             </div>

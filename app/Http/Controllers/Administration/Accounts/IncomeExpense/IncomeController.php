@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Administration\Accounts\IncomeExpense;
 use Exception;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\IncomeExpense\Income;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\Administration\Accounts\IncomeExpense\IncomeExport;
+use App\Services\Administration\Accounts\IncomeExpense\IncomeService;
+use App\Services\Administration\Accounts\IncomeExpense\IncomeExportService;
 use App\Http\Requests\Administration\Accounts\IncomeExpense\Income\IncomeStoreRequest;
 use App\Http\Requests\Administration\Accounts\IncomeExpense\Income\IncomeUpdateRequest;
-use App\Models\IncomeExpense\Income;
-use App\Services\Administration\Accounts\IncomeExpense\IncomeService;
 
 class IncomeController extends Controller
 {
@@ -114,6 +117,29 @@ class IncomeController extends Controller
             
             toast('Income deleted successfully.', 'success');
             return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
+
+
+
+    /**
+     * export incomes.
+     */
+    public function export(Request $request, IncomeExportService $incomeExportService)
+    {
+        try {
+            $exportData = $incomeExportService->export($request);
+
+            if (is_null($exportData)) {
+                toast('There are no incomes to download.', 'warning');
+                return redirect()->back();
+            }
+
+            // Return the Excel download with the appropriate filename
+            return Excel::download(new IncomeExport($exportData['incomes']), $exportData['fileName']);
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back();
