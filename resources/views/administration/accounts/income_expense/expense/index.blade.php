@@ -105,16 +105,22 @@
                 <h5 class="mb-0">
                     All Expenses
                     @isset ($expenses) 
-                        <sup class="text-bold" title="Total Expense">({{ Number::currency( $total['expense'], 'BDT') }})</sup>
+                        <sup class="text-bold" title="Total Expense">({{ format_currency( $total['expense'], 'BDT') }})</sup>
                     @endisset
                 </h5>
         
                 <div class="card-header-elements ms-auto">
-                    @can(['Expense Create'])
-                        <a href="{{ route('administration.accounts.income_expense.expense.create') }}" class="btn btn-sm btn-primary confirm-warning">
-                            <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                            Create Expense
-                        </a>
+                    @can(['Income Create'])
+                        @if ($expenses->count() > 0)
+                            <a href="{{ route('administration.accounts.income_expense.expense.export', [
+                                'category_id' => request('category_id'),
+                                'for_month' => request('for_month'),
+                                'filter_expenses' => request('filter_expenses')
+                            ]) }}" target="_blank" class="btn btn-sm btn-dark">
+                                <span class="tf-icon ti ti-download me-1"></span>
+                                {{ __('Download') }}
+                            </a>
+                        @endif
                     @endcan
                 </div>
             </div>
@@ -141,7 +147,7 @@
                                         <small class="text-muted">{{ $expense->category->name }}</small>
                                     </td>
                                     <td>
-                                        <b>{{ Number::currency($expense->total, 'BDT') }}</b>
+                                        <b>{{ format_currency($expense->total, 'BDT') }}</b>
                                         <br>
                                         <small class="text-muted text-capitalize">{{ spell_number($expense->total) }}</small>
                                     </td>

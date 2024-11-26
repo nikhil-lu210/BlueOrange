@@ -87,7 +87,7 @@
                                         <span class="fw-medium mx-2 text-heading">Unit Price:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        <span class="text-dark text-bold">{{ Number::currency($expense->price, 'BDT') }}</span>
+                                        <span class="text-dark text-bold">{{ format_currency($expense->price, 'BDT') }}</span>
                                         <br>
                                         <small class="text-muted text-capitalize"><b>Quantity: </b>{{ $expense->quantity }}</small>
                                     </dd>
@@ -98,7 +98,7 @@
                                         <span class="fw-medium mx-2 text-heading">Total Expense:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        <span class="text-dark text-bold">{{ Number::currency($expense->total, 'BDT') }}</span>
+                                        <span class="text-dark text-bold">{{ format_currency($expense->total, 'BDT') }}</span>
                                         <br>
                                         <small class="text-muted text-capitalize">{{ spell_number($expense->total) }}</small>
                                     </dd>

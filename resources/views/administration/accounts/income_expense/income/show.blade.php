@@ -87,7 +87,7 @@
                                         <span class="fw-medium mx-2 text-heading">Total Income:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        <span class="text-dark text-bold">{{ Number::currency($income->total, 'BDT') }}</span>
+                                        <span class="text-dark text-bold">{{ format_currency($income->total, 'BDT') }}</span>
                                         <br>
                                         <small class="text-muted text-capitalize">{{ spell_number($income->total) }}</small>
                                     </dd>

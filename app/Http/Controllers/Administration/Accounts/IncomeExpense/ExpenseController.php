@@ -5,8 +5,11 @@ namespace App\Http\Controllers\Administration\Accounts\IncomeExpense;
 use Exception;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Models\IncomeExpense\Expense;
+use App\Exports\Administration\Accounts\IncomeExpense\ExpenseExport;
 use App\Services\Administration\Accounts\IncomeExpense\ExpenseService;
+use App\Services\Administration\Accounts\IncomeExpense\ExpenseExportService;
 use App\Http\Requests\Administration\Accounts\IncomeExpense\Expense\ExpenseStoreRequest;
 use App\Http\Requests\Administration\Accounts\IncomeExpense\Expense\ExpenseUpdateRequest;
 
@@ -114,6 +117,29 @@ class ExpenseController extends Controller
             
             toast('Expense deleted successfully.', 'success');
             return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
+
+
+
+    /**
+     * export expenses.
+     */
+    public function export(Request $request, ExpenseExportService $expenseExportService)
+    {
+        try {
+            $exportData = $expenseExportService->export($request);
+
+            if (is_null($exportData)) {
+                toast('There are no expenses to download.', 'warning');
+                return redirect()->back();
+            }
+
+            // Return the Excel download with the appropriate filename
+            return Excel::download(new ExpenseExport($exportData['expenses']), $exportData['fileName']);
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back();

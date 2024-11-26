@@ -17,4 +17,6 @@ Route::controller(ExpenseController::class)->prefix('expense')->name('expense.')
 
     Route::put('/update/{expense}', 'update')->name('update')->can('Expense Update');
     Route::get('/destroy/{expense}', 'destroy')->name('destroy')->can('Expense Delete');
+
+    Route::get('/export', 'export')->name('export')->can('Expense Read');
 });

@@ -24,7 +24,7 @@ class IncomeExport extends BaseExportSettings implements FromCollection
                 'date' => get_date_only($income->date),
                 'source' => $income->source,
                 'category' => $income->category->name,
-                'income' => $income->total,
+                'income' => format_currency($income->total),
                 'creator' => $income->creator->name
             ];
         });

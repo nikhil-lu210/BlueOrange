@@ -105,7 +105,7 @@
                 <h5 class="mb-0">
                     All Incomes
                     @isset ($incomes) 
-                        <sup class="text-bold" title="Total Income">({{ Number::currency( $total['income'], 'BDT') }})</sup>
+                        <sup class="text-bold" title="Total Income">({{ format_currency( $total['income'], 'BDT') }})</sup>
                     @endisset
                 </h5>
         
@@ -147,7 +147,7 @@
                                         <small class="text-muted">{{ $income->category->name }}</small>
                                     </td>
                                     <td>
-                                        <b>{{ Number::currency($income->total, 'BDT') }}</b>
+                                        <b>{{ format_currency($income->total, 'BDT') }}</b>
                                         <br>
                                         <small class="text-muted text-capitalize">{{ spell_number($income->total) }}</small>
                                     </td>

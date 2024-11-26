@@ -29,3 +29,19 @@ if (!function_exists('spell_number')) {
         return $number === null ? null : Number::spell($number);
     }
 }
+
+
+if (!function_exists('format_currency')) {
+
+    /**
+     * Format a number as currency using the Number facade.
+     *
+     * @param float|null $number The amount to format. If null, returns an empty string.
+     * @param string $currencyCode The currency code (e.g., 'BDT', 'USD'). Defaults to 'BDT'.
+     * @return string The formatted currency string.
+     */
+    function format_currency(?float $number, string $currencyCode = 'BDT'): string
+    {
+        return $number === null ? '' : Number::currency($number, $currencyCode);
+    }
+}

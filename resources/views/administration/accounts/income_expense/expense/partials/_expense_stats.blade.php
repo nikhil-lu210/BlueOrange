@@ -8,7 +8,7 @@
                             <i class="ti ti-hourglass-high ti-xl"></i>
                         </span>
                         <div class="content-right">
-                            <h5 class="text-danger mb-0">{{ Number::currency( $total['overall_expense'], 'BDT') }}</h5>
+                            <h5 class="text-danger mb-0">{{ format_currency( $total['overall_expense'], 'BDT') }}</h5>
                             <small class="mb-0 text-muted">Total Expense (Overall)</small>
                         </div>
                     </div>
@@ -17,7 +17,7 @@
                             <i class="ti ti-hourglass-low ti-xl"></i>
                         </span>
                         <div class="content-right">
-                            <h5 class="text-warning mb-0">{{ Number::currency( $total['last_month_expense'], 'BDT') }}</h5>
+                            <h5 class="text-warning mb-0">{{ format_currency( $total['last_month_expense'], 'BDT') }}</h5>
                             <small class="mb-0 text-muted">Total Expense (Last Month)</small>
                         </div>
                     </div>
@@ -26,7 +26,7 @@
                             <i class="ti ti-hourglass-high ti-xl"></i>
                         </span>
                         <div class="content-right">
-                            <h5 class="text-primary mb-0">{{ Number::currency( $total['current_month_expense'], 'BDT') }}</h5>
+                            <h5 class="text-primary mb-0">{{ format_currency( $total['current_month_expense'], 'BDT') }}</h5>
                             <small class="mb-0 text-muted">Total Expense (Current Month)</small>
                         </div>
                     </div>
