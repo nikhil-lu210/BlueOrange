@@ -16,6 +16,13 @@ return new class extends Migration
 
             $table->string('taskid')->unique();
 
+            $table->foreignId('chatting_id')
+                ->unique()
+                ->nullable()
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
             $table->foreignId('creator_id')
                 ->constrained('users')
                 ->onUpdate('cascade')

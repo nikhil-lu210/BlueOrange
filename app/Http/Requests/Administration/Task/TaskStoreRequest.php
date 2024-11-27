@@ -22,6 +22,7 @@ class TaskStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'chatting_id' => ['nullable', 'integer', 'exists:chattings,id'],
             'users' => ['nullable', 'array'],
             'users.*' => ['integer', 'exists:users,id'],
             'title' => ['required', 'string'],

@@ -20,10 +20,12 @@ class Task extends Model implements HasMedia
 
     protected $casts = [
         'description' => PurifyHtmlOnGet::class,
+        'deadline' => 'date'
     ];
 
     protected $fillable = [
         'taskid',
+        'chatting_id',
         'creator_id',
         'title',
         'description',

@@ -41,6 +41,21 @@
                 <span class="fw-medium mx-2 text-heading">Priority:</span> 
                 <span class="text-bold">{{ $task->priority }}</span>
             </li>
+            @isset ($task->chatting) 
+                <li class="d-flex align-items-center mb-3">
+                    <i class="ti ti-message text-heading"></i>
+                    <span class="fw-medium mx-2 text-heading">Chatting:</span> 
+                        @if ($task->chatting->sender_id == auth()->user()->id)
+                            <a href="{{ route('administration.chatting.show', ['user' => $task->chatting->receiver->id, 'userid' => $task->chatting->receiver->userid]) }}" target="_blank">
+                                <span class="text-bold">{{ $task->chatting->receiver->name }}</span>
+                            </a>
+                        @else
+                            <a href="{{ route('administration.chatting.show', ['user' => $task->chatting->sender->id, 'userid' => $task->chatting->sender->userid]) }}" target="_blank">
+                                <span class="text-bold">{{ $task->chatting->sender->name }}</span>
+                            </a>
+                        @endif
+                </li>
+            @endisset
         </ul>
     </div>
 </div>

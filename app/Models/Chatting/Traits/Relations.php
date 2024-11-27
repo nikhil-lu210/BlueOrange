@@ -2,8 +2,10 @@
 
 namespace App\Models\Chatting\Traits;
 
+use App\Models\Task\Task;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 trait Relations
 {    
@@ -22,5 +24,14 @@ trait Relations
     public function receiver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'receiver_id');
+    }
+    
+    
+    /**
+     * Get the task associated with the chatting (message)
+     */
+    public function task(): HasOne
+    {
+        return $this->hasOne(Task::class);
     }
 }
