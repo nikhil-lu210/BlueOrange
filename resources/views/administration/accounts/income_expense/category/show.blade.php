@@ -115,7 +115,7 @@
                             <div class="card-body">
                                 <div class="d-flex align-items-center gap-3">
                                     <span class="bg-label-success p-2 rounded">
-                                        <i class="ti ti-trending-down ti-xl"></i>
+                                        <i class="ti ti-trending-up ti-xl"></i>
                                     </span>
                                     <div class="content-right">
                                         <h5 class="text-success mb-0">{{ format_currency($category->total_income) }}</h5>
