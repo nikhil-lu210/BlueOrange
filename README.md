@@ -58,12 +58,15 @@ php  artisan  serve
 
 ### Default Credentials
 **Developer**
+
 *User ID:* `20230201`
 *Password:* `12345678`
 
 **Super Admin**
+
 *User ID:* `20202020`
 *Password:* `12345678`
+
 ---
 
 ### Troubleshooting
