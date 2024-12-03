@@ -20,32 +20,32 @@ Ensure you have the following installed on your system:
 ### Steps
 **Step 1: Clone the repository and navigate to the project directory**
 ```bash
-git  clone  https://github.com/nikhil-lu210/BlueOrange.git
-cd  BlueOrange
+git clone https://github.com/nikhil-lu210/BlueOrange.git
+cd BlueOrange
 ```
 
 **Step 2: Install dependencies**
 ```bash
-composer  install
-npm  install
+composer install
+npm install
 ```
 
 **Step 3: Set up environment variables**
 ```bash
-cp  .env.example  .env
-php  artisan  key:generate
+cp .env.example .env
+php artisan key:generate
 ```
 
 **Step 4: Update the `.env` file with your database credentials**
 
 **Step 5: Run database migrations and seeders**
 ```bash
-php  artisan  migrate  --seed
+php artisan migrate  --seed
 ```
 
 **Step 6: Build frontend assets**
 ```bash
-npm  run  dev
+npm run dev
 ```
 
 **Step 7: Start the local development server**
@@ -58,16 +58,12 @@ php  artisan  serve
 
 ### Default Credentials
 **Developer**
-```bash
-Email:  developer@mail.com
-Password:  12345678
-```
+*User ID:* `20230201`
+*Password:* `12345678`
 
 **Super Admin**
-```bash
-Email:  superadmin@mail.com
-Password:  12345678
-```
+*User ID:* `20202020`
+*Password:* `12345678`
 ---
 
 ### Troubleshooting
