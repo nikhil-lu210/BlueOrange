@@ -233,6 +233,10 @@
                     <div data-i18n="Income & Expense">{{ __('Income & Expense') }}</div>
                 </a>
                 <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('accounts/income_expense/statistics*') ? 'active' : '' }}">
+                        <a href="{{ route('administration.accounts.income_expense.statistics.index') }}" class="menu-link">{{ __('Statistics') }}</a>
+                    </li>
+
                     <li class="menu-item {{ request()->is('accounts/income_expense/category/all*') ? 'active' : '' }}">
                         <a href="{{ route('administration.accounts.income_expense.category.index') }}" class="menu-link">{{ __('Categories') }}</a>
                     </li>

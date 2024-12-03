@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Route;
 Route::prefix('income_expense')
     ->name('income_expense.')
     ->group(function () {
+        // statistics
+        include_once 'statistics.php';
+        
         // category
         include_once 'category.php';
 
