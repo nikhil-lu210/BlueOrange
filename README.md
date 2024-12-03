@@ -50,7 +50,7 @@ npm run dev
 
 **Step 7: Start the local development server**
 ```bash
-php  artisan  serve
+php artisan serve
 ```
 
 - Access the application at http://127.0.0.1:8000
@@ -59,13 +59,13 @@ php  artisan  serve
 ### Default Credentials
 **Developer**
 ```bash
-Email: developer@mail.com
-Password:  12345678
+UserID: 20230201
+Password: 12345678
 ```
 
 **Super Admin**
 ```bash
-Email:  superadmin@mail.com
+UserID: 20202020
 Password:  12345678
 ```
 ---
@@ -75,7 +75,7 @@ Password:  12345678
 
 **Clear Optimization**
 ```bash
-php  artisan  optimize:clear
+php artisan optimize:clear
 ```
 
 **For more help**
