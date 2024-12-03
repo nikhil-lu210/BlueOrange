@@ -57,14 +57,17 @@ php  artisan  serve
 ---
 
 ### Default Credentials
-***Developer***
-**User ID:** `20230201`
-**Password:** `12345678`
+**Developer**
+```bash
+Email: developer@mail.com
+Password:  12345678
+```
 
 **Super Admin**
-**User ID:** `20202020`
-**Password:** `12345678`
-
+```bash
+Email:  superadmin@mail.com
+Password:  12345678
+```
 ---
 
 ### Troubleshooting
