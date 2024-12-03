@@ -21,7 +21,7 @@ class IncomeFactory extends Factory
             'category_id' => IncomeExpenseCategory::inRandomOrder()->first(),
             'source' => $this->faker->word,
             'date' => $this->faker->dateTimeThisYear(),
-            'total' => $this->faker->numberBetween(500, 500000),
+            'total' => $this->faker->numberBetween(500, 10000),
             'description' => $this->faker->sentence,
         ];
     }

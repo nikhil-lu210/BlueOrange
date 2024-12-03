@@ -19,16 +19,16 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            WeekendSeeder::class,
+            // WeekendSeeder::class,
             
-            PermissionsTableSeeder::class,
-            RolesTableSeeder::class,
-            UsersTableSeeder::class,
+            // PermissionsTableSeeder::class,
+            // RolesTableSeeder::class,
+            // UsersTableSeeder::class,
 
             // AttendanceSeeder::class,
             // DailyBreakSeeder::class,
 
-            // IncomeExpenseSeeder::class
+            IncomeExpenseSeeder::class
         ]);
     }
 }
