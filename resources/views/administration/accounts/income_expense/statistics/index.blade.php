@@ -9,6 +9,9 @@
 
 @section('css_links')
     {{--  External CSS  --}}
+    {{-- Bootstrap Datepicker --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -43,10 +46,16 @@
                     <small class="text-muted">{{ __('Income & Expense Yearly Statistics Chart') }}</small>
                 </div>
                 <div class="card-header-elements ms-auto py-0">
-                    <span class="badge bg-label-secondary" title="Statistics of {{ date('Y') }}">
-                        <i class="ti ti-calendar ti-md text-dark"></i>
-                        <b class="align-middle text-dark fs-5 pt-1">{{ date('Y') }}</b>
-                    </span>
+                    <form method="GET" action="{{ route('administration.accounts.income_expense.statistics.index') }}" autocomplete="off">
+                        <div class="input-group input-group-merge">
+                            <span class="input-group-text"><i class="ti ti-calendar"></i></span>
+                            <input type="number" minlength="4" maxlength="4" min="1900" max="{{ date('Y') }}" name="for_year" value="{{ request()->for_year ?? date('Y') }}" class="form-control text-bold text-dark year-picker" placeholder="yyyy" required style="padding-right: 15px;"/>
+                            <button class="btn btn-primary waves-effect text-uppercase" type="submit">{{ __('Filter') }}</button>
+                        </div>
+                        @error('for_year')
+                            <span class="text-danger">{{ $message }}</span>
+                        @enderror
+                    </form>
                 </div>
             </div>
             <div class="card-body border-top">
@@ -65,25 +74,42 @@
     {{--  External Javascript Links --}}
     {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/chartjs/chartjs.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        (function () {
-            const lineChart = document.getElementById("lineChart");
+        // Custom Script Here
+        $(document).ready(function() {
+            $('.year-picker').datepicker({
+                format: 'yyyy',            // Display only the year
+                minViewMode: 'years',      // Only allow year selection
+                viewMode: 'years',         // Ensure that the view is limited to years
+                todayHighlight: true,
+                autoclose: true,
+                orientation: 'auto right'
+            });
+        });
+    </script>
+
+
+    <script>
+        // Ensure the document is ready before executing the script
+        $(document).ready(function() {
+            const lineChart = $("#lineChart")[0];
             lineChart.height = 100;
-    
+
             // Data from the controller
             const monthlyIncome = {!! json_encode(array_values($monthlyIncome)) !!};
             const monthlyExpenses = {!! json_encode(array_values($monthlyExpenses)) !!};
-    
+
             // Labels for months
             const months = [
                 "January", "February", "March", "April", "May", "June",
                 "July", "August", "September", "October", "November", "December"
             ];
-    
+
             if (lineChart) {
                 new Chart(lineChart, {
                     type: "line",
@@ -131,7 +157,6 @@
                     },
                 });
             }
-        })();
+        });
     </script>
-    
 @endsection

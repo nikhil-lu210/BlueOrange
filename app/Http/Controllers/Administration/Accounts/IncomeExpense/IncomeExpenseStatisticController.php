@@ -12,22 +12,28 @@ class IncomeExpenseStatisticController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->input('for_year')) {
+            $request->validate([
+                'for_year' => ['required', 'digits:4', 'integer', 'min:1900', 'max:' . date('Y')],
+            ]);
+        }        
+
         $total = (object) [
             'income' => Income::sum('total'),
             'expense' => Expense::sum('total'),
         ];
 
-        $currentYear = now()->year;
+        $year = $request->input('for_year') ?? now()->year;
         $monthlyIncome = Income::selectRaw('MONTH(date) as month, SUM(total) as total')
-            ->whereYear('date', $currentYear)
+            ->whereYear('date', $year)
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month')->toArray();
 
         $monthlyExpenses = Expense::selectRaw('MONTH(date) as month, SUM(total) as total')
-            ->whereYear('date', $currentYear)
+            ->whereYear('date', $year)
             ->groupBy('month')
             ->orderBy('month')
             ->pluck('total', 'month')->toArray();
