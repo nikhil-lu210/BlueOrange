@@ -8,6 +8,7 @@ use Database\Seeders\User\UsersTableSeeder;
 use Database\Seeders\Weekend\WeekendSeeder;
 use Database\Seeders\Attendance\AttendanceSeeder;
 use Database\Seeders\DailyBreak\DailyBreakSeeder;
+use Database\Seeders\Accounts\IncomeExpenseSeeder;
 use Database\Seeders\Permission\PermissionsTableSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -18,14 +19,16 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-            WeekendSeeder::class,
+            // WeekendSeeder::class,
             
-            PermissionsTableSeeder::class,
-            RolesTableSeeder::class,
-            UsersTableSeeder::class,
+            // PermissionsTableSeeder::class,
+            // RolesTableSeeder::class,
+            // UsersTableSeeder::class,
 
             // AttendanceSeeder::class,
             // DailyBreakSeeder::class,
+
+            IncomeExpenseSeeder::class
         ]);
     }
 }
