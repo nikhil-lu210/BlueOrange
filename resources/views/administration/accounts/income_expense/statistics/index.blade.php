@@ -122,7 +122,7 @@
                                 borderColor: "#28c76f",
                                 backgroundColor: "#28c76f",
                                 fill: false,
-                                tension: 0.4,
+                                tension: 0.3,
                             },
                             {
                                 label: "Expenses",
@@ -130,7 +130,7 @@
                                 borderColor: "#ea5455",
                                 backgroundColor: "#ea5455",
                                 fill: false,
-                                tension: 0.4,
+                                tension: 0.3,
                             },
                         ],
                     },
@@ -139,7 +139,7 @@
                         scales: {
                             x: {
                                 ticks: { color: "#666" },
-                                grid: { display: false },
+                                grid: { display: true },
                             },
                             y: {
                                 ticks: { color: "#666" },
