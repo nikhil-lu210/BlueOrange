@@ -79,27 +79,29 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
                             @if ($monthly_salary->status !== 'Paid')
-                                <li>
-                                    <a class="dropdown-item text-primary" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addEarningModal">
-                                        <i class="ti ti-plus me-1 fs-5" style="margin-top: -5px;"></i>
-                                        Add Earning
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item text-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
-                                        <i class="ti ti-minus me-1 fs-5" style="margin-top: -5px;"></i>
-                                        Add Deduction
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider" />
-                                </li>
-                                <li>
-                                    <a class="dropdown-item btn btn-warning confirm-warning" href="{{ route('administration.accounts.salary.monthly.regenerate', ['monthly_salary' => $monthly_salary]) }}">
-                                        <i class="ti ti-refresh me-1 fs-5" style="margin-top: -5px;"></i>
-                                        Re-Generate Salary
-                                    </a>
-                                </li>
+                                @canany (['Salary Create', 'Salary Update'])
+                                    <li>
+                                        <a class="dropdown-item text-primary" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addEarningModal">
+                                            <i class="ti ti-plus me-1 fs-5" style="margin-top: -5px;"></i>
+                                            Add Earning
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item text-danger" href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#addDeductionModal">
+                                            <i class="ti ti-minus me-1 fs-5" style="margin-top: -5px;"></i>
+                                            Add Deduction
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider" />
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item btn btn-warning confirm-warning" href="{{ route('administration.accounts.salary.monthly.regenerate', ['monthly_salary' => $monthly_salary]) }}">
+                                            <i class="ti ti-refresh me-1 fs-5" style="margin-top: -5px;"></i>
+                                            Re-Generate Salary
+                                        </a>
+                                    </li>
+                                @endcanany
                             @else
                                 @isset ($payslip) 
                                     <li>
