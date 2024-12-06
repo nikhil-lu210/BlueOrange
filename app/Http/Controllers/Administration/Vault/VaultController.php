@@ -30,6 +30,7 @@ class VaultController extends Controller
         $roles = Role::with([
             'users' => function ($query) {
                 $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->where('id', '!=', auth()->user()->id)
                         ->whereStatus('Active')
                         ->orderBy('name', 'asc');
             }

@@ -76,12 +76,12 @@
                                             </small>
                                         @endisset
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <button type="button" class="btn btn-outline-dark btn-xs copy-btn" title="Click to Copy" data-copy="{{ $vault->username }}">
                                             <i class="ti ti-copy"></i> Copy Username
                                         </button>
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <button type="button" class="btn btn-outline-dark btn-xs copy-btn" title="Click to Copy" data-copy="{{ $vault->password }}">
                                             <i class="ti ti-copy"></i> Copy Password
                                         </button>
@@ -130,7 +130,7 @@
     <script>
         // Custom Script Here
         $(document).ready(function () {
-            $('.copy-btn').on('click', function () {
+            $('.data-table').on('click', '.copy-btn', function () {
                 const button = $(this);
                 const textToCopy = button.data('copy'); // Get text from data-copy attribute
 
