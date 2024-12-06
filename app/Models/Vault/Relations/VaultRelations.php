@@ -18,9 +18,9 @@ trait VaultRelations
 
 
     /**
-     * Get the users associated with the vault.
+     * Get the viewers associated with the vault.
      */
-    public function users(): BelongsToMany
+    public function viewers(): BelongsToMany
     {
         return $this->belongsToMany(User::class)->withTimestamps();
     }

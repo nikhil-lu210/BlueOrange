@@ -25,8 +25,7 @@ class Vault extends Model
     protected $cascadeDeletes = ['users'];
 
     protected $casts = [
-        'note' => PurifyHtmlOnGet::class,
-        'url' => 'url'
+        'note' => PurifyHtmlOnGet::class
     ];
 
     protected $fillable = [

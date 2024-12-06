@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Administration\Vault;
 
-use App\Http\Controllers\Controller;
+use Exception;
 use App\Models\Vault\Vault;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Spatie\Permission\Models\Role;
+use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\Vault\VaultStoreRequest;
 
 class VaultController extends Controller
 {
@@ -13,7 +17,9 @@ class VaultController extends Controller
      */
     public function index()
     {
-        return view('administration.vault.index');
+        $vaults = Vault::all();
+                        
+        return view('administration.vault.index', compact(['vaults']));
     }
 
     /**
@@ -21,15 +27,46 @@ class VaultController extends Controller
      */
     public function create()
     {
-        return view('administration.vault.create');
+        $roles = Role::with([
+            'users' => function ($query) {
+                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active')
+                        ->orderBy('name', 'asc');
+            }
+        ])->get();
+
+        return view('administration.vault.create', compact(['roles']));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(VaultStoreRequest $request)
     {
-        dd($request->all());
+        // dd($request->all());
+        try {
+            DB::transaction(function() use ($request) {
+                $vault = Vault::create([
+                    'creator_id' => auth()->id(),
+                    'name' => $request->name,
+                    'url' => $request->url,
+                    'username' => $request->username,
+                    'password' => $request->password,
+                    'note' => $request->note,
+                ]);
+
+                // Assign viewers to the vault if necessary
+                if ($request->has('viewers')) {
+                    $vault->viewers()->attach($request->viewers);
+                }
+            });
+            
+            toast('Credential Stored successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**
