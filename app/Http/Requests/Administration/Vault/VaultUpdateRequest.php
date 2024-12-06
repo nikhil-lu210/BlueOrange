@@ -11,18 +11,37 @@ class VaultUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return $this->user()->can('Vault Update');
     }
 
     /**
      * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            //
+            'name' => ['required', 'string', 'max:255'],
+            'url' => ['sometimes', 'url'],
+            'username' => ['required', 'string', 'max:255'],
+            'password' => ['required', 'string', 'min:1'],
+            'note' => ['sometimes', 'string'],
+            'viewers' => ['sometimes', 'array'],
+            'viewers.*' => ['exists:users,id'],
+        ];
+    }
+
+    /**
+     * Custom messages for validation errors.
+     */
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'The name field is required.',
+            'url.url' => 'The URL must be a valid web address.',
+            'username.required' => 'The username is required.',
+            'password.required' => 'The password is required.',
+            'password.min' => 'The password must be at least 1 characters.',
+            'viewers.*.exists' => 'The selected viewer is invalid.',
         ];
     }
 }
