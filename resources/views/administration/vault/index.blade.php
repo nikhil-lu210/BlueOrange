@@ -76,18 +76,16 @@
                                             </small>
                                         @endisset
                                     </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-outline-primary btn-xs copy-username" title="Click to Copy" onclick="copy({{ $vault->username }});">
-                                            <i class="ti ti-copy"></i>
-                                            Copy Username
+                                    <td>
+                                        <button type="button" class="btn btn-outline-dark btn-xs copy-btn" title="Click to Copy" data-copy="{{ $vault->username }}">
+                                            <i class="ti ti-copy"></i> Copy Username
                                         </button>
                                     </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-outline-primary btn-xs copy-password" title="Click to Copy" onclick="copy({{ $vault->password }});">
-                                            <i class="ti ti-copy"></i>
-                                            Copy Password
+                                    <td>
+                                        <button type="button" class="btn btn-outline-dark btn-xs copy-btn" title="Click to Copy" data-copy="{{ $vault->password }}">
+                                            <i class="ti ti-copy"></i> Copy Password
                                         </button>
-                                    </td>
+                                    </td>                                    
                                     <td class="text-center">
                                         @can ('Vault Delete') 
                                             <a href="{{ route('administration.vault.destroy', ['vault' => $vault]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Vault?">
@@ -132,29 +130,23 @@
     <script>
         // Custom Script Here
         $(document).ready(function () {
-            function copyToClipboard(text) {
-                const tempInput = $('<input>');
-                $('body').append(tempInput);
-                tempInput.val(text).select();
-                document.execCommand('copy');
-                tempInput.remove();
-            }
-
-            $('.copy-username, .copy-password').on('click', function () {
+            $('.copy-btn').on('click', function () {
                 const button = $(this);
-                const textToCopy = button.attr('onclick').match(/\(([^)]+)\)/)[1];
+                const textToCopy = button.data('copy'); // Get text from data-copy attribute
 
-                // Copy text to clipboard
-                copyToClipboard(textToCopy.replace(/['"]+/g, ''));
+                // Copy to clipboard
+                navigator.clipboard.writeText(textToCopy).then(() => {
+                    // Change button text to "Copied"
+                    const originalText = button.html();
+                    button.html('<i class="ti ti-check"></i> Copied');
 
-                // Change button text to "Copied"
-                const originalText = button.html();
-                button.html('<i class="ti ti-check"></i> Copied');
-
-                // Revert back to original text after 5 seconds
-                setTimeout(function () {
-                    button.html(originalText);
-                }, 5000);
+                    // Revert back to original text after 5 seconds
+                    setTimeout(() => {
+                        button.html(originalText);
+                    }, 5000);
+                }).catch(err => {
+                    alert('Failed to copy text: ', err);
+                });
             });
         });
     </script>
