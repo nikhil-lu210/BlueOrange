@@ -75,7 +75,7 @@ class VaultController extends Controller
      */
     public function show(Vault $vault)
     {
-        dd($vault->toArray());
+        // dd($vault->toArray());
         return view('administration.vault.show', compact(['vault']));
     }
 
