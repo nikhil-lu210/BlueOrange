@@ -19,6 +19,7 @@ use App\Models\Leave\LeaveAllowed;
 use App\Models\Leave\LeaveAvailable;
 use App\Models\Leave\LeaveHistory;
 use App\Models\User\Employee\Employee;
+use App\Models\Vault\Vault;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -225,6 +226,15 @@ trait Relations
     public function tasks(): BelongsToMany
     {
         return $this->belongsToMany(Task::class)->withPivot('progress')->withTimestamps();
+    }
+
+
+    /**
+     * Get the vaults associated with the user.
+     */
+    public function vaults(): BelongsToMany
+    {
+        return $this->belongsToMany(Vault::class)->withTimestamps();
     }
 
     /**
