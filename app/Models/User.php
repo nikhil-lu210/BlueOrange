@@ -11,13 +11,14 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 use App\Models\User\Traits\ChattingRelations;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia, Relations, ChattingRelations, SoftDeletes, CascadeSoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, Authorizable, HasRoles, InteractsWithMedia, Relations, ChattingRelations, SoftDeletes, CascadeSoftDeletes;
     
     protected $cascadeDeletes = ['employee', 'shortcuts', 'employee_shifts', 'attendances', 'daily_breaks'];
     protected $dates = ['deleted_at'];

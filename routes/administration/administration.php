@@ -57,4 +57,7 @@ Route::prefix('')
 
             // shortcut
             include_once 'shortcut/shortcut.php';
+
+            // vault
+            include_once 'vault/vault.php';
         });
