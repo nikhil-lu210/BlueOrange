@@ -140,6 +140,14 @@ class VaultController extends Controller
      */
     public function destroy(Vault $vault)
     {
-        dd($vault->toArray());
+        // dd($vault->toArray());
+        try {
+            $vault->delete();
+
+            toast('Credential deleted successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
 }

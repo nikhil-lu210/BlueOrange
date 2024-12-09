@@ -22,7 +22,7 @@ class Vault extends Model
     // Accessors & Mutators
     use VaultAccessors, VaultMutators;
     
-    protected $cascadeDeletes = ['users'];
+    protected $cascadeDeletes = ['viewers'];
 
     protected $casts = [
         'note' => PurifyHtmlOnGet::class

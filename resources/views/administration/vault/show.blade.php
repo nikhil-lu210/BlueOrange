@@ -104,7 +104,7 @@
                     </div>
 
                     <div class="col-md-6">
-                        @isset ($vault->viewers) 
+                        @if ($vault->viewers->count() > 0) 
                             <dl class="row mb-4 mt-3">
                                 <dt class="col-md-3 mb-2 fw-medium text-nowrap">
                                     <i class="ti ti-eye text-heading"></i>
@@ -120,7 +120,7 @@
                                     </ol>
                                 </dd>
                             </dl>
-                        @endisset
+                        @endif
 
                         <table class="table table-bordered">
                             <tbody>
