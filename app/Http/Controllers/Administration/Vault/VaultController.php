@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Administration\Vault;
 
+use App\Exports\Administration\Vault\VaultExport;
 use Exception;
 use App\Models\Vault\Vault;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Services\Administration\Vault\VaultExportService;
 use App\Http\Requests\Administration\Vault\VaultStoreRequest;
 use App\Http\Requests\Administration\Vault\VaultUpdateRequest;
 
@@ -18,7 +21,7 @@ class VaultController extends Controller
      */
     public function index()
     {
-        $vaults = Vault::all();
+        $vaults = Vault::with(['creator'])->orderBy('name', 'ASC')->get();
                         
         return view('administration.vault.index', compact(['vaults']));
     }
@@ -148,6 +151,31 @@ class VaultController extends Controller
             return redirect()->back();
         } catch (Exception $e) {
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+
+
+    /**
+     * export credentials.
+     */
+    public function export(VaultExportService $vaultExportService)
+    {
+        $vaults = Vault::with(['creator'])->orderBy('name', 'ASC')->get();
+
+        try {
+            $exportData = $vaultExportService->export($vaults);
+
+            if (is_null($exportData)) {
+                toast('There are no credentials to download.', 'warning');
+                return redirect()->back();
+            }
+
+            // Return the Excel download with the appropriate filename
+            return Excel::download(new VaultExport($exportData['vaults']), $exportData['fileName']);
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
         }
     }
 }

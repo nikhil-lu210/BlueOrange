@@ -44,9 +44,9 @@
         
                 <div class="card-header-elements ms-auto">
                     @can ('Vault Create') 
-                        <a href="{{ route('administration.vault.create') }}" class="btn btn-sm btn-primary">
-                            <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                            Store Credential
+                        <a href="{{ route('administration.vault.export') }}" class="btn btn-sm btn-dark">
+                            <span class="tf-icon ti ti-download ti-xs me-1"></span>
+                            Download
                         </a>
                     @endcan
                 </div>
