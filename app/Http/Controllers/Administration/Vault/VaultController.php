@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Administration\Vault\VaultStoreRequest;
+use App\Http\Requests\Administration\Vault\VaultUpdateRequest;
 
 class VaultController extends Controller
 {
@@ -75,7 +76,13 @@ class VaultController extends Controller
      */
     public function show(Vault $vault)
     {
-        // dd($vault->toArray());
+        // Check if the user has 'Vault Read' permission or is in the viewers list
+        abort_if(
+            (!auth()->user()->can('Vault Read') && !$vault->viewers->contains(auth()->user()->id)),
+            403,
+            'You do not have permission to view this vault.'
+        );
+
         return view('administration.vault.show', compact(['vault']));
     }
 
@@ -84,16 +91,48 @@ class VaultController extends Controller
      */
     public function edit(Vault $vault)
     {
-        dd($vault->toArray());
-        return view('administration.vault.edit', compact(['vault']));
+        // Check if the user has 'Vault Update' permission or is in the viewers list
+        $roles = Role::with([
+            'users' => function ($query) {
+                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->where('id', '!=', auth()->user()->id)
+                        ->whereStatus('Active')
+                        ->orderBy('name', 'asc');
+            }
+        ])->get();
+        
+        return view('administration.vault.edit', compact(['roles', 'vault']));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Vault $vault)
+    public function update(VaultUpdateRequest $request, Vault $vault)
     {
-        dd($vault->toArray());
+        try {
+            DB::transaction(function () use ($request, $vault) {
+                $vault->update([
+                    'name' => $request->name,
+                    'url' => $request->url,
+                    'username' => $request->username,
+                    'password' => $request->password,
+                    'note' => $request->note,
+                ]);
+
+                // Synchronize viewers (many-to-many relationship)
+                if ($request->has('viewers')) {
+                    $vault->viewers()->sync($request->viewers);
+                } else {
+                    $vault->viewers()->detach(); // Detach all viewers if none are provided
+                }
+            });
+
+            toast('Credential updated successfully.', 'success');
+            return redirect()->route('administration.vault.show', ['vault' => $vault]);
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**

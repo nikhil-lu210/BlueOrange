@@ -11,7 +11,7 @@ Route::controller(VaultController::class)->prefix('vault')->name('vault.')->grou
     Route::get('/create', 'create')->name('create')->can('Vault Create');
     Route::post('/store', 'store')->name('store')->can('Vault Create');
     
-    Route::get('/show/{vault}', 'show')->name('show')->can('Vault Read');
+    Route::get('/show/{vault}', 'show')->name('show');
     Route::get('/edit/{vault}', 'edit')->name('edit')->can('Vault Read');
     
     Route::put('/update/{vault}', 'update')->name('update')->can('Vault Update');

@@ -104,6 +104,24 @@
                     </div>
 
                     <div class="col-md-6">
+                        @isset ($vault->viewers) 
+                            <dl class="row mb-4 mt-3">
+                                <dt class="col-md-3 mb-2 fw-medium text-nowrap">
+                                    <i class="ti ti-eye text-heading"></i>
+                                    <span class="fw-medium mx-2 text-heading">Viewers:</span>
+                                </dt>
+                                <dd class="col-md-9">
+                                    <ol>
+                                        @foreach ($vault->viewers as $viewer) 
+                                            <li>
+                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $viewer]) }}" target="_blank" class="text-bold">{{ $viewer->name }}</a>
+                                            </li>
+                                        @endforeach
+                                    </ol>
+                                </dd>
+                            </dl>
+                        @endisset
+
                         <table class="table table-bordered">
                             <tbody>
                                 <tr>
