@@ -106,6 +106,9 @@
                             <div class="mb-3 form-password-toggle">
                                 <div class="d-flex justify-content-between">
                                     <label class="form-label" for="password">Password</label>
+                                    <a href="{{ route('password.request') }}">
+                                        <small class="fw-bold">Forgot Password?</small>
+                                    </a>
                                 </div>
                                 <div class="input-group input-group-merge">
                                     <input type="password" id="password" required autocomplete="off"  tabindex="0" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="********" aria-describedby="password" />
