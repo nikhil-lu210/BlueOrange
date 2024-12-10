@@ -28,6 +28,11 @@ class RolesTableSeeder extends Seeder
                     'Logs Read',
                     'Logs Update',
                     'Logs Delete',
+                    
+                    'Vault Create',
+                    'Vault Read',
+                    'Vault Update',
+                    'Vault Delete',
 
                     'User Interaction Create',
                     'User Interaction Read',
@@ -117,6 +122,11 @@ class RolesTableSeeder extends Seeder
             } elseif ($role === 'Super Admin') {
                 $permissions = [
                     'Logs Read',
+                    
+                    'Vault Create',
+                    'Vault Read',
+                    'Vault Update',
+                    'Vault Delete',
 
                     'User Interaction Create',
                     'User Interaction Read',
