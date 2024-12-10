@@ -108,6 +108,13 @@
                                     <i class="ti ti-lock-open"></i>
                                 </span>
                             </button>
+
+                            <a href="{{ route('login') }}" class="btn btn-dark text-uppercase text-bold d-grid w-100 mt-3">
+                                <span class="fw-bold">
+                                    <i class="ti ti-arrow-left"></i>
+                                    {{ __('Back To Login') }}
+                                </span>
+                            </a>
                         </form>
                     </div>
                 </div>
