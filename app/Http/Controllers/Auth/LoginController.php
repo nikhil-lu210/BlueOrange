@@ -47,25 +47,25 @@ class LoginController extends Controller
      *
      * @return string
      */
-    public function username()
+    public function loginEmail()
     {
-        return 'userid';
+        return 'email';
     }
 
     protected function validateLogin(Request $request)
     {
         $request->validate([
-            'userid' => 'required|string',
+            'email' => 'required|string',
             'password' => 'required|string',
         ], [
-            'userid.required' => 'The Employee ID is required.',
+            'email.required' => 'The Login Email is required.',
             'password.required' => 'The password is required.',
         ]);
     }
 
 
     /**
-     * Override credentials method to prepend 'UID' to userid.
+     * Email & password
      *
      * @param \Illuminate\Http\Request $request
      * @return array
@@ -73,7 +73,7 @@ class LoginController extends Controller
     protected function credentials(Request $request)
     {
         return [
-            'userid' => 'UID' . $request->input('userid'), // Retrieve the input and prepend 'UID' to the userid field
+            'email' => $request->input('email'),
             'password' => $request->input('password'),
         ];
     }
@@ -92,16 +92,16 @@ class LoginController extends Controller
 
     protected function sendFailedLoginResponse(Request $request)
     {
-        $user = User::where('userid', 'UID' . $request->input('userid'))->first();
+        $user = User::where('email', $request->input('email'))->first();
 
         if ($user && $user->status !== 'Active') {
             return redirect()->back()->withErrors([
-                'userid' => 'Your account is not active. Please contact support.',
+                'email' => 'Your account is not active. Please contact support.',
             ]);
         }
 
         throw ValidationException::withMessages([
-            $this->username() => [trans('auth.failed')],
+            $this->loginEmail() => [trans('auth.failed')],
         ]);
     }
 

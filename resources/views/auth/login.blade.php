@@ -92,12 +92,12 @@
                         <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}" autocomplete="off">
                             @csrf
                             <div class="mb-3">
-                                <label for="userid" class="form-label">Employee ID <sup class="text-danger">*</sup></label>
+                                <label for="email" class="form-label">Login Email <sup class="text-danger">*</sup></label>
                                 <div class="input-group input-group-merge">
-                                    <span class="input-group-text" style="padding-right: 2px; @error('userid') border-color: red; @enderror">UID</span>
-                                    <input type="text" id="userid" name="userid" class="form-control @error('userid') is-invalid @enderror" value="{{ old('userid') }}" minlength="8" maxlength="8" placeholder="20110101" autocomplete="off" required/>
+                                    {{-- <span class="input-group-text" style="padding-right: 2px; @error('email') border-color: red; @enderror">UID</span> --}}
+                                    <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="user@blueorange.com" autocomplete="off" required/>
                                 </div>
-                                @error('userid')
+                                @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
                                     </span>
