@@ -18,6 +18,7 @@ use App\Models\DailyBreak\DailyBreak;
 use App\Models\Leave\LeaveAllowed;
 use App\Models\Leave\LeaveAvailable;
 use App\Models\Leave\LeaveHistory;
+use App\Models\Ticket\ItTicket;
 use App\Models\User\Employee\Employee;
 use App\Models\Vault\Vault;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -235,6 +236,22 @@ trait Relations
     public function vaults(): BelongsToMany
     {
         return $this->belongsToMany(Vault::class)->withTimestamps();
+    }
+
+    /**
+     * Get the it_tickets associated with the user.
+     */
+    public function it_tickets(): HasMany
+    {
+        return $this->hasMany(ItTicket::class, 'creator_id');
+    }
+
+    /**
+     * Get the it_ticket_solves associated with the user.
+     */
+    public function it_ticket_solves(): HasMany
+    {
+        return $this->hasMany(ItTicket::class, 'solved_by');
     }
 
     /**
