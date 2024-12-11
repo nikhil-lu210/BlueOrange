@@ -20,7 +20,7 @@ return new class extends Migration
                 ->onDelete('cascade');
 
             $table->string('title');
-            $table->text('description')->nullable();
+            $table->text('description');
             $table->json('seen_by')->nullable();
 
             $table->foreignId('solved_by')
