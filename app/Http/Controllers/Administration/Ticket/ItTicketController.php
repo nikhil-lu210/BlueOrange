@@ -13,7 +13,9 @@ class ItTicketController extends Controller
      */
     public function index()
     {
-        return view('administration.ticket.it_ticket.index');
+        $itTickets = ItTicket::with(['creator', 'solver'])->get();
+
+        return view('administration.ticket.it_ticket.index', compact(['itTickets']));
     }
     
     /**

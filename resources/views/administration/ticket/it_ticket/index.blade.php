@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Credential'))
+@section('page_title', __('IT Ticket'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -23,13 +23,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All Credentials') }}</b>
+    <b class="text-uppercase">{{ __('All IT Tickets') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Credential') }}</li>
-    <li class="breadcrumb-item active">{{ __('All Credentials') }}</li>
+    <li class="breadcrumb-item">{{ __('IT Ticket') }}</li>
+    <li class="breadcrumb-item active">{{ __('All IT Tickets') }}</li>
 @endsection
 
 
@@ -40,13 +40,13 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">All Credentials</h5>
+                <h5 class="mb-0">All IT Tickets</h5>
         
                 <div class="card-header-elements ms-auto">
-                    @can ('Vault Create') 
-                        <a href="{{ route('administration.vault.export') }}" class="btn btn-sm btn-dark">
-                            <span class="tf-icon ti ti-download ti-xs me-1"></span>
-                            Download
+                    @can ('IT Ticket Create') 
+                        <a href="{{ route('administration.ticket.it_ticket.create') }}" class="btn btn-sm btn-primary">
+                            <span class="tf-icon ti ti-plus ti-xs me-1"></span>
+                            Arise New Ticket
                         </a>
                     @endcan
                 </div>
@@ -57,48 +57,52 @@
                         <thead>
                             <tr>
                                 <th>Sl.</th>
-                                <th>Name</th>
-                                <th class="text-center">Username/Email</th>
-                                <th class="text-center">Password</th>
+                                <th>Creator</th>
+                                <th>Title</th>
+                                <th>Created At</th>
+                                <th>Status</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($vaults as $key => $vault) 
+                            @foreach ($itTickets as $key => $ticket) 
                                 <tr>
-                                    <th>#{{ serial($vaults, $key) }}</th>
+                                    <th>#{{ serial($itTickets, $key) }}</th>
                                     <td>
-                                        <b>{{ $vault->name }}</b>
-                                        @isset ($vault->url) 
+                                        {!! show_user_name_and_avatar($ticket->creator, name: false) !!}
+                                    </td>
+                                    <td>
+                                        <b title="{{ $ticket->title }}">{{ show_content($ticket->title, 30) }}</b>
+                                        <br>
+                                        <small class="text-muted">{{ show_content($ticket->description, 30) }}</small>
+                                    </td>
+                                    <td>
+                                        <b>{{ show_date($ticket->created_at) }}</b>
+                                        <br>
+                                        <span>at <b>{{ show_time($ticket->created_at) }}</b></span>
+                                    </td>
+                                    <td>
+                                        {!! show_status($ticket->status) !!}
+                                        @isset ($ticket->solver) 
                                             <br>
-                                            <small>
-                                                <a href="{{ $vault->url }}" target="_blank" class="text-bold text-primary">{{ $vault->url }}</a>
+                                            <small title="Solved By">
+                                                {!! show_user_name_and_avatar($ticket->solver, avatar: false, name: false, role: false) !!}
                                             </small>
                                         @endisset
                                     </td>
                                     <td class="text-center">
-                                        <button type="button" class="btn btn-outline-dark btn-xs copy-btn" title="Click to Copy" data-copy="{{ $vault->username }}">
-                                            <i class="ti ti-copy"></i> Copy Username
-                                        </button>
-                                    </td>
-                                    <td class="text-center">
-                                        <button type="button" class="btn btn-outline-dark btn-xs copy-btn" title="Click to Copy" data-copy="{{ $vault->password }}">
-                                            <i class="ti ti-copy"></i> Copy Password
-                                        </button>
-                                    </td>                                    
-                                    <td class="text-center">
-                                        @can ('Vault Delete') 
-                                            <a href="{{ route('administration.vault.destroy', ['vault' => $vault]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Vault?">
+                                        @can ('IT Ticket Delete') 
+                                            <a href="{{ route('administration.ticket.it_ticket.destroy', ['it_ticket' => $ticket]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete IT Ticket?">
                                                 <i class="text-white ti ti-trash"></i>
                                             </a>
                                         @endcan
-                                        @can ('Vault Update') 
-                                            <a href="{{ route('administration.vault.edit', ['vault' => $vault]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Vault?">
+                                        @can ('IT Ticket Update') 
+                                            <a href="{{ route('administration.ticket.it_ticket.edit', ['it_ticket' => $ticket]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit IT Ticket?">
                                                 <i class="text-white ti ti-pencil"></i>
                                             </a>
                                         @endcan
-                                        @can ('Vault Read') 
-                                            <a href="{{ route('administration.vault.show', ['vault' => $vault]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                        @can ('IT Ticket Read') 
+                                            <a href="{{ route('administration.ticket.it_ticket.show', ['it_ticket' => $ticket]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                                 <i class="text-white ti ti-info-hexagon"></i>
                                             </a>
                                         @endcan
@@ -130,24 +134,7 @@
     <script>
         // Custom Script Here
         $(document).ready(function () {
-            $('.data-table').on('click', '.copy-btn', function () {
-                const button = $(this);
-                const textToCopy = button.data('copy'); // Get text from data-copy attribute
-
-                // Copy to clipboard
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    // Change button text to "Copied"
-                    const originalText = button.html();
-                    button.html('<i class="ti ti-check"></i> Copied');
-
-                    // Revert back to original text after 5 seconds
-                    setTimeout(() => {
-                        button.html(originalText);
-                    }, 5000);
-                }).catch(err => {
-                    alert('Failed to copy text: ', err);
-                });
-            });
+            // 
         });
     </script>
 @endsection

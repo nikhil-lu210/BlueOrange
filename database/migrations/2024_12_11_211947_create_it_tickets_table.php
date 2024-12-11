@@ -31,7 +31,7 @@ return new class extends Migration
 
             $table->dateTime('solved_at')->nullable();
 
-            $table->enum('status', ['Pending', 'Running', 'Solved', 'Canceled'])->nullable();
+            $table->enum('status', ['Pending', 'Running', 'Solved', 'Canceled'])->default('Pending');
             $table->text('solver_note')->nullable();
 
             $table->timestamps();
