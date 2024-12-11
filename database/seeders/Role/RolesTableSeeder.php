@@ -33,6 +33,11 @@ class RolesTableSeeder extends Seeder
                     'Vault Read',
                     'Vault Update',
                     'Vault Delete',
+                    
+                    'IT Ticket Create',
+                    'IT Ticket Read',
+                    'IT Ticket Update',
+                    'IT Ticket Delete',
 
                     'User Interaction Create',
                     'User Interaction Read',
@@ -127,6 +132,11 @@ class RolesTableSeeder extends Seeder
                     'Vault Read',
                     'Vault Update',
                     'Vault Delete',
+                    
+                    'IT Ticket Create',
+                    'IT Ticket Read',
+                    'IT Ticket Update',
+                    'IT Ticket Delete',
 
                     'User Interaction Create',
                     'User Interaction Read',
