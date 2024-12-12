@@ -23,13 +23,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All IT Tickets') }}</b>
+    <b class="text-uppercase">{{ __('My IT Tickets') }}</b>
 @endsection
 
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('IT Ticket') }}</li>
-    <li class="breadcrumb-item active">{{ __('All IT Tickets') }}</li>
+    <li class="breadcrumb-item active">{{ __('My IT Tickets') }}</li>
 @endsection
 
 
@@ -40,7 +40,7 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">All IT Tickets</h5>
+                <h5 class="mb-0">My IT Tickets</h5>
         
                 <div class="card-header-elements ms-auto">
                     @can ('IT Ticket Create') 
@@ -57,7 +57,6 @@
                         <thead>
                             <tr>
                                 <th>Sl.</th>
-                                <th>Creator</th>
                                 <th>Title</th>
                                 <th>Created At</th>
                                 <th>Status</th>
@@ -68,9 +67,6 @@
                             @foreach ($itTickets as $key => $ticket) 
                                 <tr>
                                     <th>#{{ serial($itTickets, $key) }}</th>
-                                    <td>
-                                        {!! show_user_name_and_avatar($ticket->creator, name: false) !!}
-                                    </td>
                                     <td>
                                         <b title="{{ $ticket->title }}">{{ show_content($ticket->title, 30) }}</b>
                                         <br>

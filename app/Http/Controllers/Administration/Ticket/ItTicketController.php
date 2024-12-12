@@ -30,7 +30,12 @@ class ItTicketController extends Controller
      */
     public function my()
     {
-        return view('administration.ticket.it_ticket.my');
+        $itTickets = ItTicket::with(['creator', 'solver'])
+                            ->whereCreatorId(auth()->user()->id)
+                            ->orderByDesc('created_at')
+                            ->get();
+
+        return view('administration.ticket.it_ticket.my', compact(['itTickets']));
     }
 
     /**

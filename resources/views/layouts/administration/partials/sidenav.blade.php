@@ -239,9 +239,14 @@
                     <div data-i18n="IT Ticket">{{ __('IT Ticket') }}</div>
                 </a>
                 <ul class="menu-sub">
-                    @canany(['IT Ticket Create', 'IT Ticket Update', 'IT Ticket Delete'])
+                    @canany(['IT Ticket Update', 'IT Ticket Delete'])
                         <li class="menu-item {{ request()->is('ticket/it_ticket/all*') ? 'active' : '' }}">
                             <a href="{{ route('administration.ticket.it_ticket.index') }}" class="menu-link">{{ __('All Tickets') }}</a>
+                        </li>
+                    @endcanany
+                    @canany(['IT Ticket Create', 'IT Ticket Read'])
+                        <li class="menu-item {{ request()->is('ticket/it_ticket/my*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.ticket.it_ticket.my') }}" class="menu-link">{{ __('My Tickets') }}</a>
                         </li>
                     @endcanany
                     @can('IT Ticket Create')
