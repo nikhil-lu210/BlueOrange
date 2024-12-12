@@ -74,7 +74,7 @@
                                     <td>
                                         <b title="{{ $ticket->title }}">{{ show_content($ticket->title, 30) }}</b>
                                         <br>
-                                        <small class="text-muted">{{ show_content($ticket->description, 30) }}</small>
+                                        <small class="text-muted">{{ show_content($ticket->description, 40) }}</small>
                                     </td>
                                     <td>
                                         <b>{{ show_date($ticket->created_at) }}</b>

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Administration\Ticket;
 
-use App\Http\Controllers\Controller;
-use App\Models\Ticket\ItTicket;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Models\Ticket\ItTicket;
+use App\Http\Controllers\Controller;
 
 class ItTicketController extends Controller
 {
@@ -13,7 +14,10 @@ class ItTicketController extends Controller
      */
     public function index()
     {
-        $itTickets = ItTicket::with(['creator', 'solver'])->get();
+        $itTickets = ItTicket::with(['creator', 'solver'])->whereBetween('created_at', [
+            Carbon::now()->startOfMonth()->format('Y-m-d'),
+            Carbon::now()->endOfMonth()->format('Y-m-d')
+        ])->get();
 
         return view('administration.ticket.it_ticket.index', compact(['itTickets']));
     }
