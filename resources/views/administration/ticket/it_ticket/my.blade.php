@@ -78,7 +78,15 @@
                                         <span>at <b>{{ show_time($ticket->created_at) }}</b></span>
                                     </td>
                                     <td>
-                                        {!! show_status($ticket->status) !!}
+                                        @if ($ticket->status === 'Pending') 
+                                            <span class="badge bg-dark">{{ __('Pending') }}</span>
+                                        @elseif ($ticket->status === 'Running') 
+                                            <span class="badge bg-primary">{{ __('Running') }}</span>
+                                        @elseif ($ticket->status === 'Solved') 
+                                            <span class="badge bg-success">{{ __('Solved') }}</span>
+                                        @else 
+                                            <span class="badge bg-danger">{{ __('Canceled') }}</span>
+                                        @endif
                                         @isset ($ticket->solver) 
                                             <br>
                                             <small title="Solved By">
