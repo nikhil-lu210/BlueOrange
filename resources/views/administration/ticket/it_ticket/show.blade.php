@@ -51,20 +51,16 @@
                 @canany(['IT Ticket Update', 'IT Ticket Delete'])
                     @if ($itTicket->status === 'Pending')
                         <div class="card-header-elements ms-auto">
-                            <a href="#" class="btn btn-sm btn-primary confirm-primary" title="Start Working On This Ticket?">
+                            <a href="{{ route('administration.ticket.it_ticket.mark.running', ['it_ticket' => $itTicket]) }}" class="btn btn-sm btn-primary confirm-primary" title="Start Working On This Ticket?">
                                 <span class="me-1">Proceed</span>
                                 <span class="tf-icon ti ti-arrow-right ti-xs"></span>
                             </a>
                         </div>
-                    @else
+                    @elseif ($itTicket->status === 'Running')
                         <div class="card-header-elements ms-auto">
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#approveLeaveModal" class="btn btn-sm btn-success">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#statusUpdateModal" class="btn btn-sm btn-primary" title="Mark as Solved / Canceled">
                                 <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                                Approve
-                            </button>
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#rejectLeaveModal" class="btn btn-sm btn-danger">
-                                <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                                Reject
+                                Update Ticket Status
                             </button>
                         </div>
                     @endif
@@ -129,10 +125,21 @@
                                             <span class="fw-medium mx-2 text-heading">Solved At:</span>
                                         </dt>
                                         <dd class="col-sm-8">
-                                            <span class="text-dark">{{ show_date_time($leaveHistory->solved_at) }}</span>
+                                            <span class="text-dark">{{ show_date_time($itTicket->solved_at) }}</span>
                                         </dd>
                                     </dl>
                                 @endif
+                                @isset ($itTicket->solver_note) 
+                                    <dl class="row mt-3 mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-note"></i>
+                                            <span class="fw-medium mx-2 text-heading">Note:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <span class="text-dark text-bold">{!! $itTicket->solver_note !!}</span>
+                                        </dd>
+                                    </dl>
+                                @endisset
                                 <dl class="row mb-1 mt-3">
                                     <dd class="col-12">
                                         <table class="table table-bordered">
@@ -180,11 +187,9 @@
 </div>
 <!-- End row -->
 
-@if ($itTicket->status === 'Pending') 
-    {{-- Approve Modal --}}
-    {{-- @include('administration.leave.modals.approve') --}}
-    {{-- Reject Modal --}}
-    {{-- @include('administration.leave.modals.reject') --}}
+@if ($itTicket->status === 'Running') 
+    {{-- Status Update Modal --}}
+    @include('administration.ticket.it_ticket.modals.status_update')
 @endif
 
 @endsection

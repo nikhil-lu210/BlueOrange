@@ -20,5 +20,8 @@ Route::controller(ItTicketController::class)->prefix('ticket/it_ticket')->name('
 
     Route::get('/destroy/{it_ticket}', 'destroy')->name('destroy')->can('IT Ticket Delete');
     
+    Route::get('/mark-as-running/{it_ticket}', 'markAsRunning')->name('mark.running')->can('IT Ticket Update');
+    Route::put('/update-status/{it_ticket}', 'updateStatus')->name('update.status')->can('IT Ticket Update');
+    
     Route::get('/export', 'export')->name('export')->can('IT Ticket Read');
 });

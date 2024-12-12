@@ -84,6 +84,53 @@ class ItTicketController extends Controller
         return view('administration.ticket.it_ticket.show', compact(['itTicket']));
     }
 
+
+    /**
+     * Update status to Running
+     */
+    public function markAsRunning(ItTicket $itTicket)
+    {
+        try {
+            $itTicket->update([
+                'status' => 'Running',
+            ]);
+
+            toast('Ticket Mark As Running.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
+    }
+
+
+    /**
+     * Update status to Solved or Canceled
+     */
+    public function updateStatus(Request $request, ItTicket $itTicket)
+    {
+        $request->validate([
+            'status' => ['required', 'string', 'in:Solved,Canceled'],
+            'solver_note' => ['required', 'string', 'min:2'],
+        ]);
+
+        try {
+            $itTicket->update([
+                'solved_by' => auth()->user()->id,
+                'solved_at' => now(),
+                'status' => $request->status,
+                'solver_note' => $request->solver_note,
+            ]);
+
+            toast('Ticket Mark As '. $request->status, 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
+    }
+
+
     /**
      * Show the form for editing the specified resource.
      */
