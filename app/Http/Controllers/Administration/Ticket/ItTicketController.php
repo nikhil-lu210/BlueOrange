@@ -96,6 +96,13 @@ class ItTicketController extends Controller
      */
     public function destroy(ItTicket $itTicket)
     {
-        dd($itTicket->toArray());
+        try {
+            $itTicket->delete();
+
+            toast('IT Ticket deleted successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
 }
