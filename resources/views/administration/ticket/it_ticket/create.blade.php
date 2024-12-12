@@ -4,7 +4,7 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('Create New Credential'))
+@section('page_title', __('Arise New IT Ticket'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -22,12 +22,12 @@
 @endsection
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Create New Credential') }}</b>
+    <b class="text-uppercase">{{ __('Arise New IT Ticket') }}</b>
 @endsection
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Vault') }}</li>
-    <li class="breadcrumb-item active">{{ __('Create New Credential') }}</li>
+    <li class="breadcrumb-item">{{ __('IT Ticket') }}</li>
+    <li class="breadcrumb-item active">{{ __('Arise New IT Ticket') }}</li>
 @endsection
 
 @section('content')
@@ -37,85 +37,39 @@
     <div class="col-md-8">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Create New Credential</h5>
+                <h5 class="mb-0">Arise New IT Ticket</h5>
         
                 <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.vault.index') }}" class="btn btn-sm btn-primary">
+                    <a href="{{ route('administration.ticket.it_ticket.my') }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-circle ti-xs me-1"></span>
-                        All Credentials
+                        My Tickets
                     </a>
                 </div>
             </div>
             <!-- Account -->
             <div class="card-body">
-                <form id="vaultForm" action="{{ route('administration.vault.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
+                <form id="itTicketForm" action="{{ route('administration.ticket.it_ticket.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
                     @csrf                    
                     <div class="row">
                         <div class="mb-3 col-md-12">
-                            <label for="name" class="form-label">{{ __('Name') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="name" name="name" value="{{ old('name') }}" placeholder="{{ __('Ex: Nigel Web Mail') }}" class="form-control @error('name') is-invalid @enderror" required/>
-                            @error('name')
+                            <label for="title" class="form-label">{{ __('Title') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="title" name="title" value="{{ old('title') }}" placeholder="{{ __('Ex: PC Not Working') }}" class="form-control @error('title') is-invalid @enderror" required/>
+                            @error('title')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-12">
-                            <label for="url" class="form-label">{{ __('Login URL') }}</label>
-                            <input type="url" id="url" name="url" value="{{ old('url') }}" placeholder="{{ __('Ex: https://blueorange.test/login') }}" class="form-control @error('url') is-invalid @enderror"/>
-                            @error('url')
-                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="username" class="form-label">{{ __('Email / Username') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="username" name="username" value="{{ old('username') }}" placeholder="{{ __('Ex: https://blueorange.test/login') }}" class="form-control @error('username') is-invalid @enderror" autocomplete="off" required/>
-                            @error('username')
-                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-6 form-password-toggle">
-                            <label class="form-label" for="password">{{ __('Password') }} <strong class="text-danger">*</strong></label>
-                            <div class="input-group input-group-merge">
-                                <input type="password" minlength="8" id="password" name="password" value="{{ old('password') }}" class="form-control @error('password') is-invalid @enderror" placeholder="**********" autocomplete="off" required />
-                                <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
-                            </div>
-                            @error('password')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-12">
-                            <label class="form-label">Note <strong class="text-danger">*</strong></label>
-                            <div name="note" id="full-editor">{!! old('note') !!}</div>
-                            <textarea class="d-none" name="note" id="note-input">{{ old('note') }}</textarea>
-                            @error('note')
+                            <label class="form-label">Description <strong class="text-danger">*</strong></label>
+                            <div name="description" id="full-editor">{!! old('description') !!}</div>
+                            <textarea class="d-none" name="description" id="description-input">{{ old('description') }}</textarea>
+                            @error('description')
                                 <b class="text-danger">{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-12">
-                            <label for="viewers" class="form-label">Select Viewers</label>
-                            <select name="viewers[]" id="viewers" class="select2 form-select @error('viewers') is-invalid @enderror" data-allow-clear="true" multiple autofocus>
-                                @foreach ($roles as $role)
-                                    <optgroup label="{{ $role->name }}">
-                                        @foreach ($role->users as $user)
-                                            <option value="{{ $user->id }}" {{ in_array($user->id, old('viewers', [])) ? 'selected' : '' }}>
-                                                {{ get_employee_name($user) }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
-                                @endforeach
-                            </select>
-                            <small>
-                                <b class="text-primary">Note:</b> 
-                                If you want to share this credential with any other users, then select them.
-                            </small>
-                            <br>
-                            @error('viewers')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                     </div>
                     <div class="mt-2 float-end">
-                        <a href="{{ route('administration.vault.create') }}" class="btn btn-outline-danger me-2 confirm-danger">Reset Form</a>
-                        <button type="submit" class="btn btn-primary">Store Credential</button>
+                        <a href="{{ route('administration.ticket.it_ticket.create') }}" class="btn btn-outline-danger me-2 confirm-danger">Reset Form</a>
+                        <button type="submit" class="btn btn-primary">Submit Ticket</button>
                     </div>
                 </form>
             </div>
@@ -151,7 +105,7 @@
 
             var fullEditor = new Quill("#full-editor", {
                 bounds: "#full-editor",
-                placeholder: "Ex: Credentials is to secret",
+                placeholder: "Ex: My PC is getting hanged",
                 modules: {
                     formula: true,
                     toolbar: fullToolbar,
@@ -159,13 +113,13 @@
                 theme: "snow",
             });
 
-            // Set the editor content to the old note if validation fails
-            @if(old('note'))
-                fullEditor.root.innerHTML = {!! json_encode(old('note')) !!};
+            // Set the editor content to the old description if validation fails
+            @if(old('description'))
+                fullEditor.root.innerHTML = {!! json_encode(old('description')) !!};
             @endif
 
-            $('#vaultForm').on('submit', function() {
-                $('#note-input').val(fullEditor.root.innerHTML);
+            $('#itTicketForm').on('submit', function() {
+                $('#description-input').val(fullEditor.root.innerHTML);
             });
         });
     </script>

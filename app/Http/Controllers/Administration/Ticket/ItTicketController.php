@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Ticket\ItTicket;
 use App\Http\Controllers\Controller;
+use Exception;
 
 class ItTicketController extends Controller
 {
@@ -17,7 +18,9 @@ class ItTicketController extends Controller
         $itTickets = ItTicket::with(['creator', 'solver'])->whereBetween('created_at', [
             Carbon::now()->startOfMonth()->format('Y-m-d'),
             Carbon::now()->endOfMonth()->format('Y-m-d')
-        ])->get();
+        ])
+        ->orderByDesc('created_at')
+        ->get();
 
         return view('administration.ticket.it_ticket.index', compact(['itTickets']));
     }
@@ -43,7 +46,25 @@ class ItTicketController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        $request->validate([
+            'title' => ['required', 'string', 'min:5', 'max:200'],
+            'description' => ['required', 'string', 'min:10'],
+        ]);
+        
+        try {
+            $itTicket = ItTicket::create([
+                'creator_id' => auth()->user()->id,
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'status' => 'Pending',
+            ]);
+
+            toast('Ticket Created Successfully.', 'success');
+            return redirect()->route('administration.ticket.it_ticket.show', ['it_ticket' => $itTicket]);
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**

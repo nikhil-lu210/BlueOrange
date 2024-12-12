@@ -233,7 +233,7 @@
 
         <!-- IT Ticket Management -->
         @canany(['IT Ticket Create', 'IT Ticket Read']) 
-            <li class="menu-item {{ request()->is('vault*') ? 'active open' : '' }}">
+            <li class="menu-item {{ request()->is('ticket/it_ticket*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-ticket"></i>
                     <div data-i18n="IT Ticket">{{ __('IT Ticket') }}</div>
