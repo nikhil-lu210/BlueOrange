@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\Administration\Ticket;
 
+use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Ticket\ItTicket;
 use App\Http\Controllers\Controller;
-use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class ItTicketController extends Controller
 {
@@ -77,7 +78,10 @@ class ItTicketController extends Controller
      */
     public function show(ItTicket $itTicket)
     {
-        dd($itTicket->toArray());
+        // Update the 'seen_by' data for the current user
+        $this->updateSeenBy($itTicket);
+        
+        return view('administration.ticket.it_ticket.show', compact(['itTicket']));
     }
 
     /**
@@ -108,6 +112,31 @@ class ItTicketController extends Controller
             return redirect()->back();
         } catch (Exception $e) {
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+
+    /**
+     * Updates the 'seen_by' field of the given ItTicket for the current user.
+     *
+     * @param ItTicket $itTicket The ticket being viewed.
+     * @return void
+     */
+    private function updateSeenBy(ItTicket $itTicket): void
+    {
+        $userId = Auth::id(); // Get the authenticated user's ID
+        $currentSeenBy = $itTicket->seen_by; // Retrieve the current 'seen_by' data
+
+        // Check if the user has already seen the ticket
+        if (!collect($currentSeenBy)->contains('user_id', $userId)) {
+            // Add the current user and timestamp to the 'seen_by' data
+            $currentSeenBy[] = [
+                'user_id' => $userId,
+                'seen_at' => now()->toDateTimeString(),
+            ];
+
+            // Update the 'seen_by' field in the database
+            $itTicket->update(['seen_by' => $currentSeenBy]);
         }
     }
 }

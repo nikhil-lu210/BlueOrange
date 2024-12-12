@@ -4,7 +4,7 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('Vault Details'))
+@section('page_title', __('IT Ticket Details'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -22,16 +22,20 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Credential Details') }}</b>
+    <b class="text-uppercase">{{ __('IT Ticket Details') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Vault') }}</li>
+    <li class="breadcrumb-item">{{ __('IT Ticket') }}</li>
     <li class="breadcrumb-item">
-        <a href="{{ route('administration.vault.index') }}">{{ __('All Credentials') }}</a>
+        @canany (['IT Ticket Update', 'IT Ticket Delete']) 
+            <a href="{{ route('administration.ticket.it_ticket.index') }}">{{ __('All Tickets') }}</a>
+        @elsecanany (['IT Ticket Read', 'IT Ticket Create']) 
+            <a href="{{ route('administration.ticket.it_ticket.my') }}">{{ __('My Tickets') }}</a>
+        @endcanany
     </li>
-    <li class="breadcrumb-item active">{{ __('Credential Details') }}</li>
+    <li class="breadcrumb-item active">{{ __('IT Ticket Details') }}</li>
 @endsection
 
 
@@ -42,146 +46,172 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Credential's Details</h5>
+                <h5 class="mb-0">IT Ticket's Details</h5>
         
-                @canany(['Vault Update', 'Vault Delete'])
-                    <div class="card-header-elements ms-auto">
-                        <a href="{{ route('administration.vault.edit', ['vault' => $vault]) }}" class="btn btn-sm btn-primary">
-                            <span class="tf-icon ti ti-edit ti-xs me-1"></span>
-                            Edit Credential
-                        </a>
-                    </div>
+                @canany(['IT Ticket Update', 'IT Ticket Delete'])
+                    @if ($itTicket->status === 'Pending')
+                        <div class="card-header-elements ms-auto">
+                            <a href="#" class="btn btn-sm btn-primary confirm-primary" title="Start Working On This Ticket?">
+                                <span class="me-1">Proceed</span>
+                                <span class="tf-icon ti ti-arrow-right ti-xs"></span>
+                            </a>
+                        </div>
+                    @else
+                        <div class="card-header-elements ms-auto">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#approveLeaveModal" class="btn btn-sm btn-success">
+                                <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                                Approve
+                            </button>
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#rejectLeaveModal" class="btn btn-sm btn-danger">
+                                <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                                Reject
+                            </button>
+                        </div>
+                    @endif
                 @endcanany
             </div>
             <div class="card-body">
-                <div class="row">
+                <div class="row justify-content-left">
                     <div class="col-md-6">
-                        <dl class="row mt-3 mb-1">
-                            <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                <i class="ti ti-hash text-heading"></i>
-                                <span class="fw-medium mx-2 text-heading">Name:</span>
-                            </dt>
-                            <dd class="col-sm-8">
-                                <span>{{ $vault->name }}</span>
-                            </dd>
-                        </dl>
-                        <dl class="row mt-3 mb-1">
-                            <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                <i class="ti ti-world-www text-heading"></i>
-                                <span class="fw-medium mx-2 text-heading">URL:</span>
-                            </dt>
-                            <dd class="col-sm-8">
-                                <a href="{{ $vault->url }}" class="text-bold text-primary">{{ $vault->url }}</a>
-                            </dd>
-                        </dl>
-                        <dl class="row mt-3 mb-1">
-                            <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                <i class="ti ti-user text-heading"></i>
-                                <span class="fw-medium mx-2 text-heading">Creator:</span>
-                            </dt>
-                            <dd class="col-sm-8">
-                                {!! show_user_name_and_avatar($vault->creator) !!}
-                            </dd>
-                        </dl>
-                        <dl class="row mt-3 mb-1">
-                            <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                <i class="ti ti-calendar text-heading"></i>
-                                <span class="fw-medium mx-2 text-heading">Created At:</span>
-                            </dt>
-                            <dd class="col-sm-8">
-                                <span>{{ show_date_time($vault->created_at) }}</span>
-                            </dd>
-                        </dl>
-                        <dl class="row mt-3 mb-1">
-                            <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                                <i class="ti ti-note text-heading"></i>
-                                <span class="fw-medium mx-2 text-heading">Note:</span>
-                            </dt>
-                            <dd class="col-sm-8">
-                                <span>{!! $vault->note !!}</span>
-                            </dd>
-                        </dl>
+                        <div class="card card-border-shadow-primary mb-4">
+                            <div class="card-body">
+                                <small class="card-text text-uppercase">Information</small>
+                                <dl class="row mt-3 mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-hash"></i>
+                                        <span class="fw-medium mx-2 text-heading">Title:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        <span class="text-dark text-bold">{!! $itTicket->title !!}</span>
+                                    </dd>
+                                </dl>
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-calendar"></i>
+                                        <span class="fw-medium mx-2 text-heading">Creation Date:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        <span class="text-dark text-bold">{{ show_date($itTicket->created_at) }}</span>
+                                        at
+                                        <span class="text-dark text-bold">{{ show_time($itTicket->created_at) }}</span>
+                                    </dd>
+                                </dl>
+                                <dl class="row mb-1">
+                                    <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                        <i class="ti ti-chart-candle"></i>
+                                        <span class="fw-medium mx-2 text-heading">Status:</span>
+                                    </dt>
+                                    <dd class="col-sm-8">
+                                        @if ($itTicket->status === 'Pending') 
+                                            <span class="badge bg-dark">{{ __('Pending') }}</span>
+                                        @elseif ($itTicket->status === 'Running') 
+                                            <span class="badge bg-primary">{{ __('Running') }}</span>
+                                        @elseif ($itTicket->status === 'Solved') 
+                                            <span class="badge bg-success">{{ __('Solved') }}</span>
+                                        @else 
+                                            <span class="badge bg-danger">{{ __('Canceled') }}</span>
+                                        @endif
+                                    </dd>
+                                </dl>
+                                @if ($itTicket->status === 'Solved') 
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-user-cog"></i>
+                                            <span class="fw-medium mx-2 text-heading">Solved By:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            {!! show_user_name_and_avatar($itTicket->solver, name: null) !!}
+                                        </dd>
+                                    </dl>
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-clock-check"></i>
+                                            <span class="fw-medium mx-2 text-heading">Solved At:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <span class="text-dark">{{ show_date_time($leaveHistory->solved_at) }}</span>
+                                        </dd>
+                                    </dl>
+                                @endif
+                                <dl class="row mb-1 mt-3">
+                                    <dd class="col-12">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th class="text-bold text-center">Seen By</th>
+                                                    <th class="text-bold text-center">Seen At</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($itTicket->seen_by as $seenByAt)
+                                                    <tr>
+                                                        <td class="text-center">
+                                                            {{ show_user_data($seenByAt['user_id'], 'name') }}
+                                                        </td>
+                                                        <td class="text-center">
+                                                            {{ show_date_time($seenByAt['seen_at']) }}
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
-                        @if ($vault->viewers->count() > 0) 
-                            <dl class="row mb-4 mt-3">
-                                <dt class="col-md-3 mb-2 fw-medium text-nowrap">
-                                    <i class="ti ti-eye text-heading"></i>
-                                    <span class="fw-medium mx-2 text-heading">Viewers:</span>
-                                </dt>
-                                <dd class="col-md-9">
-                                    <ol>
-                                        @foreach ($vault->viewers as $viewer) 
-                                            <li>
-                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $viewer]) }}" target="_blank" class="text-bold">{{ $viewer->name }}</a>
-                                            </li>
-                                        @endforeach
-                                    </ol>
-                                </dd>
-                            </dl>
-                        @endif
-
-                        <table class="table table-bordered">
-                            <tbody>
-                                <tr>
-                                    <th class="text-center" style="width: 15%;">Username</th>
-                                    <td class="text-center" style="width: 50%;"><code>{{ $vault->username }}</code></td>
-                                    <td class="text-center" style="width: 30%;">
-                                        <button type="button" class="btn btn-outline-dark btn-xs copy-btn" title="Click to Copy" data-copy="{{ $vault->username }}">
-                                            <i class="ti ti-copy"></i> Copy Username
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th class="text-center" style="width: 15%;">Password</th>
-                                    <td class="text-center" style="width: 50%;"><code>{{ $vault->password }}</code></td>
-                                    <td class="text-center" style="width: 30%;">
-                                        <button type="button" class="btn btn-outline-dark btn-xs copy-btn" title="Click to Copy" data-copy="{{ $vault->password }}">
-                                            <i class="ti ti-copy"></i> Copy Password
-                                        </button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="card card-border-shadow-primary mb-4">
+                            <div class="card-header align-items-center pb-3 pt-3">
+                                <h5 class="card-action-title mb-0">Description</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="description">
+                                    {!! $itTicket->description !!}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
+
+@if ($itTicket->status === 'Pending') 
+    {{-- Approve Modal --}}
+    {{-- @include('administration.leave.modals.approve') --}}
+    {{-- Reject Modal --}}
+    {{-- @include('administration.leave.modals.reject') --}}
+@endif
 
 @endsection
 
 
 @section('script_links')
     {{--  External Javascript Links --}}
+    {{-- <!-- Vendors JS --> --}}
+    <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
+    <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Custom Script Here
         $(document).ready(function () {
-            $('.table').on('click', '.copy-btn', function () {
-                const button = $(this);
-                const textToCopy = button.data('copy'); // Get text from data-copy attribute
+            $('.bootstrap-select').each(function() {
+                if (!$(this).data('bs.select')) { // Check if it's already initialized
+                    $(this).selectpicker();
+                }
+            });
 
-                // Copy to clipboard
-                navigator.clipboard.writeText(textToCopy).then(() => {
-                    // Change button text to "Copied"
-                    const originalText = button.html();
-                    button.html('<i class="ti ti-check"></i> Copied');
-
-                    // Revert back to original text after 5 seconds
-                    setTimeout(() => {
-                        button.html(originalText);
-                    }, 5000);
-                }).catch(err => {
-                    alert('Failed to copy text: ', err);
-                });
+            $('.time-picker').flatpickr({
+                enableTime: true,
+                noCalendar: true,
             });
         });
-    </script>
+    </script>    
 @endsection
