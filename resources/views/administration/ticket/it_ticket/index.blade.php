@@ -104,11 +104,13 @@
                                                 <i class="text-white ti ti-trash"></i>
                                             </a>
                                         @endcan
-                                        @can ('IT Ticket Update') 
-                                            <a href="{{ route('administration.ticket.it_ticket.edit', ['it_ticket' => $ticket]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit IT Ticket?">
-                                                <i class="text-white ti ti-pencil"></i>
-                                            </a>
-                                        @endcan
+                                        @if ($ticket->status === 'Pending') 
+                                            @can ('IT Ticket Update') 
+                                                <a href="{{ route('administration.ticket.it_ticket.edit', ['it_ticket' => $ticket]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit IT Ticket?">
+                                                    <i class="text-white ti ti-pencil"></i>
+                                                </a>
+                                            @endcan
+                                        @endif
                                         @can ('IT Ticket Read') 
                                             <a href="{{ route('administration.ticket.it_ticket.show', ['it_ticket' => $ticket]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                                 <i class="text-white ti ti-info-hexagon"></i>

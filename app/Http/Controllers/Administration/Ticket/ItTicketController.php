@@ -136,7 +136,9 @@ class ItTicketController extends Controller
      */
     public function edit(ItTicket $itTicket)
     {
-        dd($itTicket->toArray());
+        abort_if($itTicket->status !== 'Pending', 403, 'You Cannot Edit This IT Ticket.');
+
+        return view('administration.ticket.it_ticket.edit', compact(['itTicket']));
     }
 
     /**
@@ -144,7 +146,25 @@ class ItTicketController extends Controller
      */
     public function update(Request $request, ItTicket $itTicket)
     {
-        dd($request->all(), $itTicket->toArray());
+        abort_if($itTicket->status !== 'Pending', 403, 'You Cannot Update This IT Ticket.');
+
+        $request->validate([
+            'title' => ['sometimes', 'string', 'min:5', 'max:200'],
+            'description' => ['sometimes', 'string', 'min:10'],
+        ]);
+        
+        try {
+            $itTicket->update([
+                'title' => $request->input('title'),
+                'description' => $request->input('description')
+            ]);
+
+            toast('Ticket Updated Successfully.', 'success');
+            return redirect()->route('administration.ticket.it_ticket.show', ['it_ticket' => $itTicket]);
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
     }
 
     /**
