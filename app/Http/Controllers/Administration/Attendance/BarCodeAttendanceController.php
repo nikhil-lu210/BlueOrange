@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Administration\Attendance;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Models\Holiday\Holiday;
 use App\Models\Weekend\Weekend;
 use Illuminate\Support\Facades\DB;
@@ -17,7 +18,7 @@ class BarCodeAttendanceController extends Controller
 {
     public function scanner()
     {
-        $scanner = auth()->user();
+        $scanner_id = auth()->user()->userid;
 
         // Get the start and end of today
         $startOfDay = Carbon::today()->startOfDay();
@@ -34,17 +35,18 @@ class BarCodeAttendanceController extends Controller
         ->orderByDesc('clock_in')
         ->get();
 
-        return view('administration.attendance.barcode_scanner', compact(['scanner', 'attendances']));
+        return view('administration.attendance.barcode_scanner', compact(['scanner_id', 'attendances']));
     }
 
-    public function scanBarCode($scanner_id, $qr_code, $type = 'Regular')
+    public function scanBarCode(Request $request, $scanner_id)
     {
+        // dd($request, $scanner_id);
         if ($scanner_id != auth()->user()->userid) {
             toast('You are not authorized to scan code.', 'warning');
             return redirect()->back();
         }
 
-        $user = User::where('userid', $qr_code)->firstOrFail();
+        $user = User::where('userid', $request->input('userid'))->firstOrFail();
         $currentTime = now();
         $currentDate = $currentTime->toDateString();
         
@@ -54,12 +56,12 @@ class BarCodeAttendanceController extends Controller
             ->first();
 
         // Determine if the action is clock-in or clock-out
-        if ($openAttendance) {
+        if ($openAttendance || $request->input('attendance') == 'Clockout') {
             // User is currently clocked in, so this should be a clock-out
             return $this->clockOut($user->id, $currentTime);
         } else {
             // No open attendance record, so this should be a clock-in
-            return $this->clockIn($user->id, $currentTime, $currentDate, $type);
+            return $this->clockIn($user->id, $currentTime, $currentDate, $request->input('type'));
         }
     }
 

@@ -54,7 +54,8 @@
                 </div>
             </div>
             <div class="card-body">
-                <form action="#" method="POST" autocomplete="off" id="barcodeScannerForm">
+                <form action="{{ route('administration.attendance.barcode.scan', ['scanner_id' => $scanner_id]) }}" method="POST" autocomplete="off" id="barcodeScannerForm">
+                    @csrf
                     <div class="row">
                         <div class="mb-3 col-md-8">
                             <label class="form-label">{{ __('User ID') }} <strong class="text-danger">*</strong></label>
