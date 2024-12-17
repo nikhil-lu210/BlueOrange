@@ -4,6 +4,7 @@ use Illuminate\Http\UploadedFile;
 use App\Models\FileMedia\FileMedia;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 if (!function_exists('store_file_media')) {
     /**
@@ -104,5 +105,19 @@ if (!function_exists('file_media_destroy')) {
     function file_media_destroy(FileMedia $fileMedia)
     {
         return route('administration.file.destroy', ['fileMedia' => $fileMedia]);
+    }
+}
+
+
+if (!function_exists('spatie_media_download')) {
+    /**
+     * Generate the download URL for a given media item.
+     *
+     * @param  \Spatie\MediaLibrary\MediaCollections\Models\Media  $media
+     * @return string
+     */
+    function spatie_media_download(Media $media)
+    {
+        return route('administration.file.download.spatie', ['media' => $media]);
     }
 }

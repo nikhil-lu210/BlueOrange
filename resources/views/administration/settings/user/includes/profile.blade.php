@@ -25,7 +25,7 @@
                         <span class="fw-medium mx-2 text-heading">User ID:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ $user->userid }}</span>  
+                        <b class="text-dark">{{ $user->userid }}</b>  
                     </dd>
                 </dl>
                 <dl class="row mb-1">
@@ -103,7 +103,11 @@
                     </dt>
                     <dd class="col-sm-8">
                         @if ($user->hasMedia('barcode'))
-                            <img src="{{ $user->getFirstMediaUrl('barcode') }}" alt="{{ $user->name }} BAR-CODE" class="d-block h-auto ms-0 ms-sm-4" width="300px">
+                            <img src="{{ $user->getFirstMediaUrl('barcode') }}" alt="{{ $user->name }} BAR-CODE" class="d-block h-auto" width="300px">
+                            
+                            <a href="{{ spatie_media_download($user->getFirstMedia('barcode')) }}" target="_blank" class="text-bold text-muted" title="Download Barcode">
+                                {{ $user->userid }}
+                            </a>
                         @else
                             <a href="{{ route('administration.settings.user.generate.bar.code', ['user' => $user]) }}" class="btn btn-outline-primary btn-sm confirm-success">Generate Barcode</a>
                         @endif
