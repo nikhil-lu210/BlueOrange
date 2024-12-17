@@ -88,8 +88,8 @@ namespace App\Models\Attendance{
  * @property \Illuminate\Support\Carbon|null $clock_out
  * @property string|null $total_time
  * @property string $type
- * @property int|null $qr_clockin_scanner_id
- * @property int|null $qr_clockout_scanner_id
+ * @property int|null $clockin_scanner_id
+ * @property int|null $clockout_scanner_id
  * @property string|null $ip_address
  * @property string|null $country
  * @property string|null $city
@@ -103,8 +103,8 @@ namespace App\Models\Attendance{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DailyBreak\DailyBreak> $daily_breaks
  * @property-read int|null $daily_breaks_count
  * @property-read \App\Models\EmployeeShift\EmployeeShift $employee_shift
- * @property-read \App\Models\User|null $qr_clockin_scanner
- * @property-read \App\Models\User|null $qr_clockout_scanner
+ * @property-read \App\Models\User|null $clockin_scanner
+ * @property-read \App\Models\User|null $clockout_scanner
  * @property-read \App\Models\User $user
  * @method static \Database\Factories\Attendance\AttendanceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance newModelQuery()
@@ -714,10 +714,10 @@ namespace App\Models{
  * @property-read int|null $notifications_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
  * @property-read int|null $permissions_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Attendance> $qr_clockins
- * @property-read int|null $qr_clockins_count
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Attendance> $qr_clockouts
- * @property-read int|null $qr_clockouts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Attendance> $scanner_clockins
+ * @property-read int|null $scanner_clockins_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Attendance> $scanner_clockouts
+ * @property-read int|null $scanner_clockouts_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
  * @property-read int|null $roles_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Salary\Salary> $salaries

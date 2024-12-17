@@ -64,6 +64,7 @@ class AttendanceEntryService
                 'clock_in_date' => $currentDate,
                 'clock_in' => $currentTime,
                 'type' => $type,
+                'clockin_medium' => 'Manual',
                 'ip_address' => $location->ip ?? null,
                 'country' => $location->countryName ?? null,
                 'city' => $location->cityName ?? null,
@@ -147,6 +148,7 @@ class AttendanceEntryService
             'clock_out' => $clockOutTime,
             'total_time' => $formattedTotalTime,
             'total_adjusted_time' => $formattedAdjustedTotalTime,
+            'clockout_medium' => 'Manual',
         ]);
     }
 

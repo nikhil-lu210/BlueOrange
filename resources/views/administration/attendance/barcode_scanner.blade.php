@@ -5,13 +5,17 @@
 
 @endsection
 
-@section('page_title', __('QR Code Attendance'))
+@section('page_title', __('Barcode Attendance'))
 
 @section('css_links')
     {{--  External CSS  --}}
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
+    
+    {{-- Select 2 --}}
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
 @endsection
 
 @section('custom_css')
@@ -23,13 +27,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('QR Code Attendance') }}</b>
+    <b class="text-uppercase">{{ __('Barcode Attendance') }}</b>
 @endsection
 
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Attendance') }}</li>
-    <li class="breadcrumb-item active">{{ __('QR Code Attendance') }}</li>
+    <li class="breadcrumb-item active">{{ __('Barcode Attendance') }}</li>
 @endsection
 
 
@@ -40,29 +44,68 @@
     <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">QR Code Attendance</h5>
+                <h5 class="mb-0">Barcode Attendance</h5>
         
                 <div class="card-header-elements ms-auto">
-                    <button id="scanQrBtn" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-qrcode ti-xs me-1"></span>
-                        Scan QR Code
-                    </button>
-                    <button id="scanQrBtnOvertime" class="btn btn-sm btn-warning">
-                        <span class="tf-icon ti ti-qrcode ti-xs me-1"></span>
-                        Overtime
-                    </button>
+                    <a href="{{ route('administration.attendance.barcode.scanner') }}" class="btn btn-sm btn-dark" title="Reload Page?">
+                        <span class="tf-icon ti ti-reload ti-xs me-1"></span>
+                        Reload
+                    </a>
                 </div>
             </div>
             <div class="card-body">
-                <div class="row">
-                    <div class="col-12">
-                        <!-- Div for displaying the camera feed -->
-                        <div id="qr-reader" style="width: 100%; height: 100%; display: none;"></div>
+                <form action="{{ route('administration.attendance.barcode.scan', ['scanner_id' => $scanner_id]) }}" method="POST" autocomplete="off" id="barcodeScannerForm">
+                    @csrf
+                    <div class="row">
+                        <div class="mb-3 col-md-8">
+                            <label class="form-label">{{ __('User ID') }} <strong class="text-danger">*</strong></label>
+                            <div class="input-group input-group-merge">
+                                <span class="input-group-text" style="padding-right: 2px;">UID</span>
+                                <input type="text" id="userid" name="userid" class="form-control @error('userid') is-invalid @enderror" placeholder="20010101" autofocus required/>
+                            </div>
+                            @error('userid')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+    
+                        <div class="mb-3 col-md-4">
+                            <label for="type" class="form-label">{{ __('Select Clockin Type') }}</label>
+                            <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default">
+                                <option value="">{{ __('Select Type') }}</option>
+                                <option value="Regular" selected>{{ __('Regular') }}</option>
+                                <option value="Overtime">{{ __('Overtime') }}</option>
+                            </select>
+                            @error('announcer_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
 
-                        <!-- Div to display scanning results -->
-                        <div id="qr-reader-results"></div>
+                        <div class="mb-3 col-md-12">
+                            <div class="row">
+                                <div class="col-md mb-md-0 mb-2">
+                                    <div class="form-check custom-option custom-option-basic">
+                                        <label class="form-check-label custom-option-content" for="attendanceClockin">
+                                            <input name="attendance" class="form-check-input" type="radio" value="Clockin" id="attendanceClockin" checked />
+                                            <span class="custom-option-header pb-0">
+                                                <span class="h6 mb-0">Clock-IN</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div class="form-check custom-option custom-option-basic">
+                                        <label class="form-check-label custom-option-content" for="attendanceClockout">
+                                            <input name="attendance" class="form-check-input" type="radio" value="Clockout" id="attendanceClockout" />
+                                            <span class="custom-option-header pb-0">
+                                                <span class="h6 mb-0">Clock-OUT</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </form>
             </div>
         </div>      
     </div>
@@ -195,101 +238,20 @@
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+
+    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function() {
-            $('#scanQrBtn').click(function () {
-                const scannerId = '{{ $scanner->userid }}';
-                
-                // Show the QR code reader div
-                $('#qr-reader').show();
-        
-                const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-                    // Handle success when QR code is scanned
-                    $('#qr-reader-results').html(`Scanned result: ${decodedText}`);
-        
-                    // Assuming decodedText is the userID, redirect to the attendance route
-                    let attendanceUrl = `/attendance/qrcode/scan/${scannerId}/${decodedText}`;
-                    window.location.href = attendanceUrl;
-        
-                    // Stop the scanning once the code is found
-                    html5QrCode.stop().then(() => {
-                        console.log("QR Code scanning stopped.");
-                    }).catch((err) => {
-                        console.error("Error stopping scanning: ", err);
-                    });
-                };
-        
-                const qrCodeErrorCallback = (errorMessage) => {
-                    // Optionally handle errors (e.g., no QR code found)
-                    console.warn(`QR Code scan error: ${errorMessage}`);
-                };
-        
-                const html5QrCode = new Html5Qrcode("qr-reader");
-        
-                // Start the QR code scanner
-                html5QrCode.start(
-                    { facingMode: "environment" }, // Use the back camera
-                    {
-                        fps: 10,    // Frames per second
-                        qrbox: { width: 250, height: 250 } // Scanning box size
-                    },
-                    qrCodeSuccessCallback,
-                    qrCodeErrorCallback
-                ).catch((err) => {
-                    console.error("Error starting QR code scanner: ", err);
-                });
-            });
-        });
-    </script>
-    
-    <script>
-        $(document).ready(function() {
-            $('#scanQrBtnOvertime').click(function () {
-                const scannerID = '{{ $scanner->userid }}';
-                
-                // Show the QR code reader div
-                $('#qr-reader').show();
-        
-                const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-                    // Handle success when QR code is scanned
-                    $('#qr-reader-results').html(`Scanned result: ${decodedText}`);
-        
-                    // Assuming decodedText is the userID, redirect to the attendance route
-                    let attendanceUrl = `/attendance/qrcode/scan/${scannerID}/${decodedText}/Overtime`;
-                    window.location.href = attendanceUrl;
-        
-                    // Stop the scanning once the code is found
-                    html5QrCode.stop().then(() => {
-                        console.log("QR Code scanning stopped.");
-                    }).catch((err) => {
-                        console.error("Error stopping scanning: ", err);
-                    });
-                };
-        
-                const qrCodeErrorCallback = (errorMessage) => {
-                    // Optionally handle errors (e.g., no QR code found)
-                    console.warn(`QR Code scan error: ${errorMessage}`);
-                };
-        
-                const html5QrCode = new Html5Qrcode("qr-reader");
-        
-                // Start the QR code scanner
-                html5QrCode.start(
-                    { facingMode: "environment" }, // Use the back camera
-                    {
-                        fps: 10,    // Frames per second
-                        qrbox: { width: 250, height: 250 } // Scanning box size
-                    },
-                    qrCodeSuccessCallback,
-                    qrCodeErrorCallback
-                ).catch((err) => {
-                    console.error("Error starting QR code scanner: ", err);
-                });
+            $('.bootstrap-select').each(function() {
+                if (!$(this).data('bs.select')) { // Check if it's already initialized
+                    $(this).selectpicker();
+                }
             });
         });
     </script>

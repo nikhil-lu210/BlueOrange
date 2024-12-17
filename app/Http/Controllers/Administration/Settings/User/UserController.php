@@ -15,6 +15,7 @@ use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Attendance\Attendance;
 use Illuminate\Support\Facades\Storage;
+use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Mail\Administration\User\UserCredentialsMail;
 use App\Notifications\Administration\UserInfoUpdateNofication;
@@ -115,19 +116,11 @@ class UserController extends Controller
                     'implemented_from' => date('Y-m-d')
                 ]);
 
-                // Generate QR code and save it to storage (https://github.com/endroid/qr-code)
-                $qrCode = Builder::create()
-                                ->writer(new PngWriter())
-                                ->data($user->userid)
-                                ->size(300)
-                                ->margin(10)
-                                ->build();
-                $qrCodePath = 'qrcodes/' . $user->userid . '.png';
-                Storage::disk('public')->put($qrCodePath, $qrCode->getString());
+                // Generate QR code and save it to storage
+                $this->generateQrCode($user);
 
-                // Save the QR code file as a media item
-                $user->addMedia(storage_path('app/public/' . $qrCodePath))
-                    ->toMediaCollection('qrcode');
+                // Generate Barcode and save it to storage
+                $this->generateBarCode($user);
 
                 $role = Role::findOrFail($request->role_id);
                 $user->assignRole($role);
@@ -326,6 +319,30 @@ class UserController extends Controller
              ->toMediaCollection('qrcode');
 
         toast('QR Code Generated Successfully.', 'success');
+        return redirect()->back();
+    }
+
+
+    public function generateBarCode(User $user)
+    {
+        if ($user->hasMedia('barcode')) {
+            toast('User already has a barcode.', 'warning');
+            return redirect()->back();
+        }
+
+        // Generate Barcode using Picqer Barcode Generator
+        $generator = new BarcodeGeneratorPNG();
+        $barcodeData = $generator->getBarcode($user->userid, $generator::TYPE_CODE_128); // Generates CODE 128 barcode
+        $barcodePath = 'barcodes/' . $user->userid . '.png';
+
+        // Save the barcode to storage
+        Storage::disk('public')->put($barcodePath, $barcodeData);
+
+        // Save the barcode file as a media item
+        $user->addMedia(storage_path('app/public/' . $barcodePath))
+            ->toMediaCollection('barcode');
+
+        toast('Barcode generated successfully.', 'success');
         return redirect()->back();
     }
 }

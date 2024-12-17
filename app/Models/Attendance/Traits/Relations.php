@@ -19,19 +19,19 @@ trait Relations
     }
     
     /**
-     * Get the qr_clockin_scanner for the attendance.
+     * Get the clockin_scanner for the attendance.
      */
-    public function qr_clockin_scanner(): BelongsTo
+    public function clockin_scanner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'qr_clockin_scanner_id');
+        return $this->belongsTo(User::class, 'clockin_scanner_id');
     }
     
     /**
-     * Get the qr_clockout_scanner for the attendance.
+     * Get the clockout_scanner for the attendance.
      */
-    public function qr_clockout_scanner(): BelongsTo
+    public function clockout_scanner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'qr_clockout_scanner_id');
+        return $this->belongsTo(User::class, 'clockout_scanner_id');
     }
     
     /**

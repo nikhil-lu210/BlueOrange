@@ -16,6 +16,7 @@
         "laravel/ui": "^4.2",
         "livewire/livewire": "^3.5",
         "maatwebsite/excel": "^3.1",
+        "picqer/php-barcode-generator": "^3.2",
         "realrashid/sweet-alert": "^6.0",
         "spatie/browsershot": "^4.3",
         "spatie/laravel-backup": "^9.0",
