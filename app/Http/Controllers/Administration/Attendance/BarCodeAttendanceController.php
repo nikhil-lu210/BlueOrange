@@ -100,7 +100,8 @@ class BarCodeAttendanceController extends Controller
                     'clock_in_date' => $currentDate,
                     'clock_in' => $currentTime,
                     'type' => $type,
-                    'qr_clockin_scanner_id' => auth()->user()->id,
+                    'clockin_medium' => 'Barcode',
+                    'clockin_scanner_id' => auth()->user()->id,
                     'ip_address' => $location->ip ?? null,
                     'country' => $location->countryName ?? null,
                     'city' => $location->cityName ?? null,
@@ -178,7 +179,8 @@ class BarCodeAttendanceController extends Controller
                 'clock_out' => $clockOutTime,
                 'total_time' => $formattedTotalTime,
                 'total_adjusted_time' => $formattedAdjustedTotalTime,
-                'qr_clockout_scanner_id' => auth()->user()->id,
+                'clockout_medium' => 'Barcode',
+                'clockout_scanner_id' => auth()->user()->id,
             ]);
 
             toast(User::find($userId)->name . ' Clocked Out Successfully.', 'success');

@@ -23,7 +23,7 @@ trait Relations
      */
     public function qr_clockin_scanner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'qr_clockin_scanner_id');
+        return $this->belongsTo(User::class, 'clockin_scanner_id');
     }
     
     /**
@@ -31,7 +31,7 @@ trait Relations
      */
     public function qr_clockout_scanner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'qr_clockout_scanner_id');
+        return $this->belongsTo(User::class, 'clockout_scanner_id');
     }
     
     /**

@@ -173,19 +173,19 @@ trait Relations
     }
 
     /**
-     * Get the qr_clockins associated with the user.
+     * Get the scanner_clockins associated with the user.
      */
-    public function qr_clockins(): HasMany
+    public function scanner_clockins(): HasMany
     {
-        return $this->hasMany(Attendance::class, 'qr_clockin_scanner_id');
+        return $this->hasMany(Attendance::class, 'clockin_scanner_id');
     }
 
     /**
-     * Get the qr_clockouts associated with the user.
+     * Get the scanner_clockouts associated with the user.
      */
-    public function qr_clockouts(): HasMany
+    public function scanner_clockouts(): HasMany
     {
-        return $this->hasMany(Attendance::class, 'qr_clockout_scanner_id');
+        return $this->hasMany(Attendance::class, 'clockout_scanner_id');
     }
 
     /**

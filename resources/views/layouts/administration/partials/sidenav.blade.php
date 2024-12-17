@@ -85,9 +85,11 @@
                             <a href="{{ route('administration.attendance.create') }}" class="menu-link">{{ __('Assign Attendance') }}</a>
                         </li>
                         
-                        <li class="menu-item {{ request()->is('attendance/qrcode*') ? 'active' : '' }}">
-                            <a href="{{ route('administration.attendance.qrcode.scanner') }}" class="menu-link">{{ __('QR Code Attendance') }}</a>
-                        </li>
+                        @hasanyrole(['Developer'])
+                            <li class="menu-item {{ request()->is('attendance/qrcode*') ? 'active' : '' }}">
+                                <a href="{{ route('administration.attendance.qrcode.scanner') }}" class="menu-link">{{ __('QR Code Attendance') }}</a>
+                            </li>
+                        @endhasanyrole
                         
                         <li class="menu-item {{ request()->is('attendance/barcode*') ? 'active' : '' }}">
                             <a href="{{ route('administration.attendance.barcode.scanner') }}" class="menu-link">{{ __('Bar Code Attendance') }}</a>
