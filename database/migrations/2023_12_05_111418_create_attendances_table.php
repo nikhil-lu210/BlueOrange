@@ -31,8 +31,8 @@ return new class extends Migration
             $table->string('total_adjusted_time')->nullable()->comment('hh:mm:ss format to be store');
             $table->enum('type', ['Regular', 'Overtime'])->default('Regular');
 
-            $table->enum('clockin_medium', ['Login', 'QR-Code', 'Barcode'])->default('Login');
-            $table->enum('clockout_medium', ['Login', 'QR-Code', 'Barcode'])->nullable();
+            $table->enum('clockin_medium', ['Manual', 'QR-Code', 'Barcode'])->default('Manual');
+            $table->enum('clockout_medium', ['Manual', 'QR-Code', 'Barcode'])->nullable();
 
             $table->foreignId('clockin_scanner_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('clockout_scanner_id')->nullable()->constrained('users')->onDelete('cascade');

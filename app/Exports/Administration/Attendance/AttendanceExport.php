@@ -31,6 +31,10 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
                 'type' => $attendance->type,
                 'total_break_time' => $attendance->total_break_time,
                 'total_over_break' => $attendance->total_over_break,
+                'clockin_medium' => $attendance->clockin_medium,
+                'clockout_medium' => $attendance->clockout_medium ?? NULL,
+                'clockin_scanner_id' => optional($attendance->clockin_scanner)->name,
+                'clockout_scanner_id' => optional($attendance->clockout_scanner)->name,
             ];
         });
     }
@@ -52,6 +56,10 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
             'Type',
             'Total Break',
             'Over Break',
+            'Clockin Medium',
+            'Clockout Medium',
+            'Clockin Scanner',
+            'Clockout Scanner',
         ];
     }
 }
