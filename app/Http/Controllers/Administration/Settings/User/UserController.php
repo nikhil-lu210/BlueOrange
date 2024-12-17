@@ -116,19 +116,11 @@ class UserController extends Controller
                     'implemented_from' => date('Y-m-d')
                 ]);
 
-                // Generate QR code and save it to storage (https://github.com/endroid/qr-code)
-                $qrCode = Builder::create()
-                                ->writer(new PngWriter())
-                                ->data($user->userid)
-                                ->size(300)
-                                ->margin(10)
-                                ->build();
-                $qrCodePath = 'qrcodes/' . $user->userid . '.png';
-                Storage::disk('public')->put($qrCodePath, $qrCode->getString());
+                // Generate QR code and save it to storage
+                $this->generateQrCode($user);
 
-                // Save the QR code file as a media item
-                $user->addMedia(storage_path('app/public/' . $qrCodePath))
-                    ->toMediaCollection('qrcode');
+                // Generate Barcode and save it to storage
+                $this->generateBarCode($user);
 
                 $role = Role::findOrFail($request->role_id);
                 $user->assignRole($role);
