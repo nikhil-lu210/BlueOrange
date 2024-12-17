@@ -227,6 +227,46 @@
                                         <span>{{ $attendance->zip_code }}</span>
                                     </dd>
                                 </dl>
+                                
+                                @canany (['Attendance Update', 'Attendance Delete']) 
+                                    <hr>
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-clock-check text-heading"></i>
+                                            <span class="fw-medium mx-2 text-heading">Clockin Medium:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <b>{{ $attendance->clockin_medium }}</b>
+                                        </dd>
+                                    </dl>
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-clock-x text-heading"></i>
+                                            <span class="fw-medium mx-2 text-heading">Clockout Medium:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <b>{{ $attendance->clockout_medium }}</b>
+                                        </dd>
+                                    </dl>
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-user-check text-heading"></i>
+                                            <span class="fw-medium mx-2 text-heading">Clockin Scanned By:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <b>{{ optional($attendance->clockin_scanner)->name }}</b>
+                                        </dd>
+                                    </dl>
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-user-x text-heading"></i>
+                                            <span class="fw-medium mx-2 text-heading">Clockout Scanned By:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <b>{{ optional($attendance->clockout_scanner)->name }}</b>
+                                        </dd>
+                                    </dl>
+                                @endcanany
                             </div>
                         </div>
                     </div>

@@ -103,8 +103,8 @@ namespace App\Models\Attendance{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DailyBreak\DailyBreak> $daily_breaks
  * @property-read int|null $daily_breaks_count
  * @property-read \App\Models\EmployeeShift\EmployeeShift $employee_shift
- * @property-read \App\Models\User|null $qr_clockin_scanner
- * @property-read \App\Models\User|null $qr_clockout_scanner
+ * @property-read \App\Models\User|null $clockin_scanner
+ * @property-read \App\Models\User|null $clockout_scanner
  * @property-read \App\Models\User $user
  * @method static \Database\Factories\Attendance\AttendanceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance newModelQuery()

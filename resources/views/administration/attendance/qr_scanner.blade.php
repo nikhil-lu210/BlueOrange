@@ -166,12 +166,12 @@
                                     <td>
                                         <span class="text-dark text-truncate">
                                             <b>Clock-In:</b> 
-                                            <span>{{ optional($attendance->qr_clockin_scanner)->name }}</span>
+                                            <span>{{ optional($attendance->clockin_scanner)->name }}</span>
                                         </span>
                                         <br>
                                         <span class="text-dark text-truncate">
                                             <b>Clock-Out:</b> 
-                                            <span>{{ optional($attendance->qr_clockout_scanner)->name }}</span>
+                                            <span>{{ optional($attendance->clockout_scanner)->name }}</span>
                                         </span>
                                     </td>
                                 </tr>
