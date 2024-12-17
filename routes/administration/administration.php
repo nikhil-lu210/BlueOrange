@@ -60,4 +60,7 @@ Route::prefix('')
 
             // vault
             include_once 'vault/vault.php';
+
+            // IT Ticket
+            include_once 'ticket/it_ticket.php';
         });
