@@ -16,6 +16,8 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
+        $joiningDate = fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d');
+
         // Create a developer
         $developer = User::create([
             'userid' => '20230201',
@@ -41,9 +43,20 @@ class UsersTableSeeder extends Seeder
             'total_time' => '08:00:00',
             'implemented_from' => date('Y-m-d'),
         ]);
+        // Create associated Salary
+        $developer->salaries()->create([
+            'basic_salary' => 5000,
+            'house_benefit' => 1000,
+            'transport_allowance' => 1000,
+            'medical_allowance' => 1000,
+            'night_shift_allowance' => 1000,
+            'other_allowance' => 1000,
+            'implemented_from' => $joiningDate,
+            'total' => 10000,
+        ]);
         // Create associated employee for the developer
         $developer->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
+            'joining_date' => $joiningDate,
             'alias_name' => fake()->name('male'),
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
@@ -80,9 +93,20 @@ class UsersTableSeeder extends Seeder
             'total_time' => '08:00:00',
             'implemented_from' => date('Y-m-d'),
         ]);
+        // Create associated Salary
+        $superAdmin->salaries()->create([
+            'basic_salary' => 5000,
+            'house_benefit' => 1000,
+            'transport_allowance' => 1000,
+            'medical_allowance' => 1000,
+            'night_shift_allowance' => 1000,
+            'other_allowance' => 1000,
+            'implemented_from' => $joiningDate,
+            'total' => 10000,
+        ]);
         // Create associated employee for the superAdmin
         $superAdmin->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
+            'joining_date' => $joiningDate,
             'alias_name' => fake()->name('male'),
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
@@ -119,9 +143,20 @@ class UsersTableSeeder extends Seeder
             'total_time' => '08:00:00',
             'implemented_from' => date('Y-m-d'),
         ]);
+        // Create associated Salary
+        $mrRob->salaries()->create([
+            'basic_salary' => 5000,
+            'house_benefit' => 1000,
+            'transport_allowance' => 1000,
+            'medical_allowance' => 1000,
+            'night_shift_allowance' => 1000,
+            'other_allowance' => 1000,
+            'implemented_from' => $joiningDate,
+            'total' => 10000,
+        ]);
         // Create associated employee for the mrRob
         $mrRob->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-20 years', 'now')->format('Y-m-d'),
+            'joining_date' => $joiningDate,
             'alias_name' => 'ROB',
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
