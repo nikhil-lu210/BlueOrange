@@ -43,6 +43,14 @@ class UsersTableSeeder extends Seeder
             'total_time' => '08:00:00',
             'implemented_from' => date('Y-m-d'),
         ]);
+        // Create associated Leave
+        $developer->leave_alloweds()->create([
+            'earned_leave' => '120:00:00',
+            'casual_leave' => '120:00:00',
+            'sick_leave' => '120:00:00',
+            'implemented_from' => '01-01',
+            'implemented_to' => '12-31',
+        ]);
         // Create associated Salary
         $developer->salaries()->create([
             'basic_salary' => 5000,
@@ -93,6 +101,14 @@ class UsersTableSeeder extends Seeder
             'total_time' => '08:00:00',
             'implemented_from' => date('Y-m-d'),
         ]);
+        // Create associated Leave
+        $superAdmin->leave_alloweds()->create([
+            'earned_leave' => '120:00:00',
+            'casual_leave' => '120:00:00',
+            'sick_leave' => '120:00:00',
+            'implemented_from' => '01-01',
+            'implemented_to' => '12-31',
+        ]);
         // Create associated Salary
         $superAdmin->salaries()->create([
             'basic_salary' => 5000,
@@ -142,6 +158,14 @@ class UsersTableSeeder extends Seeder
             'end_time' => '22:00:00',
             'total_time' => '08:00:00',
             'implemented_from' => date('Y-m-d'),
+        ]);
+        // Create associated Leave
+        $mrRob->leave_alloweds()->create([
+            'earned_leave' => '120:00:00',
+            'casual_leave' => '120:00:00',
+            'sick_leave' => '120:00:00',
+            'implemented_from' => '01-01',
+            'implemented_to' => '12-31',
         ]);
         // Create associated Salary
         $mrRob->salaries()->create([

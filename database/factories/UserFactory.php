@@ -76,6 +76,14 @@ class UserFactory extends Factory
                     'implemented_from' => date('Y-m-d'),
                 ]);
 
+                // Create associated Leave
+                $user->leave_alloweds()->create([
+                    'earned_leave' => '120:00:00',
+                    'casual_leave' => '120:00:00',
+                    'sick_leave' => '120:00:00',
+                    'implemented_from' => '01-01',
+                    'implemented_to' => '12-31',
+                ]);
                 
                 // Create associated Salary
                 $user->salaries()->create([
