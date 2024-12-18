@@ -43,6 +43,7 @@ class PermissionsTableSeeder extends Seeder
             ]);
 
             $permissions = [
+                'Everything',
                 'Create',
                 'Read',
                 'Update',

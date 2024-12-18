@@ -70,6 +70,12 @@
                         <div class="col-md-12">
                             <div class="d-flex">
                                 <div class="form-check me-3 me-lg-5">
+                                    <input class="form-check-input" type="checkbox" checked name="name[Everything]" id="permissionEverything" />
+                                    <label class="form-check-label" for="permissionEverything">
+                                        Everything
+                                    </label>
+                                </div>
+                                <div class="form-check me-3 me-lg-5">
                                     <input class="form-check-input" type="checkbox" checked name="name[Create]" id="permissionCreate" />
                                     <label class="form-check-label" for="permissionCreate">
                                         Create
