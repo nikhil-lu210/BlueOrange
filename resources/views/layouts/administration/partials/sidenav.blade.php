@@ -50,12 +50,12 @@
                 <ul class="menu-sub">
                     @canany(['Vault Create', 'Vault Update', 'Vault Delete'])
                         <li class="menu-item {{ request()->is('vault/all*') ? 'active' : '' }}">
-                            <a href="{{ route('administration.vault.index') }}" class="menu-link">{{ __('All Creadentials') }}</a>
+                            <a href="{{ route('administration.vault.index') }}" class="menu-link">{{ __('All Credentials') }}</a>
                         </li>
                     @endcanany
                     @can('Vault Create')
                         <li class="menu-item {{ request()->is('vault/create*') ? 'active' : '' }}">
-                            <a href="{{ route('administration.vault.create') }}" class="menu-link">{{ __('Store Creadential') }}</a>
+                            <a href="{{ route('administration.vault.create') }}" class="menu-link">{{ __('Store Credential') }}</a>
                         </li>
                     @endcan
                 </ul>
