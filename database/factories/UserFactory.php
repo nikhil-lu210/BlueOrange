@@ -70,7 +70,8 @@ class UserFactory extends Factory
                 $user->employee_shifts()->create([
                     'start_time' => $start_time->format('H:i:s'),
                     'end_time' => $formatted_end_time,
-                    'implemented_from' => now()->format('Y-m-d'),
+                    'total_time' => '08:00:00',
+                    'implemented_from' => date('Y-m-d'),
                 ]);
 
                 // Create associated employee for the user
