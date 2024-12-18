@@ -16,7 +16,7 @@
                 <div class="card-header-elements ms-auto">
                     <div class="btn-group btn-group-md">
                         <span class="badge bg-primary px-3 py-2" style="cursor: default;">
-                            Current Salary: {{ $user->current_salary->total }}<sup>TK</sup>
+                            Current Salary: {{ optional($user->current_salary)->total }}<sup>TK</sup>
                         </span>
                         <button type="button" class="btn btn-dark dropdown-toggle dropdown-toggle-split waves-effect waves-light" data-bs-toggle="dropdown" aria-expanded="false">
                             <span class="visually-hidden">Toggle Dropdown</span>
@@ -27,7 +27,7 @@
                                     <i class="ti ti-history me-1"></i>
                                     All Base Salaries
                                 </a>
-                                <a class="dropdown-item" href="{{ route('administration.my.salary.show', ['salary' => $user->current_salary->id]) }}">
+                                <a class="dropdown-item" href="{{ route('administration.my.salary.show', ['salary' => optional($user->current_salary)->id]) }}">
                                     <i class="ti ti-currency-taka me-1"></i>
                                     Current Salary Breakdown
                                 </a>
