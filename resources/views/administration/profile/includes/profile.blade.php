@@ -82,7 +82,7 @@
                         @if ($user->hasMedia('qrcode'))
                             <img src="{{ $user->getFirstMediaUrl('qrcode') }}" alt="{{ $user->name }} QRCODE" class="d-block h-auto ms-0 ms-sm-4" width="150px">
                         @else
-                            <a href="{{ route('administration.settings.user.generate.qr.Code', ['user' => $user]) }}" class="btn btn-outline-primary btn-sm confirm-success">Generate QR Code</a>
+                            <a href="{{ route('administration.settings.user.generate.qr.code', ['user' => $user]) }}" class="btn btn-outline-primary btn-sm confirm-success">Generate QR Code</a>
                         @endif
                     </dd>
                 </dl>
