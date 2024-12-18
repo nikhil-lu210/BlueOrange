@@ -28,7 +28,7 @@
                                     All Base Salaries
                                 </a>
                                 @isset ($user->current_salary) 
-                                    <a class="dropdown-item" href="{{ route('administration.my.salary.show', ['salary' => $user->current_salary->id]) }}">
+                                    <a class="dropdown-item" href="{{ route('administration.my.salary.show', ['salary' => $user->current_salary]) }}">
                                         <i class="ti ti-currency-taka me-1"></i>
                                         Current Salary Breakdown
                                     </a>
