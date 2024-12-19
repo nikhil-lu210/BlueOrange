@@ -35,7 +35,7 @@
                             <tr>
                                 <th>{{ serial($user->employee_team_leaders, $key) }}</th>
                                 <td>
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $leader]) }}" target="_blank" class="text-{{ $leader->pivot->is_active == true ? 'success' : 'danger' }} text-bold">{{ $leader->name }}</a>
+                                    <a href="{{ route('administration.settings.user.user_interaction.index', ['user' => $leader]) }}" target="_blank" class="text-{{ $leader->pivot->is_active == true ? 'success' : 'danger' }} text-bold" title="Click to see {{ $leader->name }}'s Team Leader">{{ $leader->name }}</a>
                                 </td>
                                 <td>
                                     <span>{{ show_date($leader->pivot->created_at) }}</span>
@@ -81,7 +81,7 @@
                             <tr>
                                 <th>{{ serial($employee->user_interactions, $key) }}</th>
                                 <th>
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $employee]) }}" target="_blank" class="text-primary text-bold">{{ $employee->name }}</a>
+                                    <a href="{{ route('administration.settings.user.user_interaction.index', ['user' => $employee]) }}" target="_blank" class="text-primary text-bold" title="Click to see {{ $employee->name }}'s User Interactions">{{ $employee->name }}</a>
                                 </th>
                                 <td>{{ $employee->roles->first()->name }}</td>
                             </tr>
