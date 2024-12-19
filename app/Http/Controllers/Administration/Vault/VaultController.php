@@ -21,10 +21,25 @@ class VaultController extends Controller
      */
     public function index()
     {
-        $vaults = Vault::with(['creator'])->orderBy('name', 'ASC')->get();
-                        
+        $user = auth()->user();
+
+        if ($user->hasPermissionTo('Vault Everything') || $user->hasPermissionTo('Vault Create')) {
+            $vaults = Vault::with(['creator'])->orderBy('name', 'ASC')->get();
+        } else {
+            $vaults = Vault::with(['creator'])
+                ->where(function ($query) use ($user) {
+                    $query->where('creator_id', $user->id)
+                        ->orWhereHas('viewers', function ($relation) use ($user) {
+                            $relation->where('user_id', $user->id);
+                        });
+                })
+                ->orderBy('name', 'ASC')
+                ->get();
+        }
+
         return view('administration.vault.index', compact(['vaults']));
     }
+
 
     /**
      * Show the form for creating a new resource.

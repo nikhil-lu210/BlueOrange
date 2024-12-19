@@ -48,7 +48,7 @@
                     <div data-i18n="Vault">{{ __('Vault') }}</div>
                 </a>
                 <ul class="menu-sub">
-                    @canany(['Vault Create', 'Vault Update', 'Vault Delete'])
+                    @canany(['Vault Read'])
                         <li class="menu-item {{ request()->is('vault/all*') ? 'active' : '' }}">
                             <a href="{{ route('administration.vault.index') }}" class="menu-link">{{ __('All Credentials') }}</a>
                         </li>
@@ -268,7 +268,7 @@
             <span class="menu-header-text">{{ __('Accounts') }}</span>
         </li>
         
-        @canany (['Salary Create', 'Salary Read'])
+        @canany (['Salary Everything'])
             <li class="menu-item {{ request()->is('accounts/salary*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-businessplan"></i>
