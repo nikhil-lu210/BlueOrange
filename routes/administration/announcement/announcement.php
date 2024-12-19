@@ -9,7 +9,7 @@ use App\Http\Controllers\Administration\Announcement\AnnouncementCommentControll
 ===============< Announcement Routes >==============
 ===============================================*/
 Route::controller(AnnouncementController::class)->prefix('announcement')->name('announcement.')->group(function () {
-    Route::get('/all', 'index')->name('index')->can('Announcement Read');
+    Route::get('/all', 'index')->name('index')->can('Announcement Everything');
     Route::get('/my', 'my')->name('my')->can('Announcement Read');
     Route::get('/create', 'create')->name('create')->can('Announcement Create');
     Route::post('/store', 'store')->name('store')->can('Announcement Create');

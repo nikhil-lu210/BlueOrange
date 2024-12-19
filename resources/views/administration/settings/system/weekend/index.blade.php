@@ -37,7 +37,7 @@
 <div class="row justify-content-center mt-5">
     @foreach ($weekends as $key => $weekend) 
         <div class="col-md-3 col-sm-6 mb-4">
-            <div class="card h-100">
+            <div class="card h-100 @if ($weekend->is_active) card-border-shadow-primary @endif">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div class="card-title mb-0">
                         <h5 class="mb-0 me-2">{{ $weekend->day }}</h5>

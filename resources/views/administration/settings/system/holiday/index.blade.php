@@ -83,12 +83,14 @@
             <div class="card-header header-elements">
                 <h5 class="mb-0">All Holidays</h5>
         
-                <div class="card-header-elements ms-auto">
-                    <a href="javascript:void(0);" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#assignNewHolidayModal">
-                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                        Assign Holiday
-                    </a>
-                </div>
+                @can ('Holiday Create') 
+                    <div class="card-header-elements ms-auto">
+                        <a href="javascript:void(0);" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#assignNewHolidayModal">
+                            <span class="tf-icon ti ti-plus ti-xs me-1"></span>
+                            Assign Holiday
+                        </a>
+                    </div>
+                @endcan
             </div>
             <div class="card-body">
                 <table class="table data-table table-bordered table-responsive" style="width: 100%;">
@@ -117,22 +119,24 @@
                                     <span class="badge {{ $background }}">{{ $status }}</span>
                                 </td>
                                 <td>
-                                    <div class="d-inline-block">
-                                        <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="text-primary ti ti-dots-vertical"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-end m-0" style="">
-                                            <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editHolidayModal" data-holiday="{{ json_encode($holiday) }}">
-                                                <i class="text-primary ti ti-pencil"></i> 
-                                                Edit
+                                    @can ('Holiday Everything')
+                                        <div class="d-inline-block">
+                                            <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="text-primary ti ti-dots-vertical"></i>
                                             </a>
-                                            <div class="dropdown-divider"></div>
-                                            <a href="{{ route('administration.settings.system.holiday.destroy', ['holiday' => $holiday]) }}" class="dropdown-item text-danger delete-record confirm-danger">
-                                                <i class="ti ti-trash"></i> 
-                                                Delete
-                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                                                <a href="javascript:void(0);" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#editHolidayModal" data-holiday="{{ json_encode($holiday) }}">
+                                                    <i class="text-primary ti ti-pencil"></i> 
+                                                    Edit
+                                                </a>
+                                                <div class="dropdown-divider"></div>
+                                                <a href="{{ route('administration.settings.system.holiday.destroy', ['holiday' => $holiday]) }}" class="dropdown-item text-danger delete-record confirm-danger">
+                                                    <i class="ti ti-trash"></i> 
+                                                    Delete
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endcan
                                     <a href="javascript:void(0);" class="btn btn-sm btn-icon item-edit" title="Show Details" data-bs-toggle="modal" data-bs-target="#showHolidayModal" data-holiday="{{ json_encode($holiday) }}">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
@@ -149,8 +153,10 @@
 
 
 {{-- Page Modal --}}
-@include('administration.settings.system.holiday.modals.holiday_create')
-@include('administration.settings.system.holiday.modals.holiday_edit')
+@can ('Holiday Create')
+    @include('administration.settings.system.holiday.modals.holiday_create')
+    @include('administration.settings.system.holiday.modals.holiday_edit')
+@endcan
 @include('administration.settings.system.holiday.modals.holiday_show')
 
 @endsection

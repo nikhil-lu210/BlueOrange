@@ -154,14 +154,14 @@
         @endcanany
 
         <!-- Announcement Management -->
-        @canany(['Announcement Create', 'Announcement Read']) 
+        @canany(['Announcement Everything', 'Announcement Create', 'Announcement Read']) 
             <li class="menu-item {{ request()->is('announcement*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-speakerphone"></i>
                     <div data-i18n="Announcement">{{ __('Announcement') }}</div>
                 </a>
                 <ul class="menu-sub">
-                    @canany(['Announcement Create', 'Announcement Update', 'Announcement Delete'])
+                    @canany(['Announcement Everything'])
                         <li class="menu-item {{ request()->is('announcement/all*') ? 'active' : '' }}">
                             <a href="{{ route('administration.announcement.index') }}" class="menu-link">{{ __('All Announcements') }}</a>
                         </li>
@@ -181,14 +181,14 @@
         @endcanany
 
         <!-- Task Management -->
-        @canany(['Task Create', 'Task Read']) 
+        @canany(['Task Everything', 'Task Create', 'Task Read']) 
             <li class="menu-item {{ request()->is('task*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-brand-stackshare"></i>
                     <div data-i18n="Task">{{ __('Task') }}</div>
                 </a>
                 <ul class="menu-sub">
-                    @canany(['Task Create', 'Task Update', 'Task Delete'])
+                    @canany(['Task Everything'])
                         <li class="menu-item {{ request()->is('task/all*') ? 'active' : '' }}">
                             <a href="{{ route('administration.task.index') }}" class="menu-link">{{ __('All Tasks') }}</a>
                         </li>
@@ -237,14 +237,14 @@
         
 
         <!-- IT Ticket Management -->
-        @canany(['IT Ticket Create', 'IT Ticket Read']) 
+        @canany(['IT Ticket Everything', 'IT Ticket Create', 'IT Ticket Read']) 
             <li class="menu-item {{ request()->is('ticket/it_ticket*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-ticket"></i>
                     <div data-i18n="IT Ticket">{{ __('IT Ticket') }}</div>
                 </a>
                 <ul class="menu-sub">
-                    @canany(['IT Ticket Update', 'IT Ticket Delete'])
+                    @canany(['IT Ticket Everything'])
                         <li class="menu-item {{ request()->is('ticket/it_ticket/all*') ? 'active' : '' }}">
                             <a href="{{ route('administration.ticket.it_ticket.index') }}" class="menu-link">{{ __('All Tickets') }}</a>
                         </li>
