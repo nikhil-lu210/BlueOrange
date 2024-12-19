@@ -8,7 +8,7 @@
         
         <title>{{ config('app.name') }} || Monthly Salary Details</title>
         <!-- Favicon -->
-        <link rel="icon" type="image/x-icon" href="{{ asset('Logo/logo_white_01.png') }}" />
+        <link rel="icon" type="image/x-icon" href="{{ asset(config('app.favicon')) }}" />
 
         <!-- Start css -->
         @include('layouts.administration.partials.stylesheet')
@@ -33,7 +33,7 @@
                                     <div class="mb-0">
                                         <div class="mb-2 app-brand-link">
                                             <span class="app-brand-logo demo">
-                                                <img src="{{ asset('Logo/logo_black_01.png') }}" width="100%">
+                                                <img src="{{ asset(config('app.logo')) }}" width="100%">
                                             </span>
                                             <span class="app-brand-text demo menu-text fw-bold">{{ config('app.name') }}</span>
                                         </div>

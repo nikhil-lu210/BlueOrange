@@ -2,7 +2,7 @@
     <div class="app-brand demo">
         <a href="{{ route('administration.dashboard.index') }}" class="app-brand-link">
             <span class="app-brand-logo demo">
-                <img src="{{ asset('Logo/logo_black_01.png') }}" width="90%">
+                <img src="{{ asset(config('app.logo')) }}" width="90%">
             </span>
             <span class="app-brand-text demo menu-text fw-bold">{{ config('app.name') }}</span>
         </a>

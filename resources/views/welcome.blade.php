@@ -8,7 +8,7 @@
         
         <title>{{ config('app.name') }} || Not Authorized</title>
         <!-- Favicon -->
-        <link rel="icon" type="image/x-icon" href="{{ asset('Logo/logo_white_01.png') }}" />
+        <link rel="icon" type="image/x-icon" href="{{ asset(config('app.favicon')) }}" />
 
         <!-- Start css -->
         @include('layouts.administration.partials.stylesheet')

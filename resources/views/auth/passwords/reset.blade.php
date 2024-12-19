@@ -83,7 +83,7 @@
                         <!-- Logo -->
                         <div class="app-brand mb-4">
                             <a href="{{ route('login') }}" class="app-brand-link gap-2">
-                                <img src="{{ asset('Logo/logo_black_01.png') }}" alt="{{ config('app.name') }}" width="30%">
+                                <img src="{{ asset(config('app.logo')) }}" alt="{{ config('app.name') }}" width="30%">
                             </a>
                         </div>
                         <!-- /Logo -->

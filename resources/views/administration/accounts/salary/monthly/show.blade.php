@@ -133,7 +133,7 @@
                         <div class="mb-0">
                             <div class="mb-2 app-brand-link">
                                 <span class="app-brand-logo demo">
-                                    <img src="{{ asset('Logo/logo_black_01.png') }}" width="100%">
+                                    <img src="{{ asset(config('app.logo')) }}" width="100%">
                                 </span>
                                 <span class="app-brand-text demo menu-text fw-bold">{{ config('app.name') }}</span>
                             </div>
