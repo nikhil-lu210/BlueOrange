@@ -50,7 +50,7 @@
                                             <span class="custom-option-title fs-4 text-bold">Unpaid Leave</span>
                                             <small>Mark The <b class="text-{{ $typeBg }}">{{ $leaveHistory->type }}</b> Leave as <b class="text-danger">Unpaid </b>Leave</small>
                                         </span>
-                                        <input name="is_paid_leave" class="form-check-input" type="radio" value="Unpaid" id="markAsUnpaid" required @disabled($leaveHistory->type === 'Earned')/>
+                                        <input name="is_paid_leave" class="form-check-input" type="radio" value="Unpaid" id="markAsUnpaid" required @checked($leaveHistory->type !== 'Earned') @disabled($leaveHistory->type === 'Earned')/>
                                     </label>
                                 </div>
                             </div>
