@@ -255,4 +255,15 @@
             });
         });
     </script>
+
+    <script>
+        $(document).ready(function () {
+            $("#barcodeScannerForm").on("keypress", function (event) {
+                // Check if the Enter key was pressed
+                if (event.which === 13) {
+                    event.preventDefault(); // Prevent form submission
+                }
+            });
+        });
+    </script>
 @endsection
