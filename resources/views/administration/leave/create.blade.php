@@ -57,7 +57,7 @@
                             </span>
                             <div class="content-right">
                                 <h5 class="text-success mb-0">{{ auth()->user()->available_leaves()->earned_leave }}</h5>
-                                <small class="mb-0 text-muted">Available Earned Leave ({{ date('Y') }})</small>
+                                <small class="mb-0 text-muted">Available <b class="text-dark">Earned Leave ({{ date('Y') }})</b></small>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-3">
@@ -66,7 +66,7 @@
                             </span>
                             <div class="content-right">
                                 <h5 class="text-warning mb-0">{{ auth()->user()->available_leaves()->sick_leave }}</h5>
-                                <small class="mb-0 text-muted">Available Earned Leave ({{ date('Y') }})</small>
+                                <small class="mb-0 text-muted">Available <b class="text-dark">Sick Leave ({{ date('Y') }})</b></small>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-3">
@@ -75,7 +75,7 @@
                             </span>
                             <div class="content-right">
                                 <h5 class="text-primary mb-0">{{ auth()->user()->available_leaves()->casual_leave }}</h5>
-                                <small class="mb-0 text-muted">Available Earned Leave ({{ date('Y') }})</small>
+                                <small class="mb-0 text-muted">Available <b class="text-dark">Casual Leave ({{ date('Y') }})</b></small>
                             </div>
                         </div>
                     </div>
