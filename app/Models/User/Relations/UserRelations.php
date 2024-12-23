@@ -1,32 +1,33 @@
 <?php
 
-namespace App\Models\User\Traits;
+namespace App\Models\User\Relations;
 
 use App\Models\User;
 use App\Models\Task\Task;
+use App\Models\Vault\Vault;
 use App\Models\Salary\Salary;
+use App\Models\Ticket\ItTicket;
 use App\Models\Task\TaskComment;
 use App\Models\Shortcut\Shortcut;
 use App\Models\User\LoginHistory;
+use App\Models\Leave\LeaveAllowed;
+use App\Models\Leave\LeaveHistory;
+use App\Models\Leave\LeaveAvailable;
 use App\Models\Attendance\Attendance;
+use App\Models\DailyBreak\DailyBreak;
+use App\Models\Chatting\ChattingGroup;
+use App\Models\User\Employee\Employee;
 use App\Models\Announcement\Announcement;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
-use App\Models\DailyBreak\DailyBreak;
-use App\Models\Leave\LeaveAllowed;
-use App\Models\Leave\LeaveAvailable;
-use App\Models\Leave\LeaveHistory;
-use App\Models\Ticket\ItTicket;
-use App\Models\User\Employee\Employee;
-use App\Models\Vault\Vault;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
-trait Relations
-{    
+trait UserRelations
+{
     /**
      * Get the employee associated with the user.
      */
@@ -34,8 +35,8 @@ trait Relations
     {
         return $this->hasOne(Employee::class);
     }
-    
-    
+
+
     /**
      * Get the login_logout_histories associated with the user.
      */
@@ -43,7 +44,15 @@ trait Relations
     {
         return $this->hasMany(LoginHistory::class);
     }
-    
+
+    /**
+     * Get the chatting_groups associated with the user.
+     */
+    public function chatting_groups(): BelongsToMany
+    {
+        return $this->belongsToMany(ChattingGroup::class, 'chatting_group_user')->withTimestamps();
+    }
+
     /**
      * Get the shortcuts associated with the user.
      */
@@ -51,7 +60,7 @@ trait Relations
     {
         return $this->hasMany(Shortcut::class);
     }
-    
+
     /**
      * Get the employee_shifts associated with the user.
      */
@@ -60,15 +69,7 @@ trait Relations
         return $this->hasMany(EmployeeShift::class);
     }
 
-    /**
-     * Get currently active employee_shift
-     */
-    public function getCurrentShiftAttribute()
-    {
-        return $this->employee_shifts()->where('status', 'active')->latest()->first();
-    }
 
-    
     /**
      * Get the leave_alloweds associated with the user.
      */
@@ -77,20 +78,8 @@ trait Relations
         return $this->hasMany(LeaveAllowed::class);
     }
 
-    /**
-     * Get the active allowed leave
-     */
-    public function getAllowedLeaveAttribute()
-    {
-        // Retrieve the first active leave_alloweds entry for the user
-        $activeLeave = $this->leave_alloweds()->where('is_active', true)->first();
-
-        // Check if an active leave entry exists
-        return $activeLeave ?: null; // Return the active leave entry or null if not found
-    }
 
 
-    
     /**
      * Get the leave_availables associated with the user.
      */
@@ -122,7 +111,7 @@ trait Relations
         return $leaveAvailable;
     }
 
-    
+
     /**
      * Get the leave_histories associated with the user.
      */
@@ -130,21 +119,13 @@ trait Relations
     {
         return $this->hasMany(LeaveHistory::class);
     }
-    
+
     /**
      * Get the salaries associated with the user.
      */
     public function salaries(): HasMany
     {
         return $this->hasMany(Salary::class);
-    }
-
-    /**
-     * Get currently active salary
-     */
-    public function getCurrentSalaryAttribute()
-    {
-        return $this->salaries()->where('status', 'active')->latest()->first();
     }
 
     /**
@@ -268,8 +249,8 @@ trait Relations
     public function tl_employees(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'employee_team_leader', 'team_leader_id', 'employee_id')
-                    ->withPivot('is_active')
-                    ->withTimestamps();
+            ->withPivot('is_active')
+            ->withTimestamps();
     }
 
     /**
@@ -278,8 +259,8 @@ trait Relations
     public function employee_team_leaders(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'employee_team_leader', 'employee_id', 'team_leader_id')
-                    ->withPivot('is_active')
-                    ->withTimestamps();
+            ->withPivot('is_active')
+            ->withTimestamps();
     }
 
     /**
@@ -305,7 +286,7 @@ trait Relations
     public function interacted_users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_interactions', 'user_id', 'interacted_user_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 
     /**
@@ -315,6 +296,6 @@ trait Relations
     public function interacting_users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_interactions', 'interacted_user_id', 'user_id')
-                    ->withTimestamps();
+            ->withTimestamps();
     }
 }
