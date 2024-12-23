@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models\DailyBreak\Traits;
+namespace App\Models\DailyBreak\Relations;
 
-use App\Models\Attendance\Attendance;
 use App\Models\User;
+use App\Models\Attendance\Attendance;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-trait Relations
+trait DailyBreakRelations
 {
     /**
      * Get the user for the daily_break.
