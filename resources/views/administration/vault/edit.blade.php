@@ -8,10 +8,10 @@
 
 @section('css_links')
     {{--  External CSS  --}}
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/quill/typography.css')}}" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/quill/katex.css')}}" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/quill/editor.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -136,11 +136,11 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
     <!-- Vendors JS -->
-    <script src="{{asset('assets/vendor/libs/quill/katex.js')}}"></script>
-    <script src="{{asset('assets/vendor/libs/quill/quill.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
 @endsection
 
 @section('custom_script')
