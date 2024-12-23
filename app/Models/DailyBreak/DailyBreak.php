@@ -31,9 +31,16 @@ class DailyBreak extends Model
     ];
 
     protected $casts = [
+        'user_id' => 'integer',
+        'attendance_id' => 'integer',
         'date' => 'date',
         'break_in_at' => 'datetime',
         'break_out_at' => 'datetime',
+        'total_time' => 'string',
+        'over_break' => 'string',
+        'type' => 'string',
+        'break_in_ip' => 'string',
+        'break_out_ip' => 'string',
         'note' => PurifyHtmlOnGet::class,
     ];
 
@@ -51,6 +58,7 @@ class DailyBreak extends Model
         'break_in_at',
         'break_out_at',
         'total_time',
+        'over_break',
         'type',
         'break_in_ip',
         'break_out_ip',
