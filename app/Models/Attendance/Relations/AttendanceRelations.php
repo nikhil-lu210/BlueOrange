@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Attendance\Traits;
+namespace App\Models\Attendance\Relations;
 
 use App\Models\User;
 use App\Models\DailyBreak\DailyBreak;
@@ -8,7 +8,7 @@ use App\Models\EmployeeShift\EmployeeShift;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-trait Relations
+trait AttendanceRelations
 {
     /**
      * Get the user for the attendance.
