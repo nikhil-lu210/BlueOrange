@@ -259,7 +259,7 @@ namespace App\Models\DailyBreak{
  * @property string $type
  * @property string $break_in_ip
  * @property string|null $break_out_ip
- * @property string|null $note
+ * @property string|array|null $note
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at

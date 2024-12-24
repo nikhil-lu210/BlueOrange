@@ -282,18 +282,41 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // dd($user);
+        // dd($user->toArray());
         try {
-            DB::transaction(function() use ($user) {
+            DB::transaction(function () use ($user) {
+                // Delete related roles
+                $user->roles()->detach(); // roles are many-to-many
+        
+                // Delete related employee
+                if ($user->employee) {
+                    $user->employee->delete(); // one-to-one relationship
+                }
+        
+                // Delete related media
+                if ($user->media) {
+                    foreach ($user->media as $media) { // one-to-many relationship
+                        $media->delete();
+                    }
+                }
+        
+                // Delete related shortcuts
+                if ($user->shortcuts) {
+                    foreach ($user->shortcuts as $shortcut) { // one-to-many relationship
+                        $shortcut->delete();
+                    }
+                }
+        
+                // Finally, delete the user
                 $user->delete();
             }, 5);
-
+        
             toast('User Has Been Deleted.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back();
-        }
+        }        
     }
 
 

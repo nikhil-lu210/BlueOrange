@@ -28,11 +28,7 @@ class User extends Authenticatable implements HasMedia
     use UserAccessors, UserMutators;
     
     protected $cascadeDeletes = [
-        'employee', 
-        'shortcuts', 
-        'employee_shifts', 
-        'attendances', 
-        'daily_breaks'
+        'employee',
     ];
 
     protected $dates = [
