@@ -67,6 +67,7 @@
                                 <th>Status</th>
                                 <th>Total Income</th>
                                 <th>Total Expense</th>
+                                <th>Profit/Loss</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -97,6 +98,15 @@
                                             <span class="text-dark text-bold">Expenses: </span>
                                             {{ $category->expenses_count }}
                                         </span>
+                                    </td>                                    
+                                    <td>
+                                        @php
+                                            $profitOrLoss = ($category->total_income - $category->total_expense) > 0 ? 'Profit' : 'Loss';
+                                            $color = ($category->total_income - $category->total_expense) > 0 ? 'text-success' : 'text-danger';
+                                        @endphp
+                                        <b class="{{ $color }}" title="Total {{ $profitOrLoss }}">
+                                            {{ format_currency($category->total_income - $category->total_expense) }}
+                                        </b>
                                     </td>
                                     <td class="text-center">
                                         <a href="{{ route('administration.accounts.income_expense.category.show', ['category' => $category]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">

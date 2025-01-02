@@ -114,7 +114,7 @@
                         <div class="card mb-4 border-0">
                             <div class="card-body">
                                 <div class="d-flex align-items-center gap-3">
-                                    <span class="bg-label-success p-2 rounded">
+                                    <span class="bg-label-success p-2 rounded" title="{{ __('Total Income') }}">
                                         <i class="ti ti-trending-up ti-xl"></i>
                                     </span>
                                     <div class="content-right">
@@ -130,7 +130,7 @@
                         <div class="card mb-4 border-0">
                             <div class="card-body">
                                 <div class="d-flex align-items-center gap-3">
-                                    <span class="bg-label-danger p-2 rounded">
+                                    <span class="bg-label-danger p-2 rounded" title="{{ __('Total Expense') }}">
                                         <i class="ti ti-trending-down ti-xl"></i>
                                     </span>
                                     <div class="content-right">
@@ -139,6 +139,23 @@
                                             <b class="text-dark">Expenses: </b>
                                             {{ $category->expenses_count }}
                                         </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-4 border-0">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center gap-3">
+                                    @php
+                                        $profitOrLoss = ($category->total_income - $category->total_expense) > 0 ? 'Profit' : 'Loss';
+                                        $color = ($category->total_income - $category->total_expense) > 0 ? 'success' : 'danger';
+                                    @endphp
+                                    <span class="bg-label-{{ $color }} p-2 rounded" title="Total {{ $profitOrLoss }}">
+                                        <i class="ti ti-chart-histogram ti-xl"></i>
+                                    </span>
+                                    <div class="content-right">
+                                        <h5 class="text-{{ $color }} mb-0">{{ format_currency($category->total_income - $category->total_expense) }}</h5>
+                                        <small class="mb-0 text-muted">Total <span class="text-dark">{{ $profitOrLoss }}</span></small>
                                     </div>
                                 </div>
                             </div>
