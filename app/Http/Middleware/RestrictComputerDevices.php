@@ -25,7 +25,7 @@ class RestrictComputerDevices
         $computerRestriction = Settings::where('key', 'computer_restriction')->value('value');
         // dd($computerRestriction, ($computerRestriction === 'enabled' && $agent->isDesktop()));
 
-        if ($computerRestriction === 'enabled' && $agent->isDesktop()) {
+        if ($computerRestriction === 'enabled' && $agent->isDesktop() && auth()->user()->roles[0]->name !== 'Developer') {
             return response()->view('errors.restrctions.computer', [], 403);
         }
 

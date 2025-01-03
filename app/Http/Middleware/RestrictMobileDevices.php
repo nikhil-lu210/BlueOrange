@@ -25,7 +25,7 @@ class RestrictMobileDevices
         $mobileRestriction = Settings::where('key', 'mobile_restriction')->value('value');
         // dd($mobileRestriction, ($mobileRestriction === 'enabled' && $agent->isMobile()));
 
-        if ($mobileRestriction === 'enabled' && $agent->isMobile()) {
+        if ($mobileRestriction === 'enabled' && $agent->isMobile() && auth()->user()->roles[0]->name !== 'Developer') {
             return response()->view('errors.mobile_restriction', [], 403);
         }
 
