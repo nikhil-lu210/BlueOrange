@@ -10,18 +10,19 @@ class SettingsSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     * 
+     * Command: php artisan db:seed --class=Database\Seeders\Settings\SettingsSeeder
      */
     public function run(): void
     {
-        Settings::create(
-            [
-                'key' => 'mobile_restriction',
-                'value' => 'enabled',
-            ],
-            [
-                'key' => 'computer_restriction',
-                'value' => 'disabled',
-            ],
-        );
+        Settings::create([
+            'key' => 'mobile_restriction',
+            'value' => false,
+        ]);
+
+        Settings::create([
+            'key' => 'computer_restriction',
+            'value' => false,
+        ]);
     }
 }

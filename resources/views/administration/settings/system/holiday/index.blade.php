@@ -35,9 +35,8 @@
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Role & Permission') }}</li>
-    <li class="breadcrumb-item">{{ __('Permission') }}</li>
-    <li class="breadcrumb-item active">{{ __('All Holidays') }}</li>
+    <li class="breadcrumb-item">{{ __('System Settings') }}</li>
+    <li class="breadcrumb-item active">{{ __('Holidays') }}</li>
 @endsection
 
 
