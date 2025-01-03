@@ -8,7 +8,7 @@ use Jenssegers\Agent\Agent;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class RestrictMobileDevices
+class RestrictComputerDevices
 {
     /**
      * Handle an incoming request.
@@ -22,11 +22,11 @@ class RestrictMobileDevices
          */
         $agent = new Agent();
 
-        $mobileRestriction = Settings::where('key', 'mobile_restriction')->value('value');
-        // dd($mobileRestriction, ($mobileRestriction === 'enabled' && $agent->isMobile()));
+        $computerRestriction = Settings::where('key', 'computer_restriction')->value('value');
+        // dd($computerRestriction, ($computerRestriction === 'enabled' && $agent->isDesktop()));
 
-        if ($mobileRestriction === 'enabled' && $agent->isMobile()) {
-            return response()->view('errors.mobile_restriction', [], 403);
+        if ($computerRestriction === 'enabled' && $agent->isDesktop()) {
+            return response()->view('errors.restrctions.computer', [], 403);
         }
 
         return $next($request);

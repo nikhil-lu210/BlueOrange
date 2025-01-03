@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 // Route::prefix('administration')
 Route::prefix('')
         ->name('administration.')
-        ->middleware(['localization', 'restrict.mobile'])
+        ->middleware(['localization', 'restrict.mobile', 'restrict.computer'])
         ->group(function () {
             // logs
             include_once 'logs/logs.php';

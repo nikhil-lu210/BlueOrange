@@ -73,5 +73,6 @@ class Kernel extends HttpKernel
         // other middlewares...
         'active_user' => \App\Http\Middleware\CheckActiveUser::class,
         'restrict.mobile' => \App\Http\Middleware\RestrictMobileDevices::class,
+        'restrict.computer' => \App\Http\Middleware\RestrictComputerDevices::class,
     ];
 }
