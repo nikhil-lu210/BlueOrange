@@ -381,6 +381,23 @@
                     <div data-i18n="System Settings">{{ __('System Settings') }}</div>
                 </a>
                 <ul class="menu-sub">
+                    @canany (['App Setting Update', 'App Setting Read'])
+                        <li class="menu-item {{ request()->is('settings/system/app_setting*') ? 'active open' : '' }}">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <div data-i18n="App Setting">{{ __('App Settings') }}</div>
+                            </a>
+                            <ul class="menu-sub">
+                                @can ('App Setting Update') 
+                                    <li class="menu-item {{ request()->is('settings/system/app_setting/restrictions*') ? 'active' : '' }}">
+                                        <a href="{{ route('administration.settings.system.app_setting.restriction.index') }}" class="menu-link">
+                                            <div data-i18n="Restrictions">{{ __('Restrictions') }}</div>
+                                        </a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </li>
+                    @endcanany
+
                     @can ('Weekend Read') 
                         <li class="menu-item {{ request()->is('settings/system/weekend*') ? 'active' : '' }}">
                             <a href="{{ route('administration.settings.system.weekend.index') }}" class="menu-link">{{ __('Weekends') }}</a>

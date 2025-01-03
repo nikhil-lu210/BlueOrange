@@ -10,6 +10,7 @@
         "dyrynda/laravel-cascade-soft-deletes": "^4.3",
         "endroid/qr-code": "^5.0",
         "guzzlehttp/guzzle": "^7.5",
+        "jenssegers/agent": "^2.6",
         "laravel/framework": "^10.48",
         "laravel/sanctum": "^3.2",
         "laravel/tinker": "^2.8",

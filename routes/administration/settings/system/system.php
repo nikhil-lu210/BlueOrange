@@ -13,4 +13,6 @@ Route::prefix('system')
             include_once 'weekend/weekend.php';
             // holiday
             include_once 'holiday/holiday.php';
+            // app_setting
+            include_once 'app_setting/app_setting.php';
         });

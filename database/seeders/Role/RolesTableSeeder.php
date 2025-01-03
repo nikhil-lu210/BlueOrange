@@ -24,6 +24,12 @@ class RolesTableSeeder extends Seeder
             // Assign permissions to roles based on the module
             if ($role === 'Developer') {
                 $permissions = [
+                    'App Setting Everything',
+                    'App Setting Create',
+                    'App Setting Read',
+                    'App Setting Update',
+                    'App Setting Delete',
+                    
                     'Logs Everything',
                     'Logs Create',
                     'Logs Read',
