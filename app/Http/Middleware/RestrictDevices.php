@@ -10,43 +10,18 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RestrictDevices
 {
-    // /**
-    //  * Handle an incoming request.
-    //  *
-    //  * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-    //  */
-    // public function handle(Request $request, Closure $next): Response
-    // {
-    //     /**
-    //      * Reference: https://github.com/jenssegers/agent
-    //      */
-    //     $agent = new Agent();
-    //     // dd($agent, $agent->isMobile(), $agent->isDesktop());
-
-    //     $mobileRestriction = Settings::where('key', 'mobile_restriction')->value('value');
-    //     $computerRestriction = Settings::where('key', 'computer_restriction')->value('value');
-
-    //     $userRole = auth()->check() ? auth()->user()->roles[0]->name : null;
-
-    //     // Restrict Mobile
-    //     if ($mobileRestriction && $agent->isMobile() && $userRole !== 'Developer') {
-    //         return response()->view('errors.restrictions.mobile', [], 403);
-    //     }
-
-    //     // Restrict Computer
-    //     if ($computerRestriction && $agent->isDesktop() && $userRole !== 'Developer') {
-    //         return response()->view('errors.restrictions.computer', [], 403);
-    //     }
-
-    //     return $next($request);
-    // }
-
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
+     */
     public function handle(Request $request, Closure $next): Response
     {
         /**
          * Reference: https://github.com/jenssegers/agent
          */
         $agent = new Agent();
+        dd($agent->platform());
 
         $mobileRestriction = Settings::where('key', 'mobile_restriction')->value('value');
         $computerRestriction = Settings::where('key', 'computer_restriction')->value('value');
