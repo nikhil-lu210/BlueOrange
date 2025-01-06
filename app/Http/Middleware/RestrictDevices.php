@@ -21,7 +21,6 @@ class RestrictDevices
          * Reference: https://github.com/jenssegers/agent
          */
         $agent = new Agent();
-        // dd($agent, $agent->platform(), $this->isTrulyMobile($agent));
 
         $mobileRestriction = Settings::where('key', 'mobile_restriction')->value('value');
         $computerRestriction = Settings::where('key', 'computer_restriction')->value('value');
@@ -29,12 +28,12 @@ class RestrictDevices
         $userRole = auth()->check() ? auth()->user()->roles[0]->name : null;
 
         // Detect if the device is a mobile
-        if ($mobileRestriction && $this->isTrulyMobile($agent) && $userRole !== 'Developer') {
+        if ($mobileRestriction && $this->isTrulyMobile($agent, $request) && $userRole !== 'Developer') {
             return response()->view('errors.restrictions.mobile', [], 403);
         }
 
         // Detect if the device is a desktop
-        if ($computerRestriction && !$this->isTrulyMobile($agent) && $userRole !== 'Developer') {
+        if ($computerRestriction && !$this->isTrulyMobile($agent, $request) && $userRole !== 'Developer') {
             return response()->view('errors.restrictions.computer', [], 403);
         }
 
@@ -44,9 +43,16 @@ class RestrictDevices
     /**
      * Determine if the device is truly a mobile device.
      */
-    private function isTrulyMobile(Agent $agent): bool
+    private function isTrulyMobile(Agent $agent, Request $request): bool
     {
-        // Check if the device is mobile using both device and platform detection
-        return $agent->isMobile() || in_array($agent->platform(), ['iOS', 'Android', 'AndroidOS', 'Linux']);
+        $userAgent = $request->userAgent();
+
+        // Check if the device is a known mobile device
+        $isMobile = $agent->isMobile() || preg_match('/Mobile|iPhone|Android|AndroidOS|Windows Phone|webOS|BlackBerry/i', $userAgent) || in_array($agent->platform(), ['iOS', 'Android', 'AndroidOS']);
+
+        // Exclude desktop modes on mobile devices
+        $isDesktopMode = preg_match('/Linux|Macintosh|Windows NT/i', $userAgent) && !$agent->isTablet();
+
+        return $isMobile && !$isDesktopMode;
     }
 }
