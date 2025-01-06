@@ -18,7 +18,7 @@ class RestrictDevices
     public function handle(Request $request, Closure $next): Response
     {
         $agent = new Agent();
-        dd($agent, $agent->platform(), $this->isTrulyMobile($agent), $agent->device());
+        dd($agent, $agent->platform(), $this->isTrulyMobile($agent, $request), $agent->device());
 
         $mobileRestriction = Settings::where('key', 'mobile_restriction')->value('value');
         $computerRestriction = Settings::where('key', 'computer_restriction')->value('value');
@@ -26,12 +26,12 @@ class RestrictDevices
         $userRole = auth()->check() ? auth()->user()->roles[0]->name : null;
 
         // Detect if the device is a mobile
-        if ($mobileRestriction && $this->isTrulyMobile($agent) && $userRole !== 'Developer') {
+        if ($mobileRestriction && $this->isTrulyMobile($agent, $request) && $userRole !== 'Developer') {
             return response()->view('errors.restrictions.mobile', [], 403);
         }
 
         // Detect if the device is a desktop
-        if ($computerRestriction && !$this->isTrulyMobile($agent) && $userRole !== 'Developer') {
+        if ($computerRestriction && !$this->isTrulyMobile($agent, $request) && $userRole !== 'Developer') {
             return response()->view('errors.restrictions.computer', [], 403);
         }
 
@@ -41,20 +41,23 @@ class RestrictDevices
     /**
      * Determine if the device is truly a mobile device.
      */
-    private function isTrulyMobile(Agent $agent): bool
+    private function isTrulyMobile(Agent $agent, Request $request): bool
     {
-        // Check if the device is mobile using a combination of device name, platform, and general detection
-        return $agent->isMobile() 
-            || $this->isKnownMobileDevice($agent->device()) 
-            || in_array($agent->platform(), ['iOS', 'Android', 'AndroidOS']);
+        $parsedAgent = $this->parseUserAgent($request);
+
+        // Combine agent library detection and manual parsing
+        return $agent->isMobile() || $parsedAgent['isMobile'];
     }
 
-    /**
-     * Check if the device name indicates a mobile device.
-     */
-    private function isKnownMobileDevice(?string $device): bool
+    private function parseUserAgent(Request $request): array
     {
-        $knownMobileDevices = ['iPhone', 'Samsung', 'Huawei', 'Xiaomi', 'OnePlus', 'Pixel', 'Nokia'];
-        return $device && in_array($device, $knownMobileDevices, true);
+        $userAgent = $request->userAgent();
+
+        return [
+            'isMobile' => preg_match('/Mobile|iPhone|Android|Windows Phone|webOS|BlackBerry/i', $userAgent),
+            'isDesktop' => preg_match('/Windows NT|Macintosh|Linux|X11/i', $userAgent),
+            'userAgent' => $userAgent,
+        ];
     }
+
 }
