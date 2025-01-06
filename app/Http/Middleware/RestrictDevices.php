@@ -17,8 +17,11 @@ class RestrictDevices
      */
     public function handle(Request $request, Closure $next): Response
     {
+        /**
+         * Reference: https://github.com/jenssegers/agent
+         */
         $agent = new Agent();
-        dd($agent, $agent->platform(), $this->isTrulyMobile($agent, $request), $agent->device());
+        // dd($agent, $agent->platform(), $this->isTrulyMobile($agent));
 
         $mobileRestriction = Settings::where('key', 'mobile_restriction')->value('value');
         $computerRestriction = Settings::where('key', 'computer_restriction')->value('value');
@@ -26,12 +29,12 @@ class RestrictDevices
         $userRole = auth()->check() ? auth()->user()->roles[0]->name : null;
 
         // Detect if the device is a mobile
-        if ($mobileRestriction && $this->isTrulyMobile($agent, $request) && $userRole !== 'Developer') {
+        if ($mobileRestriction && $this->isTrulyMobile($agent) && $userRole !== 'Developer') {
             return response()->view('errors.restrictions.mobile', [], 403);
         }
 
         // Detect if the device is a desktop
-        if ($computerRestriction && !$this->isTrulyMobile($agent, $request) && $userRole !== 'Developer') {
+        if ($computerRestriction && !$this->isTrulyMobile($agent) && $userRole !== 'Developer') {
             return response()->view('errors.restrictions.computer', [], 403);
         }
 
@@ -41,23 +44,9 @@ class RestrictDevices
     /**
      * Determine if the device is truly a mobile device.
      */
-    private function isTrulyMobile(Agent $agent, Request $request): bool
+    private function isTrulyMobile(Agent $agent): bool
     {
-        $parsedAgent = $this->parseUserAgent($request);
-
-        // Combine agent library detection and manual parsing
-        return $agent->isMobile() || $parsedAgent['isMobile'];
+        // Check if the device is mobile using both device and platform detection
+        return $agent->isMobile() || in_array($agent->platform(), ['iOS', 'Android', 'AndroidOS', 'Linux']);
     }
-
-    private function parseUserAgent(Request $request): array
-    {
-        $userAgent = $request->userAgent();
-
-        return [
-            'isMobile' => preg_match('/Mobile|iPhone|Android|Windows Phone|webOS|BlackBerry/i', $userAgent),
-            'isDesktop' => preg_match('/Windows NT|Macintosh|Linux|X11/i', $userAgent),
-            'userAgent' => $userAgent,
-        ];
-    }
-
 }
