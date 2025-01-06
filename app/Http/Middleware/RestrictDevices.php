@@ -17,11 +17,8 @@ class RestrictDevices
      */
     public function handle(Request $request, Closure $next): Response
     {
-        /**
-         * Reference: https://github.com/jenssegers/agent
-         */
         $agent = new Agent();
-        dd($agent, $agent->platform(), $this->isTrulyMobile($agent));
+        dd($agent, $agent->platform(), $this->isTrulyMobile($agent), $agent->device());
 
         $mobileRestriction = Settings::where('key', 'mobile_restriction')->value('value');
         $computerRestriction = Settings::where('key', 'computer_restriction')->value('value');
@@ -46,7 +43,18 @@ class RestrictDevices
      */
     private function isTrulyMobile(Agent $agent): bool
     {
-        // Check if the device is mobile using both device and platform detection
-        return $agent->isMobile() || in_array($agent->platform(), ['iOS', 'Android', 'AndroidOS']);
+        // Check if the device is mobile using a combination of device name, platform, and general detection
+        return $agent->isMobile() 
+            || $this->isKnownMobileDevice($agent->device()) 
+            || in_array($agent->platform(), ['iOS', 'Android', 'AndroidOS']);
+    }
+
+    /**
+     * Check if the device name indicates a mobile device.
+     */
+    private function isKnownMobileDevice(?string $device): bool
+    {
+        $knownMobileDevices = ['iPhone', 'Samsung', 'Huawei', 'Xiaomi', 'OnePlus', 'Pixel', 'Nokia'];
+        return $device && in_array($device, $knownMobileDevices, true);
     }
 }
