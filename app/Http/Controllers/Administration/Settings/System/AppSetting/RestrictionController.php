@@ -42,12 +42,12 @@ class RestrictionController extends Controller
         // Update or create settings for mobile and computer restrictions
         Settings::updateOrCreate(
             ['key' => 'mobile_restriction'],
-            ['value' => $request->has('mobile_restriction') ? 1 : 0]
+            ['value' => $request->has('mobile_restriction') ? true : false]
         );
 
         Settings::updateOrCreate(
             ['key' => 'computer_restriction'],
-            ['value' => $request->has('computer_restriction') ? 1 : 0]
+            ['value' => $request->has('computer_restriction') ? true : false]
         );
 
         toast('Device Restriction Updated', 'success');
