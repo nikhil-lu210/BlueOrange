@@ -17,6 +17,11 @@ class RestrictDevices
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Skip restriction if the user is marked as unrestricted
+        if ($request->attributes->get('unrestricted_user')) {
+            return $next($request);
+        }
+        
         /**
          * Reference: https://github.com/jenssegers/agent
          */
