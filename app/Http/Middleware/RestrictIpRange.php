@@ -16,6 +16,11 @@ class RestrictIpRange
      */
     public function handle(Request $request, Closure $next): Response
     {
+        // Skip restriction if the user is marked as unrestricted
+        if ($request->attributes->get('unrestricted_user')) {
+            return $next($request);
+        }
+        
         // Get the allowed IP ranges from the settings
         $ipRanges = Settings::where('key', 'allowed_ip_ranges')->value('value');
         $allowedIpRanges = json_decode($ipRanges, true) ?? [];

@@ -17,4 +17,7 @@ Route::controller(RestrictionController::class)
 
             Route::put('/update/ip_range', 'updateIpRange')->name('update.ip.range')->can('App Setting Update');
             Route::get('/destroy/ip_range/{id}', 'destroyIpRange')->name('destroy.ip.range')->can('App Setting Delete');
+
+            Route::put('/update/user', 'updateUnrestrictedUser')->name('update.user')->can('App Setting Update');
+            Route::get('/destroy/user/{id}', 'destroyUnrestrictedUser')->name('destroy.user')->can('App Setting Delete');
         });

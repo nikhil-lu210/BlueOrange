@@ -16,25 +16,27 @@
                         <thead>
                             <tr>
                                 <th>Sl.</th>
-                                <th>IP Address / CIDR</th>
+                                <th>User</th>
                                 <th>Assigned By</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($ipRanges as $key => $range) 
+                            @foreach ($unrestrictedUsers as $key => $user) 
                                 <tr>
                                     <th>#{{ $key+1 }}</th>
-                                    <td class="text-dark text-bold">
-                                        {{ $range['ip_address'] }}/<sub>{{ $range['range'] }}</sub>
+                                    <td>
+                                        <b class="text-dark">{{ show_user_data($user['user_id'], 'name') }}</b>
+                                        <br>
+                                        <small class="text-muted">{{ show_employee_data($user['user_id'], 'alias_name') }}</small>
                                     </td>
                                     <td>
-                                        <b class="text-dark">{{ show_user_data($range['created_by'], 'name') }}</b>
+                                        <b class="text-dark">{{ show_user_data($user['assigned_by'], 'name') }}</b>
                                         <br>
-                                        <small class="text-muted">{{ date_time_ago($range['created_at']) }}</small>
+                                        <small class="text-muted">{{ date_time_ago($user['created_at']) }}</small>
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('administration.settings.system.app_setting.restriction.destroy.ip.range', ['id' => $range['id']]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete IP Range?">
+                                        <a href="{{ route('administration.settings.system.app_setting.restriction.destroy.user', ['id' => $user['id']]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Remove Unrestricted User?">
                                             <i class="ti ti-trash"></i>
                                         </a>
                                     </td>
@@ -60,29 +62,33 @@
                     <p class="text-muted">Assign A New Unrestricted User</p>
                 </div>
                 <!-- Create IP Range form -->
-                <form action="{{ route('administration.settings.system.app_setting.restriction.update.ip.range') }}" method="POST" autocomplete="off">
+                <form action="{{ route('administration.settings.system.app_setting.restriction.update.user') }}" method="POST" autocomplete="off">
                     @csrf
                     @method('PUT')
                     <div class="row">
-                        <div class="mb-3 col-md-8">
-                            <label class="form-label">{{ __('IP Address') }} <b class="text-danger">*</b></label>
-                            <input type="text" name="ip_address" value="{{ request()->ip_address ?? old('ip_address') }}" class="form-control" placeholder="192.168.0.1" required/>
-                            @error('ip_address')
-                                <span class="text-danger">{{ $message }}</span>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-4">
-                            <label class="form-label">{{ __('IP Range (CIDR)') }} <b class="text-danger">*</b></label>
-                            <input type="number" name="range" value="{{ request()->range ?? old('range') }}" class="form-control" placeholder="18" min="0" max="32" required/>
-                            @error('range')
-                                <span class="text-danger">{{ $message }}</span>
+                        <div class="mb-3 col-md-12">
+                            <label for="user_id" class="form-label">Select User <strong class="text-danger">*</strong></label>
+                            <select name="user_id" id="addUser" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true" required>
+                                <option value="" selected disabled>Select User</option>
+                                @foreach ($roleUsers as $role)
+                                    <optgroup label="{{ $role->name }}">
+                                        @foreach ($role->users as $user)
+                                            <option value="{{ $user->id }}" {{ in_array($user->id, old('user_id', [])) ? 'selected' : '' }}>
+                                                {{ get_employee_name($user) }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+                            </select>
+                            @error('user_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="col-12 text-center mt-4">
                             <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                             <button type="submit" class="btn btn-primary">
                                 <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                                {{ __('Store IP Range') }}
+                                {{ __('Assign User') }}
                             </button>
                         </div>
                     </div>
