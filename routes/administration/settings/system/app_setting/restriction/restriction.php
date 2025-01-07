@@ -12,5 +12,9 @@ Route::controller(RestrictionController::class)
         ->name('restriction.')
         ->group(function () {
             Route::get('/', 'index')->name('index')->can('App Setting Update');
-            Route::put('/update', 'update')->name('update')->can('App Setting Update');
+            
+            Route::put('/update/device', 'updateDeviceRestriction')->name('update.device')->can('App Setting Update');
+
+            Route::put('/update/ip_range', 'updateIpRange')->name('update.ip.range')->can('App Setting Update');
+            Route::get('/destroy/ip_range/{id}', 'destroyIpRange')->name('destroy.ip.range')->can('App Setting Delete');
         });
