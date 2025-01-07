@@ -20,12 +20,18 @@ class RestrictIpRange
         $ipRanges = Settings::where('key', 'allowed_ip_ranges')->value('value');
         $allowedIpRanges = json_decode($ipRanges, true) ?? [];
         $userIp = $request->ip();
+        // dd($allowedIpRanges, $allowedIpRanges === []);
 
         // Get the user role (assuming user is authenticated)
         $userRole = auth()->check() ? auth()->user()->roles[0]->name : null;
 
         // Allow local IPs or users with 'Developer' role
         if (in_array($userIp, ['127.0.0.1', '::1']) || $userRole === 'Developer') {
+            return $next($request);
+        }
+
+        // If no IP ranges are set (empty array), allow all requests
+        if (empty($allowedIpRanges)) {
             return $next($request);
         }
 
