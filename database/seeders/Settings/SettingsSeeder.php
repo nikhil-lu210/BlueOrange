@@ -29,5 +29,10 @@ class SettingsSeeder extends Seeder
             'key' => 'allowed_ip_ranges',
             'value' => '[]',
         ]);
+
+        Settings::create([
+            'key' => 'unrestricted_users',
+            'value' => '[]',
+        ]);
     }
 }
