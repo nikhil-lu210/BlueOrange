@@ -24,5 +24,10 @@ class SettingsSeeder extends Seeder
             'key' => 'computer_restriction',
             'value' => false,
         ]);
+
+        Settings::create([
+            'key' => 'allowed_ip_ranges',
+            'value' => '[]',
+        ]);
     }
 }

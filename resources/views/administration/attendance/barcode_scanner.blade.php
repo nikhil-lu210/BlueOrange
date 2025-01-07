@@ -256,7 +256,7 @@
         });
     </script>
 
-    <script>
+    {{-- <script>
         $(document).ready(function () {
             $("#barcodeScannerForm").on("keypress", function (event) {
                 // Check if the Enter key was pressed
@@ -265,5 +265,5 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 @endsection
