@@ -21,7 +21,7 @@ class VaultUpdateRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'url' => ['sometimes', 'url'],
+            'url' => ['nullable', 'url'],
             'username' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:1'],
             'note' => ['sometimes', 'string'],
