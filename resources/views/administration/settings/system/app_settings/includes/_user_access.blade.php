@@ -72,11 +72,11 @@
                                 <option value="" selected disabled>Select User</option>
                                 @foreach ($roleUsers as $role)
                                     <optgroup label="{{ $role->name }}">
-                                        @foreach ($role->users as $user)
-                                            <option value="{{ $user->id }}" {{ in_array($user->id, old('user_id', [])) ? 'selected' : '' }}>
-                                                {{ get_employee_name($user) }}
-                                            </option>
-                                        @endforeach
+                                        @forelse ($role->users as $user)
+                                            <option value="{{ $user->id }}" {{ in_array($user->id, old('user_id', [])) ? 'selected' : '' }}>{{ get_employee_name($user) }}</option>
+                                        @empty
+                                            <option value="" disabled>No Users for {{ $role->name }}</option>
+                                        @endforelse
                                     </optgroup>
                                 @endforeach
                             </select>
