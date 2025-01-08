@@ -28,26 +28,30 @@ class RestrictionController extends Controller
 
         // Fetch IP ranges from settings
         $ipRanges = Settings::where('key', 'allowed_ip_ranges')
-        ->value('value'); // Get the JSON value
+            ->value('value'); // Get the JSON value
 
         $ipRanges = json_decode($ipRanges, true) ?? []; // Decode JSON and ensure it's an array
 
-        $roleUsers = Role::select(['id', 'name'])->with([
-                            'users' => function ($user) {
-                                $user->select(['id', 'name'])
-                                    ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                                    ->where('id', '!=', auth()->user()->id)
-                                    ->whereStatus('Active');
-                            }
-                        ])->distinct()->get();
-
+        // Fetch unrestricted users
         $unrestrictedUsersJson = Settings::where('key', 'unrestricted_users')->value('value');
         $unrestrictedUsers = json_decode($unrestrictedUsersJson, true) ?? [];
+        $unrestrictedUserIds = collect($unrestrictedUsers)->pluck('user_id')->toArray();
+
+        // Fetch role users excluding unrestricted users
+        $roleUsers = Role::select(['id', 'name'])->with([
+            'users' => function ($user) use ($unrestrictedUserIds) {
+                $user->select(['id', 'name'])
+                    ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                    ->whereNotIn('id', $unrestrictedUserIds) // Exclude unrestricted users
+                    ->whereStatus('Active');
+            }
+        ])->distinct()->get();
 
         return view('administration.settings.system.app_settings.restrictions', compact([
             'devices', 'restrictions', 'ipRanges', 'roleUsers', 'unrestrictedUsers'
         ]));
     }
+
 
 
     /**
