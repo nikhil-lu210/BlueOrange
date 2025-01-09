@@ -6,7 +6,6 @@ use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Attendance\Attendance;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Services\Administration\User\UserService;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
@@ -59,7 +58,7 @@ class UserController extends Controller
      */
     public function showProfile(User $user)
     {
-        $user = $this->userService->getUserById($user);
+        $user = $this->userService->getUser($user);
         return view('administration.settings.user.includes.profile', compact('user'));
     }
 
@@ -68,10 +67,10 @@ class UserController extends Controller
      */
     public function showAttendance(User $user)
     {
-        $user = $this->userService->getUserById($user);
+        $user = $this->userService->getUser($user);
 
         $attendances = $user->attendances;
-        
+
         return view('administration.settings.user.includes.attendance', compact(['user', 'attendances']));
     }
 
@@ -80,7 +79,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $user = $this->userService->getUserById($user);
+        $user = $this->userService->getUser($user);
         $roles = $this->userService->getAllRoles();
 
         return view('administration.settings.user.edit', compact(['roles', 'user']));

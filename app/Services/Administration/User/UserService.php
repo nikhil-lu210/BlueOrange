@@ -62,7 +62,7 @@ class UserService
         });
     }
 
-    public function getUserById(User $user)
+    public function getUser(User $user)
     {
         return User::with(['roles', 'media'])->findOrFail($user->id);
     }
