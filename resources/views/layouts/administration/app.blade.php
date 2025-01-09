@@ -55,7 +55,6 @@
                             @endif
 
                             @if (session('error'))
-                                <hr>
                                 <div class="row justify-content-center">
                                     <div class="col-md-8">
                                         <div class="alert alert-danger alert-dismissible" role="alert">
