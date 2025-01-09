@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 ===============< User Interation Routes >==============
 =====================================================*/
 Route::controller(UserInteractionController::class)
-        ->prefix('show/{user:userid}/user_interaction')
+        ->prefix('show/{user}/user_interaction')
         ->name('user_interaction.')
         ->group(function () {
             Route::get('/', 'index')->name('index')->can('User Interaction Read');

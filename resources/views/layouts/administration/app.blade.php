@@ -43,13 +43,25 @@
                             @if ($errors->any())
                                 <div class="row justify-content-center">
                                     <div class="col-md-8">
-                                        @foreach ($errors->all() as $error) 
+                                        @foreach ($errors->all() as $error)
                                             <div class="alert alert-danger alert-dismissible" role="alert">
                                                 <i class="ti ti-ban mr-3" style="margin-top: -3px;"></i>
                                                 {{ $error }}
                                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                             </div>
                                         @endforeach
+                                    </div>
+                                </div>
+                            @endif
+
+                            @if (session('error'))
+                                <div class="row justify-content-center">
+                                    <div class="col-md-8">
+                                        <div class="alert alert-danger alert-dismissible" role="alert">
+                                            <i class="ti ti-ban mr-3" style="margin-top: -3px;"></i>
+                                            {{ session('error') }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
                                     </div>
                                 </div>
                             @endif

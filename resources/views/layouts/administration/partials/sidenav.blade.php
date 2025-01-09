@@ -426,6 +426,11 @@
                         </li>
                     @endcan
                     @can ('User Create')
+                        <li class="menu-item {{ request()->is('settings/user/barcode*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.settings.user.barcode.all') }}" class="menu-link">{{ __('All Barcodes') }}</a>
+                        </li>
+                    @endcan
+                    @can ('User Create')
                         <li class="menu-item {{ request()->is('settings/user/create*') ? 'active' : '' }}">
                             <a href="{{ route('administration.settings.user.create') }}" class="menu-link">{{ __('Create New User') }}</a>
                         </li>
