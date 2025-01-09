@@ -96,7 +96,6 @@ class UserController extends Controller
             toast('User information has been updated.','success');
             return redirect()->route('administration.settings.user.show.profile', ['user' => $user]);
         } catch (Exception $e) {
-            dd($e->getMessage());
             return back()->withError($e->getMessage())->withInput();
         }
     }
@@ -116,7 +115,6 @@ class UserController extends Controller
             toast('Employee\'s Shift Has Been Updated.','success');
             return redirect()->back();
         } catch (Exception $e) {
-            dd($e->getMessage());
             return back()->withError($e->getMessage())->withInput();
         }
     }
@@ -146,7 +144,6 @@ class UserController extends Controller
             toast('QR Code Generated Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
-            dd($e->getMessage());
             return back()->withError($e->getMessage())->withInput();
         }
     }
@@ -160,7 +157,6 @@ class UserController extends Controller
             toast('Bar Code Generated Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
-            dd($e->getMessage());
             return back()->withError($e->getMessage())->withInput();
         }
     }
