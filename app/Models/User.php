@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasCustomRouteId;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\Permission\Traits\HasRoles;
@@ -19,7 +20,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable, Authorizable, HasRoles, InteractsWithMedia, SoftDeletes, CascadeSoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, Authorizable, HasRoles, InteractsWithMedia, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
 
     // Relations 
     use UserRelations;

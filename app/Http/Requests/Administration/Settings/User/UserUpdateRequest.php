@@ -26,6 +26,7 @@ class UserUpdateRequest extends FormRequest
         $employeeId = $this->route('user')->employee->id;
         
         return [
+            'role_id' => ['sometimes', 'integer', 'exists:roles,id'],
             'avatar' => ['sometimes', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'first_name' => ['sometimes', 'string'],
             'last_name' => ['sometimes', 'string'],
