@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Administration\Settings\User;
 
 use Exception;
+use ZipArchive;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -27,6 +28,28 @@ class UserController extends Controller
     {
         $data = $this->userService->getUserListingData($request);
         return view('administration.settings.user.index', $data);
+    }
+
+    /**
+     * Display a listing of the barcodes.
+     */
+    public function allBarcodes(Request $request)
+    {
+        $users = User::with(['media'])->whereStatus('Active')->get();
+        
+        return view('administration.settings.user.barcode', compact(['users']));
+    }
+
+    public function downloadAllBarcodes()
+    {
+        try {
+            return $this->userService->downloadAllBarcodes();
+        } catch (Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred while creating the ZIP file.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

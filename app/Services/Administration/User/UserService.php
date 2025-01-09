@@ -2,6 +2,7 @@
 
 namespace App\Services\Administration\User;
 
+use ZipArchive;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -171,5 +172,38 @@ class UserService
 
         toast('Barcode generated successfully.', 'success');
         return redirect()->back();
+    }
+
+
+    public function downloadAllBarcodes()
+    {
+        // Get all users who have a barcode media
+        $users = User::has('media')->get();  // Adjust if necessary to filter users with barcode media
+
+        // Initialize a new ZipArchive instance
+        $zip = new ZipArchive();
+        $zipFileName = 'barcodes_' . now()->format('Y-m-d_H-i-s') . '.zip';
+        $zipFilePath = storage_path('app/public/' . $zipFileName);  // Path to store the temporary zip file
+
+        // Open the zip file
+        if ($zip->open($zipFilePath, ZipArchive::CREATE) !== true) {
+            return response()->json(['message' => 'Could not create ZIP file.'], 500);
+        }
+
+        // Iterate through each user and add their barcode file to the ZIP
+        foreach ($users as $user) {
+            $media = $user->getFirstMedia('barcode');  // Get the barcode media
+
+            if ($media && file_exists($media->getPath())) {
+                // Add file to the ZIP
+                $zip->addFile($media->getPath(), $media->file_name);
+            }
+        }
+
+        // Close the ZIP file
+        $zip->close();
+
+        // Return the ZIP file as a downloadable response
+        return response()->download($zipFilePath, $zipFileName)->deleteFileAfterSend(true);
     }
 }

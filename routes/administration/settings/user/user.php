@@ -12,6 +12,10 @@ Route::controller(UserController::class)
         ->name('user.')
         ->group(function () {
             Route::get('/all', 'index')->name('index')->can('User Read');
+
+            Route::get('/barcode', 'allBarcodes')->name('barcode.all')->can('User Create');
+            Route::get('/barcode/download/all', 'downloadAllBarcodes')->name('barcode.all.download')->can('User Create');
+
             Route::get('/create', 'create')->name('create')->can('User Create');
             Route::post('/store', 'store')->name('store')->can('User Create');
             Route::get('/edit/{user}', 'edit')->name('edit')->can('User Update');
