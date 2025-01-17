@@ -68,12 +68,20 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-12">
-                            <label for="import_file" class="form-label">{{ __('Users File') }} <strong class="text-danger">*</strong></label>
+                            <label for="import_file" class="form-label">
+                                Users File <strong class="text-danger">*</strong>
+                            </label>
                             <input type="file" id="import_file" name="import_file" value="{{ old('import_file') }}" placeholder="{{ __('Files') }}" class="form-control @error('import_file') is-invalid @enderror" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required/>
                             <small>
                                 <span class="text-dark text-bold">Note:</span>
                                 <span>Please select <b class="text-bold text-info">.csv / .xlsx</b> file only.</span>
                             </small>
+                            <b class="float-end">
+                                <a href="{{ asset('import_templates_sample/users_import_sample.csv') }}" class="text-primary text-bold">
+                                    <span class="tf-icon ti ti-download"></span>
+                                    {{ __('Download Formatted Template') }}
+                                </a>
+                            </b>
                             @error('import_file')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
@@ -81,7 +89,10 @@
                     </div>
                     <div class="mt-2 float-end">
                         <button type="reset" onclick="return confirm('Sure Want To Reset?');" class="btn btn-outline-danger me-2">Reset Form</button>
-                        <button type="submit" class="btn btn-primary confirm-form-success">Upload Users</button>
+                        <button type="submit" class="btn btn-primary confirm-form-success">
+                            <i class="ti ti-upload ti-xs me-1"></i>
+                            Upload Users
+                        </button>
                     </div>
                 </form>
             </div>
