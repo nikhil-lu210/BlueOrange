@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Administration\Settings\User\UserController;
+use App\Http\Controllers\Administration\Settings\User\UserImportController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -27,6 +28,11 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('/show/{user}/attendance', 'showAttendance')->name('show.attendance')->can('User Read');
 
         Route::post('/shift/{shift}/update/{user}', 'updateShift')->name('shift.update')->can('User Update');
+    });
+
+    Route::controller(UserImportController::class)->prefix('create/import')->name('import.')->group(function () {
+        Route::get('/', 'index')->name('index')->can('User Create');
+        Route::post('/upload', 'upload')->name('upload')->can('User Create');
     });
 
     // user_interaction

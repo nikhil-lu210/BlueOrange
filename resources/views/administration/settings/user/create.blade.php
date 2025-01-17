@@ -55,7 +55,7 @@
                 <h5 class="mb-0">Create New User</h5>
         
                 <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.settings.user.index') }}" class="btn btn-sm btn-primary">
+                    <a href="{{ route('administration.settings.user.import.index') }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-upload ti-xs me-1"></span>
                         {{ __('Import Users') }}
                     </a>
