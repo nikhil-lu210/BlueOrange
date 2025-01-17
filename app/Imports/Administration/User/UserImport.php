@@ -31,36 +31,31 @@ class UserImport implements ToCollection, WithHeadingRow, WithValidation
                 $userId = (string)$row['userid']; // Cast userId to string
 
                 // Create or update user
-                $user = User::updateOrCreate(
-                    ['userid' => $userId],
-                    [
-                        'first_name' => $row['first_name'],
-                        'last_name' => $row['last_name'],
-                        'name' => $row['first_name'].' '.$row['last_name'],
-                        'email' => $row['email'],
-                        'password' => bcrypt($row['password']),
-                        'status' => $row['status'] ?? 'Active',
-                    ]
-                );
+                $user = User::create([
+                    'userid' => $userId,
+                    'first_name' => $row['first_name'],
+                    'last_name' => $row['last_name'],
+                    'name' => $row['first_name'].' '.$row['last_name'],
+                    'email' => $row['email'],
+                    'password' => bcrypt($row['password']),
+                    'status' => $row['status'] ?? 'Active',
+                ]);
 
                 // Assign role to user
                 $user->roles()->sync([$this->roleId]);
 
                 // Create or update employee
-                Employee::updateOrCreate(
-                    ['user_id' => $user->id],
-                    [
-                        'joining_date' => Carbon::parse($row['joining_date'])->format('Y-m-d'),
-                        'alias_name' => $row['alias_name'],
-                        'father_name' => $row['father_name'],
-                        'mother_name' => $row['mother_name'],
-                        'birth_date' => Carbon::parse($row['birth_date'])->format('Y-m-d'),
-                        'personal_email' => $row['personal_email'],
-                        'personal_contact_no' => $row['personal_contact_no'],
-                        'official_email' => $row['official_email'] ?? null,
-                        'official_contact_no' => $row['official_contact_no'] ?? null,
-                    ]
-                );
+                $user->employee()->create([
+                    'joining_date' => Carbon::parse($row['joining_date'])->format('Y-m-d'),
+                    'alias_name' => $row['alias_name'],
+                    'father_name' => $row['father_name'],
+                    'mother_name' => $row['mother_name'],
+                    'birth_date' => Carbon::parse($row['birth_date'])->format('Y-m-d'),
+                    'personal_email' => $row['personal_email'],
+                    'personal_contact_no' => $row['personal_contact_no'],
+                    'official_email' => $row['official_email'] ?? null,
+                    'official_contact_no' => $row['official_contact_no'] ?? null,
+                ]);
 
                 // Create or update employee shift
                 EmployeeShift::updateOrCreate(
@@ -99,9 +94,9 @@ class UserImport implements ToCollection, WithHeadingRow, WithValidation
             '*.joining_date' => 'required|date',
             '*.birth_date' => 'required|date',
             '*.personal_email' => 'required|email|unique:employees,personal_email',
-            '*.personal_contact_no' => 'required|string|unique:employees,personal_contact_no',
+            '*.personal_contact_no' => 'required|alpha_num|unique:employees,personal_contact_no',
             '*.official_email' => 'nullable|email|unique:employees,official_email',
-            '*.official_contact_no' => 'nullable|string|unique:employees,official_contact_no',
+            '*.official_contact_no' => 'nullable|alpha_num|unique:employees,official_contact_no',
             '*.start_time' => 'required|date_format:H:i',
             '*.end_time' => 'required|date_format:H:i|after:*.start_time',
         ];
