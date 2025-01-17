@@ -56,8 +56,8 @@
         
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.settings.user.index') }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-circle ti-xs me-1"></span>
-                        All Users
+                        <span class="tf-icon ti ti-upload ti-xs me-1"></span>
+                        {{ __('Import Users') }}
                     </a>
                 </div>
             </div>
