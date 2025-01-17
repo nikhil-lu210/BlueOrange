@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Administration\Settings\User;
 
 use Exception;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\Administration\User\UserImport;
 
 class UserImportController extends Controller
 {
@@ -27,6 +27,19 @@ class UserImportController extends Controller
      */
     public function upload(Request $request)
     {
-        dd($request->all());
+        $request->validate([
+            'role_id' => 'required|exists:roles,id',
+            'import_file' => 'required|file|mimetypes:text/plain,text/csv',
+        ]);
+
+        try {
+            // Process the file
+            Excel::import(new UserImport($request->role_id), $request->file('import_file'));
+
+            toast('Users imported successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return back()->withError('An error occurred during import: ' . $e->getMessage())->withInput();
+        }
     }
 }

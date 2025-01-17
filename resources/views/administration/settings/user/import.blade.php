@@ -69,12 +69,12 @@
                         </div>
                         <div class="mb-3 col-md-12">
                             <label for="import_file" class="form-label">
-                                Users File <strong class="text-danger">*</strong>
+                                Users File <sup class="text-dark text-bold">(.csv file only)</sup> <strong class="text-danger">*</strong>
                             </label>
-                            <input type="file" id="import_file" name="import_file" value="{{ old('import_file') }}" placeholder="{{ __('Files') }}" class="form-control @error('import_file') is-invalid @enderror" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel" required/>
+                            <input type="file" id="import_file" name="import_file" value="{{ old('import_file') }}" placeholder="{{ __('Files') }}" class="form-control @error('import_file') is-invalid @enderror" accept=".csv" required/>
                             <small>
                                 <span class="text-dark text-bold">Note:</span>
-                                <span>Please select <b class="text-bold text-info">.csv / .xlsx</b> file only.</span>
+                                <span>Please select <b class="text-bold text-info">.csv</b> file only.</span>
                             </small>
                             <b class="float-end">
                                 <a href="{{ asset('import_templates_sample/users_import_sample.csv') }}" class="text-primary text-bold">
@@ -82,6 +82,7 @@
                                     {{ __('Download Formatted Template') }}
                                 </a>
                             </b>
+                            <br>
                             @error('import_file')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror

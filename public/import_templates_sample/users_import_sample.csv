@@ -1,2 +1,2 @@
-First Name,Last Name,Contact No,Birthdate,Division Name,Division Gender,Shirt Size,Short Size,City,State,Postal Code,Street Address,Guardian First Name,Guardian Last Name,Guardian Email,Guardian Contact No,Relation
-John,Doe,1234567890,2003-07-19,1st Grade,Male,Adult XL,Adult XL,Demo City,Demo State,Demo-1234,Demo Street Address,Nicholas,Herd,demo@guardian.com,1234567890,Father
+Userid,First Name,Last Name,Email,Password,Status,Alias Name,Joining Date,Father Name,Mother Name,Birth Date,Personal Email,Personal Contact No,Official Email,Official Contact No,Start Time,End Time,Total Time,Earned Leave,Casual Leave,Sick Leave
+20230201,Tiger,Shroff,tiger@login.com,12345678,Active,tiger,1/17/2025,Jackie Shroff,Ayesha Shroff,1/25/1992,tiger@personal.com,01235445566,tiger@office.com,02564889966,15:00,23:00,8:00:00,96:00:00,96:00:00,96:00:00
