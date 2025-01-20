@@ -179,8 +179,8 @@ class TaskController extends Controller
                     // Send Notification to System
                     $notifiableUser->notify(new TaskCreateNotification($task, auth()->user()));
 
-                    // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new NewTaskMail($task, $notifiableUser));
+                    // Send Mail to the notifiableUser's email & Dispatch the email to the queue
+                    Mail::to($notifiableUser->email)->queue(new NewTaskMail($task, $notifiableUser));
                 }
             });
 
