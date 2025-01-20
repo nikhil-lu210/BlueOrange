@@ -20,7 +20,7 @@ class UsersTableSeeder extends Seeder
 
         // Create a developer
         $developer = User::create([
-            'userid' => '20230201',
+            'userid' => '00000001',
             'first_name' => 'Demo',
             'last_name' => 'Developer',
             'name' => 'Demo Developer',
@@ -65,7 +65,7 @@ class UsersTableSeeder extends Seeder
         // Create associated employee for the developer
         $developer->employee()->create([
             'joining_date' => $joiningDate,
-            'alias_name' => fake()->name('male'),
+            'alias_name' => 'Administration',
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
             'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
@@ -78,7 +78,7 @@ class UsersTableSeeder extends Seeder
         
         // Create a superAdmin
         $superAdmin = User::create([
-            'userid' => '20202020',
+            'userid' => '00000002',
             'first_name' => 'Demo',
             'last_name' => 'Super Admin',
             'name' => 'Demo Super Admin',
@@ -123,65 +123,7 @@ class UsersTableSeeder extends Seeder
         // Create associated employee for the superAdmin
         $superAdmin->employee()->create([
             'joining_date' => $joiningDate,
-            'alias_name' => fake()->name('male'),
-            'father_name' => fake()->name('male'),
-            'mother_name' => fake()->name('female'),
-            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
-            'personal_email' => fake()->unique()->safeEmail,
-            'official_email' => fake()->email(),
-            'personal_contact_no' => fake()->phoneNumber(),
-            'official_contact_no' => fake()->unique()->phoneNumber(),
-        ]);
-        
-        
-        // Create a mrRob (Rob)
-        $mrRob = User::create([
-            'userid' => '20101010',
-            'first_name' => 'Nasir',
-            'last_name' => 'Miah',
-            'name' => 'Nasir Miah',
-            'email' => 'rob@mail.com',
-            'password' => Hash::make('12345678'),
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10),
-        ]);
-        // Assign a role to the mrRob
-        $mrRobRole = Role::findByName('Super Admin');
-        $mrRob->assignRole($mrRobRole);
-        // Assign team_leader
-        $mrRob->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
-        // Attach the interaction for this mrRob
-        $mrRob->interacted_users()->attach($developer->id);
-        // Create associated EmployeeShift
-        $mrRob->employee_shifts()->create([
-            'start_time' => '14:00:00',
-            'end_time' => '22:00:00',
-            'total_time' => '08:00:00',
-            'implemented_from' => date('Y-m-d'),
-        ]);
-        // Create associated Leave
-        $mrRob->leave_alloweds()->create([
-            'earned_leave' => '120:00:00',
-            'casual_leave' => '120:00:00',
-            'sick_leave' => '120:00:00',
-            'implemented_from' => '01-01',
-            'implemented_to' => '12-31',
-        ]);
-        // Create associated Salary
-        $mrRob->salaries()->create([
-            'basic_salary' => 5000,
-            'house_benefit' => 1000,
-            'transport_allowance' => 1000,
-            'medical_allowance' => 1000,
-            'night_shift_allowance' => 1000,
-            'other_allowance' => 1000,
-            'implemented_from' => $joiningDate,
-            'total' => 10000,
-        ]);
-        // Create associated employee for the mrRob
-        $mrRob->employee()->create([
-            'joining_date' => $joiningDate,
-            'alias_name' => 'ROB',
+            'alias_name' => 'Controller',
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
             'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
