@@ -90,12 +90,12 @@ class ProfileController extends Controller
                     'personal_contact_no' => $request->personal_contact_no
                 ]);
 
-                $notifiableUsers = User::whereHas('roles', function ($query) {
-                    $query->whereIn('name', ['Super Admin', 'Admin', 'HR Manager']);
-                })->get();
+                $notifiableUsers = User::whereStatus('Active')->get();
                 
                 foreach ($notifiableUsers as $key => $notifiableUser) {
-                    $notifiableUser->notify(new ProfileUpdateNofication($user));
+                    if ($notifiableUser->hasAnyPermission(['User Everything', 'User Update'])) {
+                        $notifiableUser->notify(new ProfileUpdateNofication($user));
+                    }
                 }
             }, 5);
 
