@@ -71,6 +71,8 @@ class UserService
     public function updateUser(User $user, array $data)
     {
         return DB::transaction(function () use ($user, $data) {
+            $data['name'] = $data['first_name'] . ' ' . $data['last_name'];
+            
             $user->update($data);
             $this->attachAvatar($user, $data['avatar'] ?? null);
             $user->syncRoles([$data['role_id']]);
