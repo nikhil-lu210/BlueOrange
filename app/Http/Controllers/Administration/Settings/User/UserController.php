@@ -113,7 +113,10 @@ class UserController extends Controller
     public function update(UserUpdateRequest $request, User $user)
     {
         try {
-            $this->userService->updateUser($user, $request->validated());
+            $data = $request->validated();
+            $data['name'] = $data['first_name'] . ' ' . $data['last_name'];
+
+            $this->userService->updateUser($user, $data);
 
             toast('User information has been updated.','success');
             return redirect()->route('administration.settings.user.show.profile', ['user' => $user]);
