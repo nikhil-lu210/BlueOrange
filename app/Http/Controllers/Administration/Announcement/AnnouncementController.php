@@ -110,8 +110,9 @@ class AnnouncementController extends Controller
                     // Send Notification to System
                     $notifiableUser->notify(new AnnouncementCreateNotification($announcement, auth()->user()));
 
-                    // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new NewAnnouncementMail($announcement, $notifiableUser));
+                    // Mail::to($notifiableUser->email)->send(new NewAnnouncementMail($announcement, $notifiableUser));
+                    // Send Mail to the notifiableUser's email Dispatch the email to the queue
+                    Mail::to($notifiableUser->email)->queue(new NewAnnouncementMail($announcement, $notifiableUser));
                 }
             });
             
