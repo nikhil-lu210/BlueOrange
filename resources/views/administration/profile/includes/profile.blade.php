@@ -102,7 +102,9 @@
                                 {{ $user->userid }}
                             </a>
                         @else
-                            <a href="{{ route('administration.settings.user.generate.bar.code', ['user' => $user]) }}" class="btn btn-outline-primary btn-sm confirm-success">Generate Barcode</a>
+                            @canany (['User Everything', 'User Create']) 
+                                <a href="{{ route('administration.settings.user.generate.bar.code', ['user' => $user]) }}" class="btn btn-outline-primary btn-sm confirm-success">Generate Barcode</a>
+                            @endcanany
                         @endif
                     </dd>
                 </dl>
