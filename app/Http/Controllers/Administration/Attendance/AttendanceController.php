@@ -161,6 +161,7 @@ class AttendanceController extends Controller
                 // For Overtime type, set total_adjusted_time directly from total_time
                 $formattedAdjustedTotalTime = $formattedTotalTime;
             }
+            // dd($request->all());
 
             // Create attendance record
             $attendance = Attendance::create([
@@ -185,7 +186,7 @@ class AttendanceController extends Controller
             return redirect()->route('administration.attendance.show', ['attendance' => $attendance]);
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
-            return redirect()->back();
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
     
