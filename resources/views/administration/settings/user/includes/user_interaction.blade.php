@@ -36,9 +36,13 @@
                                 <th>{{ serial($user->employee_team_leaders, $key) }}</th>
                                 <td>
                                     <a href="{{ route('administration.settings.user.user_interaction.index', ['user' => $leader]) }}" target="_blank" class="text-{{ $leader->pivot->is_active == true ? 'success' : 'danger' }} text-bold" title="Click to see {{ $leader->name }}'s Team Leader">{{ $leader->name }}</a>
+                                    <br>
+                                    <span class="text-muted">{{ $leader->employee->alias_name }}</span>
                                 </td>
                                 <td>
                                     <span>{{ show_date($leader->pivot->created_at) }}</span>
+                                    <br>
+                                    <small>at {{ show_time($leader->pivot->created_at) }}</small>
                                 </td>
                             </tr>
                         @endforeach
