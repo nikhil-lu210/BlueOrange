@@ -37,6 +37,7 @@ class UserInteractionController extends Controller
                                     ->orWhere('interacted_user_id', $user->id);
                         })
                         ->where('id', '!=', $user->id) // Exclude the current user from the list
+                        ->orderBy('name', 'ASC')
                         ->get();
 
 
