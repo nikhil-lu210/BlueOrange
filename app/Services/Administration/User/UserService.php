@@ -17,19 +17,31 @@ class UserService
 {
     public function getUserListingData($request)
     {
-        $roles = Role::select(['id', 'name'])->get();
-        $query = User::select(['id', 'userid', 'first_name', 'last_name', 'name', 'email', 'status'])
-                     ->with(['media', 'roles:id,name']);
+        $roles = $this->getAllRoles();
 
+        $query = User::select(['id', 'userid', 'first_name', 'last_name', 'name', 'email', 'status'])
+                    ->with(['media', 'roles:id,name']);
+
+        // Check if the authenticated user has 'User Everything' or 'User Create' permission
+        if (!auth()->user()->hasAnyPermission(['User Everything', 'User Create', 'User Update', 'User Delete'])) {
+            // Restrict to users based on user interactions
+            $query->whereIn('id', auth()->user()->user_interactions->pluck('id'));
+        }
+
+        // Apply role filter if provided
         if ($request->filled('role_id')) {
             $query->whereHas('roles', fn($role) => $role->where('roles.id', $request->role_id));
         }
 
+        // Apply status filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         } else {
             $query->where('status', 'Active');
         }
+
+        // Default sorting (optional)
+        $query->orderBy('name');
 
         $users = $query->get();
 
@@ -38,7 +50,7 @@ class UserService
 
     public function getAllRoles()
     {
-        return Role::all();
+        return Role::select(['id', 'name'])->orderBy('name')->get();
     }
 
     public function createUser(array $data)
@@ -65,6 +77,17 @@ class UserService
 
     public function getUser(User $user)
     {
+        $authUser = auth()->user();
+
+        // Check if the authenticated user has the necessary permissions
+        if (!$authUser->hasAnyPermission(['User Everything', 'User Create', 'User Update', 'User Delete'])) {
+            // Restrict access to users related to the authenticated user through user_interactions
+            if (!$authUser->user_interactions->pluck('id')->contains($user->id)) {
+                abort(403, 'You do not have permission to access this user.');
+            }
+        }
+
+        // Fetch the user with the required relationships
         return User::with(['roles', 'media'])->findOrFail($user->id);
     }
 
