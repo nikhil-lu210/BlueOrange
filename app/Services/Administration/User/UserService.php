@@ -2,34 +2,51 @@
 
 namespace App\Services\Administration\User;
 
+use Exception;
 use ZipArchive;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\EmployeeShift\EmployeeShift;
+use App\Mail\Administration\User\UserCredentialsMail;
+use App\Notifications\Administration\NewUserRegistrationNotification;
 
 class UserService
 {
     public function getUserListingData($request)
     {
-        $roles = Role::select(['id', 'name'])->get();
-        $query = User::select(['id', 'userid', 'first_name', 'last_name', 'name', 'email', 'status'])
-                     ->with(['media', 'roles:id,name']);
+        $roles = $this->getAllRoles();
 
+        $query = User::select(['id', 'userid', 'first_name', 'last_name', 'name', 'email', 'status'])
+                    ->with(['media', 'roles:id,name']);
+
+        // Check if the authenticated user has 'User Everything' or 'User Create' permission
+        if (!auth()->user()->hasAnyPermission(['User Everything', 'User Create', 'User Update', 'User Delete'])) {
+            // Restrict to users based on user interactions
+            $query->whereIn('id', auth()->user()->user_interactions->pluck('id'));
+        }
+
+        // Apply role filter if provided
         if ($request->filled('role_id')) {
             $query->whereHas('roles', fn($role) => $role->where('roles.id', $request->role_id));
         }
 
+        // Apply status filter
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         } else {
             $query->where('status', 'Active');
         }
+
+        // Default sorting (optional)
+        $query->orderBy('name');
 
         $users = $query->get();
 
@@ -38,7 +55,7 @@ class UserService
 
     public function getAllRoles()
     {
-        return Role::all();
+        return Role::select(['id', 'name'])->orderBy('name')->get();
     }
 
     public function createUser(array $data)
@@ -59,12 +76,57 @@ class UserService
             $this->generateQrCode($user);
             $this->generateBarCode($user);
 
+            // Send new user registration notification
+            $this->sendNewUserRegistrationNotification($user);
+
+            // Send Login Credentials Mail to the User's email
+            $this->sendUserCredentialMail($data['official_email'], $data);
+
             return $user;
         });
     }
 
+
+    private function sendNewUserRegistrationNotification($user)
+    {
+        $authUser = Auth::user();
+
+        $notifiableUsers = User::whereStatus('Active')->get()->filter(function ($user) {
+            return $user->hasAnyPermission(['User Everything', 'User Update']);
+        });
+            
+        foreach ($notifiableUsers as $key => $notifiableUser) {
+            $notifiableUser->notify(new NewUserRegistrationNotification($user, $authUser));
+        }
+    }
+
+
+    private function sendUserCredentialMail($email, $data)
+    {
+        try {
+            // Ensure $data is passed as an object
+            $dataObject = (object) $data;
+
+            Mail::to($email)->queue(new UserCredentialsMail($dataObject));
+        } catch (Exception $e) {
+            return back()->withError($e->getMessage())->withInput();
+        }
+    }
+
+
     public function getUser(User $user)
     {
+        $authUser = auth()->user();
+
+        // Check if the authenticated user has the necessary permissions
+        if (!$authUser->hasAnyPermission(['User Everything', 'User Create', 'User Update', 'User Delete'])) {
+            // Restrict access to users related to the authenticated user through user_interactions
+            if (!$authUser->user_interactions->pluck('id')->contains($user->id)) {
+                abort(403, 'You do not have permission to access this user.');
+            }
+        }
+
+        // Fetch the user with the required relationships
         return User::with(['roles', 'media'])->findOrFail($user->id);
     }
 

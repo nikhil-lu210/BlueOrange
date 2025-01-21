@@ -61,7 +61,7 @@ class TaskCommentController extends Controller
                     $notifiableUser->notify(new TaskCommentNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new NewCommentOnTaskMail($task, $notifiableUser, auth()->user()));
+                    Mail::to($notifiableUser->email)->queue(new NewCommentOnTaskMail($task, $notifiableUser, auth()->user()));
                 }
             });
             

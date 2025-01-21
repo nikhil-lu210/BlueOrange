@@ -179,8 +179,8 @@ class TaskController extends Controller
                     // Send Notification to System
                     $notifiableUser->notify(new TaskCreateNotification($task, auth()->user()));
 
-                    // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new NewTaskMail($task, $notifiableUser));
+                    // Send Mail to the notifiableUser's email & Dispatch the email to the queue
+                    Mail::to($notifiableUser->email)->queue(new NewTaskMail($task, $notifiableUser));
                 }
             });
 
@@ -296,7 +296,7 @@ class TaskController extends Controller
                     $notifiableUser->notify(new TaskUpdateNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new UpdateTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->queue(new UpdateTaskMail($task, $notifiableUser));
                 }
             });
             
@@ -355,7 +355,7 @@ class TaskController extends Controller
                     $notifiableUser->notify(new TaskAddUsersNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new AddUsersTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->queue(new AddUsersTaskMail($task, $notifiableUser));
                 }
             });
 
@@ -425,7 +425,7 @@ class TaskController extends Controller
                     $notifiableUser->notify(new TaskFileUploadNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new FileUploadForTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->queue(new FileUploadForTaskMail($task, $notifiableUser));
                 }
             });
 
@@ -463,7 +463,7 @@ class TaskController extends Controller
                     $notifiableUser->notify(new TaskStatusUpdateNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new StatusUpdateTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->queue(new StatusUpdateTaskMail($task, $notifiableUser));
                 }
             });
 

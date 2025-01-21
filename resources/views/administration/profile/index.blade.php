@@ -97,12 +97,14 @@
                     Profile
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('my/salary*') ? 'active' : '' }}" href="{{ route('administration.my.salary.monthly.history') }}">
-                    <i class="ti-xs ti ti-currency-taka me-1"></i> 
-                    Salaries
-                </a>
-            </li>
+            @can ('Salary Read') 
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('my/salary*') ? 'active' : '' }}" href="{{ route('administration.my.salary.monthly.history') }}">
+                        <i class="ti-xs ti ti-currency-taka me-1"></i> 
+                        Salaries
+                    </a>
+                </li>
+            @endcan
         </ul>
     </div>
 </div>

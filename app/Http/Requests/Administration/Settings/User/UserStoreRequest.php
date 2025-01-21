@@ -40,6 +40,11 @@ class UserStoreRequest extends FormRequest
                 'string',
                 'unique_userid:users,userid', // Custom validation rule
             ],
+            'role_id' => [
+                'required',
+                'integer',
+                'exists:roles,id',
+            ],
             'first_name' => ['required', 'string'],
             'last_name' => ['required', 'string'],
             'email' => ['required', 'unique:users'],

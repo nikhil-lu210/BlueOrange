@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UserCredentialsMail extends Mailable
+class UserCredentialsMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -43,7 +43,7 @@ class UserCredentialsMail extends Mailable
         return new Content(
             markdown: 'emails.administration.user.credentials',
             with: [
-                'data' => $this->data
+                'data' => (object) $this->data
             ]
         );
     }

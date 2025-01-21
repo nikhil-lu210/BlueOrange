@@ -11,7 +11,7 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class PayslipMail extends Mailable
+class PayslipMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 

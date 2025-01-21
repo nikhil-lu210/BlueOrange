@@ -146,7 +146,7 @@ class MonthlySalaryController extends Controller
                 $monthly_salary->user->notify(new MonthlySalaryNotification($monthly_salary));
 
                 // Send Mail to the user's email
-                Mail::to($monthly_salary->user->email)->send(new PayslipMail($monthly_salary, $monthly_salary->user));
+                Mail::to($monthly_salary->user->email)->queue(new PayslipMail($monthly_salary, $monthly_salary->user));
             });
             
             toast($monthly_salary->user->name . '\'s monthly salary has been paid.', 'success');
@@ -163,7 +163,7 @@ class MonthlySalaryController extends Controller
     public function sendMailPayslip(MonthlySalary $monthly_salary)
     {
         // Send Mail to the user's email
-        Mail::to($monthly_salary->user->email)->send(new PayslipMail($monthly_salary, $monthly_salary->user));
+        Mail::to($monthly_salary->user->email)->queue(new PayslipMail($monthly_salary, $monthly_salary->user));
 
         toast('Payslip Mail Has Been Sent To ' . $monthly_salary->user->name, 'success');
         return redirect()->back();

@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UpdateTaskMail extends Mailable
+class UpdateTaskMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
