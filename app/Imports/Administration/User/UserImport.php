@@ -97,8 +97,8 @@ class UserImport implements ToCollection, WithHeadingRow, WithValidation
             '*.personal_contact_no' => 'required|alpha_num|unique:employees,personal_contact_no',
             '*.official_email' => 'nullable|email|unique:employees,official_email',
             '*.official_contact_no' => 'nullable|alpha_num|unique:employees,official_contact_no',
-            '*.start_time' => 'required|date_format:H:i',
-            '*.end_time' => 'required|date_format:H:i|after:*.start_time',
+            '*.start_time' => 'required',
+            '*.end_time' => 'required',
         ];
     }
 
