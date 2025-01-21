@@ -2,16 +2,21 @@
 
 namespace App\Services\Administration\User;
 
+use Exception;
 use ZipArchive;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Endroid\QrCode\Builder\Builder;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\EmployeeShift\EmployeeShift;
+use App\Mail\Administration\User\UserCredentialsMail;
+use App\Notifications\Administration\NewUserRegistrationNotification;
 
 class UserService
 {
@@ -71,9 +76,43 @@ class UserService
             $this->generateQrCode($user);
             $this->generateBarCode($user);
 
+            // Send new user registration notification
+            $this->sendNewUserRegistrationNotification($user);
+
+            // Send Login Credentials Mail to the User's email
+            $this->sendUserCredentialMail($data['official_email'], $data);
+
             return $user;
         });
     }
+
+
+    private function sendNewUserRegistrationNotification($user)
+    {
+        $authUser = Auth::user();
+
+        $notifiableUsers = User::whereStatus('Active')->get()->filter(function ($user) {
+            return $user->hasAnyPermission(['User Everything', 'User Update']);
+        });
+            
+        foreach ($notifiableUsers as $key => $notifiableUser) {
+            $notifiableUser->notify(new NewUserRegistrationNotification($user, $authUser));
+        }
+    }
+
+
+    private function sendUserCredentialMail($email, $data)
+    {
+        try {
+            // Ensure $data is passed as an object
+            $dataObject = (object) $data;
+
+            Mail::to($email)->queue(new UserCredentialsMail($dataObject));
+        } catch (Exception $e) {
+            return back()->withError($e->getMessage())->withInput();
+        }
+    }
+
 
     public function getUser(User $user)
     {
