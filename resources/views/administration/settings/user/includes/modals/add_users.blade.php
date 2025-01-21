@@ -16,7 +16,7 @@
                         <select name="users[]" id="users" class="select2 form-select @error('users') is-invalid @enderror" data-allow-clear="true" multiple required>
                             @foreach ($users as $userData)
                                 <option value="{{ $userData->id }}" {{ in_array($userData->id, old('users', [])) ? 'selected' : '' }}>
-                                    {{ $userData->name }}
+                                    {{ $userData->employee->alias_name }} ({{ $userData->name }})
                                 </option>
                             @endforeach
                         </select>
