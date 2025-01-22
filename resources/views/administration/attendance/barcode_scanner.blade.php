@@ -148,10 +148,9 @@
                                                     @endif
                                                 </div>
                                             </div>
-                                            <div class="d-flex flex-column">
-                                                <a href="javascript:void(0);" target="_blank" class="emp_name text-truncate text-bold">{{ $attendance->user->name }}</a>
-                                                <small class="emp_post text-truncate text-muted">{{ $attendance->user->roles[0]->name }}</small>
-                                            </div>
+                                            <td>
+                                                {!! show_user_name_and_avatar($attendance->user, role: null) !!}
+                                            </td>
                                         </div>
                                     </td>
                                     <td>
