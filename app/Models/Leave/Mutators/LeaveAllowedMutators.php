@@ -90,7 +90,7 @@ trait LeaveAllowedMutators
             $interval = CarbonInterval::fromString($value);
             return sprintf('%02d:%02d:%02d', $interval->hours + ($interval->days * 24), $interval->minutes, $interval->seconds);
         } catch (Exception $e) {
-            dd('Error from LeaveAllowedMutators: '. $e->getMessage());
+            // dd('Error from LeaveAllowedMutators: '. $e->getMessage());
             // Return original if unprocessable
             return $value;
         }
