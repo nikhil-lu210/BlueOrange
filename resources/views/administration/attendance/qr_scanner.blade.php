@@ -78,105 +78,107 @@
                 </h5>
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Name</th>
-                            <th>Clocked IN</th>
-                            <th>Clock Out</th>
-                            <th>Total</th>
-                            <th>Scanned By</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($attendances as $key => $attendance) 
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
                             <tr>
-                                <th>#{{ serial($attendances, $key) }}</th>
-                                <td>
-                                    <div class="d-flex justify-content-start align-items-center user-name">
-                                        <div class="avatar-wrapper">
-                                            <div class="avatar me-2">
-                                                @if ($attendance->user->hasMedia('avatar'))
-                                                    <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $attendance->user->name }} Avatar" class="rounded-circle">
-                                                @else
-                                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $attendance->user->name }} No Avatar" class="rounded-circle">
-                                                @endif
+                                <th>Sl.</th>
+                                <th>Name</th>
+                                <th>Clocked IN</th>
+                                <th>Clock Out</th>
+                                <th>Total</th>
+                                <th>Scanned By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($attendances as $key => $attendance) 
+                                <tr>
+                                    <th>#{{ serial($attendances, $key) }}</th>
+                                    <td>
+                                        <div class="d-flex justify-content-start align-items-center user-name">
+                                            <div class="avatar-wrapper">
+                                                <div class="avatar me-2">
+                                                    @if ($attendance->user->hasMedia('avatar'))
+                                                        <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $attendance->user->name }} Avatar" class="rounded-circle">
+                                                    @else
+                                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $attendance->user->name }} No Avatar" class="rounded-circle">
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-column">
+                                                <a href="javascript:void(0);" target="_blank" class="emp_name text-truncate text-bold">{{ $attendance->user->name }}</a>
+                                                <small class="emp_post text-truncate text-muted">{{ $attendance->user->roles[0]->name }}</small>
                                             </div>
                                         </div>
-                                        <div class="d-flex flex-column">
-                                            <a href="javascript:void(0);" target="_blank" class="emp_name text-truncate text-bold">{{ $attendance->user->name }}</a>
-                                            <small class="emp_post text-truncate text-muted">{{ $attendance->user->roles[0]->name }}</small>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-grid">
-                                        @php
-                                            if (get_time_only($attendance->clock_in) > $attendance->employee_shift->start_time){
-                                                $clockInColor = 'text-danger';
-                                            } else {
-                                                $clockInColor = 'text-success';
-                                            }
-                                        @endphp
-                                        <span class="text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
-                                        <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="Shift Start Time">{{ show_time($attendance->employee_shift->start_time) }}</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-grid">
-                                        @isset($attendance->clock_out)
+                                    </td>
+                                    <td>
+                                        <div class="d-grid">
                                             @php
-                                                if (get_time_only($attendance->clock_out) < $attendance->employee_shift->end_time){
-                                                    $clockOutColor = 'text-danger';
+                                                if (get_time_only($attendance->clock_in) > $attendance->employee_shift->start_time){
+                                                    $clockInColor = 'text-danger';
                                                 } else {
-                                                    $clockOutColor = 'text-success';
+                                                    $clockInColor = 'text-success';
                                                 }
                                             @endphp
-                                            <span class="text-bold {{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
-                                        @else
-                                            <b class="text-success text-uppercase">Running</b>
-                                        @endisset
-                                        <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="d-grid">
-                                        @isset($attendance->total_time)
-                                            @php
-                                                $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                            @endphp
-                                            <b>
-                                                {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
-                                            </b>
-                                        @else
-                                            <b class="text-success text-uppercase">Running</b>
-                                        @endisset
-                                        @if ($attendance->type == 'Regular') 
-                                            @php
-                                                $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                            @endphp
-                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
-                                        @else
-                                            <small class="text-bold text-warning">{{ $attendance->type }}</small>
-                                        @endif
-                                    </div>
-                                </td>
-                                <td>
-                                    <span class="text-dark text-truncate">
-                                        <b>Clock-In:</b> 
-                                        <span>{{ optional($attendance->qr_clockin_scanner)->name }}</span>
-                                    </span>
-                                    <br>
-                                    <span class="text-dark text-truncate">
-                                        <b>Clock-Out:</b> 
-                                        <span>{{ optional($attendance->qr_clockout_scanner)->name }}</span>
-                                    </span>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                            <span class="text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
+                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="Shift Start Time">{{ show_time($attendance->employee_shift->start_time) }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-grid">
+                                            @isset($attendance->clock_out)
+                                                @php
+                                                    if (get_time_only($attendance->clock_out) < $attendance->employee_shift->end_time){
+                                                        $clockOutColor = 'text-danger';
+                                                    } else {
+                                                        $clockOutColor = 'text-success';
+                                                    }
+                                                @endphp
+                                                <span class="text-bold {{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
+                                            @else
+                                                <b class="text-success text-uppercase">Running</b>
+                                            @endisset
+                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="d-grid">
+                                            @isset($attendance->total_time)
+                                                @php
+                                                    $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                                @endphp
+                                                <b>
+                                                    {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
+                                                </b>
+                                            @else
+                                                <b class="text-success text-uppercase">Running</b>
+                                            @endisset
+                                            @if ($attendance->type == 'Regular') 
+                                                @php
+                                                    $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                                @endphp
+                                                <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
+                                            @else
+                                                <small class="text-bold text-warning">{{ $attendance->type }}</small>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="text-dark text-truncate">
+                                            <b>Clock-In:</b> 
+                                            <span>{{ optional($attendance->clockin_scanner)->name }}</span>
+                                        </span>
+                                        <br>
+                                        <span class="text-dark text-truncate">
+                                            <b>Clock-Out:</b> 
+                                            <span>{{ optional($attendance->clockout_scanner)->name }}</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>

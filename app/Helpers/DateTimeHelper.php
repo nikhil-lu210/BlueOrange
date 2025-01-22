@@ -1,6 +1,8 @@
 <?php
 
 use Carbon\Carbon;
+use App\Models\Holiday\Holiday;
+use App\Models\Weekend\Weekend;
 
 if (!function_exists('get_time_only')) {
 
@@ -68,6 +70,25 @@ if (!function_exists('show_date')) {
     }
 }
 
+if (!function_exists('show_month')) {
+
+    /**
+     * Format a given date, datetime, or month (Y-m) to "Month Year" format.
+     *
+     * @param  string|null  $month
+     * @return string
+     */
+    function show_month($month = null)
+    {
+        // If no $month is passed, use the current date
+        $carbon = $month ? Carbon::parse($month) : Carbon::now();
+        
+        // Format to Month Year (e.g., September 2024)
+        return $carbon->format('F Y');
+    }
+}
+
+
 
 
 if (!function_exists('show_date_month_day')) {
@@ -101,6 +122,54 @@ if (!function_exists('show_time')) {
         return $carbon->format('h:i:s A');
     }
 }
+
+
+
+if (!function_exists('show_hr_min_sec')) {
+
+    /**
+     * Format a total time string to a human-readable format.
+     *
+     * @param  string  $totaltime
+     * @return string
+     */
+    function show_hr_min_sec($totaltime = '00:00:00')
+    {
+        // Split the total time string into hours, minutes, and seconds
+        list($hours, $minutes, $seconds) = explode(':', $totaltime);
+
+        // Initialize the output string
+        $output = '';
+
+        // Determine the output based on the time components
+        if ($hours == 0 && $minutes == 0 && $seconds == 0) {
+            return NULL;
+        }
+
+        if ($hours > 0) {
+            $output .= $hours . 'hr';
+        }
+
+        if ($minutes > 0) {
+            // Add a space if hours were included
+            if ($output) {
+                $output .= ' ';
+            }
+            $output .= $minutes . 'min';
+        }
+
+        if ($seconds > 0) {
+            // Add a space if hours or minutes were included
+            if ($output) {
+                $output .= ' ';
+            }
+            $output .= $seconds . 'sec';
+        }
+
+        return trim($output); // Trim any extra spaces
+    }
+}
+
 
 
 if (!function_exists('show_date_time')) {
@@ -178,6 +247,29 @@ if (!function_exists('total_day_difference')) {
 }
 
 
+
+if (!function_exists('get_total_time_hh_mm_ss')) {
+    /**
+     * Calculate the total time difference between two timestamps in hh:mm:ss format.
+     *
+     * @param string $startTime The start time in 'Y-m-d H:i:s' format or 'H:i:s' format.
+     * @param string $endTime The end time in 'Y-m-d H:i:s' format or 'H:i:s' format.
+     * @return string Total time difference in 'hh:mm:ss' format.
+     * @throws Exception if the input format is invalid.
+     */
+    function get_total_time_hh_mm_ss($startTime, $endTime)
+    {
+        // Parse the timestamps to DateTime objects
+        $start = new DateTime($startTime);
+        $end = new DateTime($endTime);
+
+        // Calculate the difference
+        $interval = $start->diff($end);
+
+        // Format the interval as 'hh:mm:ss'
+        return sprintf('%02d:%02d:%02d', $interval->h, $interval->i, $interval->s);
+    }
+}
 
 
 if (!function_exists('total_time_difference')) {
@@ -411,5 +503,48 @@ if (!function_exists('is_today_birthday')) {
 
         // Check if today is the birthday by comparing month and day
         return $birthDate->isBirthday($today);
+    }
+}
+
+
+
+if (!function_exists('total_regular_working_days')) {
+    /**
+     * Calculate the number of working days in a given month, excluding weekends and holidays.
+     * 
+     * @param string|null $month The month in 'Y-m' format (e.g., '2024-09'). If null, defaults to the previous month.
+     * @return int The number of working days in the specified month.
+     */
+    function total_regular_working_days(string $month = null): int
+    {
+        // If no month is passed, use the previous month
+        if (is_null($month)) {
+            $month = Carbon::now()->subMonth()->format('Y-m');
+        }
+
+        // Get the total number of days in the month
+        $daysInMonth = Carbon::parse($month)->daysInMonth;
+
+        // Get the list of active weekend days (e.g., ['Saturday', 'Sunday'])
+        $weekendDays = Weekend::getActiveWeekendDays();
+
+        // Get the holidays for the specified month
+        $holidays = Holiday::whereMonth('date', Carbon::parse($month)->month)
+                            ->whereYear('date', Carbon::parse($month)->year)
+                            ->pluck('date')
+                            ->toArray();
+
+        // Create a collection of days in the month and filter out the weekends and holidays
+        $workingDays = collect(range(1, $daysInMonth))
+            ->map(function ($day) use ($month) {
+                return Carbon::parse($month . '-' . $day);
+            })
+            ->filter(function ($date) use ($weekendDays, $holidays) {
+                // Exclude weekends and holidays
+                return !in_array($date->format('l'), $weekendDays) && !in_array($date->toDateString(), $holidays);
+            });
+
+        // Return the count of working days
+        return $workingDays->count();
     }
 }

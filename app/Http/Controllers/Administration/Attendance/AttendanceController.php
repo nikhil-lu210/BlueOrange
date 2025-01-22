@@ -120,22 +120,50 @@ class AttendanceController extends Controller
 
         $formattedTotalTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
 
-        // dd($clockIn, $clockOut, $formattedTotalTime);
-
-        // Check if the user has an attendance on selected date and type
+        // Check if the user has an attendance on the selected date and type
         $hasAttendance = Attendance::where('user_id', $user->id)
             ->where('clock_in_date', $request->clock_in_date)
             ->where('type', $request->type)
             ->first();
 
         if ($hasAttendance) {
-            toast('This Employee has already clocked in as '.$request->type.' on the selected date.', 'warning');
+            toast('This Employee has already clocked in as ' . $request->type . ' on the selected date.', 'warning');
             return redirect()->back()->withInput();
         }
 
         $location = Location::get(get_public_ip());
 
         try {
+            // Initialize total_adjusted_time variable
+            $formattedAdjustedTotalTime = $formattedTotalTime;
+
+            // Check if the attendance type is Regular
+            if ($request->type === 'Regular') {
+                // Retrieve the employee shift associated with this user (assuming you have a relation set up)
+                $employeeShift = $user->current_shift;
+
+                if ($employeeShift) {
+                    // Convert employee shift total time from HH:MM:SS to seconds for comparison
+                    list($shiftHours, $shiftMinutes, $shiftSeconds) = explode(':', $employeeShift->total_time);
+                    $shiftTotalSeconds = ($shiftHours * 3600) + ($shiftMinutes * 60) + $shiftSeconds;
+
+                    // Compare and set total_adjusted_time
+                    $adjustedTotalSeconds = ($totalSeconds < $shiftTotalSeconds) ? $totalSeconds : $shiftTotalSeconds;
+
+                    // Convert adjusted total time back to HH:MM:SS format
+                    $adjustedHours = floor($adjustedTotalSeconds / 3600);
+                    $adjustedMinutes = floor(($adjustedTotalSeconds % 3600) / 60);
+                    $adjustedSeconds = $adjustedTotalSeconds % 60;
+
+                    $formattedAdjustedTotalTime = sprintf('%02d:%02d:%02d', $adjustedHours, $adjustedMinutes, $adjustedSeconds);
+                }
+            } elseif ($request->type === 'Overtime') {
+                // For Overtime type, set total_adjusted_time directly from total_time
+                $formattedAdjustedTotalTime = $formattedTotalTime;
+            }
+            // dd($request->all());
+
+            // Create attendance record
             $attendance = Attendance::create([
                 'user_id' => $user->id,
                 'employee_shift_id' => $user->current_shift->id,
@@ -143,6 +171,7 @@ class AttendanceController extends Controller
                 'clock_in' => $clockIn,
                 'clock_out' => $clockOut,
                 'total_time' => $formattedTotalTime,
+                'total_adjusted_time' => $formattedAdjustedTotalTime, // Add total_adjusted_time
                 'type' => $request->type,
                 'ip_address' => $location->ip ?? null,
                 'country' => $location->countryName ?? null,
@@ -153,11 +182,11 @@ class AttendanceController extends Controller
                 'longitude' => $location->longitude ?? null
             ]);
 
-            toast('Clocked In Successful for '.$user->name.' on '.$request->clock_in_date.'.', 'success');
+            toast('Clocked In Successful for ' . $user->name . ' on ' . $request->clock_in_date . '.', 'success');
             return redirect()->route('administration.attendance.show', ['attendance' => $attendance]);
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
-            return redirect()->back();
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
     
@@ -207,14 +236,6 @@ class AttendanceController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Attendance $attendance)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      */
     public function update(AttendanceUpdateRequest $request, Attendance $attendance)
@@ -225,47 +246,73 @@ class AttendanceController extends Controller
             
             if ($request->clock_out) {
                 $attendance->clock_out = $request->clock_out;
-        
+
                 // Calculate total time
                 $clockInTime = Carbon::parse($request->clock_in);
                 $clockOutTime = Carbon::parse($request->clock_out);
-            
+
                 // Check if clock in and clock out are on the same day
                 $isSameDay = $clockInTime->isSameDay($clockOutTime);
-            
+
                 // Calculate total time with consideration for different dates
                 if ($isSameDay) {
                     $totalTime = $clockInTime->diff($clockOutTime);
                 } else {
                     $totalTime = $clockOutTime->diff($clockOutTime->copy()->startOfDay());
                 }
-            
+
                 $formattedTotalTime = sprintf(
                     '%02d:%02d:%02d',
                     $totalTime->h, // total hours
                     $totalTime->i, // total minutes
-                    $totalTime->s // total seconds
+                    $totalTime->s  // total seconds
                 );
-            
+
                 $attendance->total_time = $formattedTotalTime;
+
+                // Calculate total_adjusted_time
+                if ($attendance->type === 'Regular') {
+                    // Retrieve the employee shift associated with this attendance
+                    $employeeShift = $attendance->employee_shift;
+
+                    if ($employeeShift) {
+                        // Convert employee shift total time from HH:MM:SS to seconds for comparison
+                        list($shiftHours, $shiftMinutes, $shiftSeconds) = explode(':', $employeeShift->total_time);
+                        $shiftTotalSeconds = ($shiftHours * 3600) + ($shiftMinutes * 60) + $shiftSeconds;
+
+                        // Convert total time to seconds
+                        $totalSeconds = ($totalTime->h * 3600) + ($totalTime->i * 60) + $totalTime->s;
+
+                        // Compare and set total_adjusted_time
+                        $adjustedTotalSeconds = ($totalSeconds < $shiftTotalSeconds) ? $totalSeconds : $shiftTotalSeconds;
+
+                        // Convert adjusted total time back to HH:MM:SS format
+                        $adjustedHours = floor($adjustedTotalSeconds / 3600);
+                        $adjustedMinutes = floor(($adjustedTotalSeconds % 3600) / 60);
+                        $adjustedSeconds = $adjustedTotalSeconds % 60;
+
+                        $formattedAdjustedTotalTime = sprintf('%02d:%02d:%02d', $adjustedHours, $adjustedMinutes, $adjustedSeconds);
+                    } else {
+                        // If no employee shift found, fallback to the total time
+                        $formattedAdjustedTotalTime = $formattedTotalTime;
+                    }
+                } elseif ($attendance->type === 'Overtime') {
+                    // For Overtime type, set total_adjusted_time directly from total_time
+                    $formattedAdjustedTotalTime = $formattedTotalTime;
+                }
+
+                // Update the adjusted total time in attendance record
+                $attendance->total_adjusted_time = $formattedAdjustedTotalTime;
             }
         
             $attendance->save();
-        
+
             toast('Attendance Record Updated Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back();
         }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Attendance $attendance)
-    {
-        //
     }
 
     /**

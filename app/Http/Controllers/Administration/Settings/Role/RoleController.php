@@ -81,6 +81,8 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
+        abort_if(!auth()->user()->hasAnyRole(['Developer', 'Super Admin']) || ($role->name == 'Developer' && $role->name == 'Super Admin'), 403, 'You are not authorize to view this role\'s edit page.');
+
         $modules = PermissionModule::with(['permissions'])->get();
         // dd($modules);
         return view('administration.settings.role.edit', compact(['modules', 'role']));
@@ -91,11 +93,12 @@ class RoleController extends Controller
      */
     public function update(RoleUpdateRequest $request, Role $role)
     {
-        // dd($request->all(), $role);
+        abort_if(!auth()->user()->hasAnyRole(['Developer', 'Super Admin']) || ($role->name == 'Developer' && $role->name == 'Super Admin'), 403, 'You are not authorize to update this role.');
+
         try {
             DB::transaction(function() use ($request, $role) {
                 $role->update([
-                    'name' => $request->name,
+                    'name' => $request->name ? $request->name : $role->name,
                     'updated_at' => now()
                 ]);
                 

@@ -18,7 +18,7 @@
                             @foreach ($user->user_interactions as $userData)
                                 @if ($userData->id != $user->id) 
                                     <option value="{{ $userData->id }}" {{ $userData->id == old('userData') ? 'selected' : '' }}>
-                                        {{ $userData->name }}
+                                        {{ $userData->employee->alias_name }} ({{ $userData->name }})
                                     </option>
                                 @endif
                             @endforeach

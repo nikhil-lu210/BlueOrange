@@ -153,7 +153,7 @@
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
                     <div class="avatar avatar-online">
                         @if (auth()->user()->hasMedia('avatar'))
-                            <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="h-auto rounded-circle">
+                            <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="rounded-circle" style="height: 40px; width: 40px;">
                         @else
                             <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
                                 {{ profile_name_pic(auth()->user()) }}
@@ -168,7 +168,7 @@
                                 <div class="flex-shrink-0 me-3">
                                     <div class="avatar avatar-online" title="{{ auth()->user()->name }}">
                                         @if (auth()->user()->hasMedia('avatar'))
-                                            <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="h-auto rounded-circle">
+                                            <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile') }}" alt="{{ auth()->user()->name }} Avatar" class="rounded-circle" style="height: 40px; width: 40px;">
                                         @else
                                             <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
                                                 {{ profile_name_pic(auth()->user()) }}

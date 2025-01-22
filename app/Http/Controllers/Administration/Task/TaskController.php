@@ -17,6 +17,7 @@ use App\Mail\Administration\Task\FileUploadForTaskMail;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
 use App\Http\Requests\Administration\Task\TaskUpdateRequest;
 use App\Mail\Administration\Task\StatusUpdateTaskMail;
+use App\Models\Chatting\Chatting;
 use App\Notifications\Administration\Task\TaskCreateNotification;
 use App\Notifications\Administration\Task\TaskUpdateNotification;
 use App\Notifications\Administration\Task\TaskAddUsersNotification;
@@ -122,18 +123,39 @@ class TaskController extends Controller
     }
 
     /**
+     * Show the form for creating a new resource.
+     */
+    public function createChatTask(Chatting $message)
+    {
+        // dd($message->toArray());
+        $roles = Role::with([
+            'users' => function ($query) {
+                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active')
+                        ->orderBy('name', 'asc');
+            }
+        ])->get();
+        
+        return view('administration.task.create_chat_task', compact(['roles', 'message']));
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
     public function store(TaskStoreRequest $request)
     {
         try {
-            DB::transaction(function () use ($request) {
+            $task = null;
+            $taskID = null;
+            DB::transaction(function () use ($request, &$task, &$taskID) {
                 $task = Task::create([
+                    'chatting_id' => $request->chatting_id ?? NULL,
                     'title' => $request->title,
                     'description' => $request->description,
                     'deadline' => $request->deadline ?? null,
                     'priority' => $request->priority
                 ]);
+                $taskID = $task->taskid;
 
                 // Assign users to the task if necessary
                 if ($request->has('users')) {
@@ -157,13 +179,13 @@ class TaskController extends Controller
                     // Send Notification to System
                     $notifiableUser->notify(new TaskCreateNotification($task, auth()->user()));
 
-                    // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new NewTaskMail($task, $notifiableUser));
+                    // Send Mail to the notifiableUser's email & Dispatch the email to the queue
+                    Mail::to($notifiableUser->email)->queue(new NewTaskMail($task, $notifiableUser));
                 }
             });
 
             toast('Task assigned successfully.', 'success');
-            return redirect()->route('administration.task.index');
+            return redirect()->route('administration.task.show', ['task' => $task, 'taskid' => $taskID]);
         } catch (Exception $e) {
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
@@ -274,7 +296,7 @@ class TaskController extends Controller
                     $notifiableUser->notify(new TaskUpdateNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new UpdateTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->queue(new UpdateTaskMail($task, $notifiableUser));
                 }
             });
             
@@ -333,7 +355,7 @@ class TaskController extends Controller
                     $notifiableUser->notify(new TaskAddUsersNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new AddUsersTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->queue(new AddUsersTaskMail($task, $notifiableUser));
                 }
             });
 
@@ -403,7 +425,7 @@ class TaskController extends Controller
                     $notifiableUser->notify(new TaskFileUploadNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new FileUploadForTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->queue(new FileUploadForTaskMail($task, $notifiableUser));
                 }
             });
 
@@ -441,7 +463,7 @@ class TaskController extends Controller
                     $notifiableUser->notify(new TaskStatusUpdateNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->send(new StatusUpdateTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->email)->queue(new StatusUpdateTaskMail($task, $notifiableUser));
                 }
             });
 

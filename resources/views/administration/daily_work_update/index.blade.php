@@ -14,7 +14,7 @@
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
     
     {{-- Select 2 --}}
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
@@ -115,64 +115,66 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Date</th>
-                            <th>Employee</th>
-                            <th>Team Leader</th>
-                            <th>Submitted At</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($dailyWorkUpdates as $key => $dailyUpdate) 
-                            <tr class="@if (is_null($dailyUpdate->rating)) bg-label-danger @endif">
-                                <th>#{{ serial($dailyWorkUpdates, $key) }}</th>
-                                <td>
-                                    <b>{{ show_date($dailyUpdate->date) }}</b>
-                                    <br>
-                                    @if (!is_null($dailyUpdate->rating))
-                                        <small class="badge bg-label-primary">
-                                            {{ $dailyUpdate->rating }} out of 5
-                                        </small>
-                                    @else
-                                        <small class="badge bg-danger">
-                                            {{ __('Not Reviewed') }}
-                                        </small>
-                                    @endif
-                                </td>
-                                <td>
-                                    {!! show_user_name_and_avatar($dailyUpdate->user) !!}
-                                </td>
-                                <td>
-                                    {!! show_user_name_and_avatar($dailyUpdate->team_leader) !!}
-                                </td>
-                                <td>
-                                    <small class="text-bold">{{ show_date($dailyUpdate->created_at) }}</small>
-                                    <br>
-                                    <span>
-                                        at
-                                        <small class="text-bold">{{ show_time($dailyUpdate->created_at) }}</small>
-                                    </span>
-                                </td>
-                                <td class="text-center">
-                                    @can ('Daily Work Update Delete') 
-                                        <a href="{{ route('administration.daily_work_update.destroy', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Daily Work Update?">
-                                            <i class="text-white ti ti-trash"></i>
-                                        </a>
-                                    @endcan
-                                    @can ('Daily Work Update Read') 
-                                        <a href="{{ route('administration.daily_work_update.show', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
-                                            <i class="text-white ti ti-info-hexagon"></i>
-                                        </a>
-                                    @endcan
-                                </td>
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Sl.</th>
+                                <th>Date</th>
+                                <th>Employee</th>
+                                <th>Team Leader</th>
+                                <th>Submitted At</th>
+                                <th class="text-center">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($dailyWorkUpdates as $key => $dailyUpdate) 
+                                <tr class="@if (is_null($dailyUpdate->rating)) bg-label-danger @endif">
+                                    <th>#{{ serial($dailyWorkUpdates, $key) }}</th>
+                                    <td>
+                                        <b>{{ show_date($dailyUpdate->date) }}</b>
+                                        <br>
+                                        @if (!is_null($dailyUpdate->rating))
+                                            <small class="badge bg-label-primary">
+                                                {{ $dailyUpdate->rating }} out of 5
+                                            </small>
+                                        @else
+                                            <small class="badge bg-danger">
+                                                {{ __('Not Reviewed') }}
+                                            </small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {!! show_user_name_and_avatar($dailyUpdate->user) !!}
+                                    </td>
+                                    <td>
+                                        {!! show_user_name_and_avatar($dailyUpdate->team_leader) !!}
+                                    </td>
+                                    <td>
+                                        <small class="text-bold">{{ show_date($dailyUpdate->created_at) }}</small>
+                                        <br>
+                                        <span>
+                                            at
+                                            <small class="text-bold">{{ show_time($dailyUpdate->created_at) }}</small>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        @can ('Daily Work Update Delete') 
+                                            <a href="{{ route('administration.daily_work_update.destroy', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Daily Work Update?">
+                                                <i class="text-white ti ti-trash"></i>
+                                            </a>
+                                        @endcan
+                                        @can ('Daily Work Update Read') 
+                                            <a href="{{ route('administration.daily_work_update.show', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                                <i class="text-white ti ti-info-hexagon"></i>
+                                            </a>
+                                        @endcan
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>
@@ -189,9 +191,9 @@
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
 @endsection

@@ -83,17 +83,20 @@
                         <!-- Logo -->
                         <div class="app-brand mb-4">
                             <a href="{{ route('login') }}" class="app-brand-link gap-2">
-                                <img src="{{ asset('Logo/logo_black_01.png') }}" alt="{{ config('app.name') }}" width="30%">
+                                <img src="{{ asset(config('app.logo')) }}" alt="{{ config('app.name') }}" width="30%">
                             </a>
                         </div>
                         <!-- /Logo -->
                         <h3 class="mb-3 text-left"><b>Sign-In</b> to {{ config('app.name') }}</h3>
 
-                        <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}">
+                        <form id="formAuthentication" class="mb-3" method="POST" action="{{ route('login') }}" autocomplete="off">
                             @csrf
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email <sup class="text-danger">*</sup></label>
-                                <input type="email" value="{{ old('email') }}" name="email" required autocomplete="off" autofocus tabindex="0" class="form-control @error('email') is-invalid @enderror" placeholder="{{ __('Login Email') }}" />
+                                <label for="email" class="form-label">Login Email <sup class="text-danger">*</sup></label>
+                                <div class="input-group input-group-merge">
+                                    {{-- <span class="input-group-text" style="padding-right: 2px; @error('email') border-color: red; @enderror">UID</span> --}}
+                                    <input type="email" id="email" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="user@blueorange.com" autocomplete="off" required/>
+                                </div>
                                 @error('email')
                                     <span class="invalid-feedback" role="alert">
                                         <strong>{{ $message }}</strong>
@@ -103,14 +106,12 @@
                             <div class="mb-3 form-password-toggle">
                                 <div class="d-flex justify-content-between">
                                     <label class="form-label" for="password">Password</label>
-                                    {{-- @if (Route::has('password.request'))
-                                        <a href="{{ route('password.request') }}">
-                                            <small>Forgot Password?</small>
-                                        </a>
-                                    @endif --}}
+                                    <a href="{{ route('password.request') }}">
+                                        <small class="fw-bold">Forgot Password?</small>
+                                    </a>
                                 </div>
                                 <div class="input-group input-group-merge">
-                                    <input type="password" id="password" required autocomplete="off"  tabindex="0" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="*****************" aria-describedby="password" />
+                                    <input type="password" id="password" required autocomplete="off"  tabindex="0" class="form-control @error('password') is-invalid @enderror" name="password" placeholder="********" aria-describedby="password" />
                                     <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
 
                                     @error('password')
@@ -126,7 +127,12 @@
                                     <label class="form-check-label" for="remember-me"> Remember Me </label>
                                 </div>
                             </div>
-                            <button type="submit" class="btn btn-dark d-grid w-100">Sign in</button>
+                            <button type="submit" class="btn btn-primary text-uppercase text-bold d-grid w-100">
+                                <span class="fw-bold">
+                                    {{ __('Sign In') }}
+                                    <i class="ti ti-lock-open"></i>
+                                </span>
+                            </button>
                         </form>
 
                         {{-- <p class="text-center">

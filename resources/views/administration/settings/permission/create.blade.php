@@ -9,7 +9,7 @@
 
 @section('css_links')
     {{--  External CSS  --}}
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -69,6 +69,12 @@
                     <div class="row mt-3">
                         <div class="col-md-12">
                             <div class="d-flex">
+                                <div class="form-check me-3 me-lg-5">
+                                    <input class="form-check-input" type="checkbox" checked name="name[Everything]" id="permissionEverything" />
+                                    <label class="form-check-label" for="permissionEverything">
+                                        Everything
+                                    </label>
+                                </div>
                                 <div class="form-check me-3 me-lg-5">
                                     <input class="form-check-input" type="checkbox" checked name="name[Create]" id="permissionCreate" />
                                     <label class="form-check-label" for="permissionCreate">
@@ -146,8 +152,8 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 @endsection
 
 @section('custom_script')

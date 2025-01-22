@@ -44,7 +44,7 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Update Role</h5>
+                <h5 class="mb-0">Update Role <b class="text-primary">({{ $role->name }})</b></h5>
         
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.settings.rolepermission.role.show', ['role' => $role]) }}" class="btn btn-sm btn-primary">
@@ -56,10 +56,12 @@
             <div class="card-body">
                 <form action="{{ route('administration.settings.rolepermission.role.update', ['role' => $role]) }}" method="post" autocomplete="off">
                     @csrf
-                    <div class="col-12 mb-4">
-                        <label class="form-label" for="name">Role Name <strong class="text-danger">*</strong></label>
-                        <input type="text" name="name" value="{{ $role->name }}" class="form-control" placeholder="Enter a role name" tabindex="-1" required />
-                    </div>
+                    @if ($role->name !== 'Developer' && $role->name !== 'Super Admin') 
+                        <div class="col-12 mb-4">
+                            <label class="form-label" for="name">Role Name <strong class="text-danger">*</strong></label>
+                            <input type="text" name="name" value="{{ $role->name }}" class="form-control" placeholder="Enter a role name" tabindex="-1" required />
+                        </div>
+                    @endif
                     <div class="col-12">
                         <h5>Role Permissions</h5>
                         <!-- Permission table -->
@@ -67,11 +69,11 @@
                             <table class="table table-flush-spacing">
                                 <thead>
                                     <tr>
-                                        <td class="bg-white text-nowrap fw-medium">
-                                            Superadmin Access 
+                                        <td class="text-nowrap fw-medium">
+                                            {{ $role->name }} Access 
                                             <i class="ti ti-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Allows a full access to the system"></i>
                                         </td>
-                                        <td class="bg-white" colspan="4">
+                                        <td class="" colspan="4">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="checkbox" id="selectAllPermissions" />
                                                 <label class="form-check-label" for="selectAllPermissions">

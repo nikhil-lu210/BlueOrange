@@ -18,9 +18,9 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
     
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/quill/typography.css')}}" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/quill/katex.css')}}" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/quill/editor.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -133,10 +133,10 @@
     <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
 
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
     <!-- Vendors JS -->
-    <script src="{{asset('assets/vendor/libs/quill/katex.js')}}"></script>
-    <script src="{{asset('assets/vendor/libs/quill/quill.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
 @endsection
 
 @section('custom_script')

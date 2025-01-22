@@ -72,17 +72,39 @@
                         <small class="badge bg-success text-capitalize mt-1">{{ total_day_difference(optional($user->employee)->joining_date) }}</small>
                     </dd>
                 </dl>
+                @hasanyrole(['Developer'])
+                    <hr>
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 fw-medium text-nowrap">
+                            <i class="ti ti-qrcode text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">QR Code:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            @if ($user->hasMedia('qrcode'))
+                                <img src="{{ $user->getFirstMediaUrl('qrcode') }}" alt="{{ $user->name }} QRCODE" class="d-block h-auto ms-0 ms-sm-4" width="150px">
+                            @else
+                                <a href="{{ route('administration.settings.user.generate.qr.code', ['user' => $user]) }}" class="btn btn-outline-primary btn-sm confirm-success">Generate QR Code</a>
+                            @endif
+                        </dd>
+                    </dl>
+                @endhasanyrole
                 <hr>
                 <dl class="row mb-1">
                     <dt class="col-sm-4 fw-medium text-nowrap">
-                        <i class="ti ti-qrcode text-heading"></i>
-                        <span class="fw-medium mx-2 text-heading">QR Code:</span>
+                        <i class="ti ti-barcode text-heading"></i>
+                        <span class="fw-medium mx-2 text-heading">Bar Code:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        @if ($user->hasMedia('qrcode'))
-                            <img src="{{ $user->getFirstMediaUrl('qrcode') }}" alt="{{ $user->name }} QRCODE" class="d-block h-auto ms-0 ms-sm-4" width="150px">
+                        @if ($user->hasMedia('barcode'))
+                            <img src="{{ $user->getFirstMediaUrl('barcode') }}" alt="{{ $user->name }} BAR-CODE" class="d-block h-auto" width="300px">
+                            
+                            <a href="{{ spatie_media_download($user->getFirstMedia('barcode')) }}" target="_blank" class="text-bold text-muted" title="Download Barcode">
+                                {{ $user->userid }}
+                            </a>
                         @else
-                            <a href="{{ route('administration.settings.user.generate.qr.Code', ['user' => $user]) }}" class="btn btn-outline-primary btn-sm confirm-success">Generate QR Code</a>
+                            @canany (['User Everything', 'User Create']) 
+                                <a href="{{ route('administration.settings.user.generate.bar.code', ['user' => $user]) }}" class="btn btn-outline-primary btn-sm confirm-success">Generate Barcode</a>
+                            @endcanany
                         @endif
                     </dd>
                 </dl>

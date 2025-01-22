@@ -2,6 +2,7 @@
 
 namespace App\Models\Task\Traits;
 
+use App\Models\Chatting\Chatting;
 use App\Models\User;
 use App\Models\Task\TaskComment;
 use App\Models\Task\TaskHistory;
@@ -54,5 +55,13 @@ trait TaskRelations
     public function files(): MorphMany
     {
         return $this->morphMany(FileMedia::class, 'fileable');
+    }
+
+    /**
+     * Get the chatting that owns the task.
+     */
+    public function chatting(): BelongsTo
+    {
+        return $this->belongsTo(Chatting::class);
     }
 }

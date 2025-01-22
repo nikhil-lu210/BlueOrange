@@ -9,7 +9,7 @@
 
 @section('css_links')
     {{--  External CSS  --}}
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     {{-- <!-- Vendors CSS --> --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
@@ -55,9 +55,9 @@
                 <h5 class="mb-0">Create New User</h5>
         
                 <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.settings.user.index') }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-circle ti-xs me-1"></span>
-                        All Users
+                    <a href="{{ route('administration.settings.user.import.index') }}" class="btn btn-sm btn-primary">
+                        <span class="tf-icon ti ti-upload ti-xs me-1"></span>
+                        {{ __('Import Users') }}
                     </a>
                 </div>
             </div>
@@ -257,8 +257,8 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
     {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>

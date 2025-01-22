@@ -15,11 +15,7 @@ class RolesTableSeeder extends Seeder
     {
         $roles = [
             'Developer',
-            'Super Admin',
-            'Admin',
-            'HR Manager',
-            'Team Leader',
-            'Employee',
+            'Super Admin'
         ];
 
         foreach ($roles as $role) {
@@ -28,63 +24,127 @@ class RolesTableSeeder extends Seeder
             // Assign permissions to roles based on the module
             if ($role === 'Developer') {
                 $permissions = [
+                    'App Setting Everything',
+                    'App Setting Create',
+                    'App Setting Read',
+                    'App Setting Update',
+                    'App Setting Delete',
+                    
+                    'Logs Everything',
+                    'Logs Create',
                     'Logs Read',
+                    'Logs Update',
+                    'Logs Delete',
+                    
+                    'Vault Everything',
+                    'Vault Create',
+                    'Vault Read',
+                    'Vault Update',
+                    'Vault Delete',
+                    
+                    'IT Ticket Everything',
+                    'IT Ticket Create',
+                    'IT Ticket Read',
+                    'IT Ticket Update',
+                    'IT Ticket Delete',
 
+                    'User Interaction Everything',
                     'User Interaction Create',
                     'User Interaction Read',
                     'User Interaction Update',
                     'User Interaction Delete',
 
+                    'Attendance Everything',
                     'Attendance Create',
                     'Attendance Read',
                     'Attendance Update',
                     'Attendance Delete',
 
+                    'Leave Allowed Everything',
+                    'Leave Allowed Create',
+                    'Leave Allowed Read',
+                    'Leave Allowed Update',
+                    'Leave Allowed Delete',
+
+                    'Leave History Everything',
+                    'Leave History Create',
+                    'Leave History Read',
+                    'Leave History Update',
+                    'Leave History Delete',
+
+                    'Daily Break Everything',
                     'Daily Break Create',
                     'Daily Break Read',
                     'Daily Break Update',
                     'Daily Break Delete',
 
+                    'Announcement Everything',
                     'Announcement Create',
                     'Announcement Read',
                     'Announcement Update',
                     'Announcement Delete',
 
+                    'Task Everything',
                     'Task Create',
                     'Task Read',
                     'Task Update',
                     'Task Delete',
 
+                    'Daily Work Update Everything',
                     'Daily Work Update Create',
                     'Daily Work Update Read',
                     'Daily Work Update Update',
                     'Daily Work Update Delete',
                     
+                    'Permission Everything',
                     'Permission Create',
                     'Permission Read',
                     'Permission Update',
                     'Permission Delete',
                     
+                    'Role Everything',
                     'Role Create',
                     'Role Read',
                     'Role Update',
                     'Role Delete',
                     
+                    'User Everything',
                     'User Create',
                     'User Read',
                     'User Update',
                     'User Delete',
                     
+                    'Salary Everything',
                     'Salary Create',
                     'Salary Read',
                     'Salary Update',
                     'Salary Delete',
                     
+                    'Income Everything',
+                    'Income Create',
+                    'Income Read',
+                    'Income Update',
+                    'Income Delete',
+                    
+                    'Expense Everything',
+                    'Expense Create',
+                    'Expense Read',
+                    'Expense Update',
+                    'Expense Delete',
+                    
+                    'Weekend Everything',
+                    'Weekend Create',
+                    'Weekend Read',
+                    'Weekend Update',
+                    'Weekend Delete',
+                    
+                    'Holiday Everything',
                     'Holiday Create',
                     'Holiday Read',
                     'Holiday Update',
                     'Holiday Delete',
                     
+                    'Group Chatting Everything',
                     'Group Chatting Create',
                     'Group Chatting Read',
                     'Group Chatting Update',
@@ -93,6 +153,16 @@ class RolesTableSeeder extends Seeder
             } elseif ($role === 'Super Admin') {
                 $permissions = [
                     'Logs Read',
+                    
+                    'Vault Create',
+                    'Vault Read',
+                    'Vault Update',
+                    'Vault Delete',
+                    
+                    'IT Ticket Create',
+                    'IT Ticket Read',
+                    'IT Ticket Update',
+                    'IT Ticket Delete',
 
                     'User Interaction Create',
                     'User Interaction Read',
@@ -103,6 +173,16 @@ class RolesTableSeeder extends Seeder
                     'Attendance Read',
                     'Attendance Update',
                     'Attendance Delete',
+
+                    'Leave Allowed Create',
+                    'Leave Allowed Read',
+                    'Leave Allowed Update',
+                    'Leave Allowed Delete',
+
+                    'Leave History Create',
+                    'Leave History Read',
+                    'Leave History Update',
+                    'Leave History Delete',
 
                     'Daily Break Create',
                     'Daily Break Read',
@@ -124,15 +204,9 @@ class RolesTableSeeder extends Seeder
                     'Daily Work Update Update',
                     'Daily Work Update Delete',
                     
-                    'Permission Create',
-                    'Permission Read',
-                    'Permission Update',
-                    'Permission Delete',
-                    
                     'Role Create',
                     'Role Read',
                     'Role Update',
-                    'Role Delete',
                     
                     'User Create',
                     'User Read',
@@ -143,6 +217,21 @@ class RolesTableSeeder extends Seeder
                     'Salary Read',
                     'Salary Update',
                     'Salary Delete',
+                    
+                    'Income Create',
+                    'Income Read',
+                    'Income Update',
+                    'Income Delete',
+                    
+                    'Expense Create',
+                    'Expense Read',
+                    'Expense Update',
+                    'Expense Delete',
+                    
+                    'Weekend Create',
+                    'Weekend Read',
+                    'Weekend Update',
+                    'Weekend Delete',
                     
                     'Holiday Create',
                     'Holiday Read',
@@ -154,142 +243,16 @@ class RolesTableSeeder extends Seeder
                     'Group Chatting Update',
                     'Group Chatting Delete',
                 ];
-            } elseif ($role === 'Admin') {
-                $permissions = [
-                    'User Interaction Read',
-                    'User Interaction Update',
-                    
-                    'Attendance Read',
-
-                    'Daily Break Create',
-                    'Daily Break Read',
-                    
-                    'Announcement Read',
-
-                    'Task Create',
-                    'Task Read',
-
-                    'Daily Work Update Create',
-                    'Daily Work Update Read',
-                    'Daily Work Update Update',
-                    
-                    'Permission Read',
-                    
-                    'Role Read',
-                    
-                    'User Create',
-                    'User Read',
-                    'User Update',
-                    'User Delete',
-                    
-                    'Salary Create',
-                    'Salary Read',
-                    'Salary Update',
-                    'Salary Delete',
-                    
-                    'Holiday Create',
-                    'Holiday Read',
-                    'Holiday Update',
-                    
-                    'Group Chatting Create',
-                    'Group Chatting Read',
-                    'Group Chatting Update',
-                    'Group Chatting Delete',
-                ];
-            } elseif ($role === 'HR Manager') {
-                $permissions = [
-                    'User Interaction Read',
-                    'User Interaction Update',
-                    
-                    'Attendance Read',
-
-                    'Daily Break Create',
-                    'Daily Break Read',
-                    
-                    'Announcement Read',
-                    
-                    'Task Read',
-
-                    'Daily Work Update Create',
-                    'Daily Work Update Read',
-                    
-                    'Permission Read',
-                    
-                    'Role Read',
-                    
-                    'User Create',
-                    'User Read',
-                    'User Update',
-                    
-                    'Salary Create',
-                    'Salary Read',
-                    'Salary Update',
-                    
-                    'Holiday Create',
-                    'Holiday Read',
-                    'Holiday Update',
-                    
-                    'Group Chatting Create',
-                    'Group Chatting Read',
-                    'Group Chatting Update',
-                    'Group Chatting Delete',
-                ];
-            } elseif ($role === 'Team Leader') {
-                $permissions = [
-                    'Announcement Read',
-                    
-                    'User Interaction Read',
-                    'User Interaction Update',
-                    
-                    'Attendance Read',
-
-                    'Daily Break Create',
-                    'Daily Break Read',
-                    
-                    'Task Read',
-
-                    'Daily Work Update Create',
-                    'Daily Work Update Read',
-                    'Daily Work Update Update',
-
-                    'User Read',
-
-                    'Salary Read',
-                    
-                    'Holiday Read',
-                    
-                    'Group Chatting Create',
-                    'Group Chatting Read',
-                    'Group Chatting Update',
-                    'Group Chatting Delete',
-                ];
-            } elseif ($role === 'Employee') {
-                $permissions = [
-                    'Announcement Read',
-                    
-                    'Attendance Read',
-
-                    'Daily Break Create',
-                    'Daily Break Read',
-                    
-                    'Task Read',
-
-                    'Daily Work Update Create',
-                    'Daily Work Update Read',
-                    
-                    'User Read',
-
-                    'Salary Read',
-                    
-                    'Holiday Read',
-                    
-                    'Group Chatting Read',
-                ];
             } else {
                 $permissions = [
                     'Announcement Read',
                     
                     'Attendance Read',
+                    
+                    'Leave Allowed Read',
+
+                    'Leave History Create',
+                    'Leave History Read',
 
                     'Daily Break Create',
                     'Daily Break Read',

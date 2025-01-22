@@ -3,9 +3,17 @@
 
     "Chattings": "বার্তালাপ",
 
+    "Group Chattings": "গ্রুপ বার্তালাপ",
+
+    "Vault": "তহবিল",
+    "All Credentials": "সমস্ত শংসাপত্র",
+    "Store Credential": "শংসাপত্র সংরক্ষণ",
+
     "Attendance": "উপস্থিতি",
     "All Attendances": "সমস্ত উপস্থিতি",
     "My Attendances": "আমার উপস্থিতি",
+    "QR Code Attendance": "QR কোড উপস্থিতি",
+    "Bar Code Attendance": "বার-কোড উপস্থিতি",
     "Assign Attendance": "উপস্থিতি যোগ করুন",
         "Select Employee": "কর্মচারী নির্বাচন করুন",
         "Attendances Of": "উপস্থিতির মাস",
@@ -21,6 +29,16 @@
         "Filter Attendances": "উপস্থিতি ফিল্টার করুন",
         "Attendance Details": "উপস্থিতির বিবরণ",
 
+    "Leave": "ছুটি",
+    "All Leaves": "সকল ছুটিসমূহ",
+    "My Leaves": "আমার ছুটিসমূহ",
+    "Apply For Leave": "ছুটির জন্য আবেদন",
+
+    "Daily Break": "দৈনিক বিরতি",
+    "All Daily Breaks": "সকল দৈনিক বিরতিসমূহ",
+    "My Daily Breaks": "আমার দৈনিক বিরতিসমূহ",
+    "Start/Stop Break": "বিরতি শুরু/বন্ধ",
+
     "Announcement": "ঘোষণা",
     "All Announcements": "সমস্ত ঘোষণা",
     "My Announcements": "আমার ঘোষণা",
@@ -30,6 +48,30 @@
     "All Tasks": "সমস্ত টাস্ক",
     "My Tasks": "আমার টাস্ক",
     "New Task": "নতুন টাস্ক",
+
+    "Daily Work Update": "দৈনিক কাজের আপডেট",
+    "Work Update": "কাজের আপডেট",
+    "All Work Updates": "সমস্ত কাজের আপডেট",
+    "My Work Updates": "আমার কাজের আপডেট",
+    "New Work Update": "নতুন কাজের আপডেট",
+
+    "IT Ticket": "আইটি টিকিট",
+    "All Tickets": "সমস্ত আইটি টিকিট",
+    "My Tickets": "আমার আইটি টিকিট",
+    "Arise New Ticket": "নতুন আইটি টিকিট",
+
+    "Salary": "বেতন",
+    "Monthly Salaries": "মাসিক বেতন",
+
+    "Income & Expense": "আয় ও ব্যয়",
+    "Statistics": "পরিসংখ্যান",
+    "Categories": "শ্রেণী",
+    "Income": "আয়",
+    "All Incomes": "সকল আয়",
+    "Create Income": "আয় সংরক্ষণ",
+    "Expense": "ব্যয়",
+    "All Expenses": "সকল ব্যয়",
+    "Create Expense": "ব্যয় সংরক্ষণ",
 
     "Settings": "সেটিংস",
 

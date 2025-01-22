@@ -11,7 +11,7 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-profile.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-profile.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -97,12 +97,14 @@
                     Profile
                 </a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->is('my/salary*') ? 'active' : '' }}" href="{{ route('administration.my.salary.monthly.history') }}">
-                    <i class="ti-xs ti ti-currency-taka me-1"></i> 
-                    Salaries
-                </a>
-            </li>
+            @can ('Salary Read') 
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('my/salary*') ? 'active' : '' }}" href="{{ route('administration.my.salary.monthly.history') }}">
+                        <i class="ti-xs ti ti-currency-taka me-1"></i> 
+                        Salaries
+                    </a>
+                </li>
+            @endcan
         </ul>
     </div>
 </div>
@@ -122,7 +124,7 @@
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
-    <script src="{{asset('assets/js/pages-profile.js')}}"></script>
+    <script src="{{ asset('assets/js/pages-profile.js') }}"></script>
 @endsection
 
 @section('custom_script')

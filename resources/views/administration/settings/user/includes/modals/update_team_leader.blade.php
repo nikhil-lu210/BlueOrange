@@ -17,7 +17,7 @@
                             <option value="" selected disabled>Select Team Leader</option>
                             @foreach ($teamLeaders as $teamLeader)
                                 <option value="{{ $teamLeader->id }}" {{ $teamLeader->id == old('team_leader_id') ? 'selected' : '' }}>
-                                    {{ $teamLeader->name }}
+                                    {{ $teamLeader->employee->alias_name }} ({{ $teamLeader->name }})
                                 </option>
                             @endforeach
                         </select>

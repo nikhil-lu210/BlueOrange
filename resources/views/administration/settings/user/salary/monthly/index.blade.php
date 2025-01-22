@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Monthly Salary History'))
+@section('page_title', __('Monthly Salaries'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -23,7 +23,7 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Monthly Salary History') }}</b>
+    <b class="text-uppercase">{{ __('Monthly Salaries') }}</b>
 @endsection
 
 
@@ -47,16 +47,16 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Monthly Salary History of {{ $user->name }}</h5>
+                <h5 class="mb-0">Monthly Salaries</h5>
             </div>
             <div class="card-body">
                 <table class="table data-table table-bordered table-responsive" style="width: 100%;">
                     <thead>
                         <tr>
-                            <th>Sl.</th>
+                            <th><i class="ti ti-hash"></i></th>
+                            <th>Payment For</th>
                             <th>Base Salary</th>
-                            <th>Total Earning</th>
-                            <th>Paid At</th>
+                            <th>Total Payable</th>
                             <th>Status</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -66,18 +66,33 @@
                             <tr>
                                 <th>#{{ serial($monthly_salaries, $key) }}</th>
                                 <td>
-                                    <a href="{{ route('administration.settings.user.salary.show', ['user' => $user, 'salary' => $monthlySalary->salary]) }}" target="_blank" class="text-bold" data-bs-toggle="tooltip" title="{{ spell_number($monthlySalary->salary->total) }}">
+                                    <span class="text-bold">{{ show_month($monthlySalary->for_month) }}</span>
+                                    @isset ($monthlySalary->paid_at) 
+                                        <br>
+                                        <span title="Paid At">
+                                            <span class="text-muted">{{ show_date($monthlySalary->paid_at) }}</span>
+                                            <br>
+                                            at <span class="text-muted">{{ show_time($monthlySalary->paid_at) }}</span>
+                                        </span>
+                                    @endisset
+                                </td>
+                                <td>
+                                    <a href="{{ route('administration.settings.user.salary.show', ['salary' => $monthlySalary->salary, 'user' => $monthlySalary->user]) }}" target="_blank" class="text-bold" data-bs-toggle="tooltip" title="{{ spell_number($monthlySalary->salary->total) }} taka only">
                                         <i class="ti ti-currency-taka" style="margin-top: -4px; margin-right: -5px;"></i>
                                         {{ format_number($monthlySalary->salary->total) }}
                                     </a>
                                 </td>
-                                <td>{{ 'total_earning' }}</td>
-                                <td>{{ show_date($monthlySalary->created_at) }}</td>
+                                <td>
+                                    <span class="text-bold" data-bs-toggle="tooltip" title="{{ spell_number($monthlySalary->total_payable) }} taka only">
+                                        <i class="ti ti-currency-taka" style="margin-top: -4px; margin-right: -5px;"></i>
+                                        {{ format_number($monthlySalary->total_payable) }}
+                                    </span>
+                                </td>
                                 <td>
                                     <span class="badge bg-label-{{ $monthlySalary->status == 'Paid' ? 'success' : 'danger' }}">{{ $monthlySalary->status }}</span>
                                 </td>
                                 <td class="text-center">
-                                    <a href="{{ route('administration.settings.user.salary.monthly.show', ['user' => $user, 'monthly_salary' => $monthlySalary]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
+                                    <a href="{{ route('administration.accounts.salary.monthly.show', ['monthly_salary' => $monthlySalary]) }}" class="btn btn-sm btn-icon" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="text-primary ti ti-info-hexagon"></i>
                                     </a>
                                 </td>

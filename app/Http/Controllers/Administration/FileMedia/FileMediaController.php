@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\FileMedia\FileMedia;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 class FileMediaController extends Controller
 {
@@ -42,4 +43,33 @@ class FileMediaController extends Controller
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
     }
+
+
+    /**
+     * Handle the file download request for Spatie Media Library.
+     *
+     * @param  int  $mediaId
+     * @return \Illuminate\Http\Response|\Illuminate\Http\JsonResponse
+     */
+    public function downloadSpatieMedia(Media $media)
+    {
+        try {
+            // Check if the file exists on the disk
+            if (!file_exists($media->getPath())) {
+                return response()->json([
+                    'message' => 'File not found.',
+                ], 404);
+            }
+
+            // Return the file as a downloadable response
+            return response()->download($media->getPath(), $media->file_name);
+        } catch (Exception $e) {
+            // Handle any unexpected errors
+            return response()->json([
+                'message' => 'An error occurred while processing the download.',
+                'error' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }

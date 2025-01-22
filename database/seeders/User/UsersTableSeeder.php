@@ -16,9 +16,11 @@ class UsersTableSeeder extends Seeder
      */
     public function run(): void
     {
+        $joiningDate = fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d');
+
         // Create a developer
         $developer = User::create([
-            'userid' => strtoupper(Str::random(8)),
+            'userid' => '00000001',
             'first_name' => 'Demo',
             'last_name' => 'Developer',
             'name' => 'Demo Developer',
@@ -38,12 +40,32 @@ class UsersTableSeeder extends Seeder
         $developer->employee_shifts()->create([
             'start_time' => '14:00:00',
             'end_time' => '22:00:00',
+            'total_time' => '08:00:00',
             'implemented_from' => date('Y-m-d'),
+        ]);
+        // Create associated Leave
+        $developer->leave_alloweds()->create([
+            'earned_leave' => '120:00:00',
+            'casual_leave' => '120:00:00',
+            'sick_leave' => '120:00:00',
+            'implemented_from' => '01-01',
+            'implemented_to' => '12-31',
+        ]);
+        // Create associated Salary
+        $developer->salaries()->create([
+            'basic_salary' => 5000,
+            'house_benefit' => 1000,
+            'transport_allowance' => 1000,
+            'medical_allowance' => 1000,
+            'night_shift_allowance' => 1000,
+            'other_allowance' => 1000,
+            'implemented_from' => $joiningDate,
+            'total' => 10000,
         ]);
         // Create associated employee for the developer
         $developer->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
-            'alias_name' => fake()->name('male'),
+            'joining_date' => $joiningDate,
+            'alias_name' => 'Administration',
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
             'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
@@ -56,7 +78,7 @@ class UsersTableSeeder extends Seeder
         
         // Create a superAdmin
         $superAdmin = User::create([
-            'userid' => strtoupper(Str::random(8)),
+            'userid' => '00000002',
             'first_name' => 'Demo',
             'last_name' => 'Super Admin',
             'name' => 'Demo Super Admin',
@@ -76,12 +98,32 @@ class UsersTableSeeder extends Seeder
         $superAdmin->employee_shifts()->create([
             'start_time' => '14:00:00',
             'end_time' => '22:00:00',
+            'total_time' => '08:00:00',
             'implemented_from' => date('Y-m-d'),
+        ]);
+        // Create associated Leave
+        $superAdmin->leave_alloweds()->create([
+            'earned_leave' => '120:00:00',
+            'casual_leave' => '120:00:00',
+            'sick_leave' => '120:00:00',
+            'implemented_from' => '01-01',
+            'implemented_to' => '12-31',
+        ]);
+        // Create associated Salary
+        $superAdmin->salaries()->create([
+            'basic_salary' => 5000,
+            'house_benefit' => 1000,
+            'transport_allowance' => 1000,
+            'medical_allowance' => 1000,
+            'night_shift_allowance' => 1000,
+            'other_allowance' => 1000,
+            'implemented_from' => $joiningDate,
+            'total' => 10000,
         ]);
         // Create associated employee for the superAdmin
         $superAdmin->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
-            'alias_name' => fake()->name('male'),
+            'joining_date' => $joiningDate,
+            'alias_name' => 'Controller',
             'father_name' => fake()->name('male'),
             'mother_name' => fake()->name('female'),
             'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
@@ -90,161 +132,8 @@ class UsersTableSeeder extends Seeder
             'personal_contact_no' => fake()->phoneNumber(),
             'official_contact_no' => fake()->unique()->phoneNumber(),
         ]);
-        
-        
-        // Create a admin
-        $admin = User::create([
-            'userid' => strtoupper(Str::random(8)),
-            'first_name' => 'Demo',
-            'last_name' => 'Admin',
-            'name' => 'Demo Admin',
-            'email' => 'admin@mail.com',
-            'password' => Hash::make('12345678'),
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10),
-        ]);
-        // Assign a role to the admin
-        $adminRole = Role::findByName('Admin');
-        $admin->assignRole($adminRole);
-        // Assign team_leader
-        $admin->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
-        // Attach the interaction for this admin
-        $admin->interacted_users()->attach($developer->id);
-        // Create associated EmployeeShift
-        $admin->employee_shifts()->create([
-            'start_time' => '14:00:00',
-            'end_time' => '22:00:00',
-            'implemented_from' => date('Y-m-d'),
-        ]);
-        // Create associated employee for the admin
-        $admin->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
-            'alias_name' => fake()->name('male'),
-            'father_name' => fake()->name('male'),
-            'mother_name' => fake()->name('female'),
-            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
-            'personal_email' => fake()->unique()->safeEmail,
-            'official_email' => fake()->email(),
-            'personal_contact_no' => fake()->phoneNumber(),
-            'official_contact_no' => fake()->unique()->phoneNumber(),
-        ]);
-        
-        
-        // Create a HR Manager
-        $hr = User::create([
-            'userid' => strtoupper(Str::random(8)),
-            'first_name' => 'Demo',
-            'last_name' => 'HR Manager',
-            'name' => 'Demo HR Manager',
-            'email' => 'hr@mail.com',
-            'password' => Hash::make('12345678'),
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10),
-        ]);
-        // Assign a role to the HR Manager
-        $hrRole = Role::findByName('HR Manager');
-        $hr->assignRole($hrRole);
-        // Assign team_leader
-        $hr->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
-        // Attach the interaction for this hr
-        $hr->interacted_users()->attach($developer->id);
-        // Create associated EmployeeShift
-        $hr->employee_shifts()->create([
-            'start_time' => '14:00:00',
-            'end_time' => '22:00:00',
-            'implemented_from' => date('Y-m-d'),
-        ]);
-        // Create associated employee for the hr
-        $hr->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
-            'alias_name' => fake()->name('male'),
-            'father_name' => fake()->name('male'),
-            'mother_name' => fake()->name('female'),
-            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
-            'personal_email' => fake()->unique()->safeEmail,
-            'official_email' => fake()->email(),
-            'personal_contact_no' => fake()->phoneNumber(),
-            'official_contact_no' => fake()->unique()->phoneNumber(),
-        ]);
-        
-        
-        // Create a Team Leader
-        $tl = User::create([
-            'userid' => strtoupper(Str::random(8)),
-            'first_name' => 'Demo',
-            'last_name' => 'Team Leader',
-            'name' => 'Demo Team Leader',
-            'email' => 'tl@mail.com',
-            'password' => Hash::make('12345678'),
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10),
-        ]);
-        // Assign a role to the Team Leader
-        $tlRole = Role::findByName('Team Leader');
-        $tl->assignRole($tlRole);
-        // Assign team_leader
-        $tl->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
-        // Attach the interaction for this tl
-        $tl->interacted_users()->attach($developer->id);
-        // Create associated EmployeeShift
-        $tl->employee_shifts()->create([
-            'start_time' => '14:00:00',
-            'end_time' => '22:00:00',
-            'implemented_from' => date('Y-m-d'),
-        ]);
-        // Create associated employee for the tl
-        $tl->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
-            'alias_name' => fake()->name('male'),
-            'father_name' => fake()->name('male'),
-            'mother_name' => fake()->name('female'),
-            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
-            'personal_email' => fake()->unique()->safeEmail,
-            'official_email' => fake()->email(),
-            'personal_contact_no' => fake()->phoneNumber(),
-            'official_contact_no' => fake()->unique()->phoneNumber(),
-        ]);
-        
-        
-        // Create a Employee
-        $employee = User::create([
-            'userid' => strtoupper(Str::random(8)),
-            'first_name' => 'Demo',
-            'last_name' => 'Employee',
-            'name' => 'Demo Employee',
-            'email' => 'employee@mail.com',
-            'password' => Hash::make('12345678'),
-            'email_verified_at' => now(),
-            'remember_token' => Str::random(10),
-        ]);
-        // Assign a role to the Employee
-        $employeeRole = Role::findByName('Employee');
-        $employee->assignRole($employeeRole);
-        // Assign team_leader
-        $employee->employee_team_leaders()->attach($developer->id, ['is_active' => true]);
-        // Attach the interaction for this employee
-        $employee->interacted_users()->attach($developer->id);
-        // Create associated EmployeeShift
-        $employee->employee_shifts()->create([
-            'start_time' => '14:00:00',
-            'end_time' => '22:00:00',
-            'implemented_from' => date('Y-m-d'),
-        ]);
-        // Create associated employee for the employee
-        $employee->employee()->create([
-            'joining_date' => fake()->dateTimeBetween('-10 years', 'now')->format('Y-m-d'),
-            'alias_name' => fake()->firstNameMale(),
-            'father_name' => fake()->name('male'),
-            'mother_name' => fake()->name('female'),
-            'birth_date' => fake()->dateTimeBetween('-30 years', '-20 years')->format('Y-m-d'),
-            'personal_email' => fake()->unique()->safeEmail,
-            'official_email' => fake()->email(),
-            'personal_contact_no' => fake()->phoneNumber(),
-            'official_contact_no' => fake()->unique()->phoneNumber(),
-        ]);
-
 
         // Seed fake users
-        User::factory()->count(100)->create();
+        // User::factory()->count(100)->create();
     }
 }

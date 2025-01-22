@@ -14,8 +14,8 @@
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
     
     {{-- Select 2 --}}
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
     
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
@@ -112,72 +112,74 @@
                 </div>
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Announced At</th>
-                            <th>Announcement</th>
-                            <th>Announcer</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($announcements as $key => $announcement) 
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
                             <tr>
-                                <th>#{{ serial($announcements, $key) }}</th>
-                                <td>
-                                    <b>{{ show_date($announcement->created_at) }}</b>
-                                    <br>
-                                    <span>
-                                        at
-                                        <b>{{ show_time($announcement->created_at) }}</b>
-                                    </span>
-                                </td>
-                                <td>
-                                    <b>{{ $announcement->title }}</b>
-                                    <br>
-                                    @if (!is_null($announcement->recipients))
-                                        <small class="text-primary text-bold cursor-pointer text-left" title="
-                                            @foreach ($announcement->recipients as $recipient)
-                                                <small>{{ show_user_data($recipient, 'name') }}</small>
-                                                <br>
-                                            @endforeach
-                                        ">
-                                            {{ count($announcement->recipients) }} Recipients
-                                        </small>
-                                    @else
-                                        <small class="text-muted">All Recipients</small>
-                                    @endif
-                                </td>
-                                <td>
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $announcement->announcer]) }}" target="_blank" class="text-bold text-primary">
-                                        {{ $announcement->announcer->name }}
-                                    </a>
-                                    <br>
-                                    <small class="text-muted">{{ $announcement->announcer->roles[0]->name }}</small>
-                                </td>
-                                <td class="text-center">
-                                    @can ('Announcement Delete') 
-                                        <a href="{{ route('administration.announcement.destroy', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Announcement?">
-                                            <i class="text-white ti ti-trash"></i>
-                                        </a>
-                                    @endcan
-                                    @can ('Announcement Update') 
-                                        <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Announcement?">
-                                            <i class="text-white ti ti-pencil"></i>
-                                        </a>
-                                    @endcan
-                                    @can ('Announcement Read') 
-                                        <a href="{{ route('administration.announcement.show', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
-                                            <i class="text-white ti ti-info-hexagon"></i>
-                                        </a>
-                                    @endcan
-                                </td>
+                                <th>Sl.</th>
+                                <th>Announced At</th>
+                                <th>Announcement</th>
+                                <th>Announcer</th>
+                                <th class="text-center">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($announcements as $key => $announcement) 
+                                <tr>
+                                    <th>#{{ serial($announcements, $key) }}</th>
+                                    <td>
+                                        <b>{{ show_date($announcement->created_at) }}</b>
+                                        <br>
+                                        <span>
+                                            at
+                                            <b>{{ show_time($announcement->created_at) }}</b>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <b>{{ $announcement->title }}</b>
+                                        <br>
+                                        @if (!is_null($announcement->recipients))
+                                            <small class="text-primary text-bold cursor-pointer text-left" title="
+                                                @foreach ($announcement->recipients as $recipient)
+                                                    <small>{{ show_user_data($recipient, 'name') }}</small>
+                                                    <br>
+                                                @endforeach
+                                            ">
+                                                {{ count($announcement->recipients) }} Recipients
+                                            </small>
+                                        @else
+                                            <small class="text-muted">All Recipients</small>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        <a href="{{ route('administration.settings.user.show.profile', ['user' => $announcement->announcer]) }}" target="_blank" class="text-bold text-primary">
+                                            {{ $announcement->announcer->name }}
+                                        </a>
+                                        <br>
+                                        <small class="text-muted">{{ $announcement->announcer->roles[0]->name }}</small>
+                                    </td>
+                                    <td class="text-center">
+                                        @can ('Announcement Delete') 
+                                            <a href="{{ route('administration.announcement.destroy', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Announcement?">
+                                                <i class="text-white ti ti-trash"></i>
+                                            </a>
+                                        @endcan
+                                        @can ('Announcement Update') 
+                                            <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Announcement?">
+                                                <i class="text-white ti ti-pencil"></i>
+                                            </a>
+                                        @endcan
+                                        @can ('Announcement Read') 
+                                            <a href="{{ route('administration.announcement.show', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                                <i class="text-white ti ti-info-hexagon"></i>
+                                            </a>
+                                        @endcan
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>
@@ -194,10 +196,10 @@
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
-    <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
     
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>

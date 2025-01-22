@@ -2,59 +2,48 @@
 
 namespace App\Models;
 
+use App\Traits\HasCustomRouteId;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\MediaLibrary\HasMedia;
-use App\Models\User\Traits\Relations;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
+use App\Models\User\Mutators\UserMutators;
 use Spatie\MediaLibrary\InteractsWithMedia;
-use App\Models\User\Traits\ChattingRelations;
+use App\Models\User\Accessors\UserAccessors;
+use App\Models\User\Relations\UserRelations;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
+use Illuminate\Foundation\Auth\Access\Authorizable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements HasMedia
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, InteractsWithMedia, Relations, ChattingRelations, SoftDeletes, CascadeSoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, Authorizable, HasRoles, InteractsWithMedia, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
+
+    // Relations 
+    use UserRelations;
+
+    // Accessors & Mutators
+    use UserAccessors, UserMutators;
     
-    protected $cascadeDeletes = ['employee', 'shortcuts', 'employee_shifts', 'attendances', 'daily_breaks'];
-    protected $dates = ['deleted_at'];
+    protected $cascadeDeletes = [
+        // 'employee',
+    ];
 
-    protected $with = ['roles', 'employee', 'media', 'shortcuts'];
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at'
+    ];
 
-    protected static function boot()
-    {
-        parent::boot();
-
-        static::creating(function ($user) {
-            // Prefix 'UID' to the 'userid' attribute
-            $user->userid = 'UID' . $user->userid;
-        });
-    }
-
-    public function registerMediaCollections(): void
-    {
-        $this->addMediaCollection('avatar')
-            ->singleFile()
-            ->acceptsMimeTypes(['image/jpeg', 'image/png'])
-            ->registerMediaConversions(function (Media $media) {
-                $this->addMediaConversion('thumb')
-                    ->width(50)
-                    ->height(50);
-                $this->addMediaConversion('profile')
-                    ->width(100)
-                    ->height(100);
-                $this->addMediaConversion('profile_view')
-                    ->width(500)
-                    ->height(500);
-                $this->addMediaConversion('black_and_white')
-                    ->greyscale()
-                    ->quality(100);
-                    // ->withResponsiveImages();
-            });
-    }
+    protected $with = [
+        'roles', 
+        'employee', 
+        'media', 
+        'shortcuts'
+    ];
 
     /**
      * The attributes that are mass assignable.
@@ -91,34 +80,79 @@ class User extends Authenticatable implements HasMedia
     ];
 
 
+    /**
+     * Boot the model and define event hooks.
+     *
+     * Automatically modifies attributes or performs operations during model events.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Hook into the creating event to modify the 'userid' attribute
+        static::creating(function ($user) {
+            // Prefix 'UID' to the 'userid' attribute
+            $user->userid = 'UID' . $user->userid;
+        });
+    }
+
+    /**
+     * Register media collections for this model.
+     *
+     * Defines the 'avatar' media collection and associated media conversions.
+     *
+     * @return void
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('avatar')
+            ->singleFile() // Restricts the collection to hold a single file
+            ->acceptsMimeTypes(['image/jpeg', 'image/png']) // Restricts acceptable file types
+            ->registerMediaConversions(function (Media $media) {
+                // Define media conversions for various use cases
+
+                // Thumbnail conversion (50x50 pixels)
+                $this->addMediaConversion('thumb')
+                    ->width(50)
+                    ->height(50);
+
+                // Profile-sized image conversion (100x100 pixels)
+                $this->addMediaConversion('profile')
+                    ->width(100)
+                    ->height(100);
+
+                // Larger profile view conversion (500x500 pixels)
+                $this->addMediaConversion('profile_view')
+                    ->width(500)
+                    ->height(500);
+
+                // Black and white conversion with 100% quality
+                $this->addMediaConversion('black_and_white')
+                    ->greyscale()
+                    ->quality(100);
+                    // Uncomment the following line to include responsive images
+                    // ->withResponsiveImages();
+            });
+    }
+
+    /**
+     * Check if the user has all specified permissions.
+     *
+     * Iterates over an array of permissions and verifies if the user has all of them.
+     *
+     * @param array $permissions List of permission names to check.
+     * @return bool True if the user has all the specified permissions; otherwise, false.
+     */
     public function hasAllPermissions(array $permissions): bool
     {
         foreach ($permissions as $permission) {
+            // If any permission check fails, return false
             if (!$this->can($permission)) {
                 return false;
             }
         }
+
+        // Return true if all permissions are granted
         return true;
     }
-
-    // Define an accessor to get the active_team_leader
-    public function getActiveTeamLeaderAttribute()
-    {
-        // Return the first (and only) active team leader by $user->active_team_leader
-        return $this->employee_team_leaders()->wherePivot('is_active', true)->first();
-    }
-
-    // Define an accessor to get the user_interactions
-    public function getUserInteractionsAttribute()
-    {
-        // Get users this user has interacted with
-        $interactedUsers = $this->interacted_users()->get();
-
-        // Get users interacting with this user
-        $interactingUsers = $this->interacting_users()->get();
-
-        // Merge the two collections, remove duplicates if any and get by by $user->user_interactions
-        return $interactedUsers->merge($interactingUsers)->unique('id');
-    }
-
 }

@@ -158,12 +158,15 @@
                                         <span class="fw-medium mx-2 text-heading">Total Worked:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        @isset($attendance->total_time)
+                                        @isset($attendance->total_adjusted_time)
                                             @php
                                                 $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
                                             @endphp
                                             <b>
-                                                {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
+                                                {!! total_time_with_min_hour($attendance->total_adjusted_time, $totalWorkingHour) !!}
+                                                @if ($attendance->type == 'Regular')
+                                                    <small class="text-muted" title="Total Attendance Time">({{ total_time($attendance->total_time) }})</small>
+                                                @endif
                                             </b>
                                         @else
                                             <b class="text-success text-uppercase">Running</b>
@@ -224,6 +227,46 @@
                                         <span>{{ $attendance->zip_code }}</span>
                                     </dd>
                                 </dl>
+                                
+                                @canany (['Attendance Update', 'Attendance Delete']) 
+                                    <hr>
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-clock-check text-heading"></i>
+                                            <span class="fw-medium mx-2 text-heading">Clockin Medium:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <b>{{ $attendance->clockin_medium }}</b>
+                                        </dd>
+                                    </dl>
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-clock-x text-heading"></i>
+                                            <span class="fw-medium mx-2 text-heading">Clockout Medium:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <b>{{ $attendance->clockout_medium }}</b>
+                                        </dd>
+                                    </dl>
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-user-check text-heading"></i>
+                                            <span class="fw-medium mx-2 text-heading">Clockin Scanned By:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <b>{{ optional($attendance->clockin_scanner)->name }}</b>
+                                        </dd>
+                                    </dl>
+                                    <dl class="row mb-1">
+                                        <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                                            <i class="ti ti-user-x text-heading"></i>
+                                            <span class="fw-medium mx-2 text-heading">Clockout Scanned By:</span>
+                                        </dt>
+                                        <dd class="col-sm-8">
+                                            <b>{{ optional($attendance->clockout_scanner)->name }}</b>
+                                        </dd>
+                                    </dl>
+                                @endcanany
                             </div>
                         </div>
                     </div>
@@ -318,7 +361,7 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="clock_out" class="form-label">{{ __('Clock Out') }} <strong class="text-danger">*</strong></label>
+                            <label for="clock_out" class="form-label">{{ __('Clock Out') }}</label>
                             <input type="text" id="clock_out" name="clock_out" value="{{ $attendance->clock_out ?? '' }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror"/>
                             @error('clock_out')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>

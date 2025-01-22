@@ -29,7 +29,7 @@ class ChatBody extends Component
         }
         
         if ($this->receiver) {
-            $this->messages = Chatting::with(['sender.media', 'receiver.media'])->where(function ($query) {
+            $this->messages = Chatting::with(['sender.media', 'receiver.media', 'task'])->where(function ($query) {
                     $query->where('sender_id', auth()->user()->id)
                         ->where('receiver_id', $this->receiver->id);
                 })

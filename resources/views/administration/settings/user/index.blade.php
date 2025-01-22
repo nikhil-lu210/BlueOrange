@@ -14,8 +14,8 @@
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
     
     {{-- Select 2 --}}
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -104,12 +104,14 @@
                     <span>{{ request()->role_id ? show_plural(show_role(request()->role_id)) : 'Users' }}</span>
                 </h5>
         
-                <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.settings.user.create') }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                        Create New User
-                    </a>
-                </div>
+                @can ('User Create')
+                    <div class="card-header-elements ms-auto">
+                        <a href="{{ route('administration.settings.user.create') }}" class="btn btn-sm btn-primary">
+                            <span class="tf-icon ti ti-plus ti-xs me-1"></span>
+                            Create New User
+                        </a>
+                    </div>
+                @endcan
             </div>
             <div class="card-body">
                 <table class="table data-table table-bordered table-responsive" style="width: 100%;">
@@ -120,7 +122,7 @@
                             <th>Name</th>
                             <th>Email</th>
                             <th>Status</th>
-                            <th>Action</th>
+                            <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -132,30 +134,40 @@
                                     {!! show_user_name_and_avatar($user) !!}
                                 </td>
                                 <td>
-                                    <a href="mailto:{{ optional($user->employee)->official_email }}" class="mb-1">
+                                    <a href="mailto:{{ optional($user->employee)->official_email }}" class="mb-1 text-bold" title="Official Email">
                                         {{ optional($user->employee)->official_email }}
+                                    </a>
+                                    <br>
+                                    <a href="mailto:{{ optional($user->employee)->personal_email }}" class="mb-1 text-muted" title="Personal Email">
+                                        {{ optional($user->employee)->personal_email }}
                                     </a>
                                 </td>
                                 <td>{!! show_status($user->status) !!}</td>
-                                <td>
-                                    <div class="d-inline-block">
-                                        <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="text-primary ti ti-dots-vertical"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-end m-0" style="">
-                                            <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="dropdown-item">
-                                                <i class="text-primary ti ti-pencil"></i> 
-                                                Edit
+                                <td class="text-center">
+                                    @canany (['User Update', 'User Delete']) 
+                                        <div class="d-inline-block">
+                                            <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="text-primary ti ti-dots-vertical"></i>
                                             </a>
-                                            <div class="dropdown-divider"></div>
-                                            <a href="{{ route('administration.settings.user.destroy', ['user' => $user]) }}" class="dropdown-item text-danger delete-record confirm-danger">
-                                                <i class="ti ti-trash"></i> 
-                                                Delete
-                                            </a>
+                                            <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                                                @can ('User Update') 
+                                                    <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="dropdown-item">
+                                                        <i class="text-primary ti ti-pencil"></i> 
+                                                        Edit
+                                                    </a>
+                                                @endcan
+                                                @can ('User Delete') 
+                                                    <div class="dropdown-divider"></div>
+                                                    <a href="{{ route('administration.settings.user.destroy', ['user' => $user]) }}" class="dropdown-item text-danger delete-record confirm-danger">
+                                                        <i class="ti ti-trash"></i> 
+                                                        Delete
+                                                    </a>
+                                                @endcan
+                                            </div>
                                         </div>
-                                    </div>
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                        <i class="text-primary ti ti-info-hexagon"></i>
+                                    @endcanany
+                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="btn btn-sm btn-icon btn-primary item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                        <i class="ti ti-info-hexagon"></i>
                                     </a>
                                 </td>
                             </tr>
@@ -178,10 +190,10 @@
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
-    <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
 @endsection
 
 @section('custom_script')

@@ -42,9 +42,11 @@ class UserFactory extends Factory
     
 
     public function configure()
-    {
+    {        
         return $this->afterCreating(function (User $user) {
             DB::transaction(function () use ($user) {
+                $joiningDate = $this->faker->dateTimeBetween('-2 years', 'now')->format('Y-m-d');
+                
                 // Assign a random role
                 $role = Role::inRandomOrder()->first();
                 $user->assignRole($role);
@@ -70,12 +72,34 @@ class UserFactory extends Factory
                 $user->employee_shifts()->create([
                     'start_time' => $start_time->format('H:i:s'),
                     'end_time' => $formatted_end_time,
-                    'implemented_from' => now()->format('Y-m-d'),
+                    'total_time' => '08:00:00',
+                    'implemented_from' => date('Y-m-d'),
+                ]);
+
+                // Create associated Leave
+                $user->leave_alloweds()->create([
+                    'earned_leave' => '120:00:00',
+                    'casual_leave' => '120:00:00',
+                    'sick_leave' => '120:00:00',
+                    'implemented_from' => '01-01',
+                    'implemented_to' => '12-31',
+                ]);
+                
+                // Create associated Salary
+                $user->salaries()->create([
+                    'basic_salary' => 5000,
+                    'house_benefit' => 1000,
+                    'transport_allowance' => 1000,
+                    'medical_allowance' => 1000,
+                    'night_shift_allowance' => 1000,
+                    'other_allowance' => 1000,
+                    'implemented_from' => $joiningDate,
+                    'total' => 10000,
                 ]);
 
                 // Create associated employee for the user
                 $user->employee()->create([
-                    'joining_date' => $this->faker->dateTimeBetween('-2 years', 'now')->format('Y-m-d'),
+                    'joining_date' => $joiningDate,
                     'alias_name' => $this->faker->firstNameMale(),
                     'father_name' => $this->faker->name('male'),
                     'mother_name' => $this->faker->name('female'),

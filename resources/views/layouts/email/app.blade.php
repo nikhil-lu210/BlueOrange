@@ -28,7 +28,8 @@
                         <tr>
                             <td style="text-align: center;">
                                 <a href="{{ config('app.url') }}" title="logo" target="_blank">
-                                    <img width="120" src="{{ asset('Logo/blueorange.png') }}" title="logo" alt="logo" />
+                                    {{-- <img width="120" src="{{ asset('Logo/blueorange.png') }}" title="logo" alt="logo" /> --}}
+                                    <img width="120" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path(config('app.logo')))) }}" alt="BlueOrange Logo">
                                 </a>
                             </td>
                         </tr>

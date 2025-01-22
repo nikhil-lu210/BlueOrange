@@ -11,7 +11,7 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/css/pages/page-profile.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-profile.css') }}" />
     {{-- <!-- Vendors CSS --> --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
@@ -22,13 +22,22 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
     {{--  External CSS  --}}
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
 @endsection
 
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
     /* Custom CSS Here */
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
     </style>
 @endsection
 
@@ -123,6 +132,14 @@
                     </a>
                 </li>
             @endcan
+            @can ('Leave Allowed Read') 
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('settings/user/show/*/allowed_leaves*') ? 'active' : '' }}" href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $user]) }}">
+                        <i class="ti-xs ti ti-calendar-x me-1"></i> 
+                        Allowed Leaves
+                    </a>
+                </li>
+            @endcan
         </ul>
     </div>
 </div>
@@ -188,7 +205,7 @@
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
-    <script src="{{asset('assets/js/pages-profile.js')}}"></script>
+    <script src="{{ asset('assets/js/pages-profile.js') }}"></script>
     {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
@@ -199,8 +216,8 @@
     
     
     {{--  External Javascript Links --}}
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 @endsection
 
 @section('custom_script')

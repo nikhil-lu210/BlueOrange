@@ -45,12 +45,14 @@
             <div class="card-header header-elements">
                 <h5 class="mb-0"><strong>{{ $role->name }}</strong> Role's Details</h5>
         
-                <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.settings.rolepermission.role.edit', ['role' => $role]) }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-edit ti-xs me-1"></span>
-                        Edit Role
-                    </a>
-                </div>
+                @if (auth()->user()->hasRole('Developer') || ($role->name !== 'Developer' && $role->name !== 'Super Admin')) 
+                    <div class="card-header-elements ms-auto">
+                        <a href="{{ route('administration.settings.rolepermission.role.edit', ['role' => $role]) }}" class="btn btn-sm btn-primary">
+                            <span class="tf-icon ti ti-edit ti-xs me-1"></span>
+                            Edit Role
+                        </a>
+                    </div>
+                @endif
             </div>
             <div class="card-body">
                 <div class="col-md-12 mb-4">

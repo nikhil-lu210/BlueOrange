@@ -11,7 +11,7 @@
     {{--  External CSS  --}}
     {{-- <!-- Page CSS --> --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/app-chat.css') }}" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
 
     @livewireStyles
 @endsection
@@ -96,8 +96,8 @@
     {{-- Vendors JS --}}
     <script src="{{ asset('assets/vendor/libs/bootstrap-maxlength/bootstrap-maxlength.js') }}"></script>
     {{-- <script src="{{ asset('assets/js/app-chat.js') }}"></script> --}}
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 
     @livewireScripts
 @endsection

@@ -5,11 +5,11 @@
 
 @endsection
 
-@section('page_title', __('Create New User'))
+@section('page_title', __('Edit User Info'))
 
 @section('css_links')
     {{--  External CSS  --}}
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
 @endsection
 
@@ -27,13 +27,19 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Create New User') }}</b>
+    <b class="text-uppercase">{{ __('Edit User Info') }}</b>
 @endsection
 
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('User Management') }}</li>
-    <li class="breadcrumb-item active">{{ __('Create New User') }}</li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('administration.settings.user.index') }}">{{ __('All Users') }}</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">{{ $user->userid }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ __('Edit User Info') }}</li>
 @endsection
 
 
@@ -44,7 +50,7 @@
     <div class="col-md-12"></div>
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Create New User</h5>
+                <h5 class="mb-0">Edit User Info of <b class="text-primary">{{ $user->name .' ('. $user->employee->alias_name .')' }}</b></h5>
         
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="btn btn-sm btn-primary">
@@ -213,9 +219,9 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 @endsection
 
 @section('custom_script')

@@ -21,8 +21,16 @@ Auth::routes();
 
 
 /*==============================================================
+======================< Public Routes >=================
+==============================================================*/
+Route::middleware(['web'])->group(function () {
+    include_once 'application/application.php';
+});
+
+
+/*==============================================================
 ======================< Administration Routes >=================
 ==============================================================*/
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'active_user'])->group(function () {
     include_once 'administration/administration.php';
 });

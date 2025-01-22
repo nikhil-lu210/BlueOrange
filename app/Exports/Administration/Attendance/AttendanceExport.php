@@ -27,10 +27,14 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
                 'shift' => show_time($attendance->employee_shift->start_time) . ' to ' . show_time($attendance->employee_shift->end_time),
                 'clock_in' => show_time($attendance->clock_in),
                 'clock_out' => $attendance->clock_out ? show_time($attendance->clock_out) : NULL,
-                'total_time' => total_time($attendance->total_time),
+                'total_time' => $attendance->type == 'Regular' ? $attendance->total_adjusted_time : $attendance->total_time,
                 'type' => $attendance->type,
-                'total_break_time' => total_time($attendance->total_break_time),
-                'total_over_break' => total_time($attendance->total_over_break),
+                'total_break_time' => $attendance->total_break_time,
+                'total_over_break' => $attendance->total_over_break,
+                'clockin_medium' => $attendance->clockin_medium,
+                'clockout_medium' => $attendance->clockout_medium ?? NULL,
+                'clockin_scanner_id' => optional($attendance->clockin_scanner)->name,
+                'clockout_scanner_id' => optional($attendance->clockout_scanner)->name,
             ];
         });
     }
@@ -52,6 +56,10 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
             'Type',
             'Total Break',
             'Over Break',
+            'Clockin Medium',
+            'Clockout Medium',
+            'Clockin Scanner',
+            'Clockout Scanner',
         ];
     }
 }

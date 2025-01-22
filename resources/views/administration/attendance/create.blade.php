@@ -10,8 +10,8 @@
 @section('css_links')
     {{--  External CSS  --}}
     {{-- Select 2 --}}
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/select2/select2.css')}}" />
-    <link rel="stylesheet" href="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css')}}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
     
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
@@ -55,9 +55,9 @@
                     <h5 class="mb-0">Assign Attendance</h5>
             
                     <div class="card-header-elements ms-auto">
-                        <a href="{{ route('administration.attendance.index') }}" class="btn btn-sm btn-primary">
-                            <span class="tf-icon ti ti-circle ti-xs me-1"></span>
-                            All Attendances
+                        <a href="{{ route('administration.attendance.import.index') }}" class="btn btn-sm btn-primary">
+                            <span class="tf-icon ti ti-upload ti-xs me-1"></span>
+                            Import Attendances
                         </a>
                     </div>
                 </div>
@@ -129,10 +129,10 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <script src="{{asset('assets/js/form-layouts.js')}}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 
-    <script src="{{asset('assets/vendor/libs/select2/select2.js')}}"></script>
-    <script src="{{asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js')}}"></script>
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
     
     <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>

@@ -2,7 +2,7 @@
     <div class="app-brand demo">
         <a href="{{ route('administration.dashboard.index') }}" class="app-brand-link">
             <span class="app-brand-logo demo">
-                <img src="{{ asset('Logo/logo_black_01.png') }}" width="90%">
+                <img src="{{ asset(config('app.logo')) }}" width="90%">
             </span>
             <span class="app-brand-text demo menu-text fw-bold">{{ config('app.name') }}</span>
         </a>
@@ -40,6 +40,28 @@
             </a>
         </li>
 
+        <!-- Vault Management -->
+        @canany(['Vault Create', 'Vault Read']) 
+            <li class="menu-item {{ request()->is('vault*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-lock-square"></i>
+                    <div data-i18n="Vault">{{ __('Vault') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    @canany(['Vault Read'])
+                        <li class="menu-item {{ request()->is('vault/all*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.vault.index') }}" class="menu-link">{{ __('All Credentials') }}</a>
+                        </li>
+                    @endcanany
+                    @can('Vault Create')
+                        <li class="menu-item {{ request()->is('vault/create*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.vault.create') }}" class="menu-link">{{ __('Store Credential') }}</a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcanany
+
         <!-- Attendance Management -->
         @canany(['Attendance Create', 'Attendance Read']) 
             <li class="menu-item {{ request()->is('attendance*') ? 'active open' : '' }}">
@@ -62,10 +84,42 @@
                         <li class="menu-item {{ request()->is('attendance/create*') ? 'active' : '' }}">
                             <a href="{{ route('administration.attendance.create') }}" class="menu-link">{{ __('Assign Attendance') }}</a>
                         </li>
+                        
+                        @hasanyrole(['Developer'])
+                            <li class="menu-item {{ request()->is('attendance/qrcode*') ? 'active' : '' }}">
+                                <a href="{{ route('administration.attendance.qrcode.scanner') }}" class="menu-link">{{ __('QR Code Attendance') }}</a>
+                            </li>
+                        @endhasanyrole
+                        
+                        <li class="menu-item {{ request()->is('attendance/barcode*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.attendance.barcode.scanner') }}" class="menu-link">{{ __('Bar Code Attendance') }}</a>
+                        </li>
                     @endcan
-                    @can('Attendance Create')
-                        <li class="menu-item {{ request()->is('attendance/qrcode*') ? 'active' : '' }}">
-                            <a href="{{ route('administration.attendance.qrcode.scanner') }}" class="menu-link">{{ __('QR Code Attendance') }}</a>
+                </ul>
+            </li>
+        @endcanany
+
+        <!-- Leave History Management -->
+        @canany(['Leave History Create', 'Leave History Read']) 
+            <li class="menu-item {{ request()->is('leave*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-calendar-pause"></i>
+                    <div data-i18n="Leave History">{{ __('Leave') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    @canany(['Leave History Update', 'Leave History Delete'])
+                        <li class="menu-item {{ request()->is('leave/history/all*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.leave.history.index') }}" class="menu-link">{{ __('All Leaves') }}</a>
+                        </li>
+                    @endcanany
+                    @can('Leave History Read') 
+                        <li class="menu-item {{ request()->is('leave/history/my*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.leave.history.my') }}" class="menu-link">{{ __('My Leaves') }}</a>
+                        </li>
+                    @endcan
+                    @can('Leave History Create')
+                        <li class="menu-item {{ request()->is('leave/history/create*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.leave.history.create') }}" class="menu-link">{{ __('Apply For Leave') }}</a>
                         </li>
                     @endcan
                 </ul>
@@ -100,14 +154,14 @@
         @endcanany
 
         <!-- Announcement Management -->
-        @canany(['Announcement Create', 'Announcement Read']) 
+        @canany(['Announcement Everything', 'Announcement Create', 'Announcement Read']) 
             <li class="menu-item {{ request()->is('announcement*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-speakerphone"></i>
                     <div data-i18n="Announcement">{{ __('Announcement') }}</div>
                 </a>
                 <ul class="menu-sub">
-                    @canany(['Announcement Create', 'Announcement Update', 'Announcement Delete'])
+                    @canany(['Announcement Everything'])
                         <li class="menu-item {{ request()->is('announcement/all*') ? 'active' : '' }}">
                             <a href="{{ route('administration.announcement.index') }}" class="menu-link">{{ __('All Announcements') }}</a>
                         </li>
@@ -127,14 +181,14 @@
         @endcanany
 
         <!-- Task Management -->
-        @canany(['Task Create', 'Task Read']) 
+        @canany(['Task Everything', 'Task Create', 'Task Read']) 
             <li class="menu-item {{ request()->is('task*') ? 'active open' : '' }}">
                 <a href="javascript:void(0);" class="menu-link menu-toggle">
                     <i class="menu-icon tf-icons ti ti-brand-stackshare"></i>
                     <div data-i18n="Task">{{ __('Task') }}</div>
                 </a>
                 <ul class="menu-sub">
-                    @canany(['Task Create', 'Task Update', 'Task Delete'])
+                    @canany(['Task Everything'])
                         <li class="menu-item {{ request()->is('task/all*') ? 'active' : '' }}">
                             <a href="{{ route('administration.task.index') }}" class="menu-link">{{ __('All Tasks') }}</a>
                         </li>
@@ -180,6 +234,140 @@
             </li>
         @endcanany
 
+        
+
+        <!-- IT Ticket Management -->
+        @canany(['IT Ticket Everything', 'IT Ticket Create', 'IT Ticket Read']) 
+            <li class="menu-item {{ request()->is('ticket/it_ticket*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-ticket"></i>
+                    <div data-i18n="IT Ticket">{{ __('IT Ticket') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    @canany(['IT Ticket Everything'])
+                        <li class="menu-item {{ request()->is('ticket/it_ticket/all*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.ticket.it_ticket.index') }}" class="menu-link">{{ __('All Tickets') }}</a>
+                        </li>
+                    @endcanany
+                    @canany(['IT Ticket Create', 'IT Ticket Read'])
+                        <li class="menu-item {{ request()->is('ticket/it_ticket/my*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.ticket.it_ticket.my') }}" class="menu-link">{{ __('My Tickets') }}</a>
+                        </li>
+                    @endcanany
+                    @can('IT Ticket Create')
+                        <li class="menu-item {{ request()->is('ticket/it_ticket/create*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.ticket.it_ticket.create') }}" class="menu-link">{{ __('Arise New Ticket') }}</a>
+                        </li>
+                    @endcan
+                </ul>
+            </li>
+        @endcanany
+
+        <!-- Accounts -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">{{ __('Accounts') }}</span>
+        </li>
+        
+        @canany (['Salary Everything'])
+            <li class="menu-item {{ request()->is('accounts/salary*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-businessplan"></i>
+                    <div data-i18n="Salary">{{ __('Salary') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('accounts/salary/monthly/all*') ? 'active' : '' }}">
+                        <a href="{{ route('administration.accounts.salary.monthly.index') }}" class="menu-link">{{ __('Monthly Salaries') }}</a>
+                    </li>
+                </ul>
+            </li>
+        @endcanany
+
+        @canany (['Income Create', 'Income Read', 'Expense Create', 'Expense Read'])
+            <li class="menu-item {{ request()->is('accounts/income_expense*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-calculator"></i>
+                    <div data-i18n="Income & Expense">{{ __('Income & Expense') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('accounts/income_expense/statistics*') ? 'active' : '' }}">
+                        <a href="{{ route('administration.accounts.income_expense.statistics.index') }}" class="menu-link">{{ __('Statistics') }}</a>
+                    </li>
+
+                    <li class="menu-item {{ request()->is('accounts/income_expense/category/all*') ? 'active' : '' }}">
+                        <a href="{{ route('administration.accounts.income_expense.category.index') }}" class="menu-link">{{ __('Categories') }}</a>
+                    </li>
+
+                    @canany (['Income Create', 'Income Read'])
+                        <li class="menu-item {{ request()->is('accounts/income_expense/income*') ? 'active open' : '' }}">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <div data-i18n="Income">{{ __('Income') }}</div>
+                            </a>
+                            <ul class="menu-sub">
+                                @can ('Income Read') 
+                                    <li class="menu-item {{ request()->is('accounts/income_expense/income/all*') ? 'active' : '' }}">
+                                        <a href="{{ route('administration.accounts.income_expense.income.index') }}" class="menu-link">
+                                            <div data-i18n="All Incomes">{{ __('All Incomes') }}</div>
+                                        </a>
+                                    </li>
+                                @endcan
+                                @can ('Income Create') 
+                                    <li class="menu-item {{ request()->is('accounts/income_expense/income/create') ? 'active' : '' }}">
+                                        <a href="{{ route('administration.accounts.income_expense.income.create') }}" class="menu-link">
+                                            <div data-i18n="Create Income">{{ __('Create Income') }}</div>
+                                        </a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </li>
+                    @endcanany
+
+                    @canany (['Expense Create', 'Expense Read'])
+                        <li class="menu-item {{ request()->is('accounts/income_expense/expense*') ? 'active open' : '' }}">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <div data-i18n="Expense">{{ __('Expense') }}</div>
+                            </a>
+                            <ul class="menu-sub">
+                                @can ('Expense Read') 
+                                    <li class="menu-item {{ request()->is('accounts/income_expense/expense/all*') ? 'active' : '' }}">
+                                        <a href="{{ route('administration.accounts.income_expense.expense.index') }}" class="menu-link">
+                                            <div data-i18n="All Expenses">{{ __('All Expenses') }}</div>
+                                        </a>
+                                    </li>
+                                @endcan
+                                @can ('Expense Create') 
+                                    <li class="menu-item {{ request()->is('accounts/income_expense/expense/create') ? 'active' : '' }}">
+                                        <a href="{{ route('administration.accounts.income_expense.expense.create') }}" class="menu-link">
+                                            <div data-i18n="Create Expense">{{ __('Create Expense') }}</div>
+                                        </a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </li>
+                    @endcanany
+                </ul>
+            </li>
+        @endcanany
+        
+
+        <!-- Logs -->
+        @canany (['Logs Read'])
+            <li class="menu-header small text-uppercase">
+                <span class="menu-header-text">{{ __('Logs') }}</span>
+            </li>
+        
+            <li class="menu-item {{ request()->is('logs*') ? 'active open' : '' }}">
+                <a href="javascript:void(0);" class="menu-link menu-toggle">
+                    <i class="menu-icon tf-icons ti ti-history"></i>
+                    <div data-i18n="Logs">{{ __('Logs') }}</div>
+                </a>
+                <ul class="menu-sub">
+                    <li class="menu-item {{ request()->is('logs/login_logout_history*') ? 'active' : '' }}">
+                        <a href="{{ route('administration.logs.login_logout_history.index') }}" class="menu-link">{{ __('Login Histories') }}</a>
+                    </li>
+                </ul>
+            </li>
+        @endcanany
+
         <!-- Settings -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">{{ __('Settings') }}</span>
@@ -193,6 +381,28 @@
                     <div data-i18n="System Settings">{{ __('System Settings') }}</div>
                 </a>
                 <ul class="menu-sub">
+                    @canany (['App Setting Update', 'App Setting Read'])
+                        <li class="menu-item {{ request()->is('settings/system/app_setting*') ? 'active open' : '' }}">
+                            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                                <div data-i18n="App Setting">{{ __('App Settings') }}</div>
+                            </a>
+                            <ul class="menu-sub">
+                                @can ('App Setting Update') 
+                                    <li class="menu-item {{ request()->is('settings/system/app_setting/restrictions*') ? 'active' : '' }}">
+                                        <a href="{{ route('administration.settings.system.app_setting.restriction.index') }}" class="menu-link">
+                                            <div data-i18n="Restrictions">{{ __('Restrictions') }}</div>
+                                        </a>
+                                    </li>
+                                @endcan
+                            </ul>
+                        </li>
+                    @endcanany
+
+                    @can ('Weekend Read') 
+                        <li class="menu-item {{ request()->is('settings/system/weekend*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.settings.system.weekend.index') }}" class="menu-link">{{ __('Weekends') }}</a>
+                        </li>
+                    @endcan
                     @can ('Holiday Read') 
                         <li class="menu-item {{ request()->is('settings/system/holiday*') ? 'active' : '' }}">
                             <a href="{{ route('administration.settings.system.holiday.index') }}" class="menu-link">{{ __('Holidays') }}</a>
@@ -213,6 +423,11 @@
                     @can ('User Read') 
                         <li class="menu-item {{ request()->is('settings/user/all*') ? 'active' : '' }}">
                             <a href="{{ route('administration.settings.user.index') }}" class="menu-link">{{ __('All Users') }}</a>
+                        </li>
+                    @endcan
+                    @can ('User Create')
+                        <li class="menu-item {{ request()->is('settings/user/barcode*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.settings.user.barcode.all') }}" class="menu-link">{{ __('All Barcodes') }}</a>
                         </li>
                     @endcan
                     @can ('User Create')
@@ -298,25 +513,5 @@
                 </li>
             </ul>
         </li>
-        
-
-        <!-- Logs -->
-        @canany (['Logs Read'])
-            <li class="menu-header small text-uppercase">
-                <span class="menu-header-text">{{ __('Logs') }}</span>
-            </li>
-        
-            <li class="menu-item {{ request()->is('logs*') ? 'active open' : '' }}">
-                <a href="javascript:void(0);" class="menu-link menu-toggle">
-                    <i class="menu-icon tf-icons ti ti-history"></i>
-                    <div data-i18n="Logs">{{ __('Logs') }}</div>
-                </a>
-                <ul class="menu-sub">
-                    <li class="menu-item {{ request()->is('logs/login_logout_history*') ? 'active' : '' }}">
-                        <a href="{{ route('administration.logs.login_logout_history.index') }}" class="menu-link">{{ __('Login Histories') }}</a>
-                    </li>
-                </ul>
-            </li>
-        @endcanany
     </ul>
 </aside>

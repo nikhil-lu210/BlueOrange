@@ -15,7 +15,10 @@ class PermissionsTableSeeder extends Seeder
     public function run(): void
     {
         $modules = [
+            'App Setting',
             'Logs',
+            'Vault',
+            'IT Ticket',
             'Attendance',
             'Daily Break',
             'User Interaction',
@@ -26,8 +29,13 @@ class PermissionsTableSeeder extends Seeder
             'Role',
             'User',
             'Salary',
+            'Income',
+            'Expense',
+            'Weekend',
             'Holiday',
             'Group Chatting',
+            'Leave Allowed',
+            'Leave History',
         ];
 
         foreach ($modules as $module) {
@@ -36,6 +44,7 @@ class PermissionsTableSeeder extends Seeder
             ]);
 
             $permissions = [
+                'Everything',
                 'Create',
                 'Read',
                 'Update',

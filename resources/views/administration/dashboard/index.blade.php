@@ -112,43 +112,45 @@
                                 <small>{{ date('jS M, Y (l)') }}</small>
                             </div>
                         </div>
-                        @isset($activeAttendance->clock_in)
-                            <div class="d-flex align-items-center">
-                                <form action="{{ route('administration.attendance.clockout') }}" method="post" class="confirm-form-danger">
-                                    <div class="avatar flex-shrink-0 me-2">
-                                        @csrf
-                                        <button type="submit" name="attendance" value="clock_out" class="avatar-initial rounded bg-danger border-0" data-bs-placement="top" title="Clock Out?">
-                                            <i class="ti ti-clock-off ti-md"></i>
-                                        </button>
-                                    </div>
-                                </form>
-                                <div>
-                                    <h5 class="mb-0 text-nowrap live-working-time text-{{ $activeAttendance->type == 'Regular' ? 'primary' : 'warning' }}" 
-                                        id="liveWorkingTime" 
-                                        data-clock-in-at="{{ $activeAttendance->clock_in->timestamp }}">
-                                    </h5>
-                                    <small class="bg-label-{{ $activeAttendance->type == 'Regular' ? 'primary' : 'warning' }} p-1 px-2 rounded-2 text-bold">{{ $activeAttendance->type }}</small>
-                                </div>
-                            </div>
-                        @else
-                            <form action="{{ route('administration.attendance.clockin') }}" method="post">
-                                @csrf
-                                <div class="d-flex align-items-center mt-1">
-                                    <div class="avatar flex-shrink-0 me-2">
-                                        <button type="button" class="avatar-initial rounded bg-primary border-0 submit-regular" data-bs-placement="top" title="Regular Clockin?">
-                                            <i class="ti ti-clock-check ti-md"></i>
-                                        </button>
-                                    </div>
-                                    <div class="avatar flex-shrink-0 me-2">
-                                        <button type="button" class="avatar-initial rounded bg-warning border-0 submit-overtime" data-bs-placement="top" title="Overtime Clockin?">
-                                            <i class="ti ti-clock-check ti-md"></i>
-                                        </button>
+                        @if (auth()->user()->hasAllPermissions(['Attendance Everything', 'Attendance Update'])) 
+                            @isset($activeAttendance->clock_in)
+                                <div class="d-flex align-items-center">
+                                    <form action="{{ route('administration.attendance.clockout') }}" method="post" class="confirm-form-danger">
+                                        <div class="avatar flex-shrink-0 me-2">
+                                            @csrf
+                                            <button type="submit" name="attendance" value="clock_out" class="avatar-initial rounded bg-danger border-0" data-bs-placement="top" title="Clock Out?">
+                                                <i class="ti ti-clock-off ti-md"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                    <div>
+                                        <h5 class="mb-0 text-nowrap live-working-time text-{{ $activeAttendance->type == 'Regular' ? 'primary' : 'warning' }}" 
+                                            id="liveWorkingTime" 
+                                            data-clock-in-at="{{ $activeAttendance->clock_in->timestamp }}">
+                                        </h5>
+                                        <small class="bg-label-{{ $activeAttendance->type == 'Regular' ? 'primary' : 'warning' }} p-1 px-2 rounded-2 text-bold">{{ $activeAttendance->type }}</small>
                                     </div>
                                 </div>
-                                <!-- Hidden input to store attendance type -->
-                                <input type="hidden" name="attendance" id="attendanceType">
-                            </form>                        
-                        @endisset
+                            @else
+                                <form action="{{ route('administration.attendance.clockin') }}" method="post">
+                                    @csrf
+                                    <div class="d-flex align-items-center mt-1">
+                                        <div class="avatar flex-shrink-0 me-2">
+                                            <button type="button" class="avatar-initial rounded bg-primary border-0 submit-regular" data-bs-placement="top" title="Regular Clockin?">
+                                                <i class="ti ti-clock-check ti-md"></i>
+                                            </button>
+                                        </div>
+                                        <div class="avatar flex-shrink-0 me-2">
+                                            <button type="button" class="avatar-initial rounded bg-warning border-0 submit-overtime" data-bs-placement="top" title="Overtime Clockin?">
+                                                <i class="ti ti-clock-check ti-md"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <!-- Hidden input to store attendance type -->
+                                    <input type="hidden" name="attendance" id="attendanceType">
+                                </form>                        
+                            @endisset
+                        @endif
                     </div>
                 </div>
             </div>

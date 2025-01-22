@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Route;
 // Route::prefix('administration')
 Route::prefix('')
         ->name('administration.')
-        ->middleware('localization')
+        ->middleware(['localization', 'unrestricted.users', 'restrict.devices', 'restrict.ip'])
         ->group(function () {
             // logs
             include_once 'logs/logs.php';
@@ -31,6 +31,9 @@ Route::prefix('')
             // Attendance
             include_once 'attendance/attendance.php';
 
+            // Leave
+            include_once 'leave/leave.php';
+
             // Daily Break
             include_once 'daily_break/daily_break.php';
 
@@ -49,6 +52,15 @@ Route::prefix('')
             // settings
             include_once 'settings/settings.php';
 
+            // accounts
+            include_once 'accounts/accounts.php';
+
             // shortcut
             include_once 'shortcut/shortcut.php';
+
+            // vault
+            include_once 'vault/vault.php';
+
+            // IT Ticket
+            include_once 'ticket/it_ticket.php';
         });

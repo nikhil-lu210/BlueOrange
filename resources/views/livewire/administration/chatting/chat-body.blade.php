@@ -36,6 +36,7 @@
             <ul class="list-unstyled chat-history" wire:poll.10s="loadMessages">
                 @php
                     $currentDate = null;
+                    // dd($messages[2]->task);
                 @endphp
                 @foreach ($messages as $key => $message)
                     @php
@@ -67,11 +68,22 @@
                                 @else 
                                     <i class="ti ti-check ti-xs me-1"></i>
                                 @endif
-                                <div class="chat-message-wrapper flex-grow-1" data-bs-toggle="tooltip" title="{{ show_time($message->created_at) }}">
+                                <div class="chat-message-wrapper flex-grow-1">
                                     @if (!is_null($message->message)) 
-                                        <div class="chat-message-text">
+                                        <div class="chat-message-text" title="{{ show_time($message->created_at) }}">
                                             <p class="mb-0">{!! $message->message !!}</p>
                                         </div>
+                                        @isset ($message->task)
+                                            <small class="float-left pt-1" title="Show Related Task">
+                                                <a href="{{ route('administration.task.show', ['task' => $message->task, 'taskid' => $message->task->taskid]) }}" target="_blank" class="text-bold text-dark">Show Task</a>
+                                            </small>
+                                        @else
+                                            @can ('Task Create') 
+                                                <small class="float-left pt-1" title="Create New Task">
+                                                    <a href="{{ route('administration.task.create.chat.task', ['message' => $message]) }}" target="_blank" class="text-bold">Create Task</a>
+                                                </small>
+                                            @endcan
+                                        @endisset
                                     @endif
                                     @if (!is_null($message->file)) 
                                         <a href="#" class="chat-message-text card h-100" target="_blank">
@@ -106,11 +118,22 @@
                                         @endif
                                     </div>
                                 </div>
-                                <div class="chat-message-wrapper flex-grow-1" data-bs-toggle="tooltip" title="{{ show_time($message->created_at) }}">
+                                <div class="chat-message-wrapper flex-grow-1">
                                     @if (!is_null($message->message)) 
-                                        <div class="chat-message-text">
+                                        <div class="chat-message-text" title="{{ show_time($message->created_at) }}">
                                             <p class="mb-0">{!! $message->message !!}</p>
                                         </div>
+                                        @isset ($message->task)
+                                            <small class="float-right pt-1" title="Show Related Task">
+                                                <a href="{{ route('administration.task.show', ['task' => $message->task, 'taskid' => $message->task->taskid]) }}" target="_blank" class="text-bold text-dark">Show Task</a>
+                                            </small>
+                                        @else
+                                            @can ('Task Create') 
+                                                <small class="float-right pt-1" title="Create New Task">
+                                                    <a href="{{ route('administration.task.create.chat.task', ['message' => $message]) }}" target="_blank" class="text-bold">Create Task</a>
+                                                </small>
+                                            @endcan
+                                        @endisset
                                     @endif
                                     @if (!is_null($message->file)) 
                                         <a href="#" class="chat-message-text card h-100" target="_blank">

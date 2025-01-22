@@ -25,6 +25,7 @@ class UserInteractionController extends Controller
                 return $query->where('id', '!=', $activeTeamLeader->id);
             })
             ->where('id', '!=', $user->id)
+            ->orderBy('name', 'ASC')
             ->get();
 
         $users = User::whereDoesntHave('interacting_users', function($userQuery) use ($user) {
@@ -36,6 +37,7 @@ class UserInteractionController extends Controller
                                     ->orWhere('interacted_user_id', $user->id);
                         })
                         ->where('id', '!=', $user->id) // Exclude the current user from the list
+                        ->orderBy('name', 'ASC')
                         ->get();
 
 

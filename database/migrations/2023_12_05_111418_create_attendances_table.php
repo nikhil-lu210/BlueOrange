@@ -24,14 +24,18 @@ return new class extends Migration
                   ->onUpdate('cascade')
                   ->onDelete('cascade');
 
-            $table->date('clock_in_date')->default(now()->toDateString());
+            $table->date('clock_in_date');
             $table->dateTime('clock_in');
             $table->dateTime('clock_out')->nullable();
-            $table->string('total_time')->nullable();
+            $table->string('total_time')->nullable()->comment('hh:mm:ss format to be store');
+            $table->string('total_adjusted_time')->nullable()->comment('hh:mm:ss format to be store');
             $table->enum('type', ['Regular', 'Overtime'])->default('Regular');
 
-            $table->foreignId('qr_clockin_scanner_id')->nullable()->constrained('users')->onDelete('cascade');
-            $table->foreignId('qr_clockout_scanner_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->enum('clockin_medium', ['Manual', 'QR-Code', 'Barcode'])->default('Manual');
+            $table->enum('clockout_medium', ['Manual', 'QR-Code', 'Barcode'])->nullable();
+
+            $table->foreignId('clockin_scanner_id')->nullable()->constrained('users')->onDelete('cascade');
+            $table->foreignId('clockout_scanner_id')->nullable()->constrained('users')->onDelete('cascade');
 
             $table->ipAddress('ip_address')->nullable();
             $table->string('country')->nullable();
@@ -43,8 +47,6 @@ return new class extends Migration
 
             $table->timestamps();
             $table->softDeletes();
-
-            $table->unique(['user_id', 'clock_in_date', 'type'], 'user_id_clock_in_date_type_unique');
         });
     }
 
