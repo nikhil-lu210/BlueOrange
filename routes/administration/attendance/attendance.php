@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Administration\Attendance\AttendanceController;
+use App\Http\Controllers\Administration\Attendance\AttendanceImportController;
 use App\Http\Controllers\Administration\Attendance\QrCodeAttendanceController;
 use App\Http\Controllers\Administration\Attendance\BarCodeAttendanceController;
 
@@ -30,4 +31,9 @@ Route::controller(QrCodeAttendanceController::class)->prefix('attendance/qrcode'
 Route::controller(BarCodeAttendanceController::class)->prefix('attendance/barcode')->name('attendance.barcode.')->group(function () {
     Route::get('/scan', 'scanner')->name('scanner')->can('Attendance Create');
     Route::post('/scan/{scanner_id}', 'scanBarCode')->name('scan')->can('Attendance Create');
+});
+
+Route::controller(AttendanceImportController::class)->prefix('attendance/create/import')->name('attendance.import.')->group(function () {
+    Route::get('/', 'index')->name('index')->can('Attendance Create');
+    Route::post('/upload', 'upload')->name('upload')->can('Attendance Create');
 });
