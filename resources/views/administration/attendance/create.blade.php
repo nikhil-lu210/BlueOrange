@@ -55,9 +55,9 @@
                     <h5 class="mb-0">Assign Attendance</h5>
             
                     <div class="card-header-elements ms-auto">
-                        <a href="{{ route('administration.attendance.index') }}" class="btn btn-sm btn-primary">
-                            <span class="tf-icon ti ti-circle ti-xs me-1"></span>
-                            All Attendances
+                        <a href="{{ route('administration.attendance.import.index') }}" class="btn btn-sm btn-primary">
+                            <span class="tf-icon ti ti-upload ti-xs me-1"></span>
+                            Import Attendances
                         </a>
                     </div>
                 </div>
