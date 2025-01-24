@@ -12,8 +12,8 @@ use App\Http\Controllers\Administration\Attendance\BarCodeAttendanceController;
 Route::controller(AttendanceController::class)->prefix('attendance')->name('attendance.')->group(function () {
     Route::get('/all', 'index')->name('index')->can('Attendance Everything');
     Route::get('/my', 'myAttendances')->name('my')->can('Attendance Read');
-    Route::get('/create', 'create')->name('create')->can('Attendance Create');
-    Route::post('/store', 'store')->name('store')->can('Attendance Create');
+    Route::get('/create', 'create')->name('create')->can('Attendance Everything');
+    Route::post('/store', 'store')->name('store')->can('Attendance Everything');
     Route::post('/clockin', 'clockIn')->name('clockin')->can('Attendance Read');
     Route::post('/clockout', 'clockOut')->name('clockout')->can('Attendance Read');
     
