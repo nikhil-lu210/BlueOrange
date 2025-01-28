@@ -107,7 +107,7 @@
                                             </div>
                                             <div class="d-flex flex-column">
                                                 <a href="javascript:void(0);" target="_blank" class="emp_name text-truncate text-bold">{{ $attendance->user->name }}</a>
-                                                <small class="emp_post text-truncate text-muted">{{ $attendance->user->roles[0]->name }}</small>
+                                                <small class="emp_post text-truncate text-muted">{{ $attendance->user->role->name }}</small>
                                             </div>
                                         </div>
                                     </td>

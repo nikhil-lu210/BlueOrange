@@ -15,7 +15,7 @@
                     </div>
                     <div class="chat-contact-info flex-grow-1 ms-2">
                         <h6 class="m-0">{{ get_employee_name($receiver) }}</h6>
-                        <small class="user-status text-muted">{{ $receiver->roles[0]->name }}</small>
+                        <small class="user-status text-muted">{{ $receiver->role->name }}</small>
                     </div>
                 </div>
                 <div class="d-flex align-items-center">

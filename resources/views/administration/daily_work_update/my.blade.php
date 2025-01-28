@@ -163,7 +163,7 @@
                                             </div>
                                             <div class="d-flex flex-column">
                                                 <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->user]) }}" target="_blank" class="emp_name text-truncate">{{ $dailyUpdate->user->name }}</a>
-                                                <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->user->roles[0]->name }}</small>
+                                                <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->user->role->name }}</small>
                                             </div>
                                         </div>
                                     </td>
@@ -184,7 +184,7 @@
                                             </div>
                                             <div class="d-flex flex-column">
                                                 <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}" target="_blank" class="emp_name text-truncate">{{ $dailyUpdate->team_leader->name }}</a>
-                                                <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->team_leader->roles[0]->name }}</small>
+                                                <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->team_leader->role->name }}</small>
                                             </div>
                                         </div>
                                     </td>

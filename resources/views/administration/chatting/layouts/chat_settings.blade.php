@@ -8,7 +8,7 @@
             @endif
         </div>
         <h5 class="mt-2 mb-0">{{ get_employee_name(auth()->user()) }}</h5>
-        <span>{{ auth()->user()->roles[0]->name }}</span>
+        <span>{{ auth()->user()->role->name }}</span>
         <i class="ti ti-x ti-sm cursor-pointer close-sidebar" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-sidebar-left"></i>
     </div>
     <div class="sidebar-body px-4 pb-4">

@@ -88,7 +88,7 @@
                                     <a href="{{ route('administration.settings.user.user_interaction.index', ['user' => $employee]) }}" target="_blank" class="text-primary text-bold text-capitalize" title="Click to see {{ $employee->name }}'s User Interactions">{{ $employee->name }}</a>
                                     (<span class="text-muted text-capitalize">{{ $employee->employee->alias_name }}</span>)
                                 </th>
-                                <td>{{ $employee->roles->first()->name }}</td>
+                                <td>{{ $employee->role->name }}</td>
                             </tr>
                         @endforeach
                     </tbody>

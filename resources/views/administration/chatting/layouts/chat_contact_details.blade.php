@@ -10,7 +10,7 @@
             @endif
         </div>
         <h6 class="mt-2 mb-0">{{ get_employee_name($user) }}</h6>
-        <span>{{ $user->roles->first()->name }}</span>
+        <span>{{ $user->role->name }}</span>
         <i class="ti ti-x ti-sm cursor-pointer close-sidebar d-block" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-sidebar-right"></i>
     </div>
     <div class="sidebar-body px-4 pb-4">

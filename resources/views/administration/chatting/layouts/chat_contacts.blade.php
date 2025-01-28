@@ -74,7 +74,7 @@
                         </div>
                         <div class="chat-contact-info flex-grow-1 ms-2">
                             <h6 class="chat-contact-name text-truncate m-0">{{ get_employee_name($contact) }}</h6>
-                            <p class="chat-contact-status text-muted text-truncate mb-0">{{ $contact->roles[0]->name }}</p>
+                            <p class="chat-contact-status text-muted text-truncate mb-0">{{ $contact->role->name }}</p>
                         </div>
                     </a>
                 </li>

@@ -95,7 +95,7 @@
                             <select name="role_id" class="select2 form-select @error('role_id') is-invalid @enderror" data-allow-clear="true" required autofocus>
                                 <option value="" selected disabled>Select Role</option>
                                 @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}" @selected(old('role_id') == $role->id || ($user->roles[0]->id == $role->id))>{{ $role->name }}</option>
+                                    <option value="{{ $role->id }}" @selected(old('role_id') == $role->id || ($user->role->id == $role->id))>{{ $role->name }}</option>
                                 @endforeach
                             </select>
                             @error('role_id')

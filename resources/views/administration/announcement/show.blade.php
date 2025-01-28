@@ -155,7 +155,7 @@
                                                       </div>
                                                       <div class="d-flex flex-column">
                                                         <span class="fw-medium">{{ $comment->commenter->name }}</span>
-                                                        <small class="text-muted">{{ $comment->commenter->roles[0]->name }}</small>
+                                                        <small class="text-muted">{{ $comment->commenter->role->name }}</small>
                                                     </div>
                                                 </div>
                                                 <small class="date-time text-muted">{{ date_time_ago($comment->created_at) }}</small>

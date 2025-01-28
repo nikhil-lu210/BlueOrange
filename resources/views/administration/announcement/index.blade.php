@@ -156,7 +156,7 @@
                                             {{ $announcement->announcer->name }}
                                         </a>
                                         <br>
-                                        <small class="text-muted">{{ $announcement->announcer->roles[0]->name }}</small>
+                                        <small class="text-muted">{{ $announcement->announcer->role->name }}</small>
                                     </td>
                                     <td class="text-center">
                                         @can ('Announcement Delete') 
