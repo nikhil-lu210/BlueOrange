@@ -114,66 +114,68 @@
                 @endcan
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Employee ID</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($users as $key => $user) 
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
                             <tr>
-                                <th>#{{ serial($users, $key) }}</th>
-                                <th><b class="text-primary">{{ $user->userid }}</b></th>
-                                <td>
-                                    {!! show_user_name_and_avatar($user) !!}
-                                </td>
-                                <td>
-                                    <a href="mailto:{{ optional($user->employee)->official_email }}" class="mb-1 text-bold" title="Official Email">
-                                        {{ optional($user->employee)->official_email }}
-                                    </a>
-                                    <br>
-                                    <a href="mailto:{{ optional($user->employee)->personal_email }}" class="mb-1 text-muted" title="Personal Email">
-                                        {{ optional($user->employee)->personal_email }}
-                                    </a>
-                                </td>
-                                <td>{!! show_status($user->status) !!}</td>
-                                <td class="text-center">
-                                    @canany (['User Update', 'User Delete']) 
-                                        <div class="d-inline-block">
-                                            <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="text-primary ti ti-dots-vertical"></i>
-                                            </a>
-                                            <div class="dropdown-menu dropdown-menu-end m-0" style="">
-                                                @can ('User Update') 
-                                                    <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="dropdown-item">
-                                                        <i class="text-primary ti ti-pencil"></i> 
-                                                        Edit
-                                                    </a>
-                                                @endcan
-                                                @can ('User Delete') 
-                                                    <div class="dropdown-divider"></div>
-                                                    <a href="{{ route('administration.settings.user.destroy', ['user' => $user]) }}" class="dropdown-item text-danger delete-record confirm-danger">
-                                                        <i class="ti ti-trash"></i> 
-                                                        Delete
-                                                    </a>
-                                                @endcan
-                                            </div>
-                                        </div>
-                                    @endcanany
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="btn btn-sm btn-icon btn-primary item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                        <i class="ti ti-info-hexagon"></i>
-                                    </a>
-                                </td>
+                                <th>Sl.</th>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                                <th class="text-center">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($users as $key => $user) 
+                                <tr>
+                                    <th>#{{ serial($users, $key) }}</th>
+                                    <th><b class="text-primary">{{ $user->userid }}</b></th>
+                                    <td>
+                                        {!! show_user_name_and_avatar($user) !!}
+                                    </td>
+                                    <td>
+                                        <a href="mailto:{{ optional($user->employee)->official_email }}" class="mb-1 text-bold" title="Official Email">
+                                            {{ optional($user->employee)->official_email }}
+                                        </a>
+                                        <br>
+                                        <a href="mailto:{{ optional($user->employee)->personal_email }}" class="mb-1 text-muted" title="Personal Email">
+                                            {{ optional($user->employee)->personal_email }}
+                                        </a>
+                                    </td>
+                                    <td>{!! show_status($user->status) !!}</td>
+                                    <td class="text-center">
+                                        @canany (['User Update', 'User Delete']) 
+                                            <div class="d-inline-block">
+                                                <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="text-primary ti ti-dots-vertical"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                                                    @can ('User Update') 
+                                                        <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="dropdown-item">
+                                                            <i class="text-primary ti ti-pencil"></i> 
+                                                            Edit
+                                                        </a>
+                                                    @endcan
+                                                    @can ('User Delete') 
+                                                        <div class="dropdown-divider"></div>
+                                                        <a href="{{ route('administration.settings.user.destroy', ['user' => $user]) }}" class="dropdown-item text-danger delete-record confirm-danger">
+                                                            <i class="ti ti-trash"></i> 
+                                                            Delete
+                                                        </a>
+                                                    @endcan
+                                                </div>
+                                            </div>
+                                        @endcanany
+                                        <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="btn btn-sm btn-icon btn-primary item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                            <i class="ti ti-info-hexagon"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>        
     </div>
