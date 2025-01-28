@@ -11,6 +11,14 @@ use Illuminate\Support\Collection;
 trait UserAccessors
 {
     /**
+     * Get the first role of the user.
+     */
+    public function getRoleAttribute()
+    {
+        return $this->roles->first();
+    }
+    
+    /**
      * Get the currently active employee shift.
      *
      * @return EmployeeShift|null
