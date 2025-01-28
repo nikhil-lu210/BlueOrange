@@ -33,15 +33,14 @@ class DailyWorkUpdateController extends Controller
     public function my(Request $request)
     {
         // dd(auth()->user()->tl_employees);
-        $roles = Role::select(['id', 'name'])
-                        ->with(['users' => function ($query) {
+        $roles = Role::select(['id', 'name'])->with(['users' => function ($query) {
                             $query->permission('Daily Work Update Create')
                                 ->select(['id', 'name'])
                                 ->whereIn('id', auth()->user()->tl_employees->pluck('id'))
                                 ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
                                 ->whereStatus('Active');
-                        }])
-        ->get();
+                        }])->get();
+
         $authUserID = auth()->id();
 
         if (!$request->has('filter_work_updates') && auth()->user()->tl_employees_daily_work_updates->count() < 1) {
