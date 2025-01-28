@@ -172,15 +172,15 @@
                                         <small class="badge bg-label-{{ $typeBg }}" title="Requested Leave Type">{{ $leave->type }} Leave</small>
                                     </td>
                                     <td>
-                                        <span class="text-bold">{{ $leave->total_leave->forHumans() }}</span>
-                                        @if (!is_null($leave->is_paid_leave)) 
-                                            <br>
+                                        @if (!is_null($leave->is_paid_leave))
                                             @if ($leave->is_paid_leave == true)
                                                 <small class="badge bg-success">Paid</small>
                                             @else
                                                 <small class="badge bg-danger">Unpaid</small>
                                             @endif
+                                            <br>
                                         @endif
+                                        <span class="text-bold">{{ $leave->total_leave->forHumans() }}</span>
                                     </td>
                                     <td>
                                         @php
@@ -202,13 +202,13 @@
                                         @if (!is_null($leave->reviewed_by))
                                             <br>
                                             <a href="{{ route('administration.settings.user.show.profile', ['user' => $leave->reviewer]) }}" target="_blank" class="text-bold text-primary" title="Reviewed By">
-                                                {{ $leave->reviewer->name }}
+                                                {{ $leave->reviewer->first_name . ' (' . $leave->reviewer->employee->alias_name . ')' }}
                                             </a>
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('administration.leave.history.show', ['leaveHistory' => $leave]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                            <i class="text-primary ti ti-info-hexagon"></i>
+                                        <a href="{{ route('administration.leave.history.show', ['leaveHistory' => $leave]) }}" class="btn btn-sm btn-icon btn-primary item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                            <i class="ti ti-info-hexagon"></i>
                                         </a>
                                     </td>
                                 </tr>

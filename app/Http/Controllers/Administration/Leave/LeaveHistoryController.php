@@ -41,6 +41,7 @@ class LeaveHistoryController extends Controller
         // Get daily breaks with the pre-loaded users
         $leaves = $this->leaveHistoryService->getLeavesQuery($request)
             ->whereIn('user_id', $userIds)
+            ->orderByDesc('date')
             ->get();
 
         return view('administration.leave.index', compact(['users', 'leaves']));
