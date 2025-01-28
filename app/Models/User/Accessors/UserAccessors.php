@@ -7,13 +7,17 @@ use App\Models\Salary;
 use App\Models\EmployeeShift;
 use App\Models\Leave\LeaveAllowed;
 use Illuminate\Support\Collection;
+use Spatie\Permission\Models\Role;
 
 trait UserAccessors
 {
     /**
      * Get the first role of the user.
+     *
+     * @return \Spatie\Permission\Models\Role|null 
+     * The first role assigned to the user or null if no roles are assigned.
      */
-    public function getRoleAttribute()
+    public function getRoleAttribute(): ?Role
     {
         return $this->roles->first();
     }
