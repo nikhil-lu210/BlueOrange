@@ -27,7 +27,7 @@ class HolidayController extends Controller
             $query->whereYear('date', $monthYear->year)->whereMonth('date', $monthYear->month);
         }
 
-        $holidays = $query->get();
+        $holidays = $query->orderByDesc('date')->get();
 
         return view('administration.settings.system.holiday.index', compact(['holidays']));
     }
