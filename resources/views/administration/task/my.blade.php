@@ -115,8 +115,7 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">My Tasks</h5>
-        
+                <h5 class="mb-0">My Tasks <sup class="text-muted">(Assigned to me / Created by me)</sup></h5>        
                 <div class="card-header-elements ms-auto">
                     @can ('Task Create') 
                         <a href="{{ route('administration.task.create') }}" class="btn btn-sm btn-primary">
@@ -127,6 +126,40 @@
                 </div>
             </div>
             <div class="card-body">
+                <div class="vehicles-overview-progress progress rounded-2 mb-4" style="height: 36px">
+                    @if ($statusPercentages['active'] > 0)
+                        <div class="progress-bar fw-medium text-start bg-info px-3 rounded-0" role="progressbar"
+                            style="width: {{ $statusPercentages['active'] }}%" aria-valuenow="{{ $statusPercentages['active'] }}"
+                            aria-valuemin="0" aria-valuemax="100" title="Active Tasks">
+                            <span class="percentage-value">{{ $statusPercentages['active'] }}%</span>
+                        </div>
+                    @endif
+                
+                    @if ($statusPercentages['running'] > 0)
+                        <div class="progress-bar fw-medium text-start bg-primary px-3" role="progressbar"
+                            style="width: {{ $statusPercentages['running'] }}%" aria-valuenow="{{ $statusPercentages['running'] }}"
+                            aria-valuemin="0" aria-valuemax="100" title="Running Tasks">
+                            <span class="percentage-value">{{ $statusPercentages['running'] }}%</span>
+                        </div>
+                    @endif
+                
+                    @if ($statusPercentages['completed'] > 0)
+                        <div class="progress-bar fw-medium text-start bg-success px-3" role="progressbar"
+                            style="width: {{ $statusPercentages['completed'] }}%" aria-valuenow="{{ $statusPercentages['completed'] }}"
+                            aria-valuemin="0" aria-valuemax="100" title="Completed Tasks">
+                            <span class="percentage-value">{{ $statusPercentages['completed'] }}%</span>
+                        </div>
+                    @endif
+                
+                    @if ($statusPercentages['canceled'] > 0)
+                        <div class="progress-bar fw-medium text-start bg-danger px-2 rounded-0 px-lg-2 px-xxl-3" role="progressbar"
+                            style="width: {{ $statusPercentages['canceled'] }}%" aria-valuenow="{{ $statusPercentages['canceled'] }}"
+                            aria-valuemin="0" aria-valuemax="100" title="Canceled Tasks">
+                            <span class="percentage-value">{{ $statusPercentages['canceled'] }}%</span>
+                        </div>
+                    @endif
+                </div>                
+
                 <div class="table-responsive-md table-responsive-sm w-100">
                     <table class="table data-table table-bordered">
                         <thead>

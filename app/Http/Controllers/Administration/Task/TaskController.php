@@ -85,13 +85,13 @@ class TaskController extends Controller
     {
         $creators = User::permission('Task Create')->select(['id', 'name'])->get();
 
-        $query = Task::with([
-            'creator:id,first_name,last_name'
-        ])
-        ->whereHas('users', function($query) {
-            $query->where('user_id', auth()->id());
-        })
-        ->orderByDesc('created_at');
+        $query = Task::with(['creator:id,first_name,last_name'])
+                        ->where(function ($taskQuery) {
+                            $taskQuery->whereHas('users', function ($userQuery) {
+                                $userQuery->where('user_id', auth()->id());
+                            })->orWhere('creator_id', auth()->id());
+                        })
+                        ->orderByDesc('created_at');
 
         if ($request->has('creator_id') && !is_null($request->creator_id)) {
             $query->where('creator_id', $request->creator_id);
@@ -102,8 +102,22 @@ class TaskController extends Controller
         }
 
         $tasks = $query->get();
-                    
-        return view('administration.task.my', compact(['creators', 'tasks']));
+
+        // Count total tasks
+        $totalTasks = $tasks->count();
+
+        // Count tasks by status
+        $statusCounts = $tasks->groupBy('status')->map->count();
+
+        // Calculate percentages
+        $statusPercentages = [
+            'active' => $totalTasks > 0 ? round(($statusCounts->get('Active', 0) / $totalTasks) * 100, 2) : 0,
+            'running' => $totalTasks > 0 ? round(($statusCounts->get('Running', 0) / $totalTasks) * 100, 2) : 0,
+            'completed' => $totalTasks > 0 ? round(($statusCounts->get('Completed', 0) / $totalTasks) * 100, 2) : 0,
+            'canceled' => $totalTasks > 0 ? round(($statusCounts->get('Cancelled', 0) / $totalTasks) * 100, 2) : 0,
+        ];
+
+        return view('administration.task.my', compact(['creators', 'tasks', 'statusPercentages']));
     }
 
     /**
