@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Administration\DailyBreak\DailyBreakController;
+use App\Http\Controllers\Administration\DailyBreak\BarCodeDailyBreakController;
 
 /* ==============================================
 ===============< Daily Break Routes >==============
@@ -17,4 +18,9 @@ Route::controller(DailyBreakController::class)->prefix('daily_break')->name('dai
     Route::put('/update/{break}', 'update')->name('update');
     
     Route::get('/export', 'export')->name('export');
+});
+
+Route::controller(BarCodeDailyBreakController::class)->prefix('daily_break/barcode')->name('daily_break.barcode.')->group(function () {
+    Route::get('/scan', 'scanner')->name('scanner')->can('Daily Break Create');
+    Route::post('/scan/{scanner_id}', 'scanBarCode')->name('scan')->can('Daily Break Create');
 });
