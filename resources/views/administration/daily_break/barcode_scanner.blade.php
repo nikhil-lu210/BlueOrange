@@ -21,7 +21,15 @@
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
-    /* Custom CSS Here */
+        /* Custom CSS Here */
+        .custom-option-content {
+            position: relative;
+        }
+        .custom-option-content .form-check-input {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
     </style>
 @endsection
 
@@ -41,7 +49,7 @@
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-8">
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Barcode Daily Break</h5>
@@ -60,30 +68,34 @@
                         <div class="mb-3 col-md-12">
                             <div class="row">
                                 <div class="col-md mb-md-0 mb-2">
-                                    <div class="form-check form-check-primary bg-label-primary custom-option custom-option-basic">
+                                    <div class="form-check custom-option custom-option-icon form-check-primary bg-label-primary">
                                         <label class="form-check-label custom-option-content" for="shortBreak">
-                                            <input name="break_type" value="Short" class="form-check-input" type="radio" id="shortBreak" required/>
-                                            <span class="custom-option-header">
-                                                <span class="h6 mb-0 text-uppercase text-bold">Short Break</span>
-                                                <span class="text-bold">15-20 Min</span>
-                                            </span>
                                             <span class="custom-option-body">
-                                                <small class="text-muted">You Can Take Maximum 2 Short Break.</small>
+                                                <img src="{{ asset('assets/img/illustrations/page-misc-launching-soon.png') }}" width="92" class="mb-2">
+                                                <span class="h6 mb-0 text-uppercase text-bold custom-option-title">Short Break</span>
+                                                <small>
+                                                    <span>You Can Take Maximum <b>Two Short Breaks</b></span>
+                                                    <br>
+                                                    <span>For <b>15-20 Min</b></span>
+                                                </small>
                                             </span>
+                                            <input name="break_type" value="Short" class="form-check-input" type="radio" id="shortBreak" required />
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-md">
-                                    <div class="form-check form-check-warning bg-label-warning custom-option custom-option-basic">
+                                <div class="col-md mb-md-0 mb-2">
+                                    <div class="form-check custom-option custom-option-icon form-check-warning bg-label-warning">
                                         <label class="form-check-label custom-option-content" for="longBreak">
-                                            <input name="break_type" value="Long" class="form-check-input" type="radio" id="longBreak" required/>
-                                            <span class="custom-option-header">
-                                                <span class="h6 mb-0 text-uppercase text-bold">Long Break</span>
-                                                <span class="text-bold">30-45 Min</span>
-                                            </span>
                                             <span class="custom-option-body">
-                                                <small class="text-muted">You Can Take Maximum 1 Long Break.</small>
+                                                <img src="{{ asset('assets/img/illustrations/page-misc-you-are-not-authorized.png') }}" width="60" class="mb-2">
+                                                <span class="h6 mb-0 text-uppercase text-bold custom-option-title">Long Break</span>
+                                                <small>
+                                                    <span>You Can Take Maximum <b>One Long Break</b></span>
+                                                    <br>
+                                                    <span>For <b>30-45 Min</b></span>
+                                                </small>
                                             </span>
+                                            <input name="break_type" value="Long" class="form-check-input" type="radio" id="longBreak" required />
                                         </label>
                                     </div>
                                 </div>
