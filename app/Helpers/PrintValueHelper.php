@@ -51,6 +51,7 @@ if (!function_exists('show_status')) {
     {
         $badgeClass = match($status) {
             'Active' => 'bg-label-success',
+            'Completed' => 'bg-label-success',
             'Inactive' => 'bg-label-danger',
             'Canceled' => 'bg-label-danger',
             'Cancelled' => 'bg-label-danger',

@@ -38,6 +38,9 @@
         color: #333333;
         font-weight: bold;
     }
+    .list-group-item + .list-group-item {
+        border-top-width: 1px;
+    }
     </style>
 @endsection
 
@@ -126,9 +129,9 @@
                 </div>
             </div>
             <div class="card-body">
-                <div class="vehicles-overview-progress progress rounded-2 mb-4" style="height: 36px">
+                <div class="vehicles-overview-progress progress rounded-0 mb-2" style="height: 40px">
                     @if ($statusPercentages['active'] > 0)
-                        <div class="progress-bar fw-medium text-start bg-info px-3 rounded-0" role="progressbar"
+                        <div class="progress-bar fw-medium text-start bg-label-info px-3 rounded-0 text-center" role="progressbar"
                             style="width: {{ $statusPercentages['active'] }}%" aria-valuenow="{{ $statusPercentages['active'] }}"
                             aria-valuemin="0" aria-valuemax="100" title="Active Tasks">
                             <span class="percentage-value">{{ $statusPercentages['active'] }}%</span>
@@ -136,7 +139,7 @@
                     @endif
                 
                     @if ($statusPercentages['running'] > 0)
-                        <div class="progress-bar fw-medium text-start bg-primary px-3" role="progressbar"
+                        <div class="progress-bar fw-medium text-start bg-label-primary px-3 rounded-0 text-center" role="progressbar"
                             style="width: {{ $statusPercentages['running'] }}%" aria-valuenow="{{ $statusPercentages['running'] }}"
                             aria-valuemin="0" aria-valuemax="100" title="Running Tasks">
                             <span class="percentage-value">{{ $statusPercentages['running'] }}%</span>
@@ -144,7 +147,7 @@
                     @endif
                 
                     @if ($statusPercentages['completed'] > 0)
-                        <div class="progress-bar fw-medium text-start bg-success px-3" role="progressbar"
+                        <div class="progress-bar fw-medium text-start bg-label-success px-3 rounded-0 text-center" role="progressbar"
                             style="width: {{ $statusPercentages['completed'] }}%" aria-valuenow="{{ $statusPercentages['completed'] }}"
                             aria-valuemin="0" aria-valuemax="100" title="Completed Tasks">
                             <span class="percentage-value">{{ $statusPercentages['completed'] }}%</span>
@@ -152,92 +155,112 @@
                     @endif
                 
                     @if ($statusPercentages['canceled'] > 0)
-                        <div class="progress-bar fw-medium text-start bg-danger px-2 rounded-0 px-lg-2 px-xxl-3" role="progressbar"
+                        <div class="progress-bar fw-medium text-start bg-label-danger px-3 rounded-0 text-center" role="progressbar"
                             style="width: {{ $statusPercentages['canceled'] }}%" aria-valuenow="{{ $statusPercentages['canceled'] }}"
                             aria-valuemin="0" aria-valuemax="100" title="Canceled Tasks">
                             <span class="percentage-value">{{ $statusPercentages['canceled'] }}%</span>
                         </div>
                     @endif
-                </div>                
+                </div>
 
-                <div class="table-responsive-md table-responsive-sm w-100">
-                    <table class="table data-table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>Sl.</th>
-                                <th>Title</th>
-                                <th>Assigner & Assignees</th>
-                                <th>Deadline</th>
-                                <th>Status</th>
-                                <th class="text-center">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($tasks as $key => $task) 
-                                <tr>
-                                    <th>#{{ serial($tasks, $key) }}</th>
-                                    <td>
-                                        <b title="{{ $task->title }}">{{ show_content($task->title, 30) }}</b>
-                                        <br>
-                                        <small>Priority: <span class="text-muted">{{ $task->priority }}</span></small>
-                                    </td>
-                                    <td>
-                                        <b class="text-dark">{{ $task->creator->first_name.' '.$task->creator->last_name }}</b>
-                                        <br>
-                                        @if ($task->users->count() > 0)
-                                            <div class="d-flex align-items-center">
-                                                <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2 mt-1">
-                                                    @foreach ($task->users->take(6) as $user)
-                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
-                                                            @if ($user->hasMedia('avatar'))
-                                                                <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
-                                                            @else
-                                                                <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="rounded-circle">
-                                                            @endif
-                                                        </li>
-                                                    @endforeach
-                                                    @if ($task->users->count() > 6)
-                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $task->users->count() - 6 }} More" class="avatar avatar-sm pull-up more-user-avatar">
-                                                            <small>{{ $task->users->count() - 6 }}+</small>
-                                                        </li>
-                                                    @endif
-                                                </ul>
+                <div class="row mb-3">
+                    <div class="col-md-12">
+                        <div class="demo-inline-spacing mt-1">
+                            <div class="list-group">
+                                @forelse ($tasks as $key => $task)
+                                    @php
+                                        $color = '';
+                                        switch ($task->status) {
+                                            case 'Running':
+                                                $color = 'primary';
+                                                break;
+                                            
+                                            case 'Completed':
+                                                $color = 'success';
+                                                break;
+                                            
+                                            case 'Cancelled':
+                                                $color = 'danger';
+                                                break;
+                                            
+                                            default:
+                                                $color = 'info';
+                                                break;
+                                        }
+                                    @endphp
+                                    <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="list-group-item d-flex justify-content-between btn-outline-{{ $color }} bg-label-{{ $color }} mb-3" style="border-radius: 5px;" title="Click to view {{ $task->title }}">
+                                        <div class="li-wrapper d-flex justify-content-start align-items-center" title="{{ $task->title }}">
+                                            <div class="list-content">
+                                                <h6 class="mb-1 text-dark text-bold">{{ show_content($task->title, 30) }}</h6>
+                                                <small class="text-muted">Task ID: <b>{{ $task->taskid }}</b></small>
                                             </div>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        @if (!is_null($task->deadline)) 
-                                            <b>{{ show_date($task->deadline) }}</b>
-                                        @else 
-                                            <span class="badge bg-success">Ongoing Task</span>
-                                        @endif
-                                        <br>
-                                        <small>Created: <span class="text-muted">{{ show_date($task->created_at) }}</span></small>
-                                    </td>
-                                    <td>{!! show_status($task->status) !!}</td>
-                                    <td class="text-center">
-                                        @if ($task->creator_id == auth()->user()->id) 
-                                            @can ('Task Delete') 
-                                                <a href="{{ route('administration.task.destroy', ['task' => $task]) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" data-bs-toggle="tooltip" title="Delete Task?">
-                                                    <i class="ti ti-trash"></i>
-                                                </a>
-                                            @endcan
-                                            @can ('Task Update') 
-                                                <a href="{{ route('administration.task.edit', ['task' => $task]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Task?">
-                                                    <i class="ti ti-pencil"></i>
-                                                </a>
-                                            @endcan
-                                        @endif
-                                        @can ('Task Read') 
-                                            <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
-                                                <i class="ti ti-info-hexagon"></i>
-                                            </a>
-                                        @endcan
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                                        </div>
+                                        <div class="li-wrapper d-flex justify-content-start align-items-center" title="Task Deadline">
+                                            <div class="list-content">
+                                                @if (!is_null($task->deadline)) 
+                                                    <b class="text-dark">{{ show_date($task->deadline) }}</b>
+                                                @else 
+                                                    <span class="badge bg-success">Ongoing Task</span>
+                                                @endif
+                                                <br>
+                                                <small class="text-dark">Created: <span class="text-muted">{{ show_date($task->created_at) }}</span></small>
+                                            </div>
+                                        </div>
+                                        <div class="li-wrapper d-flex justify-content-start align-items-center" title="Task Status & Priority">
+                                            <div class="list-content text-center">
+                                                <small class="badge bg-{{ $color }} mb-1">{{ $task->status }}</small>
+                                                <br>
+                                                @switch($task->priority)
+                                                    @case('Low')
+                                                        <small class="badge bg-info">{{ $task->priority }}</small>
+                                                        @break
+                                                    @case('Medium')
+                                                        <small class="badge bg-primary">{{ $task->priority }}</small>
+                                                        @break
+                                                    @case('Average')
+                                                        <small class="badge bg-warning">{{ $task->priority }}</small>
+                                                        @break
+                                                    @case('High')
+                                                        <small class="badge bg-danger">{{ $task->priority }}</small>
+                                                        @break
+                                                    @default
+                                                        <small class="badge bg-dark">{{ $task->priority }}</small>
+                                                @endswitch
+                                            </div>
+                                        </div>
+                                        <div class="li-wrapper d-flex justify-content-start align-items-center">
+                                            <div class="list-content">
+                                                <span class="text-dark" title="Task Creator">{{ $task->creator->first_name.' '.$task->creator->last_name }}</span>
+                                                <br>
+                                                @if ($task->users->count() > 0)
+                                                    <div class="d-flex align-items-center">
+                                                        <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2 mt-1">
+                                                            @foreach ($task->users->take(6) as $user)
+                                                                <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
+                                                                    @if ($user->hasMedia('avatar'))
+                                                                        <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
+                                                                    @else
+                                                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="rounded-circle">
+                                                                    @endif
+                                                                </li>
+                                                            @endforeach
+                                                            @if ($task->users->count() > 6)
+                                                                <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $task->users->count() - 6 }} More" class="avatar avatar-sm pull-up more-user-avatar">
+                                                                    <small>{{ $task->users->count() - 6 }}+</small>
+                                                                </li>
+                                                            @endif
+                                                        </ul>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </a>
+                                @empty 
+                                    <h4 class="text-center text-muted mt-3">No Tasks Available</h4>
+                                @endforelse
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>        
