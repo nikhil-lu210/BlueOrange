@@ -57,3 +57,208 @@ body.swal2-toast-shown .swal2-container.swal2-top-end,
 body.swal2-toast-shown .swal2-container.swal2-top-right {
     z-index: 9999999 !important;
 }
+
+/* Border Styles */
+.border-primary {
+    border: 3px solid #7367f0 !important; /* Primary color */
+}
+
+.border-secondary {
+    border: 3px solid #a8aaae !important; /* Secondary color */
+}
+
+.border-success {
+    border: 3px solid #28c76f !important; /* Success color */
+}
+
+.border-danger {
+    border: 3px solid #ea5455 !important; /* Danger color */
+}
+
+.border-warning {
+    border: 3px solid #ff9f43 !important; /* Warning color */
+}
+
+.border-info {
+    border: 3px solid #00cfe8 !important; /* Info color */
+}
+
+.border-light {
+    border: 3px solid #dfdfe3 !important; /* Light color */
+}
+
+.border-dark {
+    border: 3px solid #4b4b4b !important; /* Dark color */
+}
+
+.border-muted {
+    border: 3px solid #a8aaae !important; /* Muted color */
+}
+
+.border-white {
+    border: 3px solid #ffffff !important; /* White color */
+}
+
+/* Border Bottom Styles */
+.border-bottom-primary {
+    border-bottom: 3px solid #7367f0 !important; /* Primary color */
+}
+
+.border-bottom-secondary {
+    border-bottom: 3px solid #a8aaae !important; /* Secondary color */
+}
+
+.border-bottom-success {
+    border-bottom: 3px solid #28c76f !important; /* Success color */
+}
+
+.border-bottom-danger {
+    border-bottom: 3px solid #ea5455 !important; /* Danger color */
+}
+
+.border-bottom-warning {
+    border-bottom: 3px solid #ff9f43 !important; /* Warning color */
+}
+
+.border-bottom-info {
+    border-bottom: 3px solid #00cfe8 !important; /* Info color */
+}
+
+.border-bottom-light {
+    border-bottom: 3px solid #dfdfe3 !important; /* Light color */
+}
+
+.border-bottom-dark {
+    border-bottom: 3px solid #4b4b4b !important; /* Dark color */
+}
+
+.border-bottom-muted {
+    border-bottom: 3px solid #a8aaae !important; /* Muted color */
+}
+
+.border-bottom-white {
+    border-bottom: 3px solid #ffffff !important; /* White color */
+}
+
+/* Border Top Styles */
+.border-top-primary {
+    border-top: 3px solid #7367f0 !important; /* Primary color */
+}
+
+.border-top-secondary {
+    border-top: 3px solid #a8aaae !important; /* Secondary color */
+}
+
+.border-top-success {
+    border-top: 3px solid #28c76f !important; /* Success color */
+}
+
+.border-top-danger {
+    border-top: 3px solid #ea5455 !important; /* Danger color */
+}
+
+.border-top-warning {
+    border-top: 3px solid #ff9f43 !important; /* Warning color */
+}
+
+.border-top-info {
+    border-top: 3px solid #00cfe8 !important; /* Info color */
+}
+
+.border-top-light {
+    border-top: 3px solid #dfdfe3 !important; /* Light color */
+}
+
+.border-top-dark {
+    border-top: 3px solid #4b4b4b !important; /* Dark color */
+}
+
+.border-top-muted {
+    border-top: 3px solid #a8aaae !important; /* Muted color */
+}
+
+.border-top-white {
+    border-top: 3px solid #ffffff !important; /* White color */
+}
+
+/* Border Left Styles */
+.border-left-primary {
+    border-left: 3px solid #7367f0 !important; /* Primary color */
+}
+
+.border-left-secondary {
+    border-left: 3px solid #a8aaae !important; /* Secondary color */
+}
+
+.border-left-success {
+    border-left: 3px solid #28c76f !important; /* Success color */
+}
+
+.border-left-danger {
+    border-left: 3px solid #ea5455 !important; /* Danger color */
+}
+
+.border-left-warning {
+    border-left: 3px solid #ff9f43 !important; /* Warning color */
+}
+
+.border-left-info {
+    border-left: 3px solid #00cfe8 !important; /* Info color */
+}
+
+.border-left-light {
+    border-left: 3px solid #dfdfe3 !important; /* Light color */
+}
+
+.border-left-dark {
+    border-left: 3px solid #4b4b4b !important; /* Dark color */
+}
+
+.border-left-muted {
+    border-left: 3px solid #a8aaae !important; /* Muted color */
+}
+
+.border-left-white {
+    border-left: 3px solid #ffffff !important; /* White color */
+}
+
+/* Border Right Styles */
+.border-right-primary {
+    border-right: 3px solid #7367f0 !important; /* Primary color */
+}
+
+.border-right-secondary {
+    border-right: 3px solid #a8aaae !important; /* Secondary color */
+}
+
+.border-right-success {
+    border-right: 3px solid #28c76f !important; /* Success color */
+}
+
+.border-right-danger {
+    border-right: 3px solid #ea5455 !important; /* Danger color */
+}
+
+.border-right-warning {
+    border-right: 3px solid #ff9f43 !important; /* Warning color */
+}
+
+.border-right-info {
+    border-right: 3px solid #00cfe8 !important; /* Info color */
+}
+
+.border-right-light {
+    border-right: 3px solid #dfdfe3 !important; /* Light color */
+}
+
+.border-right-dark {
+    border-right: 3px solid #4b4b4b !important; /* Dark color */
+}
+
+.border-right-muted {
+    border-right: 3px solid #a8aaae !important; /* Muted color */
+}
+
+.border-right-white {
+    border-right: 3px solid #ffffff !important; /* White color */
+}
