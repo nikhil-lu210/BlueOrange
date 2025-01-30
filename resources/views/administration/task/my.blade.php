@@ -262,7 +262,9 @@
                                         </div>
                                         <div class="li-wrapper d-flex justify-content-start align-items-center">
                                             <div class="list-content">
-                                                <span class="text-dark" title="Task Creator">{{ $task->creator->first_name.' '.$task->creator->last_name }}</span>
+                                                <span class="text-dark text-bold" title="Task Creator">
+                                                    {{ $task->creator->name }}
+                                                </span>
                                                 <br>
                                                 @if ($task->users->count() > 0)
                                                     <div class="d-flex align-items-center">

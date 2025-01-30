@@ -85,7 +85,7 @@ class TaskController extends Controller
     {
         $creators = User::permission('Task Create')->select(['id', 'name'])->get();
 
-        $query = Task::with(['creator:id,first_name,last_name'])
+        $query = Task::with(['creator:id,first_name,last_name,name'])
                         ->where(function ($taskQuery) {
                             $taskQuery->whereHas('users', function ($userQuery) {
                                 $userQuery->where('user_id', auth()->id());
