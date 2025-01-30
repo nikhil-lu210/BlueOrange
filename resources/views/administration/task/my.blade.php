@@ -25,22 +25,60 @@
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
-    /* Custom CSS Here */
-    .more-user-avatar {
-        background-color: #dddddd;
-        border-radius: 50px;
-        text-align: center;
-        padding-top: 5px;
-        border: 1px solid #ffffff;
-    }
-    .more-user-avatar small {
-        font-size: 12px;
-        color: #333333;
-        font-weight: bold;
-    }
-    .list-group-item + .list-group-item {
-        border-top-width: 1px;
-    }
+        /* Custom CSS Here */
+        .more-user-avatar {
+            background-color: #dddddd;
+            border-radius: 50px;
+            text-align: center;
+            padding-top: 5px;
+            border: 1px solid #ffffff;
+        }
+        .more-user-avatar small {
+            font-size: 12px;
+            color: #333333;
+            font-weight: bold;
+        }
+        .list-group-item + .list-group-item {
+            border-top-width: 1px;
+        }
+
+        .grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive Grid */
+            gap: 20px; /* Spacing between items */
+        }
+        .grid-view .list-group-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 15px;
+            border-radius: 10px;
+            transition: transform 0.2s ease-in-out;
+        }
+        .grid-view .list-group-item:hover {
+            transform: translateY(-5px); /* Subtle hover effect */
+        }
+        .grid-view .list-content {
+            width: 100%;
+        }
+        .grid-view .li-wrapper.li-task-status-priority {
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        .grid-view .task-status {
+            position: absolute;
+            right: 10px;
+            top: 40px;
+        }
+        .grid-view .task-priority {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+        .grid-view .li-wrapper {
+            margin-bottom: 15px;
+        }
     </style>
 @endsection
 
@@ -126,6 +164,9 @@
                             Create Task
                         </a>
                     @endcan
+                    <button id="toggleView" class="btn btn-icon btn-outline-dark" title="Switch View">
+                        <span class="tf-icon ti ti-layout-2"></span>
+                    </button>
                 </div>
             </div>
             <div class="card-body">
@@ -166,29 +207,35 @@
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <div class="demo-inline-spacing mt-1">
-                            <div class="list-group">
+                            @php
+                                function getColor($status) {
+                                    switch ($status) {
+                                        case 'Active':
+                                        case 'Low':
+                                            return 'info';
+                                        
+                                        case 'Running':
+                                        case 'Medium':
+                                            return 'primary';
+
+                                        case 'Completed':
+                                            return 'success';
+
+                                        case 'Average':
+                                            return 'warning';
+
+                                        case 'Cancelled':
+                                        case 'High':
+                                            return 'danger';
+
+                                        default:
+                                            return 'dark';
+                                    }
+                                }
+                            @endphp
+                            <div id="taskContainer" class="list-group list-view"> {{-- grid-view --}}
                                 @forelse ($tasks as $key => $task)
-                                    @php
-                                        $color = '';
-                                        switch ($task->status) {
-                                            case 'Running':
-                                                $color = 'primary';
-                                                break;
-                                            
-                                            case 'Completed':
-                                                $color = 'success';
-                                                break;
-                                            
-                                            case 'Cancelled':
-                                                $color = 'danger';
-                                                break;
-                                            
-                                            default:
-                                                $color = 'info';
-                                                break;
-                                        }
-                                    @endphp
-                                    <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="list-group-item d-flex justify-content-between btn-outline-{{ $color }} bg-label-{{ $color }} mb-3" style="border-radius: 5px;" title="Click to view {{ $task->title }}">
+                                    <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="list-group-item d-flex justify-content-between btn-outline-{{ getColor($task->status) }} bg-label-{{ getColor($task->status) }} mb-3" style="border-radius: 5px;">
                                         <div class="li-wrapper d-flex justify-content-start align-items-center" title="{{ $task->title }}">
                                             <div class="list-content">
                                                 <h6 class="mb-1 text-dark text-bold">{{ show_content($task->title, 30) }}</h6>
@@ -206,26 +253,11 @@
                                                 <small class="text-dark">Created: <span class="text-muted">{{ show_date($task->created_at) }}</span></small>
                                             </div>
                                         </div>
-                                        <div class="li-wrapper d-flex justify-content-start align-items-center" title="Task Status & Priority">
+                                        <div class="li-wrapper d-flex justify-content-start align-items-center li-task-status-priority">
                                             <div class="list-content text-center">
-                                                <small class="badge bg-{{ $color }} mb-1">{{ $task->status }}</small>
+                                                <small class="badge bg-{{ getColor($task->status) }} mb-1 task-status" title="Task Status">{{ $task->status }}</small>
                                                 <br>
-                                                @switch($task->priority)
-                                                    @case('Low')
-                                                        <small class="badge bg-info">{{ $task->priority }}</small>
-                                                        @break
-                                                    @case('Medium')
-                                                        <small class="badge bg-primary">{{ $task->priority }}</small>
-                                                        @break
-                                                    @case('Average')
-                                                        <small class="badge bg-warning">{{ $task->priority }}</small>
-                                                        @break
-                                                    @case('High')
-                                                        <small class="badge bg-danger">{{ $task->priority }}</small>
-                                                        @break
-                                                    @default
-                                                        <small class="badge bg-dark">{{ $task->priority }}</small>
-                                                @endswitch
+                                                <small class="badge bg-{{ getColor($task->priority) }} task-priority" title="Task Priority">{{ $task->priority }}</small>
                                             </div>
                                         </div>
                                         <div class="li-wrapper d-flex justify-content-start align-items-center">
@@ -256,7 +288,7 @@
                                         </div>
                                     </a>
                                 @empty 
-                                    <h4 class="text-center text-muted mt-3">No Tasks Available</h4>
+                                    <h4 class="text-center text-muted mt-3">{{ __('No Tasks Available') }}</h4>
                                 @endforelse
                             </div>
                         </div>
@@ -293,6 +325,46 @@
                     $(this).selectpicker();
                 }
             });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var $container = $('#taskContainer');
+            var $button = $('#toggleView');
+
+            // Check localStorage for stored view preference, or default to 'list-view'
+            var viewMode = localStorage.getItem('taskViewMode');
+            if (!viewMode) {
+                viewMode = 'list-view'; // Default to list-view if nothing is stored
+            }
+
+            // Apply the view mode from localStorage or default
+            $container.removeClass('grid-view list-view').addClass(viewMode);
+            updateButtonText(viewMode);
+
+            // Toggle View on Button Click
+            $button.on('click', function () {
+                var newViewMode = $container.hasClass('grid-view') ? 'list-view' : 'grid-view';
+
+                // Update the class for task container
+                $container.removeClass('grid-view list-view').addClass(newViewMode);
+
+                // Store the updated view mode in localStorage
+                localStorage.setItem('taskViewMode', newViewMode);
+
+                // Update button text/icon based on the new view mode
+                updateButtonText(newViewMode);
+            });
+
+            // Function to update button text/icon based on the view mode
+            function updateButtonText(mode) {
+                if (mode === 'grid-view') {
+                    $button.html('<span class="tf-icon ti ti-list ti-xs me-1" title="Switch to List View"></span>');
+                } else {
+                    $button.html('<span class="tf-icon ti ti-layout-2 ti-xs me-1" title="Switch to Grid View"></span>');
+                }
+            }
         });
     </script>
 @endsection
