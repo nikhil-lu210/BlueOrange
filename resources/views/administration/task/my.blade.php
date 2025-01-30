@@ -290,16 +290,21 @@
                                 @empty 
                                     <h4 class="text-center text-muted mt-3">{{ __('No Tasks Available') }}</h4>
                                 @endforelse
+
+                                {{-- {{ $tasks->links() }} --}}
                             </div>
                         </div>
                     </div>
+
+                    {{-- Pagination --}}
+                    {!! pagination($tasks, 'center', 'primary') !!}
+                    {{-- Pagination Ends --}}
                 </div>
             </div>
         </div>        
     </div>
 </div>
 <!-- End row -->
-
 @endsection
 
 

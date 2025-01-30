@@ -101,13 +101,17 @@ class TaskController extends Controller
             $query->where('status', $request->status);
         }
 
-        $tasks = $query->get();
+        // Temporarily use get() instead of paginate for debugging
+        $allTasks = $query->get();
 
-        // Count total tasks
-        $totalTasks = $tasks->count();
+        // Count tasks by status for all tasks (no pagination)
+        $statusCounts = $allTasks->groupBy('status')->map->count();
 
-        // Count tasks by status
-        $statusCounts = $tasks->groupBy('status')->map->count();
+        // Get the paginated tasks
+        $tasks = $query->paginate(20);
+
+        // Calculate total task count from pagination
+        $totalTasks = $tasks->total();
 
         // Calculate percentages
         $statusPercentages = [
