@@ -182,7 +182,7 @@
                                     @else 
                                         <span class="fw-medium d-block">{{ auth()->user()->name }}</span>
                                     @endif
-                                    <small class="text-muted">{{ auth()->user()->roles[0]->name }}</small>
+                                    <small class="text-muted">{{ auth()->user()->role->name }}</small>
                                 </div>
                             </div>
                         </a>

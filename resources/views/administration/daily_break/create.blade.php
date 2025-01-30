@@ -14,13 +14,22 @@
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
-    /* Custom CSS Here */
-    * {
-      user-select: none; /* Standard syntax */
-      -webkit-user-select: none; /* Chrome, Safari */
-      -moz-user-select: none; /* Firefox */
-      -ms-user-select: none; /* IE10+ */
-    }
+        /* Custom CSS Here */
+        * {
+        user-select: none; /* Standard syntax */
+        -webkit-user-select: none; /* Chrome, Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE10+ */
+        }
+        
+        .custom-option-content {
+            position: relative;
+        }
+        .custom-option-content .form-check-input {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
     </style>
 @endsection
 
@@ -111,33 +120,39 @@
                     </div>
                     <div class="card-body">
                         <input type="hidden" name="userid" value="{{ auth()->user()->userid }}" required>
-                        <div class="row">
-                            <div class="col-md mb-md-0 mb-2">
-                                <div class="form-check form-check-primary bg-label-primary custom-option custom-option-basic">
-                                    <label class="form-check-label custom-option-content" for="shortBreak">
-                                        <input name="break_type" value="Short" class="form-check-input" type="radio" id="shortBreak" required/>
-                                        <span class="custom-option-header">
-                                            <span class="h6 mb-0 text-uppercase text-bold">Short Break</span>
-                                            <span class="text-bold">15-20 Min</span>
-                                        </span>
-                                        <span class="custom-option-body">
-                                            <small class="text-muted">You Can Take Maximum 2 Short Break.</small>
-                                        </span>
-                                    </label>
+                        <div class="mb-3 col-md-12">
+                            <div class="row">
+                                <div class="col-md mb-md-0 mb-2">
+                                    <div class="form-check custom-option custom-option-icon form-check-primary bg-label-primary">
+                                        <label class="form-check-label custom-option-content" for="shortBreak">
+                                            <span class="custom-option-body">
+                                                <img src="{{ asset('assets/img/illustrations/page-misc-launching-soon.png') }}" width="92" class="mb-2">
+                                                <span class="h6 mb-0 text-uppercase text-bold custom-option-title">Short Break</span>
+                                                <small>
+                                                    <span>You Can Take Maximum <b>Two Short Breaks</b></span>
+                                                    <br>
+                                                    <span>For <b>15-20 Min</b></span>
+                                                </small>
+                                            </span>
+                                            <input name="break_type" value="Short" class="form-check-input" type="radio" id="shortBreak" required />
+                                        </label>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md">
-                                <div class="form-check form-check-warning bg-label-warning custom-option custom-option-basic">
-                                    <label class="form-check-label custom-option-content" for="longBreak">
-                                        <input name="break_type" value="Long" class="form-check-input" type="radio" id="longBreak" required/>
-                                        <span class="custom-option-header">
-                                            <span class="h6 mb-0 text-uppercase text-bold">Long Break</span>
-                                            <span class="text-bold">30-45 Min</span>
-                                        </span>
-                                        <span class="custom-option-body">
-                                            <small class="text-muted">You Can Take Maximum 1 Long Break.</small>
-                                        </span>
-                                    </label>
+                                <div class="col-md mb-md-0 mb-2">
+                                    <div class="form-check custom-option custom-option-icon form-check-warning bg-label-warning">
+                                        <label class="form-check-label custom-option-content" for="longBreak">
+                                            <span class="custom-option-body">
+                                                <img src="{{ asset('assets/img/illustrations/page-misc-you-are-not-authorized.png') }}" width="60" class="mb-2">
+                                                <span class="h6 mb-0 text-uppercase text-bold custom-option-title">Long Break</span>
+                                                <small>
+                                                    <span>You Can Take Maximum <b>One Long Break</b></span>
+                                                    <br>
+                                                    <span>For <b>30-45 Min</b></span>
+                                                </small>
+                                            </span>
+                                            <input name="break_type" value="Long" class="form-check-input" type="radio" id="longBreak" required />
+                                        </label>
+                                    </div>
                                 </div>
                             </div>
                         </div>

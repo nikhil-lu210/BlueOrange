@@ -28,7 +28,7 @@ class RestrictIpRange
         // dd($allowedIpRanges, $allowedIpRanges === []);
 
         // Get the user role (assuming user is authenticated)
-        $userRole = auth()->check() ? auth()->user()->roles[0]->name : null;
+        $userRole = auth()->check() ? auth()->user()->role->name : null;
 
         // Allow local IPs or users with 'Developer' role
         if (in_array($userIp, ['127.0.0.1', '::1']) || $userRole === 'Developer') {

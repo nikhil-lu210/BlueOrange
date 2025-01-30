@@ -142,7 +142,7 @@ if (!function_exists('show_user_name_and_avatar')) {
 
         $roleHtml = '';
         if ($role) {
-            $roleName = $user->roles[0]->name ?? '';
+            $roleName = $user->role->name ?? '';
             $roleHtml = '<small class="text-truncate text-muted">' . htmlspecialchars($roleName) . '</small>';
         }
 

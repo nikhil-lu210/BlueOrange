@@ -84,6 +84,10 @@
         
                 @can ('Holiday Create') 
                     <div class="card-header-elements ms-auto">
+                        <a href="javascript:void(0);" class="btn btn-sm btn-dark" data-bs-toggle="modal" data-bs-target="#importHolidayModal">
+                            <span class="tf-icon ti ti-upload ti-xs me-1"></span>
+                            Import Holidays
+                        </a>
                         <a href="javascript:void(0);" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#assignNewHolidayModal">
                             <span class="tf-icon ti ti-plus ti-xs me-1"></span>
                             Assign Holiday
@@ -153,6 +157,7 @@
 
 {{-- Page Modal --}}
 @can ('Holiday Create')
+    @include('administration.settings.system.holiday.modals.holiday_import')
     @include('administration.settings.system.holiday.modals.holiday_create')
     @include('administration.settings.system.holiday.modals.holiday_edit')
 @endcan

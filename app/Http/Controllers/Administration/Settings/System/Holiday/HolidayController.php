@@ -6,10 +6,11 @@ use Exception;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Holiday\Holiday;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Requests\Administration\Settings\System\Holiday\HolidayStoreRequest;
 use App\Http\Requests\Administration\Settings\System\Holiday\HolidayUpdateRequest;
+use App\Imports\Administration\Settings\HolidayImport;
 
 class HolidayController extends Controller
 {
@@ -26,17 +27,9 @@ class HolidayController extends Controller
             $query->whereYear('date', $monthYear->year)->whereMonth('date', $monthYear->month);
         }
 
-        $holidays = $query->get();
+        $holidays = $query->orderByDesc('date')->get();
 
         return view('administration.settings.system.holiday.index', compact(['holidays']));
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
     }
 
     /**
@@ -58,21 +51,6 @@ class HolidayController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Holiday $holiday)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Holiday $holiday)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
@@ -110,4 +88,27 @@ class HolidayController extends Controller
             return redirect()->back();
         }
     }
+
+
+    /**
+     * import a newly created resource in storage.
+     */
+    public function import(Request $request)
+    {
+        // dd($request->all());
+        $request->validate([
+            'import_file' => 'required|file|mimetypes:text/plain,text/csv',
+        ]);
+
+        try {
+            // Process the file
+            Excel::import(new HolidayImport(), $request->file('import_file'));
+
+            toast('Holidays imported successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return back()->withError('An error occurred during import: ' . $e->getMessage())->withInput();
+        }
+    }
+    
 }

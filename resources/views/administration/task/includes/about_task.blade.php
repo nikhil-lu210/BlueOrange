@@ -10,7 +10,7 @@
             <li class="d-flex align-items-center mb-3">
                 <i class="ti ti-user-edit text-heading"></i>
                 <span class="fw-medium mx-2 text-heading">Creator:</span> 
-                <span>{{ $task->creator->name }}</span>
+                <span class="text-dark text-bold">{{ $task->creator->name }}</span>
             </li>
             <li class="d-flex align-items-center mb-3">
                 <i class="ti ti-clock-up text-heading"></i>
@@ -34,26 +34,26 @@
             <li class="d-flex align-items-center mb-3">
                 <i class="ti ti-check text-heading"></i>
                 <span class="fw-medium mx-2 text-heading">Status:</span> 
-                <span>{!! show_status($task->status) !!}</span>
+                <span class="badge bg-{{ getColor($task->status) }}">{{ $task->status }}</span>
             </li>
             <li class="d-flex align-items-center mb-3">
                 <i class="ti ti-checks text-heading"></i>
                 <span class="fw-medium mx-2 text-heading">Priority:</span> 
-                <span class="text-bold">{{ $task->priority }}</span>
+                <span class="badge bg-{{ getColor($task->priority) }}">{{ $task->priority }}</span>
             </li>
             @isset ($task->chatting) 
                 <li class="d-flex align-items-center mb-3">
                     <i class="ti ti-message text-heading"></i>
                     <span class="fw-medium mx-2 text-heading">Chatting:</span> 
-                        @if ($task->chatting->sender_id == auth()->user()->id)
-                            <a href="{{ route('administration.chatting.show', ['user' => $task->chatting->receiver->id, 'userid' => $task->chatting->receiver->userid]) }}" target="_blank">
-                                <span class="text-bold">{{ $task->chatting->receiver->name }}</span>
-                            </a>
-                        @else
-                            <a href="{{ route('administration.chatting.show', ['user' => $task->chatting->sender->id, 'userid' => $task->chatting->sender->userid]) }}" target="_blank">
-                                <span class="text-bold">{{ $task->chatting->sender->name }}</span>
-                            </a>
-                        @endif
+                    @if ($task->chatting->sender_id == auth()->user()->id)
+                        <a href="{{ route('administration.chatting.show', ['user' => $task->chatting->receiver->id, 'userid' => $task->chatting->receiver->userid]) }}" target="_blank">
+                            <span class="text-bold">{{ $task->chatting->receiver->name }}</span>
+                        </a>
+                    @else
+                        <a href="{{ route('administration.chatting.show', ['user' => $task->chatting->sender->id, 'userid' => $task->chatting->sender->userid]) }}" target="_blank">
+                            <span class="text-bold">{{ $task->chatting->sender->name }}</span>
+                        </a>
+                    @endif
                 </li>
             @endisset
         </ul>

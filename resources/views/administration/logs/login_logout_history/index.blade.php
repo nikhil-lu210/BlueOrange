@@ -54,7 +54,7 @@
                                 <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>{{ __('Select Employee') }}</option>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}" {{ $user->id == request()->user_id ? 'selected' : '' }}>
-                                        {{ $user->name }}
+                                        {{ $user->name }} ({{ $user->employee->alias_name }})
                                     </option>
                                 @endforeach
                             </select>

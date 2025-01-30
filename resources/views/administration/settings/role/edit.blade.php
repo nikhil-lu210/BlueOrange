@@ -87,11 +87,22 @@
                                     @foreach ($modules as $key => $module) 
                                         <tr>
                                             <td class="text-nowrap fw-medium">{{ $module->name }}</td>
+                                            <td>
+                                                <!-- "Everything" Checkbox for the module -->
+                                                <div class="d-flex">
+                                                    <div class="form-check me-3 me-lg-5">
+                                                        <input class="form-check-input everything-checkbox" type="checkbox" id="select_everything{{ $module->id }}" data-module-id="{{ $module->id }}" />
+                                                        <label class="form-check-label" for="select_everything{{ $module->id }}">
+                                                            Select Everything
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </td>
                                             @foreach ($module->permissions as $sl => $permission) 
                                                 <td>
                                                     <div class="d-flex">
                                                         <div class="form-check me-3 me-lg-5">
-                                                            <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" value="{{ $permission->id }}" {{ $role->hasPermissionTo($permission) ? 'checked' : '' }} />
+                                                            <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" value="{{ $permission->id }}" data-module-id="{{ $module->id }}" @checked($role->hasPermissionTo($permission))/>
                                                             <label class="form-check-label" for="permission{{ $permission->id }}">
                                                                 {{ $permission->name }}
                                                             </label>
@@ -128,23 +139,53 @@
     {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function () {
-            // When the "Select All Permissions" checkbox is clicked
+            // "Select All Permissions" checkbox behavior
             $("#selectAllPermissions").click(function () {
-                // Get the state of the "Select All Permissions" checkbox
                 var selectAllChecked = $(this).prop("checked");
-    
-                // Set the state of all other permission checkboxes to match
                 $("input[name='permissions[]']").prop("checked", selectAllChecked);
+                $(".everything-checkbox").prop("checked", selectAllChecked);
             });
     
-            // When any permission checkbox is clicked
+            // Individual permission checkbox click behavior
             $("input[name='permissions[]']").click(function () {
-                // Check if any permission checkbox is unchecked
-                var anyUnchecked = $("input[name='permissions[]']:not(:checked)").length > 0;
+                var row = $(this).closest("tr");
+                var moduleId = $(this).data("module-id");
     
-                // Update the state of "Select All Permissions" accordingly
+                var everythingCheckbox = row.find(".everything-checkbox[data-module-id='" + moduleId + "']");
+                var permissionsCheckboxes = row.find("input[name='permissions[]'][data-module-id='" + moduleId + "']");
+    
+                // Handle the "Everything" checkbox based on individual permissions
+                if ($(this).prop("checked")) {
+                    var allChecked = permissionsCheckboxes.filter(":checked").length === permissionsCheckboxes.length;
+                    if (allChecked) {
+                        everythingCheckbox.prop("checked", true);
+                    }
+                } else {
+                    everythingCheckbox.prop("checked", false);
+                }
+    
+                // Check the "Select All Permissions" checkbox if all individual permissions are selected
+                var anyUnchecked = $("input[name='permissions[]']:not(:checked)").length > 0;
+                $("#selectAllPermissions").prop("checked", !anyUnchecked);
+            });
+    
+            // "Everything" checkbox click behavior
+            $(".everything-checkbox").click(function () {
+                var moduleId = $(this).data("module-id");
+                var row = $(this).closest("tr");
+                var permissionsCheckboxes = row.find("input[name='permissions[]'][data-module-id='" + moduleId + "']");
+    
+                // If "Everything" is checked, select all individual permissions for that module
+                if ($(this).prop("checked")) {
+                    permissionsCheckboxes.prop("checked", true);
+                } else {
+                    permissionsCheckboxes.prop("checked", false);
+                }
+    
+                // Check the "Select All Permissions" checkbox if all permissions are selected
+                var anyUnchecked = $("input[name='permissions[]']:not(:checked)").length > 0;
                 $("#selectAllPermissions").prop("checked", !anyUnchecked);
             });
         });
-    </script>    
+    </script>
 @endsection

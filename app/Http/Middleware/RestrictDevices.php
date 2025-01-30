@@ -31,7 +31,7 @@ class RestrictDevices
         $mobileRestriction = Settings::where('key', 'mobile_restriction')->value('value');
         $computerRestriction = Settings::where('key', 'computer_restriction')->value('value');
 
-        $userRole = auth()->check() ? auth()->user()->roles[0]->name : null;
+        $userRole = auth()->check() ? auth()->user()->role->name : null;
 
         // Detect if the device is a mobile
         if ($mobileRestriction && $this->isTrulyMobile($agent) && $userRole !== 'Developer') {

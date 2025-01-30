@@ -80,11 +80,12 @@
                             <a href="{{ route('administration.attendance.my') }}" class="menu-link">{{ __('My Attendances') }}</a>
                         </li>
                     @endcan
-                    @can('Attendance Create')
+                    @can ('Attendance Everything') 
                         <li class="menu-item {{ request()->is('attendance/create*') ? 'active' : '' }}">
                             <a href="{{ route('administration.attendance.create') }}" class="menu-link">{{ __('Assign Attendance') }}</a>
                         </li>
-                        
+                    @endcan
+                    @can('Attendance Create')
                         @hasanyrole(['Developer'])
                             <li class="menu-item {{ request()->is('attendance/qrcode*') ? 'active' : '' }}">
                                 <a href="{{ route('administration.attendance.qrcode.scanner') }}" class="menu-link">{{ __('QR Code Attendance') }}</a>
@@ -147,6 +148,10 @@
                     @can('Daily Break Create')
                         <li class="menu-item {{ request()->is('daily_break/start_stop*') ? 'active' : '' }}">
                             <a href="{{ route('administration.daily_break.create') }}" class="menu-link">{{ __('Start/Stop Break') }}</a>
+                        </li>
+                        
+                        <li class="menu-item {{ request()->is('daily_break/barcode*') ? 'active' : '' }}">
+                            <a href="{{ route('administration.daily_break.barcode.scanner') }}" class="menu-link">{{ __('Bar Code Break') }}</a>
                         </li>
                     @endcan
                 </ul>

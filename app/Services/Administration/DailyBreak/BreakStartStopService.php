@@ -18,8 +18,7 @@ class BreakStartStopService
 
         // Check attendance
         $attendance = Attendance::where('user_id', $user->id)
-            ->where('clock_in_date', $currentDate)
-            ->whereType('Regular')
+            ->whereType('Regular') // ->where('clock_in_date', $currentDate)
             ->whereNull('clock_out')
             ->first();
 

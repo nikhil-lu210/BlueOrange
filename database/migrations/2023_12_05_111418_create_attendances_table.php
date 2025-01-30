@@ -45,6 +45,8 @@ return new class extends Migration
             $table->decimal('latitude', 10, 7)->nullable();
             $table->decimal('longitude', 10, 7)->nullable();
 
+            $table->unique(['user_id', 'employee_shift_id', 'clock_in_date', 'clock_in', 'type'], 'user_shift_date_clockin_type_unique');
+
             $table->timestamps();
             $table->softDeletes();
         });
@@ -58,6 +60,7 @@ return new class extends Migration
         Schema::dropIfExists('attendances');
         Schema::table("attendances", function ($table) {
             $table->dropSoftDeletes();
+            $table->dropUnique('user_shift_date_clockin_type_unique');
         });
     }
 };

@@ -47,7 +47,7 @@ class NewUserRegistrationNotification extends Notification
             'url'   => $url,
             'icon'   => 'user',
             'title'   => 'New User Assigned',
-            'message'     => 'A New '. $this->user->roles[0]->name . ' Has Been Assigned By '. $this->authUser->name,
+            'message'     => 'A New '. $this->user->role->name . ' Has Been Assigned By '. $this->authUser->name,
         ];
     }
 }

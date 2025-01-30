@@ -53,8 +53,34 @@
 
 <!-- Start row -->
 <div class="row justify-content-center">
+    @php
+        function getColor($status) {
+            switch ($status) {
+                case 'Active':
+                case 'Low':
+                    return 'info';
+                
+                case 'Running':
+                case 'Medium':
+                    return 'primary';
+
+                case 'Completed':
+                    return 'success';
+
+                case 'Average':
+                    return 'warning';
+
+                case 'Cancelled':
+                case 'High':
+                    return 'danger';
+
+                default:
+                    return 'dark';
+            }
+        }
+    @endphp
     <div class="col-md-12">
-        <div class="card mb-4">
+        <div class="card border-bottom-{{ getColor($task->priority) }} mb-4">
             <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
                 <div class="flex-grow-1 mt-4">
                     <div class="d-flex align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
