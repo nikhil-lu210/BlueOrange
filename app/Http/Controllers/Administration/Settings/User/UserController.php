@@ -35,6 +35,10 @@ class UserController extends Controller
     public function allBarcodes(Request $request)
     {
         $users = User::with(['media'])->whereStatus('Active')->get();
+
+        // foreach ($users as $key => $user) {
+        //     $this->generateBarCode($user);
+        // }
         
         return view('administration.settings.user.barcode', compact(['users']));
     }

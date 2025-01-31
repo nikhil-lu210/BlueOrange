@@ -5,6 +5,7 @@ namespace App\Services\Administration\User;
 use Exception;
 use ZipArchive;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use Endroid\QrCode\Builder\Builder;
@@ -12,6 +13,7 @@ use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use App\Models\User\Employee\Employee;
 use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\EmployeeShift\EmployeeShift;
@@ -70,11 +72,20 @@ class UserService
                 'password' => Hash::make($data['password']),
             ]);
 
-            $this->attachAvatar($user, $data['avatar'] ?? null);
+            $this->createEmployee($user->id, $data);
+
+            if (isset($data['avatar']) && $data['avatar'] instanceof UploadedFile) {
+                $this->attachAvatar($user, $data['avatar']);
+            }
+
             $this->createEmployeeShift($user->id, $data);
             $user->assignRole($data['role_id']);
-            $this->generateQrCode($user);
+
+            // $this->generateQrCode($user); // QR Code Disabled
             $this->generateBarCode($user);
+
+            // Remove avatar before passing data to mail queue
+            unset($data['avatar']);
 
             // Send new user registration notification
             $this->sendNewUserRegistrationNotification($user);
@@ -104,14 +115,14 @@ class UserService
     private function sendUserCredentialMail($email, $data)
     {
         try {
-            // Ensure $data is passed as an object
+            unset($data['avatar']); // Remove UploadedFile before queuing
             $dataObject = (object) $data;
-
             Mail::to($email)->queue(new UserCredentialsMail($dataObject));
         } catch (Exception $e) {
             return back()->withError($e->getMessage())->withInput();
         }
     }
+
 
 
     public function getUser(User $user)
@@ -168,15 +179,35 @@ class UserService
         });
     }
 
+
+    private function createEmployee($userId, $data)
+    {
+        // dd($userId, $data);
+        Employee::create([
+            'user_id' => $userId,
+            'joining_date' => $data['joining_date'],
+            'alias_name' => $data['alias_name'],
+            'father_name' => $data['father_name'],
+            'mother_name' => $data['mother_name'],
+            'birth_date' => $data['birth_date'],
+            'personal_email' => $data['personal_email'],
+            'official_email' => $data['official_email'],
+            'personal_contact_no' => $data['personal_contact_no'],
+            'official_contact_no' => $data['official_contact_no'],
+        ]);
+    }
+
+    
     private function attachAvatar(User $user, $avatar = null)
     {
-        if ($avatar) {
+        if ($avatar instanceof UploadedFile) {
             if ($user->hasMedia('avatar')) {
                 $user->clearMediaCollection('avatar');
             }
             $user->addMedia($avatar)->toMediaCollection('avatar');
         }
     }
+
 
     private function createEmployeeShift($userId, $data)
     {
