@@ -115,14 +115,14 @@ class UserService
     private function sendUserCredentialMail($email, $data)
     {
         try {
-            // Ensure $data is passed as an object
+            unset($data['avatar']); // Remove UploadedFile before queuing
             $dataObject = (object) $data;
-
             Mail::to($email)->queue(new UserCredentialsMail($dataObject));
         } catch (Exception $e) {
             return back()->withError($e->getMessage())->withInput();
         }
     }
+
 
 
     public function getUser(User $user)
@@ -197,15 +197,17 @@ class UserService
         ]);
     }
 
+    
     private function attachAvatar(User $user, $avatar = null)
     {
-        if ($avatar) {
+        if ($avatar instanceof UploadedFile) {
             if ($user->hasMedia('avatar')) {
                 $user->clearMediaCollection('avatar');
             }
             $user->addMedia($avatar)->toMediaCollection('avatar');
         }
     }
+
 
     private function createEmployeeShift($userId, $data)
     {

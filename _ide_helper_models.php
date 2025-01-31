@@ -841,6 +841,27 @@ namespace App\Models\Salary{
 	class Salary extends \Eloquent {}
 }
 
+namespace App\Models\Settings{
+/**
+ * App\Models\Settings\Settings
+ *
+ * @property int $id
+ * @property string $key
+ * @property mixed $value
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|Settings newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Settings newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Settings query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Settings whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Settings whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Settings whereKey($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Settings whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Settings whereValue($value)
+ */
+	class Settings extends \Eloquent {}
+}
+
 namespace App\Models\Shortcut{
 /**
  * App\Models\Shortcut\Shortcut
@@ -1080,6 +1101,7 @@ namespace App\Models{
  * @property-read \App\Models\LeaveAllowed|null $allowed_leave
  * @property-read \App\Models\Salary|null $current_salary
  * @property-read \App\Models\EmployeeShift|null $current_shift
+ * @property-read \Spatie\Permission\Models\Role|null $role
  * @property-read \App\Models\Collection $user_interactions
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $interacted_users
  * @property-read int|null $interacted_users_count
