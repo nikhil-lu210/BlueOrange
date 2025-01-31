@@ -90,7 +90,10 @@ trait UserAccessors
         // Fetch the users who have interacted with this user
         $interactingUsers = $this->interacting_users()->get();
 
-        // Merge both collections, remove duplicates, and return
-        return $interactedUsers->merge($interactingUsers)->unique('id');
+        // Merge both collections
+        $users = $interactedUsers->merge($interactingUsers)->unique('id');
+
+        // Add the current user
+        return $users->push($this)->unique('id');
     }
 }
