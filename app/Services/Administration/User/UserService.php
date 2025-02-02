@@ -141,16 +141,47 @@ class UserService
         return User::with(['roles', 'media'])->findOrFail($user->id);
     }
 
+    
     public function updateUser(User $user, array $data)
     {
         return DB::transaction(function () use ($user, $data) {
+            // Merge first_name and last_name for users table
             $data['name'] = $data['first_name'] . ' ' . $data['last_name'];
-            
-            $user->update($data);
+
+            // Update only the users table
+            $user->update([
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'name' => $data['name'],
+                'email' => $data['email'],
+            ]);
+
+            // Ensure user has an associated employee record
+            $employee = $user->employee;
+
+            if ($employee) {
+                // Update only the employees table
+                $employee->update([
+                    'joining_date' => $data['joining_date'],
+                    'alias_name' => $data['alias_name'],
+                    'father_name' => $data['father_name'],
+                    'mother_name' => $data['mother_name'],
+                    'birth_date' => $data['birth_date'],
+                    'personal_email' => $data['personal_email'],
+                    'official_email' => $data['official_email'],
+                    'personal_contact_no' => $data['personal_contact_no'],
+                    'official_contact_no' => $data['official_contact_no'],
+                ]);
+            }
+
+            // Handle avatar update
             $this->attachAvatar($user, $data['avatar'] ?? null);
+            
+            // Sync roles
             $user->syncRoles([$data['role_id']]);
         });
     }
+
 
     public function updateShift(EmployeeShift $shift, User $user, array $data) {
         return DB::transaction(function() use ($data, $shift, $user) {
