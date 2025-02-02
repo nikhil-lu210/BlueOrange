@@ -8,6 +8,7 @@
 
 @section('css_links')
     {{--  External CSS  --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
     {{-- <!-- Vendors CSS --> --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
@@ -82,9 +83,9 @@
                                     </dt>
                                     <dd class="col-sm-8">
                                         @if ($attendance->type == 'Regular') 
-                                            <span class="badge bg-primary">{{ __('Regular Break') }}</span>
+                                            <span class="badge bg-primary">{{ __('Regular Attendance') }}</span>
                                         @else 
-                                            <span class="badge bg-warning">{{ __('Overtime Break') }}</span>
+                                            <span class="badge bg-warning">{{ __('Overtime Attendance') }}</span>
                                         @endif
                                     </dd>
                                 </dl>
@@ -353,6 +354,17 @@
                 </div>
                 <div class="modal-body">
                     <div class="row">
+                        <div class="mb-3 col-md-12">
+                            <label for="type" class="form-label">Select Clockin Type <strong class="text-danger">*</strong></label>
+                            <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default" required>
+                                <option value="" selected disabled>Select Type</option>
+                                <option value="Regular" @selected($attendance->type == 'Regular' ?? old('type'))>Regular</option>
+                                <option value="Overtime" @selected($attendance->type == 'Overtime' ?? old('type'))>Overtime</option>
+                            </select>
+                            @error('type')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
                         <div class="mb-3 col-md-6">
                             <label for="clock_in" class="form-label">{{ __('Clock In') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="clock_in" name="clock_in" value="{{ $attendance->clock_in ?? old('clock_in') }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_in') is-invalid @enderror" required/>
@@ -390,6 +402,7 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
+    <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
     {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
@@ -405,6 +418,12 @@
     {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function () {
+            $('.bootstrap-select').each(function() {
+                if (!$(this).data('bs.select')) { // Check if it's already initialized
+                    $(this).selectpicker();
+                }
+            });
+            
             $('.date-time-picker').flatpickr({
                 enableTime: true,
                 dateFormat: 'Y-m-d H:i'
