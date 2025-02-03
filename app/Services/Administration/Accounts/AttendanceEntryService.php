@@ -32,17 +32,17 @@ class AttendanceEntryService
         if ($openAttendance) {
             throw new Exception('You have already clocked in and have not clocked out yet.');
         }
-
+        
         // Check id the current date an weekend
         $isWeekend = Weekend::where('day', '=', Carbon::parse($currentDate)->format('l'))->where('is_active', true)->exists();
-        if ($isWeekend) {
-            throw new Exception('You cannot Regular clocin on Weekend. Please clockin as Overtime.');
+        if ($isWeekend && $type === 'Regular') {
+            return redirect()->back()->withInput()->with('error', 'You cannot Regular Clock-In on Weekend. Please clockin as Overtime.');
         }
 
         // Check if the current date is a holiday
         $isHoliday = Holiday::where('date', '=', $currentDate)->where('is_active', true)->exists();
-        if ($isHoliday) {
-            throw new Exception('You cannot Regular clocin on Holiday. Please clockin as Overtime.');
+        if ($isHoliday && $type === 'Regular') {
+            return redirect()->back()->withInput()->with('error', 'You cannot Regular Clock-In on Holiday. Please clockin as Overtime.');
         }
 
         // Check if the user has already Regular clocked in today
