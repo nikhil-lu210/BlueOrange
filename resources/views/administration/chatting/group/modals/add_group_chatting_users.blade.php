@@ -9,7 +9,7 @@
                     <p class="text-muted">Add New Users To This Chatting Group</p>
                 </div>
                 <!-- Add Users form -->
-                <form method="post" action="{{ route('administration.chatting.group.store.users', ['group' => $group]) }}" class="row g-3" autocomplete="off">
+                <form method="post" action="{{ route('administration.chatting.group.store.users', ['group' => $group, 'groupid' => $group->groupid]) }}" class="row g-3" autocomplete="off">
                     @csrf
                     <div class="mb-3 col-md-12">
                         <label for="users" class="form-label">Select Users <strong class="text-danger">*</strong></label>

@@ -28,9 +28,9 @@
                 <h4 class="mb-0 mx-2 text-primary text-bold">{{ $exception->getStatusCode() }} Error!</h4>
                 <h2 class="mb-1 mx-2">Oops! 😖 The requested URL was not found on this server.</h2>
                 @auth
-                    @hasexactroles(['Developer'])
+                    {{-- @hasexactroles(['Developer']) --}}
                         <p class="mb-4 mx-2">{{ $exception->getMessage() }}</p>
-                    @endhasexactroles
+                    {{-- @endhasexactroles --}}
                 @endauth
                 <a href="{{ url()->previous() }}" class="btn btn-primary mb-4">
                     <i class="ti ti-arrow-left" style="font-size: 20px; margin-top: -2px; padding-right: 4px;"></i>
