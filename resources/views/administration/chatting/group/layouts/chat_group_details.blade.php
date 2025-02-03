@@ -10,7 +10,7 @@
         <i class="ti ti-x ti-sm cursor-pointer close-sidebar d-block" data-bs-toggle="sidebar" data-overlay
             data-target="#app-chat-sidebar-right"></i>
     </div>
-    <div class="sidebar-body px-4 pb-4">
+    <div class="sidebar-body px-4 pb-4" style="overflow-y: scroll;">
         <div class="my-4">
             <div class="d-flex justify-content-between align-items-center">
                 <small class="text-muted text-uppercase">User List</small>
@@ -44,7 +44,7 @@
                                     @if ($group->creator_id != $user->id) 
                                         @if ($group->creator_id == auth()->user()->id) 
                                             @can ('Group Chatting Delete') 
-                                                <a href="{{ route('administration.chatting.group.remove.user', ['group' => $group, 'user' => $user]) }}" class="text-bold text-danger confirm-danger" title="Remove {{ $user->name }}?">
+                                                <a href="{{ route('administration.chatting.group.remove.user', ['group' => $group, 'groupid' => $group->groupid, 'user' => $user]) }}" class="text-bold text-danger confirm-danger" title="Remove {{ $user->name }}?">
                                                     <i class="ti ti-x"></i>
                                                 </a>
                                             @endcan

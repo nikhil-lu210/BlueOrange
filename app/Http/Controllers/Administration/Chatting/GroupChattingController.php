@@ -6,12 +6,10 @@ use Auth;
 use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
-use App\Models\Chatting\Chatting;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Models\Chatting\ChattingGroup;
-use App\Models\Chatting\GroupChatting;
 
 class GroupChattingController extends Controller
 {
@@ -103,8 +101,9 @@ class GroupChattingController extends Controller
     /**
      * Add Users for Grop Chatting
      */
-    public function addUsers(Request $request, ChattingGroup $group)
+    public function addUsers(Request $request, ChattingGroup $group, $groupid)
     {
+        // dd($request->all(), $group->toArray());
         $request->validate([
             'users' => ['required', 'array'],
             'users.*' => [
@@ -135,7 +134,7 @@ class GroupChattingController extends Controller
     /**
      * Remove user from Chatting Group
      */
-    public function removeUser(ChattingGroup $group, User $user)
+    public function removeUser(ChattingGroup $group, $groupid, User $user)
     {
         try {
             if ($user) {
