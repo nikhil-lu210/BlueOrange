@@ -66,7 +66,7 @@
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Joining Date">
                                     <i class="ti ti-calendar"></i> 
-                                    {{ show_date($user->created_at) }}
+                                    {{ show_date($user->employee->joining_date) }}
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Working Shift">
                                     <i class="ti ti-clock"></i>

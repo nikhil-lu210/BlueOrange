@@ -89,11 +89,11 @@
                                     <i class="ti ti-crown"></i> 
                                     {{ $user->role->name }}
                                 </li>
-                                <li class="list-inline-item d-flex gap-1">
+                                <li class="list-inline-item d-flex gap-1" title="Joining Date">
                                     <i class="ti ti-calendar"></i> 
-                                    {{ show_date($user->created_at) }}
+                                    {{ show_date($user->employee->joining_date) }}
                                 </li>
-                                <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Click to Update Shift">
+                                <li class="list-inline-item d-flex gap-1" title="Click to Update Shift">
                                     <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#updateShift" class="text-primary">
                                         <i class="ti ti-clock"></i>
                                         {{ show_time(optional($user->current_shift)->start_time) }}
