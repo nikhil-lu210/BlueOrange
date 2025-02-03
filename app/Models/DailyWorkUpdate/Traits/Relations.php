@@ -4,7 +4,6 @@ namespace App\Models\DailyWorkUpdate\Traits;
 
 use App\Models\User;
 use App\Models\FileMedia\FileMedia;
-use App\Models\EmployeeShift\EmployeeShift;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 
