@@ -130,7 +130,19 @@
                             @foreach ($users as $key => $user) 
                                 <tr>
                                     <th>#{{ serial($users, $key) }}</th>
-                                    <th><b class="text-primary">{{ $user->userid }}</b></th>
+                                    <th>
+                                        <b class="text-primary fs-5">{{ $user->userid }}</b>
+                                        <br>
+                                        <small>
+                                            <a href="{{ route('administration.settings.user.user_interaction.index', ['user' => $user]) }}" target="_blank" class="mb-1 text-capitalize text-bold text-dark" title="Team Leader">
+                                                @isset ($user->active_team_leader) 
+                                                    {{ $user->active_team_leader->employee->alias_name }}
+                                                @else
+                                                    {{ __('Not Assigned') }}
+                                                @endisset
+                                            </a>
+                                        </small>
+                                    </th>
                                     <td>
                                         {!! show_user_name_and_avatar($user) !!}
                                     </td>
