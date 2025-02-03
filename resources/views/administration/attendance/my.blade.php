@@ -26,6 +26,13 @@
     {{--  External CSS  --}}
     <style>
     /* Custom CSS Here */
+    td.not-allowed {
+        background: #dbdade;
+        color: white !important;
+        text-align: center;
+        text-transform: uppercase;
+        cursor: not-allowed;
+    }
     </style>
 @endsection
 
@@ -120,13 +127,13 @@
             <div class="card-body">
                 <div class="table-responsive-md table-responsive-sm w-100">
                     <table class="table data-table table-bordered">
-                        <thead>
+                        <thead class="bg-label-primary">
                             <tr>
                                 <th>Sl.</th>
                                 <th>Date</th>
                                 <th>Clocked IN</th>
                                 <th>Clock Out</th>
-                                <th>Breaks</th>
+                                <th class="text-center">Breaks</th>
                                 <th>Total</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -138,7 +145,7 @@
                                     <td>
                                         <span class="text-truncate">{{ show_date($attendance->clock_in_date) }}</span>
                                         <br>
-                                        <small class="text-bold text-{{ $attendance->type === 'Regular' ? 'success' : 'primary' }}">{{ $attendance->type }}</small>
+                                        <small class="text-bold badge bg-{{ $attendance->type === 'Regular' ? 'success' : 'warning' }}">{{ $attendance->type }}</small>
                                     </td>
                                     <td>
                                         <div class="d-grid">
@@ -149,7 +156,7 @@
                                                     $clockInColor = 'text-success';
                                                 }
                                             @endphp
-                                            <span class="{{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
+                                            <span class="text-truncate text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
                                             <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="Shift Start Time">{{ show_time($attendance->employee_shift->start_time) }}</small>
                                         </div>
                                     </td>
@@ -163,48 +170,59 @@
                                                         $clockOutColor = 'text-success';
                                                     }
                                                 @endphp
-                                                <span class="{{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
+                                                <span class="text-truncate text-bold {{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
                                             @else
                                                 <b class="text-success text-uppercase">Running</b>
                                             @endisset
                                             <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
                                         </div>
                                     </td>
-                                    <td>
-                                        <div class="d-grid">
-                                            @if ($attendance->type == 'Regular') 
-                                                <b class="text-warning" title="Total Break Time">
-                                                    {{ total_time($attendance->total_break_time) }}
+                                    <td class="text-center {{ $attendance->type == 'Overtime' ? 'not-allowed' : '' }}">
+                                        @if ($attendance->type == 'Regular') 
+                                            <div class="d-grid">
+                                                <b class="text-truncate">
+                                                    <span class="text-warning" title="Total Break Time">
+                                                        {{ total_time($attendance->total_break_time) }}
+                                                    </span>
+                                                    @isset ($attendance->total_over_break)
+                                                        <br>
+                                                        <small class="text-danger" title="Total Over Break">
+                                                            ({{ total_time($attendance->total_over_break) }})
+                                                        </small>
+                                                    @endisset
                                                 </b>
                                                 <small class="text-truncate text-muted">
                                                     Breaks Taken: {{ $attendance->total_breaks_taken }}
                                                 </small>
-                                            @else 
-                                                <b class="text-muted">No Break</b>
-                                            @endif
-                                        </div>
+                                            </div>
+                                        @else 
+                                            <b class="text-muted">No Break</b>
+                                        @endif
                                     </td>
                                     <td>
                                         <div class="d-grid">
-                                            @isset($attendance->total_time)
-                                                @php
-                                                    $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                                @endphp
-                                                <b>
-                                                    {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
+                                            @if ($attendance->type == 'Regular') 
+                                                @isset($attendance->total_adjusted_time)
+                                                    @php
+                                                        $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                                    @endphp
+                                                    <b title="Adjusted Total Time">
+                                                        {!! total_time_with_min_hour($attendance->total_adjusted_time, $totalWorkingHour) !!}
+                                                    </b>
+                                                @else
+                                                    <b class="text-success text-uppercase">Running</b>
+                                                @endisset
+                                                <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Total Working Time">{{ $attendance->total_time }}</small>
+                                            @else 
+                                                <b class="text-warning">
+                                                    {{ total_time($attendance->total_time) }}
                                                 </b>
-                                            @else
-                                                <b class="text-success text-uppercase">Running</b>
-                                            @endisset
-                                            @php
-                                                $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                            @endphp
-                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Shift's Total Working Time">{{ $totalTimeDifferent }}</small>
+                                            @endif
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                            <i class="text-primary ti ti-info-hexagon"></i>
+                                        <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                            <i class="ti ti-info-hexagon"></i>
                                         </a>
                                     </td>
                                 </tr>

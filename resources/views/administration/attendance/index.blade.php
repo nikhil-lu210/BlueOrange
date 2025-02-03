@@ -166,7 +166,7 @@
                                     <td>
                                         <span class="text-truncate">{{ show_date($attendance->clock_in_date) }}</span>
                                         <br>
-                                        <small class="text-bold text-{{ $attendance->type === 'Regular' ? 'success' : 'warning' }}">{{ $attendance->type }}</small>
+                                        <small class="text-bold badge bg-{{ $attendance->type === 'Regular' ? 'success' : 'warning' }}">{{ $attendance->type }}</small>
                                     </td>
                                     <td>
                                         {!! show_user_name_and_avatar($attendance->user, role: null) !!}

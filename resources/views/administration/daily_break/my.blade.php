@@ -133,27 +133,40 @@
                                 <tr>
                                     <th>#{{ serial($dailyBreaks, $key) }}</th>
                                     <td>
-                                        {{ show_date($break->date) }}
+                                        <b class="text-dark">{{ show_date($break->date) }}</b>
                                         <br>
-                                        <small class="text-bold text-{{ $break->type === 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</small>
+                                        <small class="text-bold badge bg-{{ $break->type === 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</small>
                                     </td>
                                     <td>
                                         <div class="d-grid">
-                                            <span class="text-bold text-success">{{ show_time($break->break_in_at) }}</span>
+                                            <span class="text-bold text-dark">{{ show_time($break->break_in_at) }}</span>
                                         </div>
                                     </td>
                                     <td>
                                         @isset ($break->break_out_at) 
-                                            <span class="text-bold text-success">{{ show_time($break->break_out_at) }}</span>
+                                            <span class="text-bold text-dark">{{ show_time($break->break_out_at) }}</span>
                                         @else
                                             <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
                                         @endisset
                                     </td>
                                     <td>
-                                        @isset ($break->total_time) 
-                                            <span class="text-bold text-warning">{{ total_time($break->total_time) }}</span>
+                                        @isset ($break->total_time)
+                                            @php
+                                                if (is_null($break->over_break)) {
+                                                    $color = 'success';
+                                                } else {
+                                                    $color = 'warning';
+                                                }
+                                            @endphp
+                                            <span class="text-bold text-{{ $color }}">{{ total_time($break->total_time) }}</span>
                                         @else
                                             <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
+                                        @endisset
+                                        @isset ($break->over_break)
+                                            <br>
+                                            <small class="text-danger text-bold" title="Total Over Break">
+                                                {{ total_time($break->over_break) }}
+                                            </small>
                                         @endisset
                                     </td>
                                     <td class="text-center">

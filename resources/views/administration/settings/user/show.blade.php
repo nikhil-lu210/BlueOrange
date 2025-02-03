@@ -38,6 +38,13 @@
     input[type="number"] {
         -moz-appearance: textfield;
     }
+    td.not-allowed {
+        background: #dbdade;
+        color: white !important;
+        text-align: center;
+        text-transform: uppercase;
+        cursor: not-allowed;
+    }
     </style>
 @endsection
 
