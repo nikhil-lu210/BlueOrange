@@ -30,19 +30,19 @@ class AttendanceEntryService
         $openAttendance = Attendance::where('user_id', $this->user->id)->whereNull('clock_out')->first();
 
         if ($openAttendance) {
-            throw new Exception('You have already clocked in and have not clocked out yet.');
+            return redirect()->back()->withInput()->with('error', 'You have already clocked in and have not clocked out yet.');
         }
 
         // Check id the current date an weekend
         $isWeekend = Weekend::where('day', '=', Carbon::parse($currentDate)->format('l'))->where('is_active', true)->exists();
-        if ($isWeekend) {
-            throw new Exception('You cannot Regular clocin on Weekend. Please clockin as Overtime.');
+        if ($isWeekend && $type === 'Regular') {
+            return redirect()->back()->withInput()->with('error', 'You cannot Regular Clock-In on Weekend. Please clockin as Overtime.');
         }
 
         // Check if the current date is a holiday
         $isHoliday = Holiday::where('date', '=', $currentDate)->where('is_active', true)->exists();
-        if ($isHoliday) {
-            throw new Exception('You cannot Regular clocin on Holiday. Please clockin as Overtime.');
+        if ($isHoliday && $type === 'Regular') {
+            return redirect()->back()->withInput()->with('error', 'You cannot Regular Clock-In on Holiday. Please clockin as Overtime.');
         }
 
         // Check if the user has already Regular clocked in today
@@ -52,7 +52,7 @@ class AttendanceEntryService
             ->first();
             
         if ($existingRegularAttendance && $existingRegularAttendance->type === 'Regular') {
-            throw new Exception('You have already clocked in as Regular today.');
+            return redirect()->back()->withInput()->with('error', 'You have already clocked in as Regular today.');
         }
 
         $location = Location::get(get_public_ip());
@@ -86,7 +86,7 @@ class AttendanceEntryService
             ->first();
 
         if (!$existingAttendance) {
-            throw new Exception('You have not clocked in today.');
+            return redirect()->back()->withInput()->with('error', 'You have not clocked in today.');
         }
 
         // Stop any active running breaks
