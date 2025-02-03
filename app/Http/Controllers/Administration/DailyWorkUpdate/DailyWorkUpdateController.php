@@ -68,11 +68,15 @@ class DailyWorkUpdateController extends Controller
     public function store(Request $request)
     {
         // dd($request->all(), auth()->user()->active_team_leader->id);
-        try {
-            DB::transaction(function () use ($request) {
-                $authUser = auth()->user();
-                $teamLeader = $authUser->active_team_leader;
+        $authUser = auth()->user();
+        $teamLeader = $authUser->active_team_leader;
+        
+        if (is_null($teamLeader)) {
+            return redirect()->back()->withInput()->withErrors('Team Leader is Missing. Please ask authority to assign your Team Leader');
+        }
 
+        try {
+            DB::transaction(function () use ($request, $authUser, $teamLeader) {
                 $workUpdate = DailyWorkUpdate::create([
                     'user_id' => $authUser->id,
                     'team_leader_id' => $teamLeader->id,
@@ -153,10 +157,15 @@ class DailyWorkUpdateController extends Controller
      */
     public function destroy(DailyWorkUpdate $dailyWorkUpdate)
     {
-        //
+        try {
+            $dailyWorkUpdate->forceDelete();
+
+            toast('Daily Work Updated Has Been Deleted Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
-
-
 
     
 

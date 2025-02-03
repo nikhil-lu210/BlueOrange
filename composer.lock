@@ -5109,16 +5109,16 @@
         },
         {
             "name": "spatie/browsershot",
-            "version": "5.0.3",
+            "version": "5.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/browsershot.git",
-                "reference": "aae8a337f73f63fc41c4c759fc397ce725312367"
+                "reference": "c0fa14c2386df2b4444e803ddc11e592b16d3a20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/browsershot/zipball/aae8a337f73f63fc41c4c759fc397ce725312367",
-                "reference": "aae8a337f73f63fc41c4c759fc397ce725312367",
+                "url": "https://api.github.com/repos/spatie/browsershot/zipball/c0fa14c2386df2b4444e803ddc11e592b16d3a20",
+                "reference": "c0fa14c2386df2b4444e803ddc11e592b16d3a20",
                 "shasum": ""
             },
             "require": {
@@ -5165,7 +5165,7 @@
                 "webpage"
             ],
             "support": {
-                "source": "https://github.com/spatie/browsershot/tree/5.0.3"
+                "source": "https://github.com/spatie/browsershot/tree/5.0.5"
             },
             "funding": [
                 {
@@ -5173,7 +5173,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-16T09:46:16+00:00"
+            "time": "2024-12-30T12:56:36+00:00"
         },
         {
             "name": "spatie/db-dumper",
