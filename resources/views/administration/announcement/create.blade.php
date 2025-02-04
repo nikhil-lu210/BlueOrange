@@ -69,6 +69,7 @@
                         <div class="mb-3 col-md-12">
                             <label for="recipients" class="form-label">Select Recipients</label>
                             <select name="recipients[]" id="recipients" class="select2 form-select @error('recipients') is-invalid @enderror" data-allow-clear="true" multiple autofocus>
+                                <option value="selectAllValues">Select All</option>
                                 @foreach ($roles as $role)
                                     <optgroup label="{{ $role->name }}">
                                         @foreach ($role->users as $user)
