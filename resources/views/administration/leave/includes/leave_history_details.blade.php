@@ -44,8 +44,10 @@
                     <span class="badge bg-success">{{ __('Approved') }}</span>
                 @elseif ($leaveHistory->status === 'Rejected') 
                     <span class="badge bg-danger">{{ __('Rejected') }}</span>
+                @elseif ($leaveHistory->status === 'Pending') 
+                    <span class="badge bg-primary">{{ __('Rejected') }}</span>
                 @else 
-                    <span class="badge bg-primary">{{ __('Pending') }}</span>
+                    <span class="badge bg-danger">{{ __('Canceled') }}</span>
                 @endif
 
                 @isset($leaveHistory->is_paid_leave)
@@ -81,7 +83,7 @@
                 </dd>
             </dl>
         @endisset
-        @if (!is_null($leaveHistory->reviewer_note) && $leaveHistory->status === 'Rejected') 
+        @if (!is_null($leaveHistory->reviewer_note) && ($leaveHistory->status === 'Rejected' || $leaveHistory->status === 'Canceled')) 
             <dl class="row mb-1">
                 <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                     <i class="ti ti-user-edit"></i>
