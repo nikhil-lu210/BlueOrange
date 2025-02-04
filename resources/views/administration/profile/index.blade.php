@@ -76,9 +76,11 @@
                                 </li>
                             </ul>
                         </div>
-                        <a href="{{ route('administration.my.profile.edit') }}" class="btn btn-dark btn-icon rounded-pill confirm-danger" data-bs-toggle="tooltip" title="Edit Profile">
-                            <i class="ti ti-pencil"></i>
-                        </a>
+                        @can ('User Update') 
+                            <a href="{{ route('administration.my.profile.edit') }}" class="btn btn-dark btn-icon rounded-pill confirm-danger" data-bs-toggle="tooltip" title="Edit Profile">
+                                <i class="ti ti-pencil"></i>
+                            </a>
+                        @endcan
                     </div>
                 </div>
             </div>
