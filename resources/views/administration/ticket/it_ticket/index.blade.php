@@ -93,7 +93,7 @@
                                         @endif
                                         @isset ($ticket->solver) 
                                             <br>
-                                            <small title="Solved By">
+                                            <small title="{{ $ticket->status }} By">
                                                 {!! show_user_name_and_avatar($ticket->solver, avatar: false, name: false, role: false) !!}
                                             </small>
                                         @endisset
@@ -104,7 +104,7 @@
                                                 <i class="text-white ti ti-trash"></i>
                                             </a>
                                         @endcan
-                                        @if ($ticket->status === 'Pending') 
+                                        @if ($ticket->status === 'Pending' && $ticket->creator_id == auth()->user()->id) 
                                             @can ('IT Ticket Update') 
                                                 <a href="{{ route('administration.ticket.it_ticket.edit', ['it_ticket' => $ticket]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit IT Ticket?">
                                                     <i class="text-white ti ti-pencil"></i>

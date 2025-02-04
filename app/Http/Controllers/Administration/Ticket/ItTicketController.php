@@ -4,10 +4,15 @@ namespace App\Http\Controllers\Administration\Ticket;
 
 use Exception;
 use Carbon\Carbon;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Ticket\ItTicket;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use App\Notifications\Administration\Tickets\ItTicket\ItTicketCreateNotification;
+use App\Notifications\Administration\Tickets\ItTicket\ItTicketRunningNotification;
+use App\Notifications\Administration\Tickets\ItTicket\ItTicketStatusUpdateNotification;
 
 class ItTicketController extends Controller
 {
@@ -32,7 +37,10 @@ class ItTicketController extends Controller
     public function my()
     {
         $itTickets = ItTicket::with(['creator', 'solver'])
-                            ->whereCreatorId(auth()->user()->id)
+                            ->where(function ($query) {
+                                $query->where('creator_id', auth()->user()->id)
+                                    ->orWhere('solved_by', auth()->user()->id);
+                            })
                             ->orderByDesc('created_at')
                             ->get();
 
@@ -58,12 +66,24 @@ class ItTicketController extends Controller
         ]);
         
         try {
-            $itTicket = ItTicket::create([
-                'creator_id' => auth()->user()->id,
-                'title' => $request->input('title'),
-                'description' => $request->input('description'),
-                'status' => 'Pending',
-            ]);
+            $itTicket = null;
+
+            DB::transaction(function() use ($request, &$itTicket) {
+                $itTicket = ItTicket::create([
+                    'creator_id' => auth()->user()->id,
+                    'title' => $request->input('title'),
+                    'description' => $request->input('description'),
+                    'status' => 'Pending',
+                ]);
+
+                $notifiableUsers = User::whereStatus('Active')->get();
+                    
+                foreach ($notifiableUsers as $key => $notifiableUser) {
+                    if ($notifiableUser->hasAnyPermission(['IT Ticket Everything', 'IT Ticket Update'])) {
+                        $notifiableUser->notify(new ItTicketCreateNotification($itTicket, auth()->user()));
+                    }
+                }
+            }, 3);
 
             toast('Ticket Created Successfully.', 'success');
             return redirect()->route('administration.ticket.it_ticket.show', ['it_ticket' => $itTicket]);
@@ -91,9 +111,13 @@ class ItTicketController extends Controller
     public function markAsRunning(ItTicket $itTicket)
     {
         try {
-            $itTicket->update([
-                'status' => 'Running',
-            ]);
+            DB::transaction(function() use ($itTicket) {
+                $itTicket->update([
+                    'status' => 'Running',
+                ]);
+
+                $itTicket->creator->notify(new ItTicketRunningNotification($itTicket, auth()->user()));
+            }, 3);
 
             toast('Ticket Mark As Running.', 'success');
             return redirect()->back();
@@ -115,12 +139,16 @@ class ItTicketController extends Controller
         ]);
 
         try {
-            $itTicket->update([
-                'solved_by' => auth()->user()->id,
-                'solved_at' => now(),
-                'status' => $request->status,
-                'solver_note' => $request->solver_note,
-            ]);
+            DB::transaction(function() use ($request, $itTicket) {
+                $itTicket->update([
+                    'solved_by' => auth()->user()->id,
+                    'solved_at' => now(),
+                    'status' => $request->status,
+                    'solver_note' => $request->solver_note,
+                ]);
+
+                $itTicket->creator->notify(new ItTicketStatusUpdateNotification($itTicket, auth()->user()));
+            }, 3);
 
             toast('Ticket Mark As '. $request->status, 'success');
             return redirect()->back();
