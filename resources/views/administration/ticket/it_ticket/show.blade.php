@@ -54,7 +54,7 @@
                 @canany(['IT Ticket Update', 'IT Ticket Delete'])
                     @if ($itTicket->status === 'Pending')
                         <div class="card-header-elements ms-auto">
-                            @if ($itTicket->status === 'Pending' && $ticket->creator_id == auth()->user()->id) 
+                            @if ($itTicket->status === 'Pending' && $itTicket->creator_id == auth()->user()->id) 
                                 <a href="{{ route('administration.ticket.it_ticket.edit', ['it_ticket' => $itTicket]) }}" class="btn btn-sm btn-info me-2 confirm-info" title="Edit & Update?">
                                     <span class="tf-icon ti ti-edit ti-xs"></span>
                                     <span class="me-1">Edit</span>
