@@ -28,7 +28,7 @@ return new class extends Migration
             $table->string('total_leave', 20)->comment('Store as hh:mm:ss format');
             $table->enum('type', ['Earned', 'Casual', 'Sick'])->default('Casual');
             $table->boolean('is_paid_leave')->nullable();
-            $table->enum('status', ['Pending', 'Approved', 'Rejected'])->default('Pending');
+            $table->enum('status', ['Pending', 'Approved', 'Rejected', 'Canceled'])->default('Pending');
             $table->longText('reason');
             
             $table->foreignId('reviewed_by')->nullable()->constrained('users');

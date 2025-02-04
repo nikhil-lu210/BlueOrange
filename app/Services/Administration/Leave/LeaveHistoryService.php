@@ -199,6 +199,85 @@ class LeaveHistoryService
         }
     }
 
+
+    /**
+     * Cancel an approved leave request and update the leave balance.
+     *
+     * @param Request $request
+     * @param LeaveHistory $leaveHistory
+     * @return void
+     * @throws Exception
+     */
+    public function cancel(Request $request, LeaveHistory $leaveHistory): void
+    {
+        if ($leaveHistory->status !== 'Approved') {
+            throw new Exception('Only approved leaves can be canceled.');
+        }
+
+        DB::transaction(function () use ($request, $leaveHistory) {
+            $user = $leaveHistory->user;
+            $forYear = Carbon::parse($leaveHistory->date)->year;
+
+            // Retrieve the leave available record
+            $leaveAvailable = LeaveAvailable::where('user_id', $user->id)
+                ->where('for_year', $forYear)
+                ->firstOrFail();
+
+            // Calculate the leave taken in seconds
+            $leaveTakenInSeconds = $leaveHistory->total_leave->total('seconds');
+
+            // Revert the leave balance
+            $this->revertLeaveBalance($leaveAvailable, $leaveHistory->type, $leaveTakenInSeconds);
+
+            // Save the updated leave available record
+            $leaveAvailable->save();
+
+            // Update leave history status
+            $leaveHistory->update([
+                'status' => 'Canceled',
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => Carbon::now(),
+                'reviewer_note' => $request->reviewer_note,
+            ]);
+        });
+    }
+
+    /**
+     * Revert the leave balance based on leave type and canceled leave.
+     *
+     * @param LeaveAvailable $leaveAvailable
+     * @param string $leaveType
+     * @param int $leaveTakenInSeconds
+     * @return void
+     * @throws Exception
+     */
+    private function revertLeaveBalance(LeaveAvailable $leaveAvailable, string $leaveType, int $leaveTakenInSeconds): void
+    {
+        switch ($leaveType) {
+            case 'Casual':
+                $leaveAvailable->casual_leave = $this->formatLeaveTime(
+                    $leaveAvailable->casual_leave->total('seconds') + $leaveTakenInSeconds
+                );
+                break;
+
+            case 'Earned':
+                $leaveAvailable->earned_leave = $this->formatLeaveTime(
+                    $leaveAvailable->earned_leave->total('seconds') + $leaveTakenInSeconds
+                );
+                break;
+
+            case 'Sick':
+                $leaveAvailable->sick_leave = $this->formatLeaveTime(
+                    $leaveAvailable->sick_leave->total('seconds') + $leaveTakenInSeconds
+                );
+                break;
+
+            default:
+                throw new Exception('Invalid leave type.');
+        }
+    }
+
+
     /**
      * Format leave time from seconds to HH:MM:SS.
      *

@@ -20,6 +20,7 @@ Route::prefix('leave')
 
                 Route::put('/approve/{leaveHistory}', 'approve')->name('approve')->can('Leave History Update');
                 Route::put('/reject/{leaveHistory}', 'reject')->name('reject')->can('Leave History Update');
+                Route::put('/cancel/{leaveHistory}', 'cancel')->name('cancel')->can('Leave History Update');
                 
                 Route::post('/store', 'store')->name('store')->can('Leave History Create');
 

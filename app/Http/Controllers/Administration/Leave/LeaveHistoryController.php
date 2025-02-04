@@ -133,9 +133,16 @@ class LeaveHistoryController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(LeaveHistory $leaveHistory)
+    public function cancel(Request $request, LeaveHistory $leaveHistory)
     {
-        //
+        $request->validate([
+            'reviewer_note' => ['required', 'string'],
+        ]);
+        // dd($leaveHistory->toArray(), $request->all());
+        $this->leaveHistoryService->cancel($request, $leaveHistory);
+        
+        toast('Leave request has been Canceled Successfully.', 'success');
+        return redirect()->back();
     }
 
 

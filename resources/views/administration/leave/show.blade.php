@@ -57,6 +57,14 @@
                             </button>
                         </div>
                     @endif
+                    @if ($leaveHistory->status === 'Approved') 
+                        <div class="card-header-elements ms-auto">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#cancelLeaveModal" class="btn btn-sm btn-danger">
+                                <span class="tf-icon ti ti-ban ti-xs me-1"></span>
+                                {{ __('Cancel Leave') }}
+                            </button>
+                        </div>
+                    @endif
                 @endcanany
             </div>
             <div class="card-body">
@@ -88,6 +96,11 @@
     @include('administration.leave.modals.approve')
     {{-- Reject Modal --}}
     @include('administration.leave.modals.reject')
+@endif
+
+@if ($leaveHistory->status === 'Approved')
+    {{-- Cancel Modal --}}
+    @include('administration.leave.modals.cancel')
 @endif
 
 @endsection
