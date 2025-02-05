@@ -14,6 +14,7 @@
                     <div class="mb-3 col-md-12">
                         <label for="users" class="form-label">Select Users <strong class="text-danger">*</strong></label>
                         <select name="users[]" id="users" class="select2 form-select @error('users') is-invalid @enderror" data-allow-clear="true" multiple required>
+                            <option value="selectAllValues">Select All</option>
                             @foreach ($users as $userData)
                                 <option value="{{ $userData->id }}" {{ in_array($userData->id, old('users', [])) ? 'selected' : '' }}>
                                     {{ $userData->employee->alias_name }} ({{ $userData->name }})
