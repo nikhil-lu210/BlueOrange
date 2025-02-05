@@ -93,6 +93,7 @@
                         <div class="mb-3 col-md-12">
                             <label for="viewers" class="form-label">Select Viewers</label>
                             <select name="viewers[]" id="viewers" class="select2 form-select @error('viewers') is-invalid @enderror" data-allow-clear="true" multiple autofocus>
+                                <option value="selectAllValues">Select All</option>
                                 @foreach ($roles as $role)
                                     <optgroup label="{{ $role->name }}">
                                         @foreach ($role->users as $user)
