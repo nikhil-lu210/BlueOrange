@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Administration\Notification;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 
 class NotificationController extends Controller
 {
@@ -72,5 +73,24 @@ class NotificationController extends Controller
 
         toast('All Notification Has Been Deleted.', 'success');
         return redirect()->back();
+    }
+
+
+    /**
+     * to fetch it from client side js
+     * public\assets\js\custom_js\notification\browser_notification.js
+     * 
+     * resources/views/layouts/administration/partials/scripts.blade.php 
+     */
+    public function getUnreadNotifications()
+    {
+        // Check if the unread notifications are already cached
+        $notifications = Cache::remember('unread_notifications_' . auth()->id(), 5, function () {
+            // If not cached, fetch the notifications from the database
+            return auth()->user()->unreadNotifications;
+        });
+
+        // Return the cached notifications as JSON
+        return response()->json($notifications);
     }
 }

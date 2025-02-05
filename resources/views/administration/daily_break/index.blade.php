@@ -191,6 +191,11 @@
                                         @endisset
                                     </td>
                                     <td class="text-center">
+                                        @can ('Daily Break Delete') 
+                                            <a href="{{ route('administration.daily_break.destroy', ['break' => $break]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Break?">
+                                                <i class="text-white ti ti-trash"></i>
+                                            </a>
+                                        @endcan
                                         <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="btn btn-sm btn-icon btn-primary item-edit" data-bs-toggle="tooltip" title="Show Details">
                                             <i class="ti ti-info-hexagon"></i>
                                         </a>
