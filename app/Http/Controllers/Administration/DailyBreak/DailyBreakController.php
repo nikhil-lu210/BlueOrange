@@ -177,6 +177,22 @@ class DailyBreakController extends Controller
     }
 
     /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(DailyBreak $break)
+    {
+        try {
+            $break->delete();
+            
+            toast('Daily Break deleted successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
+
+    /**
      * export daily_breaks.
      */
     public function export(Request $request, BreakExportService $breakExportService)
