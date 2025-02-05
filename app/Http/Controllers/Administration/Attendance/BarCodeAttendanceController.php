@@ -73,8 +73,8 @@ class BarCodeAttendanceController extends Controller
             ->whereType($type)
             ->first();
 
-        if ($existingAttendance) {
-            toast(User::find($userId)->name. ' has already been '.$type.' clocked in today.', 'warning');
+        if ($existingAttendance && $type === 'Regular') {
+            toast(User::find($userId)->name. ' has already been Regular clocked in today.', 'warning');
             return redirect()->back();
         }
 
