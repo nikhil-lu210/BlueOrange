@@ -16,4 +16,7 @@ Route::controller(NotificationController::class)->prefix('notification')->name('
 
     Route::get('/delete/{notification_id}', 'destroy')->name('destroy');
     Route::get('/destroy/all', 'destroyAll')->name('destroy.all');
+
+    Route::get('/get-unread-notifications', 'getUnreadNotifications')->name('get_unread');
+
 });
