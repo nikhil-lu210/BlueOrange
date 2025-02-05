@@ -111,18 +111,40 @@ class User extends Authenticatable implements HasMedia
             ->registerMediaConversions(function (Media $media) {
                 // Define media conversions for various use cases
 
-                // Thumbnail conversion (50x50 pixels)
+                // Thumbnail black and white conversion (50x50 pixels)
                 $this->addMediaConversion('thumb')
+                    ->greyscale()
+                    ->quality(100)
                     ->width(50)
                     ->height(50);
 
-                // Profile-sized image conversion (100x100 pixels)
+                // Thumbnail conversion (50x50 pixels)
+                $this->addMediaConversion('thumb_color')
+                    ->width(50)
+                    ->height(50);
+
+                // Profile-sized black & white image conversion (100x100 pixels)
                 $this->addMediaConversion('profile')
+                    ->greyscale()
+                    ->quality(100)
                     ->width(100)
                     ->height(100);
 
-                // Larger profile view conversion (500x500 pixels)
+                // Profile-sized image conversion (100x100 pixels)
+                $this->addMediaConversion('profile_color')
+                    ->width(100)
+                    ->height(100);
+
+                // Larger profile black_and_white view conversion (500x500 pixels)
                 $this->addMediaConversion('profile_view')
+                    ->greyscale()
+                    ->quality(100)
+                    ->width(500)
+                    ->height(500);
+
+                // Larger profile view conversion (500x500 pixels)
+                $this->addMediaConversion('profile_view_color')
+                    ->quality(100)
                     ->width(500)
                     ->height(500);
 
