@@ -130,7 +130,7 @@ class LeaveHistoryController extends Controller
             $leaveHistory->user->notify(new LeaveRequestUpdateNotification($leaveHistory, auth()->user()));
 
             // Send Mail to the Leave Applier
-            Mail::to($leaveHistory->user->employee->official_email)->send(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
+            Mail::to($leaveHistory->user->employee->official_email)->queue(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
 
             toast('Leave request rejected successfully.', 'success');
             return redirect()->back();

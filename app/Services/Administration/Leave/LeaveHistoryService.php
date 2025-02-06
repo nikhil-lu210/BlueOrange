@@ -110,7 +110,7 @@ class LeaveHistoryService
                 $user->active_team_leader->notify(new LeaveStoreNotification($leaveHistory, auth()->user()));
 
                 // Send Mail to the Team Leader
-                Mail::to($user->active_team_leader->employee->official_email)->queue(new NewLeaveRequestMail($leaveHistory, $user->active_team_leader));
+                Mail::to($user->active_team_leader->employee->official_email)->send(new NewLeaveRequestMail($leaveHistory, $user->active_team_leader));
             }
         }, 5);
     }
@@ -164,8 +164,8 @@ class LeaveHistoryService
                 // Send Notification to Leave Applier
                 $leaveHistory->user->notify(new LeaveRequestUpdateNotification($leaveHistory, auth()->user()));
 
-                // Send Mail to the Leave Applier
-                Mail::to($leaveHistory->user->employee->official_email)->send(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
+                // Send Mail to the Leave Applier by Queue
+                Mail::to($leaveHistory->user->employee->official_email)->queue(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
             });
         } catch (Exception $e) {
             throw new Exception('Failed to approve leave: ' . $e->getMessage());
@@ -260,8 +260,8 @@ class LeaveHistoryService
             // Send Notification to Leave Applier
             $leaveHistory->user->notify(new LeaveRequestUpdateNotification($leaveHistory, auth()->user()));
 
-            // Send Mail to the Leave Applier
-            Mail::to($leaveHistory->user->employee->official_email)->send(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
+            // Send Mail to the Leave Applier by Queue
+            Mail::to($leaveHistory->user->employee->official_email)->queue(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
         });
     }
 
