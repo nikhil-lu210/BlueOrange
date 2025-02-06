@@ -45,7 +45,7 @@
                 @elseif ($leaveHistory->status === 'Rejected') 
                     <span class="badge bg-danger">{{ __('Rejected') }}</span>
                 @elseif ($leaveHistory->status === 'Pending') 
-                    <span class="badge bg-primary">{{ __('Rejected') }}</span>
+                    <span class="badge bg-primary">{{ __('Pending') }}</span>
                 @else 
                     <span class="badge bg-danger">{{ __('Canceled') }}</span>
                 @endif
