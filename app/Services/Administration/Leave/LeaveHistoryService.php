@@ -2,6 +2,8 @@
 
 namespace App\Services\Administration\Leave;
 
+use App\Mail\Administration\Leave\LeaveRequestStatusUpdateMail;
+use App\Mail\Administration\Leave\NewLeaveRequestMail;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
@@ -9,7 +11,10 @@ use Illuminate\Http\Request;
 use App\Models\Leave\LeaveHistory;
 use Illuminate\Support\Facades\DB;
 use App\Models\Leave\LeaveAvailable;
+use App\Notifications\Administration\Leave\LeaveRequestUpdateNotification;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Database\Eloquent\Builder;
+use App\Notifications\Administration\Leave\LeaveStoreNotification;
 
 class LeaveHistoryService
 {
@@ -100,6 +105,12 @@ class LeaveHistoryService
                         store_file_media($file, $leaveHistory, $directory);
                     }
                 }
+
+                // Send Notification to Team Leader
+                $user->active_team_leader->notify(new LeaveStoreNotification($leaveHistory, auth()->user()));
+
+                // Send Mail to the Team Leader
+                Mail::to($user->active_team_leader->employee->official_email)->queue(new NewLeaveRequestMail($leaveHistory, $user->active_team_leader));
             }
         }, 5);
     }
@@ -149,6 +160,12 @@ class LeaveHistoryService
                     'reviewed_at' => Carbon::now(),
                     'is_paid_leave' => $request->input('is_paid_leave') === 'Paid',
                 ]);
+
+                // Send Notification to Leave Applier
+                $leaveHistory->user->notify(new LeaveRequestUpdateNotification($leaveHistory, auth()->user()));
+
+                // Send Mail to the Leave Applier
+                Mail::to($leaveHistory->user->employee->official_email)->send(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
             });
         } catch (Exception $e) {
             throw new Exception('Failed to approve leave: ' . $e->getMessage());
@@ -239,6 +256,12 @@ class LeaveHistoryService
                 'reviewed_at' => Carbon::now(),
                 'reviewer_note' => $request->reviewer_note,
             ]);
+
+            // Send Notification to Leave Applier
+            $leaveHistory->user->notify(new LeaveRequestUpdateNotification($leaveHistory, auth()->user()));
+
+            // Send Mail to the Leave Applier
+            Mail::to($leaveHistory->user->employee->official_email)->send(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
         });
     }
 

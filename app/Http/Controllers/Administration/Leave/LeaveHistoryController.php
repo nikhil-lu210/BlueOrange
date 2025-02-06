@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Administration\Leave;
 
-use App\Exports\Administration\Leave\LeaveExport;
 use Auth;
 use Exception;
 use Carbon\Carbon;
@@ -10,11 +9,15 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Leave\LeaveHistory;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\Administration\Leave\LeaveExport;
 use App\Services\Administration\Leave\LeaveExportService;
 use App\Services\Administration\Leave\LeaveHistoryService;
+use App\Mail\Administration\Leave\LeaveRequestStatusUpdateMail;
 use App\Http\Requests\Administration\Leave\LeaveApprovalRequest;
 use App\Http\Requests\Administration\Leave\LeaveHistoryStoreRequest;
+use App\Notifications\Administration\Leave\LeaveRequestUpdateNotification;
 
 class LeaveHistoryController extends Controller
 {
@@ -71,7 +74,7 @@ class LeaveHistoryController extends Controller
      */
     public function store(LeaveHistoryStoreRequest $request)
     {
-        // dd($request->all());
+        // dd($user->active_team_leader->employee->official_email, $request->validated());
         try {
             $user = Auth::user();
             $this->leaveHistoryService->store($user, $request->validated());
@@ -122,6 +125,12 @@ class LeaveHistoryController extends Controller
                 'reviewed_by' => auth()->id(),
                 'reviewed_at' => Carbon::now(),
             ]);
+
+            // Send Notification to Leave Applier
+            $leaveHistory->user->notify(new LeaveRequestUpdateNotification($leaveHistory, auth()->user()));
+
+            // Send Mail to the Leave Applier
+            Mail::to($leaveHistory->user->employee->official_email)->send(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
 
             toast('Leave request rejected successfully.', 'success');
             return redirect()->back();
