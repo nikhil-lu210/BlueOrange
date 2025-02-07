@@ -5,6 +5,7 @@ use App\Http\Controllers\Administration\Attendance\AttendanceController;
 use App\Http\Controllers\Administration\Attendance\AttendanceImportController;
 use App\Http\Controllers\Administration\Attendance\QrCodeAttendanceController;
 use App\Http\Controllers\Administration\Attendance\BarCodeAttendanceController;
+use App\Http\Controllers\Administration\Attendance\Issue\AttendanceIssueController;
 
 /* ==============================================
 ===============< Attendance Routes >==============
@@ -36,4 +37,17 @@ Route::controller(BarCodeAttendanceController::class)->prefix('attendance/barcod
 Route::controller(AttendanceImportController::class)->prefix('attendance/create/import')->name('attendance.import.')->group(function () {
     Route::get('/', 'index')->name('index')->can('Attendance Create');
     Route::post('/upload', 'upload')->name('upload')->can('Attendance Create');
+});
+
+Route::controller(AttendanceIssueController::class)->prefix('attendance/issue')->name('attendance.issue.')->group(function () {
+    Route::get('/all', 'index')->name('index')->can('Attendance Read');
+    Route::get('/my', 'my')->name('my')->can('Attendance Read');
+    Route::get('/create', 'create')->name('create')->can('Attendance Read');
+
+    Route::post('/store', 'store')->name('store')->can('Attendance Read');
+    Route::put('/update/{issue}', 'update')->name('update')->can('Attendance Update');
+
+    Route::get('/show/{issue}', 'show')->name('show')->can('Attendance Read');
+    
+    Route::get('/destroy/{issue}', 'destroy')->name('destroy')->can('Attendance Update');
 });

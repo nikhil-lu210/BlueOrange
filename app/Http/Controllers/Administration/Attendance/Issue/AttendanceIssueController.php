@@ -1,0 +1,123 @@
+<?php
+
+namespace App\Http\Controllers\Administration\Attendance\Issue;
+
+use Exception;
+use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Models\Attendance\Attendance;
+use App\Models\Attendance\Issue\AttendanceIssue;
+use App\Http\Requests\Administration\Attendance\Issue\AttendanceIssueStoreRequest;
+
+class AttendanceIssueController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        //
+    }
+    
+    /**
+     * Display a listing of the resource.
+     */
+    public function my()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        $dates = collect(range(0, 30))->map(function ($day) {
+            return now()->subDays($day)->format('Y-m-d');
+        })->values();
+        // dd($dates);
+
+        $attendances = Attendance::where('user_id', auth()->id())->whereBetween('clock_in_date', [
+                                        now()->subDays(30)->format('Y-m-d'), 
+                                        now()->format('Y-m-d')
+                                    ])->orderByDesc('clock_in_date')->get();
+
+        return view('administration.attendance.issue.create', compact(['dates', 'attendances']));
+    }
+
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(AttendanceIssueStoreRequest $request)
+    {
+        // dd($request->all());
+        $userId = auth()->user()->id;
+        $attendanceId = NULL;
+        $clockInDate = NULL;
+        $shiftId = auth()->user()->current_shift->id;
+
+        if ($request->attendance_id) {
+            $attendanceId = $request->attendance_id;
+            $attendance = Attendance::whereId($attendanceId)->firstOrFail();
+
+            $clockInDate = $attendance->clock_in_date;
+            $shiftId = $attendance->employee_shift->id;
+        }
+
+        if ($request->clock_in_date) {
+            $clockInDate = $request->clock_in_date;
+        }
+
+        try {
+            $issue = AttendanceIssue::create([
+                'user_id' => $userId,
+                'attendance_id' => $attendanceId,
+                'employee_shift_id' => $shiftId,
+                'title' => $request->title,
+                'clock_in_date' => $clockInDate,
+                'clock_in' => $request->clock_in,
+                'clock_out' => $request->clock_out,
+                'reason' => $request->reason,
+                'type' => $request->type,
+            ]);
+
+            toast('Attendance Issue Submitted.', 'success');
+            return redirect()->route('administration.attendance.issue.show', ['issue' => $issue]);
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(AttendanceIssue $issue)
+    {
+        return view('administration.attendance.issue.show', compact(['issue']));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(AttendanceIssue $issue)
+    {
+        dd($issue->toArray());
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, AttendanceIssue $issue)
+    {
+        dd($request->all(), $issue->toArray());
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(AttendanceIssue $issue)
+    {
+        dd($issue->toArray());
+    }
+}
