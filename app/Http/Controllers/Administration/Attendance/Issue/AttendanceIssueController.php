@@ -16,7 +16,14 @@ class AttendanceIssueController extends Controller
      */
     public function index()
     {
-        //
+        $startOfMonth = now()->startOfMonth()->format('Y-m-d'); // First day of the current month
+        $today = now()->format('Y-m-d'); // Today's date
+
+        $issues = AttendanceIssue::whereBetween('clock_in_date', [$startOfMonth, $today])
+                                ->orderByDesc('clock_in_date')
+                                ->get();
+        // dd($issues);
+        return view('administration.attendance.issue.index', compact(['issues']));
     }
     
     /**
@@ -32,15 +39,18 @@ class AttendanceIssueController extends Controller
      */
     public function create()
     {
-        $dates = collect(range(0, 30))->map(function ($day) {
+        $startOfMonth = now()->startOfMonth()->format('Y-m-d'); // First day of the current month
+        $today = now()->format('Y-m-d'); // Today's date
+
+        $dates = collect(range(0, now()->day - 1))->map(function ($day) {
             return now()->subDays($day)->format('Y-m-d');
         })->values();
-        // dd($dates);
 
-        $attendances = Attendance::where('user_id', auth()->id())->whereBetween('clock_in_date', [
-                                        now()->subDays(30)->format('Y-m-d'), 
-                                        now()->format('Y-m-d')
-                                    ])->orderByDesc('clock_in_date')->get();
+        // Fetch attendances within the current month
+        $attendances = Attendance::where('user_id', auth()->id())
+            ->whereBetween('clock_in_date', [$startOfMonth, $today])
+            ->orderByDesc('clock_in_date')
+            ->get();
 
         return view('administration.attendance.issue.create', compact(['dates', 'attendances']));
     }
