@@ -121,7 +121,7 @@
                                 <th>Sl.</th>
                                 <th>Employee ID</th>
                                 <th>Name</th>
-                                <th>Email</th>
+                                <th>Email & Shift</th>
                                 <th>Status</th>
                                 <th class="text-center">Action</th>
                             </tr>
@@ -151,9 +151,9 @@
                                             {{ optional($user->employee)->official_email }}
                                         </a>
                                         <br>
-                                        <a href="mailto:{{ optional($user->employee)->personal_email }}" class="mb-1 text-muted" title="Personal Email">
-                                            {{ optional($user->employee)->personal_email }}
-                                        </a>
+                                        <b class="text-dark" title="Current Working Shift">
+                                            {{ show_time(optional($user->current_shift)->start_time). ' to '.show_time(optional($user->current_shift)->end_time) }}
+                                        </b>
                                     </td>
                                     <td>{!! show_status($user->status) !!}</td>
                                     <td class="text-center">
