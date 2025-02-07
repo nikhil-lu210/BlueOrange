@@ -90,9 +90,28 @@
             <div class="card-header header-elements">
                 <h5 class="mb-0">Daily Work Update Details</h5>
     
-                @if ($dailyWorkUpdate->rating) 
+                @if ($dailyWorkUpdate->rating)
+                    @php
+                        switch ($dailyWorkUpdate->rating) {
+                            case '1':
+                                $color = 'danger';
+                                break;
+                            case '2':
+                                $color = 'warning';
+                                break;
+                            case '3':
+                                $color = 'dark';
+                                break;
+                            case '4':
+                                $color = 'primary';
+                                break;                                                    
+                            default:
+                                $color = 'success';
+                                break;
+                        }
+                    @endphp
                     <div class="card-header-elements ms-auto">
-                        <div class="btn btn-primary btn-icon p-3" title="Rating {{ $dailyWorkUpdate->rating }} out of 5">
+                        <div class="btn btn-{{ $color }} btn-icon p-3" title="Rating {{ $dailyWorkUpdate->rating }} out of 5">
                             <sup class="text-bold">{{ $dailyWorkUpdate->rating }}</sup>
                             <span>/</span>
                             <sub class="text-bold">5</sub>
