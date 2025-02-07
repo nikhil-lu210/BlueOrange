@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\DailyWorkUpdate\DailyWorkUpdateStoreRequest;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Notifications\Administration\DailyWorkUpdate\DailyWorkUpdateCreateNotification;
 use App\Notifications\Administration\DailyWorkUpdate\DailyWorkUpdateUpdateNotification;
@@ -65,7 +66,7 @@ class DailyWorkUpdateController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(DailyWorkUpdateStoreRequest $request)
     {
         // dd($request->all(), auth()->user()->active_team_leader->id);
         $authUser = auth()->user();

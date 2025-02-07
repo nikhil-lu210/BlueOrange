@@ -32,7 +32,7 @@ return new class extends Migration
             $table->tinyInteger('rating')->nullable();
             $table->text('comment')->nullable()->comment('Team Leader Comment Here.');
 
-            $table->unique(['user_id', 'date'], 'user_id_date_unique');
+            $table->unique(['user_id', 'date'], 'user_id_date_unique'); // A user cannot submit multiple work update in a date
                   
             $table->timestamps();
             $table->softDeletes();

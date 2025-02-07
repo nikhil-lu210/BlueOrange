@@ -135,7 +135,26 @@
                                         <b>{{ show_date($dailyUpdate->date) }}</b>
                                         <br>
                                         @if (!is_null($dailyUpdate->rating))
-                                            <small class="badge bg-label-primary">
+                                            @php
+                                                switch ($dailyUpdate->rating) {
+                                                    case '1':
+                                                        $color = 'danger';
+                                                        break;
+                                                    case '2':
+                                                        $color = 'warning';
+                                                        break;
+                                                    case '3':
+                                                        $color = 'dark';
+                                                        break;
+                                                    case '4':
+                                                        $color = 'primary';
+                                                        break;                                                    
+                                                    default:
+                                                        $color = 'success';
+                                                        break;
+                                                }
+                                            @endphp
+                                            <small class="badge bg-{{ $color }}">
                                                 {{ $dailyUpdate->rating }} out of 5
                                             </small>
                                         @else
