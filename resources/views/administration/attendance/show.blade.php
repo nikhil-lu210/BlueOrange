@@ -355,7 +355,7 @@
                                         @endphp
                                         <li class="timeline-item ps-4 {{ $loop->last ? 'border-transparent' : 'border-left-dashed pb-1' }}">
                                             <span class="timeline-indicator-advanced timeline-indicator-{{ $color }}">
-                                                <i class="ti ti-hash"></i>
+                                                <i class="ti ti-bell-question"></i>
                                             </span>
                                             <div class="timeline-event px-0 pb-0">
                                                 <div class="timeline-header">

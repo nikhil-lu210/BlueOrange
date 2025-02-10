@@ -6,12 +6,18 @@ use Exception;
 use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use App\Models\Attendance\Attendance;
 use Stevebauman\Location\Facades\Location;
 use App\Models\Attendance\Issue\AttendanceIssue;
 use App\Http\Requests\Administration\Attendance\Issue\AttendanceIssueStoreRequest;
 use App\Http\Requests\Administration\Attendance\Issue\AttendanceIssueUpdateRequest;
+use App\Mail\Administration\Attendance\Issue\AttendanceIssueStatusUpdateMail;
+use App\Mail\Administration\Attendance\Issue\NewAttendanceIssueMail;
+use App\Notifications\Administration\Attendance\Issue\AttendanceIssueRequestUpdateNotification;
+use App\Notifications\Administration\Attendance\Issue\AttendanceIssueStoreNotification;
 
 class AttendanceIssueController extends Controller
 {
@@ -65,7 +71,7 @@ class AttendanceIssueController extends Controller
      */
     public function store(AttendanceIssueStoreRequest $request)
     {
-        // dd($request->all());
+        // dd($request->all(), auth()->user()->active_team_leader);
         $userId = auth()->user()->id;
         $attendanceId = NULL;
         $clockInDate = NULL;
@@ -84,17 +90,26 @@ class AttendanceIssueController extends Controller
         }
 
         try {
-            $issue = AttendanceIssue::create([
-                'user_id' => $userId,
-                'attendance_id' => $attendanceId,
-                'employee_shift_id' => $shiftId,
-                'title' => $request->title,
-                'clock_in_date' => $clockInDate,
-                'clock_in' => $request->clock_in,
-                'clock_out' => $request->clock_out,
-                'reason' => $request->reason,
-                'type' => $request->type,
-            ]);
+            $issue = null;
+            DB::transaction(function () use ($request, $userId, $clockInDate, $shiftId, $attendanceId, &$issue) {
+                $issue = AttendanceIssue::create([
+                    'user_id' => $userId,
+                    'attendance_id' => $attendanceId,
+                    'employee_shift_id' => $shiftId,
+                    'title' => $request->title,
+                    'clock_in_date' => $clockInDate,
+                    'clock_in' => $request->clock_in,
+                    'clock_out' => $request->clock_out,
+                    'reason' => $request->reason,
+                    'type' => $request->type,
+                ]);            
+
+                // Send Notification to Team Leader
+                auth()->user()->active_team_leader->notify(new AttendanceIssueStoreNotification($issue, auth()->user()));
+
+                // Send Mail to the Team Leader
+                Mail::to(auth()->user()->active_team_leader->employee->official_email)->send(new NewAttendanceIssueMail($issue, auth()->user()->active_team_leader));
+            }, 5);
 
             toast('Attendance Issue Submitted.', 'success');
             return redirect()->route('administration.attendance.issue.show', ['issue' => $issue]);
@@ -123,6 +138,12 @@ class AttendanceIssueController extends Controller
                     'note' => $request->note,
                     'status' => 'Rejected',
                 ]);
+
+                // Send Notification to Issue Applier
+                $issue->user->notify(new AttendanceIssueRequestUpdateNotification($issue, auth()->user()));
+
+                // Send Mail to the Issue Applier by Queue
+                Mail::to($issue->user->employee->official_email)->queue(new AttendanceIssueStatusUpdateMail($issue, auth()->user()));
 
                 toast('Attendance Issue Has Been Rejected.', 'success');
                 return redirect()->back();
@@ -213,6 +234,12 @@ class AttendanceIssueController extends Controller
                     'status' => 'Approved',
                     'attendance_id' => $attendance->id,
                 ]);
+
+                // Send Notification to Issue Applier
+                $issue->user->notify(new AttendanceIssueRequestUpdateNotification($issue, auth()->user()));
+
+                // Send Mail to the Issue Applier by Queue
+                Mail::to($issue->user->employee->official_email)->queue(new AttendanceIssueStatusUpdateMail($issue, auth()->user()));
 
                 toast('Attendance Issue Approved and Attendance Updated.', 'success');
                 return redirect()->back();
