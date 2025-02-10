@@ -50,14 +50,17 @@ if (!function_exists('show_status')) {
     function show_status(string $status): string
     {
         $badgeClass = match($status) {
-            'Active' => 'bg-label-success',
+            'Pending'   => 'bg-label-info',
+            'Active'    => 'bg-label-success',
             'Completed' => 'bg-label-success',
-            'Inactive' => 'bg-label-danger',
-            'Canceled' => 'bg-label-danger',
+            'Approved'  => 'bg-label-success',
+            'Inactive'  => 'bg-label-danger',
+            'Canceled'  => 'bg-label-danger',
             'Cancelled' => 'bg-label-danger',
-            'Resigned' => 'bg-label-dark',
-            'Fired' => 'bg-label-warning',
-            default => 'bg-label-primary',
+            'Rejected'  => 'bg-label-danger',
+            'Resigned'  => 'bg-label-dark',
+            'Fired'     => 'bg-label-warning',
+            default     => 'bg-label-primary',
         };
 
         return sprintf('<span class="badge %s">%s</span>', $badgeClass, htmlspecialchars($status, ENT_QUOTES, 'UTF-8'));
