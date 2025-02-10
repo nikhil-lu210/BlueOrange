@@ -10,7 +10,7 @@
                 <span class="fw-medium mx-2 text-heading">Date:</span>
             </dt>
             <dd class="col-sm-8">
-                <span class="text-bold badge bg-label-dark">{{ show_date($attendance->clock_in_date) }}</span>
+                <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" target="_blank" class="text-bold badge bg-label-primary" title="Click here to view attendance details">{{ show_date($attendance->clock_in_date) }}</a>
             </dd>
         </dl>
         <dl class="row mb-1">

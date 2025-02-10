@@ -215,7 +215,7 @@ class AttendanceIssueController extends Controller
                 ]);
 
                 toast('Attendance Issue Approved and Attendance Updated.', 'success');
-                return redirect()->route('administration.attendance.show', ['attendance' => $attendance]);
+                return redirect()->back();
             } catch (Exception $e) {
                 return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
             }
