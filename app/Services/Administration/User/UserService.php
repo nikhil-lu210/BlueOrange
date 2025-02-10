@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Mail\Administration\User\UserCredentialsMail;
+use App\Mail\Administration\User\UserStatusUpdateNotifyMail;
 use App\Notifications\Administration\NewUserRegistrationNotification;
 
 class UserService
@@ -205,6 +206,13 @@ class UserService
             $user->update([
                 'status' => $data['status']
             ]);
+
+            $notifiableUsers = User::whereStatus('Active')->get();
+
+            // Send Mail to the Issue Applier by Queue
+            foreach ($notifiableUsers as $notifiableUser) {
+                Mail::to($notifiableUser->employee->official_email)->queue(new UserStatusUpdateNotifyMail($user, $notifiableUser));
+            }
         }, 5);
     }
 
