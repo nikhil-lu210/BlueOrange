@@ -28,6 +28,8 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::get('/show/{user}/attendance', 'showAttendance')->name('show.attendance')->can('User Read');
 
         Route::post('/shift/{shift}/update/{user}', 'updateShift')->name('shift.update')->can('User Update');
+
+        Route::put('/status/update/{user}', 'updateStatus')->name('status.update')->can('User Update');
     });
 
     Route::controller(UserImportController::class)->prefix('create/import')->name('import.')->group(function () {

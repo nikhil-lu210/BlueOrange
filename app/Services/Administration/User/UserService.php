@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Mail\Administration\User\UserCredentialsMail;
+use App\Mail\Administration\User\UserStatusUpdateNotifyMail;
 use App\Notifications\Administration\NewUserRegistrationNotification;
 
 class UserService
@@ -197,6 +198,21 @@ class UserService
                 'total_time' => get_total_time_hh_mm_ss($data['start_time'], $data['end_time']),
                 'implemented_from' => date('Y-m-d')
             ]);
+        }, 5);
+    }
+
+    public function updateStatus(User $user, array $data) {
+        return DB::transaction(function() use ($data, $user) {
+            $user->update([
+                'status' => $data['status']
+            ]);
+
+            $notifiableUsers = User::whereStatus('Active')->get();
+
+            // Send Mail to the Issue Applier by Queue
+            foreach ($notifiableUsers as $notifiableUser) {
+                Mail::to($notifiableUser->employee->official_email)->queue(new UserStatusUpdateNotifyMail($user, $notifiableUser));
+            }
         }, 5);
     }
 
