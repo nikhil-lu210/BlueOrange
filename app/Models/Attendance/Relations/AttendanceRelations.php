@@ -54,10 +54,10 @@ trait AttendanceRelations
 
     
     /**
-     * Get the issue associated with the attendance.
+     * Get the issues associated with the attendance.
      */
-    public function issue(): HasOne
+    public function issues(): HasMany
     {
-        return $this->hasOne(AttendanceIssue::class);
+        return $this->hasMany(AttendanceIssue::class);
     }
 }

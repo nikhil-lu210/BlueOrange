@@ -14,7 +14,7 @@
                     <input type="hidden" name="status" value="{{ 'Rejected' }}" required>
                     <div class="col-md-12 mb-3">
                         <label class="form-label">Rejection Reason <strong class="text-danger">*</strong></label>
-                        <textarea class="form-control" name="note" rows="3" placeholder="Ex: You are trying to fraud with the timing.">{{ old('note') }}</textarea>
+                        <textarea class="form-control" name="note" rows="3" placeholder="Ex: You are trying to fraud with the timing." required>{{ old('note') }}</textarea>
                         @error('note')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
