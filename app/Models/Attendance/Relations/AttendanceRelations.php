@@ -2,9 +2,11 @@
 
 namespace App\Models\Attendance\Relations;
 
+use App\Models\Attendance\Issue\AttendanceIssue;
 use App\Models\User;
 use App\Models\DailyBreak\DailyBreak;
 use App\Models\EmployeeShift\EmployeeShift;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -48,5 +50,14 @@ trait AttendanceRelations
     public function daily_breaks(): HasMany
     {
         return $this->hasMany(DailyBreak::class);
+    }
+
+    
+    /**
+     * Get the issue associated with the attendance.
+     */
+    public function issue(): HasOne
+    {
+        return $this->hasOne(AttendanceIssue::class);
     }
 }

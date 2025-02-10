@@ -6,7 +6,7 @@ use Carbon\Carbon;
 use App\Models\Attendance\Attendance;
 use Illuminate\Foundation\Http\FormRequest;
 
-class AttendanceIssueStoreRequest extends FormRequest
+class AttendanceIssueUpdateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,15 +24,14 @@ class AttendanceIssueStoreRequest extends FormRequest
     public function rules()
     {
         $rules = [
-            'title'                 => ['required', 'string', 'max:255'],
-            'attendance_issue_type' => ['required', 'in:Old,New'],
-            'clock_in'              => ['required', 'date_format:Y-m-d H:i'],
-            'clock_out'             => ['nullable', 'date_format:Y-m-d H:i', 'after:clock_in'],
-            'type'                  => ['required', 'string', 'in:Regular,Overtime'],
-            'reason'                => ['required', 'string', 'min:10'],
+            'status'                => ['required', 'in:Approved,Rejected'],
+            // 'clock_in'              => ['required', 'date_format:Y-m-d H:i'],
+            // 'clock_out'             => ['nullable', 'date_format:Y-m-d H:i', 'after:clock_in'],
+            // 'type'                  => ['required', 'string', 'in:Regular,Overtime'],
+            // 'reason'                => ['required', 'string', 'min:10'],
         ];
 
-        if ($this->attendance_issue_type === 'New') {
+        if ($this->status === 'Approved') {
             $rules['clock_in_date'] = ['required', 'date', 'date_format:Y-m-d', 'before_or_equal:' . now()->format('Y-m-d')];
 
             // Ensure clock_in date matches clock_in_date
@@ -44,17 +43,8 @@ class AttendanceIssueStoreRequest extends FormRequest
             };
         }
 
-        if ($this->attendance_issue_type === 'Old') {
-            $rules['attendance_id'] = ['required', 'exists:attendances,id'];
-
-            // Ensure clock_in date matches the attendance's clock_in_date
-            $rules['clock_in'][] = function ($attribute, $value, $fail) {
-                $clockInDate = Carbon::parse($value)->format('Y-m-d');
-                $attendance = Attendance::find($this->attendance_id);
-                if ($attendance && $clockInDate !== $attendance->clock_in_date) {
-                    $fail('The clock-in date-time must match the selected attendance record’s clock-in date.');
-                }
-            };
+        if ($this->status === 'Rejected') {
+            $rules['note'] = ['required', 'string'];
         }
 
         return $rules;
@@ -84,12 +74,11 @@ class AttendanceIssueStoreRequest extends FormRequest
             'clock_out.date_format'          => 'The clock-out time format must be YYYY-MM-DD HH:MM.',
             'clock_out.after'                => 'The clock-out time must be after the clock-in time.',
 
-            'type.required'                  => 'The attendance type is required.',
-            'type.in'                        => 'Invalid attendance type selected.',
+            'status.required'                  => 'The attendance issue status is required.',
+            'status.in'                        => 'Invalid attendance issue status selected.',
 
-            'reason.required'                => 'A reason for the attendance issue is required.',
-            'reason.string'                  => 'The reason must be a valid string.',
-            'reason.min'                     => 'The reason must be at least 10 characters long.',
+            'note.required'                => 'A note for the attendance issue rejection is required.',
+            'note.string'                  => 'The note must be a valid string.',
         ];
     }
 }

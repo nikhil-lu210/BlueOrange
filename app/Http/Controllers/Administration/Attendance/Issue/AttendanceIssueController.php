@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance\Attendance;
 use App\Models\Attendance\Issue\AttendanceIssue;
 use App\Http\Requests\Administration\Attendance\Issue\AttendanceIssueStoreRequest;
+use App\Http\Requests\Administration\Attendance\Issue\AttendanceIssueUpdateRequest;
 
 class AttendanceIssueController extends Controller
 {
@@ -108,19 +109,25 @@ class AttendanceIssueController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(AttendanceIssue $issue)
-    {
-        dd($issue->toArray());
-    }
-
-    /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, AttendanceIssue $issue)
+    public function update(AttendanceIssueUpdateRequest $request, AttendanceIssue $issue, $status)
     {
-        dd($request->all(), $issue->toArray());
+        // dd($request->all(), $issue->toArray(), $status);
+        if ($status === 'Rejected' && $request->status === 'Rejected') {
+            try {
+                $issue->update([
+                    'updated_by' => auth()->user()->id,
+                    'note' => $request->note,
+                    'status' => 'Rejected',
+                ]);
+
+                toast('Attendance Issue Has Been Rejected.', 'success');
+                return redirect()->back();
+            } catch (Exception $e) {
+                return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
+            }
+        }
     }
 
     /**

@@ -45,7 +45,7 @@ Route::controller(AttendanceIssueController::class)->prefix('attendance/issue')-
     Route::get('/create', 'create')->name('create')->can('Attendance Read');
 
     Route::post('/store', 'store')->name('store')->can('Attendance Read');
-    Route::put('/update/{issue}', 'update')->name('update')->can('Attendance Update');
+    Route::put('/update/{issue}/{status}', 'update')->name('update')->can('Attendance Update');
 
     Route::get('/show/{issue}', 'show')->name('show')->can('Attendance Read');
     
