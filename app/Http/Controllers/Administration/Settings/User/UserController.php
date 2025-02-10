@@ -144,6 +144,26 @@ class UserController extends Controller
             return back()->withError($e->getMessage())->withInput();
         }
     }
+
+    /**
+     * User Status Update
+     */
+    public function updateStatus(Request $request, User $user) {
+        $validatedStatus = $request->validate([
+            'status' => ['required', 'in:Active,Inactive,Fired,Resigned']
+        ]);
+
+        // dd($validatedStatus);
+
+        try {
+            $this->userService->updateStatus($user, $validatedStatus);
+
+            toast($user->name. '\'s Status Has Been Updated to '. $request->status,'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return back()->withError($e->getMessage())->withInput();
+        }
+    }
     
 
     /**

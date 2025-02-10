@@ -200,6 +200,14 @@ class UserService
         }, 5);
     }
 
+    public function updateStatus(User $user, array $data) {
+        return DB::transaction(function() use ($data, $user) {
+            $user->update([
+                'status' => $data['status']
+            ]);
+        }, 5);
+    }
+
     public function deleteUser(User $user)
     {
         return DB::transaction(function () use ($user) {
