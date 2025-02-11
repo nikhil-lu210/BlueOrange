@@ -10,20 +10,18 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UserStatusUpdateNotifyMail extends Mailable implements ShouldQueue
+class BirthdayWishMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
     public $data;
-    public $user;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($data, $user)
+    public function __construct($data)
     {
         $this->data = $data;
-        $this->user = $user;
     }
 
     /**
@@ -33,7 +31,7 @@ class UserStatusUpdateNotifyMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: $this->data->employee->alias_name. '\'s Status Marked As '. $this->data->status,
+            subject: 'Happy Birthday '. $this->data->alias_name,
         );
     }
 
@@ -43,10 +41,9 @@ class UserStatusUpdateNotifyMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.administration.user.status_update',
+            markdown: 'emails.administration.user.birthday_wish',
             with: [
-                'data' => $this->data,
-                'user' => $this->user
+                'data' => $this->data
             ]
         );
     }
