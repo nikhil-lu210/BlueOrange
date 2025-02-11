@@ -51,6 +51,7 @@
         <div class="col-md-12">
             <div class="card card-border-shadow-primary">
                 <div class="card-body text-center">
+                    <i class="ti ti-balloon text-warning" style="font-size: 8rem;"></i>
                     <h1 class="m-0 text-primary text-bold">Happy Birthday</h1>
                     <h3 class="m-0 text-primary text-bold">{{ get_employee_name(auth()->user()) }}</h3>
 

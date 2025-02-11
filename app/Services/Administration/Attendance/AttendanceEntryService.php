@@ -20,50 +20,51 @@ class AttendanceEntryService
         $this->user = $user;
     }
 
-    public function clockIn($attendanceType)
+    public function clockIn($attendanceType, $clockInDate = null, $clockInTime = null, $clockInMedium = 'Manual', $scannerId = null)
     {
         $currentTime = now();
-        $currentDate = $currentTime->toDateString();
+        $currentDate = $clockInDate ?? $currentTime->toDateString(); // Use provided date or current date
+        $clockInTimestamp = $clockInTime ? Carbon::parse($clockInTime) : $currentTime; // Use provided time or current time
         $type = $attendanceType === 'Overtime' ? 'Overtime' : 'Regular';
+        // dd($attendanceType, $type, $clockInDate, $clockInTime, $clockInMedium);
 
         // Check if the user has an open attendance session
         $openAttendance = Attendance::where('user_id', $this->user->id)->whereNull('clock_out')->first();
 
         if ($openAttendance) {
-            return redirect()->back()->withInput()->with('error', 'You have already clocked in and have not clocked out yet.');
+            throw new Exception('You have already clocked in and have not clocked out yet.');
         }
 
-        // Check id the current date an weekend
-        $isWeekend = Weekend::where('day', '=', Carbon::parse($currentDate)->format('l'))->where('is_active', true)->exists();
-        if ($isWeekend && $type === 'Regular') {
-            return redirect()->back()->withInput()->with('error', 'You cannot Regular Clock-In on Weekend. Please clockin as Overtime.');
+        // Check if the current date is a weekend or holiday, and if the user is trying to clock in as Regular
+        if ($this->isWeekend($currentDate) && $type === 'Regular') {
+            throw new Exception('You cannot Regular Clock-In on Weekend. Please clock in as Overtime.');
         }
 
-        // Check if the current date is a holiday
-        $isHoliday = Holiday::where('date', '=', $currentDate)->where('is_active', true)->exists();
-        if ($isHoliday && $type === 'Regular') {
-            return redirect()->back()->withInput()->with('error', 'You cannot Regular Clock-In on Holiday. Please clockin as Overtime.');
+        if ($this->isHoliday($currentDate) && $type === 'Regular') {
+            throw new Exception('You cannot Regular Clock-In on Holiday. Please clock in as Overtime.');
         }
 
         // Check if the user has already Regular clocked in today
         $existingRegularAttendance = Attendance::where('user_id', $this->user->id)
             ->where('clock_in_date', $currentDate)
-            ->whereType($type)
+            ->where('type', 'Regular')
             ->first();
             
-        if ($existingRegularAttendance && $existingRegularAttendance->type === 'Regular') {
-            return redirect()->back()->withInput()->with('error', 'You have already clocked in as Regular today.');
+        if ($existingRegularAttendance && $type === 'Regular') {
+            throw new Exception('You have already clocked in as Regular today.');
         }
 
         $location = Location::get(get_public_ip());
 
-        DB::transaction(function () use ($currentTime, $currentDate, $type, $location) {
-            Attendance::create([
+        $attendance = DB::transaction(function () use ($clockInTimestamp, $currentDate, $type, $clockInMedium, $scannerId, $location) {
+            return Attendance::create([
                 'user_id' => $this->user->id,
                 'employee_shift_id' => $this->user->current_shift->id,
                 'clock_in_date' => $currentDate,
-                'clock_in' => $currentTime,
+                'clock_in' => $clockInTimestamp,
                 'type' => $type,
+                'clockin_medium' => $clockInMedium,
+                'clockin_scanner_id' => $scannerId ?? null,
                 'ip_address' => $location->ip ?? null,
                 'country' => $location->countryName ?? null,
                 'city' => $location->cityName ?? null,
@@ -73,20 +74,22 @@ class AttendanceEntryService
                 'longitude' => $location->longitude ?? null
             ]);
         }, 5);
+
+        return $attendance;
     }
 
-    public function clockOut()
+    public function clockOut(Attendance $attendance = null, $clockOutTime = null, $clockOutMedium = 'Manual', $scannerId = null)
     {
         $currentTime = now();
         $userId = $this->user->id;
 
-        // Retrieve the existing attendance record
-        $existingAttendance = Attendance::where('user_id', $userId)
+        // If no attendance record is passed, retrieve the active attendance
+        $existingAttendance = $attendance ?? Attendance::where('user_id', $userId)
             ->whereNull('clock_out')
             ->first();
 
         if (!$existingAttendance) {
-            return redirect()->back()->withInput()->with('error', 'You have not clocked in today.');
+            throw new Exception('You have not clocked in today.');
         }
 
         // Stop any active running breaks
@@ -100,45 +103,21 @@ class AttendanceEntryService
             $breakStartStopService->stopBreak($this->user);
         }
 
-        // Update the existing attendance record with clock_out time and calculate total time
-        $clockOutTime = $currentTime->timestamp;
+        // Use the provided clock-out time or current time if not provided
+        $clockOutTime = $clockOutTime ? Carbon::parse($clockOutTime)->timestamp : $currentTime->timestamp;
         $clockInTime = $existingAttendance->clock_in->timestamp;
 
         // Calculate total time in seconds
         $totalSeconds = $clockOutTime - $clockInTime;
 
         // Convert total time to HH:MM:SS format
-        $hours = floor($totalSeconds / 3600);
-        $minutes = floor(($totalSeconds % 3600) / 60);
-        $seconds = $totalSeconds % 60;
+        $formattedTotalTime = $this->formatTime($totalSeconds);
 
-        $formattedTotalTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
-
-        // Check attendance type
+        // Check attendance type and adjust time accordingly
         if ($existingAttendance->type === 'Regular') {
-            // Retrieve the employee shift associated with this user (assuming you have a relation set up)
-            $employeeShift = $existingAttendance->employee_shift;
-
-            if ($employeeShift) {
-                // Convert employee shift total time from HH:MM:SS to seconds for comparison
-                list($shiftHours, $shiftMinutes, $shiftSeconds) = explode(':', $employeeShift->total_time);
-                $shiftTotalSeconds = ($shiftHours * 3600) + ($shiftMinutes * 60) + $shiftSeconds;
-
-                // Compare and set total_adjusted_time
-                $adjustedTotalSeconds = ($totalSeconds < $shiftTotalSeconds) ? $totalSeconds : $shiftTotalSeconds;
-
-                // Convert adjusted total time back to HH:MM:SS format
-                $adjustedHours = floor($adjustedTotalSeconds / 3600);
-                $adjustedMinutes = floor(($adjustedTotalSeconds % 3600) / 60);
-                $adjustedSeconds = $adjustedTotalSeconds % 60;
-
-                $formattedAdjustedTotalTime = sprintf('%02d:%02d:%02d', $adjustedHours, $adjustedMinutes, $adjustedSeconds);
-            } else {
-                // If no employee shift found, fallback to the total time
-                $formattedAdjustedTotalTime = $formattedTotalTime;
-            }
-        } elseif ($existingAttendance->type === 'Overtime') {
-            // For Overtime type, set total_adjusted_time directly from total_time
+            $formattedAdjustedTotalTime = $this->adjustForShiftTime($existingAttendance, $totalSeconds, $formattedTotalTime);
+        } else {
+            // For Overtime type, use the full time as is
             $formattedAdjustedTotalTime = $formattedTotalTime;
         }
 
@@ -147,8 +126,102 @@ class AttendanceEntryService
             'clock_out' => $clockOutTime,
             'total_time' => $formattedTotalTime,
             'total_adjusted_time' => $formattedAdjustedTotalTime,
+            'clockout_medium' => $clockOutMedium,
+            'clockout_scanner_id' => $scannerId ?? null,
         ]);
     }
 
 
+    // Handle clock-in updates
+    public function updateClockIn(Attendance $attendance, $type, Carbon $clockIn)
+    {
+        // Assign the updated clock-in time
+        $attendance->clock_in = $clockIn;
+        $attendance->type = $type;
+    }
+
+    // Handle clock-out updates
+    public function updateClockOut(Attendance $attendance, Carbon $clockIn, Carbon $clockOut)
+    {
+        // Handle cases where clock-out is past midnight (next day)
+        if ($clockOut < $clockIn) {
+            $clockOut->addDay();
+        }
+
+        $attendance->clock_out = $clockOut;
+
+        // Calculate total time in seconds
+        $totalSeconds = $clockOut->diffInSeconds($clockIn);
+
+        // Format total time as HH:MM:SS
+        $formattedTotalTime = gmdate('H:i:s', $totalSeconds);
+
+        // Initialize adjusted total time as total time
+        $formattedAdjustedTotalTime = $formattedTotalTime;
+
+        // Adjust total time based on employee shift
+        if ($attendance->type === 'Regular') {
+            $employeeShift = $attendance->employee_shift;
+
+            if ($employeeShift) {
+                // Convert shift total time to seconds
+                list($shiftHours, $shiftMinutes, $shiftSeconds) = explode(':', $employeeShift->total_time);
+                $shiftTotalSeconds = ($shiftHours * 3600) + ($shiftMinutes * 60) + $shiftSeconds;
+
+                // Use the minimum time (either worked time or shift time)
+                $adjustedTotalSeconds = min($totalSeconds, $shiftTotalSeconds);
+
+                // Format adjusted total time as HH:MM:SS
+                $formattedAdjustedTotalTime = gmdate('H:i:s', $adjustedTotalSeconds);
+            }
+        }
+
+        // Assign calculated values to the attendance object
+        $attendance->total_time = $formattedTotalTime;
+        $attendance->total_adjusted_time = $formattedAdjustedTotalTime;
+    }
+
+
+    // Check if the day is a weekend
+    private function isWeekend($currentDate)
+    {
+        return Weekend::where('day', Carbon::parse($currentDate)->format('l'))->where('is_active', true)->exists();
+    }
+
+    // Check if the day is a holiday
+    private function isHoliday($currentDate)
+    {
+        return Holiday::where('date', $currentDate)->where('is_active', true)->exists();
+    }
+
+    // Format time in seconds to HH:MM:SS format
+    private function formatTime($totalSeconds)
+    {
+        $hours = floor($totalSeconds / 3600);
+        $minutes = floor(($totalSeconds % 3600) / 60);
+        $seconds = $totalSeconds % 60;
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+    }
+
+    // Adjust time based on shift
+    private function adjustForShiftTime($existingAttendance, $totalSeconds, $formattedTotalTime)
+    {
+        // Retrieve the employee shift associated with this user
+        $employeeShift = $existingAttendance->employee_shift;
+
+        if ($employeeShift) {
+            // Convert employee shift total time from HH:MM:SS to seconds for comparison
+            list($shiftHours, $shiftMinutes, $shiftSeconds) = explode(':', $employeeShift->total_time);
+            $shiftTotalSeconds = ($shiftHours * 3600) + ($shiftMinutes * 60) + $shiftSeconds;
+
+            // Compare and set total_adjusted_time
+            $adjustedTotalSeconds = ($totalSeconds < $shiftTotalSeconds) ? $totalSeconds : $shiftTotalSeconds;
+
+            // Convert adjusted total time back to HH:MM:SS format
+            return $this->formatTime($adjustedTotalSeconds);
+        } else {
+            // If no employee shift found, fallback to the total time
+            return $formattedTotalTime;
+        }
+    }
 }

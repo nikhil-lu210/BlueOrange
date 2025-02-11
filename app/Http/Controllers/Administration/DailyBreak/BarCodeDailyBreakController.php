@@ -31,7 +31,7 @@ class BarCodeDailyBreakController extends Controller
             'attendance'
         ])
         ->whereBetween('created_at', [$startOfDay, $endOfDay])
-        ->orderByDesc('break_in_at')
+        ->orderByDesc('updated_at')
         ->get();
 
         return view('administration.daily_break.barcode_scanner', compact(['scanner_id', 'breaks']));
