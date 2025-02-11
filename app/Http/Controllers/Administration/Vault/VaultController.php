@@ -23,7 +23,7 @@ class VaultController extends Controller
     {
         $user = auth()->user();
 
-        if ($user->hasPermissionTo('Vault Everything') || $user->hasPermissionTo('Vault Create')) {
+        if ($user->hasPermissionTo('Vault Everything') || $user->hasPermissionTo('Vault Update') || $user->hasPermissionTo('Vault Delete')) {
             $vaults = Vault::with(['creator'])->orderBy('name', 'ASC')->get();
         } else {
             $vaults = Vault::with(['creator'])
