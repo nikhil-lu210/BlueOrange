@@ -6,6 +6,7 @@ use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Attendance\Attendance;
@@ -115,69 +116,30 @@ class AttendanceController extends Controller
             $clockOut->addDay();
         }
 
-        // Calculate the total time
-        $totalSeconds = $clockOut->diffInSeconds($clockIn);
-
-        // Convert total time to HH:MM:SS format
-        $formattedTotalTime = gmdate('H:i:s', $totalSeconds);
-
-        // Check if the user has an attendance on the selected date and type
-        $hasAttendance = Attendance::where('user_id', $user->id)
-            ->where('clock_in_date', $request->clock_in_date)
-            ->where('type', $request->type)
-            ->first();
-
-        if ($hasAttendance) {
-            toast('This Employee has already clocked in as ' . $request->type . ' on the selected date.', 'warning');
-            return redirect()->back()->withInput();
-        }
-
-        $location = Location::get(get_public_ip());
-
         try {
-            // Default adjusted total time
-            $formattedAdjustedTotalTime = $formattedTotalTime;
+            // Use DB transaction to wrap the process
+            DB::transaction(function () use ($user, $request, $clockIn, $clockOut) {
+                // Initialize the service
+                $attendanceEntryService = new AttendanceEntryService($user);
 
-            if ($request->type === 'Regular') {
-                $employeeShift = $user->current_shift;
+                // Handle clock-in process and get the Attendance object
+                $attendanceClockIn = $attendanceEntryService->clockIn($request->type, $request->clock_in_date, $clockIn, 'Manual');
 
-                if ($employeeShift) {
-                    list($shiftHours, $shiftMinutes, $shiftSeconds) = explode(':', $employeeShift->total_time);
-                    $shiftTotalSeconds = ($shiftHours * 3600) + ($shiftMinutes * 60) + $shiftSeconds;
+                // Handle clock-out process using the Attendance object
+                $attendanceEntryService->clockOut($attendanceClockIn, $clockOut, 'Manual');
+            });
 
-                    $adjustedTotalSeconds = min($totalSeconds, $shiftTotalSeconds);
+            // Final attendance entry processing can go here if needed
+            toast('Clocked In and Out Successfully for ' . $user->name . ' on ' . $request->clock_in_date . '.', 'success');
+            return redirect()->back();
 
-                    // Convert adjusted total time back to HH:MM:SS format
-                    $formattedAdjustedTotalTime = gmdate('H:i:s', $adjustedTotalSeconds);
-                }
-            }
-
-            // Create attendance record
-            $attendance = Attendance::create([
-                'user_id' => $user->id,
-                'employee_shift_id' => optional($user->current_shift)->id,
-                'clock_in_date' => $request->clock_in_date,
-                'clock_in' => $clockIn,
-                'clock_out' => $clockOut,
-                'total_time' => $formattedTotalTime,
-                'total_adjusted_time' => $formattedAdjustedTotalTime,
-                'type' => $request->type,
-                'ip_address' => $location->ip ?? null,
-                'country' => $location->countryName ?? null,
-                'city' => $location->cityName ?? null,
-                'zip_code' => $location->zipCode ?? null,
-                'time_zone' => $location->timezone ?? null,
-                'latitude' => $location->latitude ?? null,
-                'longitude' => $location->longitude ?? null
-            ]);
-
-            toast('Clocked In Successfully for ' . $user->name . ' on ' . $request->clock_in_date . '.', 'success');
-            return redirect()->route('administration.attendance.show', ['attendance' => $attendance]);
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back()->withInput()->with('error', 'An error occurred: ' . $e->getMessage());
         }
     }
+
+
     
     // Clockin
     public function clockIn(Request $request)
