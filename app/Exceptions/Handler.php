@@ -42,17 +42,17 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        $this->reportable(function (Throwable $e) {
-            Log::channel('slack')->error("🚨 *Exception Occurred!* 🚨", [
-                'message' => $e->getMessage(),
-                'file'    => $e->getFile(),
-                'line'    => $e->getLine(),
-                'code'    => $e->getCode(),
-                'trace'   => array_slice($e->getTrace(), 0, 3), // Include first 3 trace entries
-            ]);
+        // $this->reportable(function (Throwable $e) {
+        //     Log::channel('slack')->error("🚨 *Exception Occurred!* 🚨", [
+        //         'message' => $e->getMessage(),
+        //         'file'    => $e->getFile(),
+        //         'line'    => $e->getLine(),
+        //         'code'    => $e->getCode(),
+        //         'trace'   => array_slice($e->getTrace(), 0, 3), // Include first 3 trace entries
+        //     ]);
 
-            return false; // Prevent Laravel from logging the error again
-        });
+        //     return false; // Prevent Laravel from logging the error again
+        // });
     }
 
 }
