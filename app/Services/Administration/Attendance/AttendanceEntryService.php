@@ -20,7 +20,7 @@ class AttendanceEntryService
         $this->user = $user;
     }
 
-    public function clockIn($attendanceType, $clockInDate = null, $clockInTime = null, $clockInMedium = 'Manual')
+    public function clockIn($attendanceType, $clockInDate = null, $clockInTime = null, $clockInMedium = 'Manual', $scannerId = null)
     {
         $currentTime = now();
         $currentDate = $clockInDate ?? $currentTime->toDateString(); // Use provided date or current date
@@ -56,14 +56,15 @@ class AttendanceEntryService
 
         $location = Location::get(get_public_ip());
 
-        $attendance = DB::transaction(function () use ($clockInTimestamp, $currentDate, $type, $clockInMedium, $location) {
+        $attendance = DB::transaction(function () use ($clockInTimestamp, $currentDate, $type, $clockInMedium, $scannerId, $location) {
             return Attendance::create([
                 'user_id' => $this->user->id,
                 'employee_shift_id' => $this->user->current_shift->id,
                 'clock_in_date' => $currentDate,
                 'clock_in' => $clockInTimestamp,
                 'type' => $type,
-                'clockin_medium' => $clockInMedium, // Now using the provided clock-in medium
+                'clockin_medium' => $clockInMedium,
+                'clockin_scanner_id' => $scannerId ?? null,
                 'ip_address' => $location->ip ?? null,
                 'country' => $location->countryName ?? null,
                 'city' => $location->cityName ?? null,
@@ -77,7 +78,7 @@ class AttendanceEntryService
         return $attendance;
     }
 
-    public function clockOut(Attendance $attendance = null, $clockOutTime = null, $clockOutMedium = 'Manual')
+    public function clockOut(Attendance $attendance = null, $clockOutTime = null, $clockOutMedium = 'Manual', $scannerId = null)
     {
         $currentTime = now();
         $userId = $this->user->id;
@@ -125,7 +126,8 @@ class AttendanceEntryService
             'clock_out' => $clockOutTime,
             'total_time' => $formattedTotalTime,
             'total_adjusted_time' => $formattedAdjustedTotalTime,
-            'clockout_medium' => $clockOutMedium, // Now using the provided clock-out medium
+            'clockout_medium' => $clockOutMedium,
+            'clockout_scanner_id' => $scannerId ?? null,
         ]);
     }
 

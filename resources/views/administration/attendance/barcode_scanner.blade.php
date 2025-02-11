@@ -41,7 +41,7 @@
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Barcode Attendance</h5>
@@ -57,8 +57,35 @@
                 <form action="{{ route('administration.attendance.barcode.scan', ['scanner_id' => $scanner_id]) }}" method="POST" autocomplete="off" id="barcodeScannerForm">
                     @csrf
                     <div class="row">
-                        <div class="mb-3 col-md-8">
-                            <label class="form-label">{{ __('User ID') }} <strong class="text-danger">*</strong></label>
+                        <div class="mb-3 col-md-12">
+                            <div class="row">
+                                <div class="col-md mb-md-0 mb-2">
+                                    <div class="form-check custom-option custom-option-basic form-check-primary">
+                                        <label class="form-check-label custom-option-content" for="typeRegular">
+                                            <input name="type" class="form-check-input" type="radio" value="Regular" id="typeRegular" checked />
+                                            <span class="custom-option-header pb-0">
+                                                <span class="h6 mb-0 text-primary text-bold">{{ __('Regular') }}</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div class="form-check custom-option custom-option-basic form-check-warning">
+                                        <label class="form-check-label custom-option-content" for="typeOvertime">
+                                            <input name="type" class="form-check-input" type="radio" value="Overtime" id="typeOvertime" />
+                                            <span class="custom-option-header pb-0">
+                                                <span class="h6 mb-0 text-warning text-bold">{{ __('Overtime') }}</span>
+                                            </span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            @error('type')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-12">
+                            <label class="form-label text-bold text-dark">{{ __('User ID') }} <strong class="text-danger">*</strong></label>
                             <div class="input-group input-group-merge">
                                 <span class="input-group-text" style="padding-right: 2px;">UID</span>
                                 <input type="text" id="userid" name="userid" class="form-control @error('userid') is-invalid @enderror" placeholder="20010101" autofocus required/>
@@ -67,45 +94,8 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-    
-                        <div class="mb-3 col-md-4">
-                            <label for="type" class="form-label">{{ __('Select Clockin Type') }}</label>
-                            <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default">
-                                <option value="">{{ __('Select Type') }}</option>
-                                <option value="Regular" selected>{{ __('Regular') }}</option>
-                                <option value="Overtime">{{ __('Overtime') }}</option>
-                            </select>
-                            @error('announcer_id')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-
-                        <div class="mb-3 col-md-12">
-                            <div class="row">
-                                <div class="col-md mb-md-0 mb-2">
-                                    <div class="form-check custom-option custom-option-basic">
-                                        <label class="form-check-label custom-option-content" for="attendanceClockin">
-                                            <input name="attendance" class="form-check-input" type="radio" value="Clockin" id="attendanceClockin" checked />
-                                            <span class="custom-option-header pb-0">
-                                                <span class="h6 mb-0">Clock-IN</span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div class="col-md">
-                                    <div class="form-check custom-option custom-option-basic">
-                                        <label class="form-check-label custom-option-content" for="attendanceClockout">
-                                            <input name="attendance" class="form-check-input" type="radio" value="Clockout" id="attendanceClockout" />
-                                            <span class="custom-option-header pb-0">
-                                                <span class="h6 mb-0">Clock-OUT</span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                     </div>
-                </form>
+                </form>                
             </div>
         </div>      
     </div>
@@ -241,6 +231,16 @@
             });
         });
     </script>
+    <script>
+        $(document).ready(function() {
+            // When any radio button for clock-in type is selected
+            $('input[name="type"]').on('change', function() {
+                // Clear the User ID field and focus on it
+                $('#userid').val('').focus();
+            });
+        });
+    </script>
+
 
     {{-- <script>
         $(document).ready(function () {
