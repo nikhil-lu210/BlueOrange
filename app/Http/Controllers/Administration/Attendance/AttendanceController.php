@@ -192,51 +192,19 @@ class AttendanceController extends Controller
     public function update(AttendanceUpdateRequest $request, Attendance $attendance)
     {
         try {
+            // Initialize the service
+            $attendanceEntryService = new AttendanceEntryService($attendance->user);
+
             // Parse clock-in and clock-out times
             $clockIn = Carbon::parse($request->clock_in);
             $clockOut = $request->clock_out ? Carbon::parse($request->clock_out) : null;
 
-            // Assign the updated clock-in time
-            $attendance->clock_in = $clockIn;
-            $attendance->type = $request->type;
+            // Handle clock-in process and get the updated Attendance object
+            $attendanceEntryService->updateClockIn($attendance, $request->type, $clockIn);
 
             if ($clockOut) {
-                // Handle cases where clock-out is past midnight (next day)
-                if ($clockOut < $clockIn) {
-                    $clockOut->addDay();
-                }
-
-                $attendance->clock_out = $clockOut;
-
-                // Calculate total time in seconds
-                $totalSeconds = $clockOut->diffInSeconds($clockIn);
-
-                // Format total time as HH:MM:SS
-                $formattedTotalTime = gmdate('H:i:s', $totalSeconds);
-
-                // Initialize adjusted total time as total time
-                $formattedAdjustedTotalTime = $formattedTotalTime;
-
-                // Adjust total time based on employee shift
-                if ($request->type === 'Regular') {
-                    $employeeShift = $attendance->employee_shift;
-
-                    if ($employeeShift) {
-                        // Convert shift total time to seconds
-                        list($shiftHours, $shiftMinutes, $shiftSeconds) = explode(':', $employeeShift->total_time);
-                        $shiftTotalSeconds = ($shiftHours * 3600) + ($shiftMinutes * 60) + $shiftSeconds;
-
-                        // Use the minimum time (either worked time or shift time)
-                        $adjustedTotalSeconds = min($totalSeconds, $shiftTotalSeconds);
-
-                        // Format adjusted total time as HH:MM:SS
-                        $formattedAdjustedTotalTime = gmdate('H:i:s', $adjustedTotalSeconds);
-                    }
-                }
-
-                // Assign calculated values
-                $attendance->total_time = $formattedTotalTime;
-                $attendance->total_adjusted_time = $formattedAdjustedTotalTime;
+                // Handle clock-out process and get the updated Attendance object
+                $attendanceEntryService->updateClockOut($attendance, $clockIn, $clockOut);
             }
 
             // Save updated attendance record
@@ -249,6 +217,7 @@ class AttendanceController extends Controller
             return redirect()->back();
         }
     }
+
 
     /**
      * export attendances.

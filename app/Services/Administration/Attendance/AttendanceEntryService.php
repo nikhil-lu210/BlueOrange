@@ -129,6 +129,57 @@ class AttendanceEntryService
         ]);
     }
 
+
+    // Handle clock-in updates
+    public function updateClockIn(Attendance $attendance, $type, Carbon $clockIn)
+    {
+        // Assign the updated clock-in time
+        $attendance->clock_in = $clockIn;
+        $attendance->type = $type;
+    }
+
+    // Handle clock-out updates
+    public function updateClockOut(Attendance $attendance, Carbon $clockIn, Carbon $clockOut)
+    {
+        // Handle cases where clock-out is past midnight (next day)
+        if ($clockOut < $clockIn) {
+            $clockOut->addDay();
+        }
+
+        $attendance->clock_out = $clockOut;
+
+        // Calculate total time in seconds
+        $totalSeconds = $clockOut->diffInSeconds($clockIn);
+
+        // Format total time as HH:MM:SS
+        $formattedTotalTime = gmdate('H:i:s', $totalSeconds);
+
+        // Initialize adjusted total time as total time
+        $formattedAdjustedTotalTime = $formattedTotalTime;
+
+        // Adjust total time based on employee shift
+        if ($attendance->type === 'Regular') {
+            $employeeShift = $attendance->employee_shift;
+
+            if ($employeeShift) {
+                // Convert shift total time to seconds
+                list($shiftHours, $shiftMinutes, $shiftSeconds) = explode(':', $employeeShift->total_time);
+                $shiftTotalSeconds = ($shiftHours * 3600) + ($shiftMinutes * 60) + $shiftSeconds;
+
+                // Use the minimum time (either worked time or shift time)
+                $adjustedTotalSeconds = min($totalSeconds, $shiftTotalSeconds);
+
+                // Format adjusted total time as HH:MM:SS
+                $formattedAdjustedTotalTime = gmdate('H:i:s', $adjustedTotalSeconds);
+            }
+        }
+
+        // Assign calculated values to the attendance object
+        $attendance->total_time = $formattedTotalTime;
+        $attendance->total_adjusted_time = $formattedAdjustedTotalTime;
+    }
+
+
     // Check if the day is a weekend
     private function isWeekend($currentDate)
     {
