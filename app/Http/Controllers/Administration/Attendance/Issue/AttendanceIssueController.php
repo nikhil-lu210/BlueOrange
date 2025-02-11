@@ -41,7 +41,15 @@ class AttendanceIssueController extends Controller
      */
     public function my()
     {
-        //
+        $startOfMonth = now()->startOfMonth()->format('Y-m-d'); // First day of the current month
+        $today = now()->format('Y-m-d'); // Today's date
+
+        $issues = AttendanceIssue::whereUserId(auth()->user()->id)
+                                ->whereBetween('clock_in_date', [$startOfMonth, $today])
+                                ->orderByDesc('clock_in_date')
+                                ->get();
+        // dd($issues);
+        return view('administration.attendance.issue.my', compact(['issues']));
     }
 
     /**
