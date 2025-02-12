@@ -131,13 +131,13 @@ if (!function_exists('show_user_name_and_avatar')) {
 
         $nameHtml = '';
         if ($name) {
-            $nameHtml = '<a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '" target="_blank" class="text-bold">' . htmlspecialchars($user->name) . '</a>';
+            $nameHtml = '<small class="text-bold text-dark">' . htmlspecialchars($user->name) . '</small>';
         }
 
         $aliasNameHtml = '';
         if ($alias) {
             $aliasName = optional($user->employee)->alias_name ?? '';
-            $aliasNameHtml = '<small class="text-bold text-dark">' . htmlspecialchars($aliasName) . '</small>';
+            $aliasNameHtml = '<a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '" target="_blank" class="text-bold">' . htmlspecialchars($aliasName) . '</a>';
         }
 
         $roleHtml = '';
@@ -151,8 +151,8 @@ if (!function_exists('show_user_name_and_avatar')) {
         <div class="d-flex justify-content-start align-items-center user-name">
             ' . $avatarHtml . '
             <div class="d-flex flex-column">
-                ' . $nameHtml . '
                 ' . $aliasNameHtml . '
+                ' . $nameHtml . '
                 ' . $roleHtml . '
             </div>
         </div>';
