@@ -23,6 +23,23 @@ trait UserAccessors
     }
     
     /**
+     * Get the fullname with alias_name of the user.
+     */
+    public function getFullNameAttribute(): string
+    {
+        $fullName = $this->name. ' ('. $this->employee->alias_name. ')';
+        return $fullName;
+    }
+    
+    /**
+     * Get the alias_name of the user.
+     */
+    public function getAliasNameAttribute(): string
+    {
+        return $this->employee->alias_name;
+    }
+    
+    /**
      * Get the currently active employee shift.
      *
      * @return EmployeeShift|null
