@@ -2,6 +2,7 @@
 
 namespace App\Mail\Administration\User;
 
+use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Address;
@@ -33,7 +34,7 @@ class UpcomingBirthdayNotifyMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: $this->data->alias_name. '\'s Birthday on '. show_date($this->data->birth_date),
+            subject: $this->data->alias_name. '\'s Birthday on '. Carbon::parse($this->data->birth_date)->format('jS F'),
         );
     }
 

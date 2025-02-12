@@ -9,9 +9,9 @@
 <div>
     Dear <b>{{ $data->user->name }}</b> ({{ $data->alias_name }}),  
     <br><br>
-    Wish You A Many Many Happy Returns Of The Day.  
+    {{ $wish }}
     <br><br>
-    Hope you will have a successful life ahead and shine you future. 
+    Once Again, Happy Birthday To You. 
     <br><br>
 
     Best Regards,  

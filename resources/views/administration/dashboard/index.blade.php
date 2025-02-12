@@ -30,6 +30,72 @@
             font-weight: bold;
         }
     </style>
+
+    <style>
+        :root {
+            --primary-color: #ff6b6b;
+            --secondary-color: #4ecdc4;
+            --text-color: #333;
+            --background-color: #f7f7f7;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes confetti {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+        .birthday-card {
+            /* background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); */
+            /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); */
+            border-radius: 20px;
+            overflow: hidden;
+            width: 100%;
+            margin: 0 auto;
+            padding: 0rem;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .user-photo {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 1rem;
+            border: 5px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .birthday-wish {
+            width: 100%;
+            border-radius: 10px;
+            border: 3px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .message {
+            color: white;
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f0f0;
+            animation: confetti 5s ease-in-out infinite;
+        }
+    </style>
 @endsection
 
 
@@ -47,17 +113,17 @@
 @section('content')
 <!-- Start row -->
 @if (is_today_birthday(optional(auth()->user()->employee)->birth_date)) 
-    <div class="row mb-4 birthday-wish">
-        <div class="col-md-12">
-            <div class="card card-border-shadow-primary">
-                <div class="card-body text-center">
-                    <i class="ti ti-balloon text-warning" style="font-size: 8rem;"></i>
-                    <h1 class="m-0 text-primary text-bold">Happy Birthday</h1>
-                    <h3 class="m-0 text-primary text-bold">{{ get_employee_name(auth()->user()) }}</h3>
-
-                    <p class="birthday-message mt-4 text-bold bg-label-success p-3">{{ $wish }}</p>
-                    <i class="fs-3">{{ __('Team Staff-India') }}</i>
-                </div>
+    <div class="row mb-4 birthday-wish-container justify-content-center">
+        <div class="col-md-6">
+            <div class="birthday-card">
+                @if (auth()->user()->hasMedia('avatar'))
+                    <img src="{{ auth()->user()->getFirstMediaUrl('avatar', 'profile_view') }}" alt="{{ auth()->user()->name }} Avatar" class="user-photo">
+                @else
+                    <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold user-photo">
+                        {{ profile_name_pic(auth()->user()) }}
+                    </span>
+                @endif
+                <img src="{{ asset('assets/img/custom_images/happy_birthday_wish.jpg') }}" alt="Happy Birthday" class="birthday-wish">
             </div>
         </div>
     </div>
@@ -346,6 +412,24 @@
                 $(this).closest('form').submit(); 
             });
         });
+    </script>
 
+    <script>
+        function createConfetti() {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.left = Math.random() * 100 + 'vw';
+            confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+            confetti.style.opacity = Math.random();
+            confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
+            
+            document.body.appendChild(confetti);
+            
+            setTimeout(() => {
+                confetti.remove();
+            }, 5000);
+        }
+
+        setInterval(createConfetti, 200);
     </script>
 @endsection
