@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\User\Employee\Employee;
 use App\Mail\Administration\User\BirthdayWishMail;
 use App\Mail\Administration\User\UpcomingBirthdayNotifyMail;
+use App\Models\User;
 
 class SendBirthdayEmails extends Command
 {
@@ -42,7 +43,6 @@ class SendBirthdayEmails extends Command
 
         if ($employees->isEmpty()) {
             $this->info('No birthdays today.');
-            return;
         }
 
         foreach ($employees as $employee) {
@@ -74,13 +74,13 @@ class SendBirthdayEmails extends Command
             $this->info('No birthdays in 3 days.');
         } else {
             foreach ($employeesInThreeDays as $employee) {
-                // Get the active team leader of the employee
-                $teamLeader = $employee->user->active_team_leader;
+                $notifiableUsers = User::with('employee')->whereStatus('Active')->get();
 
-                if ($teamLeader && $teamLeader->employee) {
-                    // Send email to the team leader
-                    Mail::to($teamLeader->employee->official_email)->queue(new UpcomingBirthdayNotifyMail($employee, $teamLeader));
-                    $this->info("Birthday notification sent to {$teamLeader->employee->alias_name} for {$employee->alias_name}.");
+                foreach ($notifiableUsers as $notifiableUser) {
+                    if ($notifiableUser->hasAnyPermission(['User Everything', 'User Update'])) {
+                        Mail::to($notifiableUser->employee->official_email)->queue(new UpcomingBirthdayNotifyMail($employee, $notifiableUser));
+                        $this->info("Birthday notification sent to {$notifiableUser->employee->alias_name} for {$employee->alias_name}.");
+                    }
                 }
             }
         }
