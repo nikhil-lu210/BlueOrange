@@ -184,7 +184,7 @@
                                             </a>
                                         @endcan
                                         @can ('Daily Work Update Read') 
-                                            <a href="{{ route('administration.daily_work_update.show', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                            <a href="{{ route('administration.daily_work_update.show', ['daily_work_update' => $dailyUpdate]) }}" target="_blank" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                                 <i class="text-white ti ti-info-hexagon"></i>
                                             </a>
                                         @endcan
