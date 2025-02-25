@@ -45,6 +45,15 @@ class LeaveHistoryService
             $query->whereUserId($request->user_id);
         }
 
+        // If a team leader ID is provided, filter employees under them
+        if ($request->team_leader_id) {
+            $teamLeader = User::find($request->team_leader_id);
+            if ($teamLeader) {
+                $employeeIds = $teamLeader->tl_employees->pluck('id');
+                $query->whereIn('user_id', $employeeIds);
+            }
+        }
+
         // Handle month/year filtering
         if ($request->has('leave_month_year') && !is_null($request->leave_month_year)) {
             $monthYear = Carbon::createFromFormat('F Y', $request->leave_month_year);
@@ -63,6 +72,11 @@ class LeaveHistoryService
         // Apply type filter if specified
         if ($request->has('type') && !is_null($request->type)) {
             $query->where('type', $request->type);
+        }
+
+        // Apply status filter if specified
+        if ($request->has('status') && !is_null($request->status)) {
+            $query->where('status', $request->status);
         }
 
         return $query;

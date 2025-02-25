@@ -45,12 +45,27 @@
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    <div class="col-md-10">
+    <div class="col-md-12">
         <form action="{{ route('administration.leave.history.index') }}" method="get" autocomplete="off">
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-3">
+                            <label for="team_leader_id" class="form-label">{{ __('Select Team Leader') }}</label>
+                            <select name="team_leader_id" id="team_leader_id" class="select2 form-select @error('team_leader_id') is-invalid @enderror" data-allow-clear="true">
+                                <option value="" {{ is_null(request()->team_leader_id) ? 'selected' : '' }}>{{ __('Select Team Leader') }}</option>
+                                @foreach ($teamLeaders as $leader)
+                                    <option value="{{ $leader->id }}" {{ $leader->id == request()->team_leader_id ? 'selected' : '' }}>
+                                        {{ get_employee_name($leader) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('announcer_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        
+                        <div class="mb-3 col-md-3">
                             <label for="user_id" class="form-label">{{ __('Select Employee') }}</label>
                             <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true">
                                 <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>{{ __('Select Employee') }}</option>
@@ -65,7 +80,7 @@
                             @enderror
                         </div>
                         
-                        <div class="mb-3 col-md-3">
+                        <div class="mb-3 col-md-2">
                             <label class="form-label">{{ __('Leaves Of') }}</label>
                             <input type="text" name="leave_month_year" value="{{ request()->leave_month_year ?? old('leave_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                             @error('leave_month_year')
@@ -73,7 +88,7 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3 col-md-3">
+                        <div class="mb-3 col-md-2">
                             <label for="type" class="form-label">{{ __('Select Leave Type') }}</label>
                             <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default">
                                 <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ __('Select Type') }}</option>
@@ -81,7 +96,21 @@
                                 <option value="Sick" {{ request()->type == 'Sick' ? 'selected' : '' }}>{{ __('Sick Leave') }}</option>
                                 <option value="Casual" {{ request()->type == 'Casual' ? 'selected' : '' }}>{{ __('Casual Leave') }}</option>
                             </select>
-                            @error('announcer_id')
+                            @error('type')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3 col-md-2">
+                            <label for="status" class="form-label">{{ __('Select Status') }}</label>
+                            <select name="status" id="status" class="form-select bootstrap-select w-100 @error('status') is-invalid @enderror"  data-style="btn-default">
+                                <option value="" {{ is_null(request()->status) ? 'selected' : '' }}>{{ __('Select status') }}</option>
+                                <option value="Pending" {{ request()->status == 'Pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                                <option value="Approved" {{ request()->status == 'Approved' ? 'selected' : '' }}>{{ __('Approved') }}</option>
+                                <option value="Rejected" {{ request()->status == 'Rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
+                                <option value="Canceled" {{ request()->status == 'Canceled' ? 'selected' : '' }}>{{ __('Canceled') }}</option>
+                            </select>
+                            @error('status')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>

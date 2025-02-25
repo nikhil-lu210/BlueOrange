@@ -33,7 +33,16 @@ class LeaveHistoryController extends Controller
      */
     public function index(Request $request)
     {
+        // dd($request->all());
         $userIds = auth()->user()->user_interactions->pluck('id');
+
+        
+        $teamLeaders = User::whereIn('id', $userIds)
+                            ->whereStatus('Active')
+                            ->get()
+                            ->filter(function ($user) {
+                                return $user->hasAnyPermission(['Leave History Everything', 'Leave History Update']);
+                            });
 
         // Eager load all necessary relationships
         $users = User::with(['roles', 'media', 'shortcuts', 'employee'])
@@ -46,7 +55,7 @@ class LeaveHistoryController extends Controller
             ->whereIn('user_id', $userIds)
             ->get();
 
-        return view('administration.leave.index', compact(['users', 'leaves']));
+        return view('administration.leave.index', compact(['teamLeaders', 'users', 'leaves']));
     }
 
     /**
