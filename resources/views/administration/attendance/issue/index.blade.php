@@ -122,8 +122,8 @@
                     </div> 
                     
                     <div class="col-md-12 text-end">
-                        @if (request()->user_id || request()->leave_month_year || request()->type) 
-                            <a href="{{ route('administration.leave.history.index') }}" class="btn btn-danger confirm-warning">
+                        @if (request()->team_leader_id || request()->user_id || request()->issue_month_year || request()->type || request()->status) 
+                            <a href="{{ route('administration.attendance.issue.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
                             </a>
