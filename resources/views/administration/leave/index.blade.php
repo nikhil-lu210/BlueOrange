@@ -60,7 +60,7 @@
                                     </option>
                                 @endforeach
                             </select>
-                            @error('announcer_id')
+                            @error('team_leader_id')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
@@ -75,7 +75,7 @@
                                     </option>
                                 @endforeach
                             </select>
-                            @error('announcer_id')
+                            @error('user_id')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>

@@ -24,16 +24,68 @@ class AttendanceIssueController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $userIds = auth()->user()->user_interactions->pluck('id');
+
+        $teamLeaders = User::whereIn('id', $userIds)
+                            ->whereStatus('Active')
+                            ->get()
+                            ->filter(function ($user) {
+                                return $user->hasAnyPermission(['Attendance Everything', 'Attendance Update']);
+                            });
+
+        // Eager load all necessary relationships
+        $users = User::with(['roles', 'media', 'shortcuts', 'employee'])
+            ->whereIn('id', $userIds)
+            ->whereStatus('Active')
+            ->get(['id', 'name']);
+
+        // Set default date range (current month)
         $startOfMonth = now()->startOfMonth()->format('Y-m-d'); // First day of the current month
         $today = now()->format('Y-m-d'); // Today's date
 
-        $issues = AttendanceIssue::whereBetween('clock_in_date', [$startOfMonth, $today])
-                                ->orderByDesc('clock_in_date')
-                                ->get();
-        // dd($issues);
-        return view('administration.attendance.issue.index', compact(['issues']));
+        $query = AttendanceIssue::orderByDesc('clock_in_date');
+
+        // If a team leader ID is provided, filter employees under them
+        if ($request->team_leader_id) {
+            $teamLeader = User::find($request->team_leader_id);
+            if ($teamLeader) {
+                $employeeIds = $teamLeader->tl_employees->pluck('id');
+                $query->whereIn('user_id', $employeeIds);
+            }
+        }
+
+        // Apply user filter
+        if ($request->has('user_id') && !empty($request->user_id)) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        // Handle month/year filtering
+        if ($request->has('issue_month_year') && !is_null($request->issue_month_year)) {
+            $monthYear = Carbon::createFromFormat('F Y', $request->issue_month_year);
+            $query->whereYear('clock_in_date', $monthYear->year)
+                ->whereMonth('clock_in_date', $monthYear->month);
+        } else {
+            // Default to current month if no specific filter is applied
+            if (!$request->has('filter_issues')) {
+                $query->whereBetween('clock_in_date', [$startOfMonth, $today]);
+            }
+        }
+
+        // Apply type filter if specified
+        if ($request->has('type') && !is_null($request->type)) {
+            $query->where('type', $request->type);
+        }
+
+        // Apply status filter if specified
+        if ($request->has('status') && !is_null($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        $issues = $query->get();
+
+        return view('administration.attendance.issue.index', compact(['teamLeaders', 'users', 'issues']));
     }
     
     /**
