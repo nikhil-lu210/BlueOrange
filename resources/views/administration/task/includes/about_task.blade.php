@@ -10,7 +10,7 @@
             <li class="d-flex align-items-center mb-3">
                 <i class="ti ti-user-edit text-heading"></i>
                 <span class="fw-medium mx-2 text-heading">Creator:</span> 
-                <span class="text-dark text-bold">{{ $task->creator->name }}</span>
+                <span class="text-dark text-bold">{{ $task->creator->alias_name }}</span>
             </li>
             <li class="d-flex align-items-center mb-3">
                 <i class="ti ti-clock-up text-heading"></i>
