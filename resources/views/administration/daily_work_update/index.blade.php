@@ -12,10 +12,11 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    
+
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
-    
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
 @endsection
@@ -43,12 +44,27 @@
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    <div class="col-md-8">
+    <div class="col-md-12">
         <form action="{{ route('administration.daily_work_update.index') }}" method="get" autocomplete="off">
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
-                        <div class="mb-3 col-md-7">
+                        <div class="mb-3 col-md-4">
+                            <label for="team_leader_id" class="form-label">{{ __('Select Team Leader') }}</label>
+                            <select name="team_leader_id" id="team_leader_id" class="select2 form-select @error('team_leader_id') is-invalid @enderror" data-allow-clear="true">
+                                <option value="" {{ is_null(request()->team_leader_id) ? 'selected' : '' }}>{{ __('Select Team Leader') }}</option>
+                                @foreach ($teamLeaders as $leader)
+                                    <option value="{{ $leader->id }}" {{ $leader->id == request()->team_leader_id ? 'selected' : '' }}>
+                                        {{ get_employee_name($leader) }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            @error('team_leader_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3 col-md-4">
                             <label for="user_id" class="form-label">Select Employee</label>
                             <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true">
                                 <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>Select Employee</option>
@@ -66,18 +82,30 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        
-                        <div class="mb-3 col-md-5">
+
+                        <div class="mb-3 col-md-2">
                             <label class="form-label">Work Updates Of</label>
                             <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                             @error('created_month_year')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
-                        </div>                        
+                        </div>
+
+                        <div class="mb-3 col-md-2">
+                            <label for="status" class="form-label">{{ __('Status') }}</label>
+                            <select name="status" id="status" class="form-select bootstrap-select w-100 @error('status') is-invalid @enderror"  data-style="btn-default">
+                                <option value="" {{ is_null(request()->status) ? 'selected' : '' }}>{{ __('Select status') }}</option>
+                                <option value="Reviewed" {{ request()->status == 'Reviewed' ? 'selected' : '' }}>{{ __('Reviewed') }}</option>
+                                <option value="Pending" {{ request()->status == 'Pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
+                            </select>
+                            @error('status')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
                     </div>
-                    
+
                     <div class="col-md-12 text-end">
-                        @if (request()->user_id || request()->created_month_year) 
+                        @if (request()->user_id || request()->created_month_year)
                             <a href="{{ route('administration.daily_work_update.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 Reset Filters
@@ -90,7 +118,7 @@
                     </div>
                 </div>
             </div>
-        </form>        
+        </form>
     </div>
 </div>
 
@@ -104,9 +132,9 @@
                     <span class="text-bold">{{ request()->user_id ? show_user_data(request()->user_id, 'name') : 'All Users' }}</span>
                     <sup>(<b>Month: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
                 </h5>
-        
+
                 <div class="card-header-elements ms-auto">
-                    @can ('Daily Work Update Create') 
+                    @can ('Daily Work Update Create')
                         <a href="{{ route('administration.daily_work_update.create') }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-plus ti-xs me-1"></span>
                             Create Work Update
@@ -128,7 +156,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($dailyWorkUpdates as $key => $dailyUpdate) 
+                            @foreach ($dailyWorkUpdates as $key => $dailyUpdate)
                                 <tr class="@if (is_null($dailyUpdate->rating)) bg-label-danger @endif">
                                     <th>#{{ serial($dailyWorkUpdates, $key) }}</th>
                                     <td>
@@ -148,7 +176,7 @@
                                                         break;
                                                     case '4':
                                                         $color = 'primary';
-                                                        break;                                                    
+                                                        break;
                                                     default:
                                                         $color = 'success';
                                                         break;
@@ -178,12 +206,12 @@
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        @can ('Daily Work Update Delete') 
+                                        @can ('Daily Work Update Delete')
                                             <a href="{{ route('administration.daily_work_update.destroy', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Daily Work Update?">
                                                 <i class="text-white ti ti-trash"></i>
                                             </a>
                                         @endcan
-                                        @can ('Daily Work Update Read') 
+                                        @can ('Daily Work Update Read')
                                             <a href="{{ route('administration.daily_work_update.show', ['daily_work_update' => $dailyUpdate]) }}" target="_blank" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                                 <i class="text-white ti ti-info-hexagon"></i>
                                             </a>
@@ -195,7 +223,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -213,7 +241,8 @@
     <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
-    
+    <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
+
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
 @endsection
 
@@ -222,6 +251,12 @@
     <script>
         // Custom Script Here
         $(document).ready(function() {
+            $('.bootstrap-select').each(function() {
+                if (!$(this).data('bs.select')) { // Check if it's already initialized
+                    $(this).selectpicker();
+                }
+            });
+
             $('.month-year-picker').datepicker({
                 format: 'MM yyyy',         // Display format to show full month name and year
                 minViewMode: 'months',     // Only allow month selection

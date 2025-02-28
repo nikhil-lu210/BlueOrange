@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Administration\DailyWorkUpdate;
 
 use Exception;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Administration\DailyWorkUpdate\DailyWorkUpdateStoreRequest;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
+use App\Http\Requests\Administration\DailyWorkUpdate\DailyWorkUpdateStoreRequest;
 use App\Notifications\Administration\DailyWorkUpdate\DailyWorkUpdateCreateNotification;
 use App\Notifications\Administration\DailyWorkUpdate\DailyWorkUpdateUpdateNotification;
 
@@ -21,11 +22,21 @@ class DailyWorkUpdateController extends Controller
     public function index(Request $request)
     {
         // dd(auth()->user()->tl_employees);
+        $userIds = auth()->user()->user_interactions->pluck('id');
+
+
+        $teamLeaders = User::whereIn('id', $userIds)
+                            ->whereStatus('Active')
+                            ->get()
+                            ->filter(function ($user) {
+                                return $user->hasAnyPermission(['Daily Work Update Everything', 'Daily Work Update Update']);
+                            });
+
         $roles = $this->getRolesWithPermission();
 
         $dailyWorkUpdates = $this->getFilteredDailyWorkUpdates($request);
 
-        return view('administration.daily_work_update.index', compact('roles', 'dailyWorkUpdates'));
+        return view('administration.daily_work_update.index', compact('teamLeaders', 'roles', 'dailyWorkUpdates'));
     }
 
     /**
@@ -71,7 +82,7 @@ class DailyWorkUpdateController extends Controller
         // dd($request->all(), auth()->user()->active_team_leader->id);
         $authUser = auth()->user();
         $teamLeader = $authUser->active_team_leader;
-        
+
         if (is_null($teamLeader)) {
             return redirect()->back()->withInput()->withErrors('Team Leader is Missing. Please ask authority to assign your Team Leader');
         }
@@ -94,7 +105,7 @@ class DailyWorkUpdateController extends Controller
                         store_file_media($file, $workUpdate, $directory);
                     }
                 }
-                
+
                 // Send Notification to System
                 $teamLeader->notify(new DailyWorkUpdateCreateNotification($workUpdate, auth()->user()));
             });
@@ -141,7 +152,7 @@ class DailyWorkUpdateController extends Controller
                     'rating' => $request->rating,
                     'comment' => $comment
                 ]);
-                
+
                 // Send Notification to System
                 $dailyWorkUpdate->user->notify(new DailyWorkUpdateUpdateNotification($dailyWorkUpdate, auth()->user()));
             });
@@ -168,7 +179,7 @@ class DailyWorkUpdateController extends Controller
         }
     }
 
-    
+
 
     /**
      * Helper method to get roles with 'Daily Work Update Create' permission
@@ -196,6 +207,10 @@ class DailyWorkUpdateController extends Controller
             $query->where('team_leader_id', $teamLeaderId);
         }
 
+        if ($request->filled('team_leader_id')) {
+            $query->where('team_leader_id', $request->team_leader_id);
+        }
+
         if ($request->filled('user_id')) {
             $query->where('user_id', $request->user_id);
         }
@@ -210,6 +225,10 @@ class DailyWorkUpdateController extends Controller
                 Carbon::now()->startOfMonth()->format('Y-m-d'),
                 Carbon::now()->endOfMonth()->format('Y-m-d')
             ]);
+        }
+
+        if ($request->filled('status')) {
+            $request->status === 'Reviewed' ? $query->whereNotNull('rating') : $query->whereNull('rating');
         }
 
         return $query->get();
