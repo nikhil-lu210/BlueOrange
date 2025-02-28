@@ -167,7 +167,7 @@
                                         <small>Priority: <span class="text-muted">{{ $task->priority }}</span></small>
                                     </td>
                                     <td>
-                                        <b class="text-dark">{{ $task->creator->first_name.' '.$task->creator->last_name }}</b>
+                                        <b class="text-dark">{{ $task->creator->alias_name }}</b>
                                         <br>
                                         @if ($task->users->count() > 0)
                                             <div class="d-flex align-items-center">
