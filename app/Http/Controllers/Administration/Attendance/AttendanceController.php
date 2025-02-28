@@ -140,7 +140,7 @@ class AttendanceController extends Controller
     }
 
 
-    
+
     // Clockin
     public function clockIn(Request $request)
     {
@@ -219,6 +219,23 @@ class AttendanceController extends Controller
     }
 
 
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Attendance $attendance)
+    {
+        try {
+            $attendance->delete();
+
+            toast('Attendance Record deleted successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+
     /**
      * export attendances.
      */
@@ -236,7 +253,7 @@ class AttendanceController extends Controller
         $userName = '';
         $monthYear = '';
         $clockinType = '';
-        
+
         // Handle user_id filter
         if ($request->has('user_id') && !is_null($request->user_id)) {
             $query->where('user_id', $request->user_id);
@@ -259,11 +276,11 @@ class AttendanceController extends Controller
                 ]);
             }
         }
-        
+
         // Handle type filter
         if ($request->has('type') && !is_null($request->type)) {
             $query->where('type', $request->type);
-            
+
             $clockinType = strtolower($request->type). '_';
         }
 
@@ -291,8 +308,8 @@ class AttendanceController extends Controller
     {
         $query = Attendance::with([
             'user:id,userid,name,first_name,last_name',
-            'user.media', 
-            'user.roles', 
+            'user.media',
+            'user.roles',
             'employee_shift:id,start_time,end_time',
             'daily_breaks'
         ]);

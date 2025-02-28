@@ -12,11 +12,11 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    
+
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -71,7 +71,7 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        
+
                         <div class="mb-3 col-md-3">
                             <label class="form-label">{{ __('Attendances Of') }}</label>
                             <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
@@ -92,9 +92,9 @@
                             @enderror
                         </div>
                     </div>
-                    
+
                     <div class="col-md-12 text-end">
-                        @if (request()->user_id || request()->created_month_year || request()->type) 
+                        @if (request()->user_id || request()->created_month_year || request()->type)
                             <a href="{{ route('administration.attendance.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
@@ -107,7 +107,7 @@
                     </div>
                 </div>
             </div>
-        </form>        
+        </form>
     </div>
 </div>
 
@@ -129,11 +129,11 @@
                     <span class="text-bold">{{ request()->user_id ? show_user_data(request()->user_id, 'name') : 'All Users' }}</span>
                     <sup>(<b>Month: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
                 </h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     @if ($attendances->count() > 0)
                         <a href="{{ route('administration.attendance.export', [
-                            'user_id' => request('user_id'), 
+                            'user_id' => request('user_id'),
                             'created_month_year' => request('created_month_year'),
                             'type' => request('type'),
                             'filter_attendance' => request('filter_attendance')
@@ -160,7 +160,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($attendances as $key => $attendance) 
+                            @foreach ($attendances as $key => $attendance)
                                 <tr>
                                     <th>#{{ serial($attendances, $key) }}</th>
                                     <td>
@@ -169,7 +169,9 @@
                                         <small class="text-bold badge bg-{{ $attendance->type === 'Regular' ? 'success' : 'warning' }}">{{ $attendance->type }}</small>
                                     </td>
                                     <td>
-                                        {!! show_user_name_and_avatar($attendance->user, role: null) !!}
+                                        @if ($attendance->user)
+                                            {!! show_user_name_and_avatar($attendance->user, role: null) !!}
+                                        @endif
                                     </td>
                                     <td>
                                         <div class="d-grid">
@@ -202,13 +204,13 @@
                                         </div>
                                     </td>
                                     <td class="text-center {{ $attendance->type == 'Overtime' ? 'not-allowed' : '' }}">
-                                        @if ($attendance->type == 'Regular') 
+                                        @if ($attendance->type == 'Regular')
                                             <div class="d-grid">
                                                 <b class="text-truncate">
                                                     <span class="text-warning" title="Total Break Time">
                                                         {{ total_time($attendance->total_break_time) }}
                                                     </span>
-                                                    @isset ($attendance->total_over_break) 
+                                                    @isset ($attendance->total_over_break)
                                                         <small class="text-danger" title="Total Over Break">
                                                             ({{ total_time($attendance->total_over_break) }})
                                                         </small>
@@ -218,13 +220,13 @@
                                                     Breaks Taken: {{ $attendance->total_breaks_taken }}
                                                 </small>
                                             </div>
-                                        @else 
+                                        @else
                                             <b class="text-muted">No Break</b>
                                         @endif
                                     </td>
                                     <td>
                                         <div class="d-grid">
-                                            @if ($attendance->type == 'Regular') 
+                                            @if ($attendance->type == 'Regular')
                                                 @isset($attendance->total_adjusted_time)
                                                     @php
                                                         $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
@@ -236,7 +238,7 @@
                                                     <b class="text-success text-uppercase">Running</b>
                                                 @endisset
                                                 <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Total Working Time">{{ $attendance->total_time }}</small>
-                                            @else 
+                                            @else
                                                 <b class="text-warning">
                                                     {{ total_time($attendance->total_time) }}
                                                 </b>
@@ -244,8 +246,11 @@
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                            <i class="text-primary ti ti-info-hexagon"></i>
+                                        <a href="{{ route('administration.attendance.destroy', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Destroy Details">
+                                            <i class="ti ti-info-hexagon"></i>
+                                        </a>
+                                        <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                            <i class="ti ti-info-hexagon"></i>
                                         </a>
                                     </td>
                                 </tr>
@@ -254,7 +259,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -273,7 +278,7 @@
 
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
 @endsection

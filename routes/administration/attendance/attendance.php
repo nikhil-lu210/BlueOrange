@@ -17,10 +17,12 @@ Route::controller(AttendanceController::class)->prefix('attendance')->name('atte
     Route::post('/store', 'store')->name('store')->can('Attendance Everything');
     Route::post('/clockin', 'clockIn')->name('clockin')->can('Attendance Read');
     Route::post('/clockout', 'clockOut')->name('clockout')->can('Attendance Read');
-    
+
     Route::get('/show/{attendance}', 'show')->name('show')->can('Attendance Read');
     Route::post('/update/{attendance}', 'update')->name('update')->can('Attendance Update');
-    
+
+    Route::get('/destroy/{attendance}', 'destroy')->name('destroy')->can('Attendance Delete');
+
     Route::get('/export', 'export')->name('export')->can('Attendance Everything');
 });
 
@@ -48,6 +50,6 @@ Route::controller(AttendanceIssueController::class)->prefix('attendance/issue')-
     Route::put('/update/{issue}/{status}', 'update')->name('update')->can('Attendance Update');
 
     Route::get('/show/{issue}', 'show')->name('show')->can('Attendance Read');
-    
+
     Route::get('/destroy/{issue}', 'destroy')->name('destroy')->can('Attendance Update');
 });
