@@ -106,7 +106,7 @@ class UserService
         $notifiableUsers = User::whereStatus('Active')->get()->filter(function ($user) {
             return $user->hasAnyPermission(['User Everything', 'User Update']);
         });
-            
+
         foreach ($notifiableUsers as $key => $notifiableUser) {
             $notifiableUser->notify(new NewUserRegistrationNotification($user, $authUser));
         }
@@ -142,7 +142,7 @@ class UserService
         return User::with(['roles', 'media'])->findOrFail($user->id);
     }
 
-    
+
     public function updateUser(User $user, array $data)
     {
         return DB::transaction(function () use ($user, $data) {
@@ -177,7 +177,7 @@ class UserService
 
             // Handle avatar update
             $this->attachAvatar($user, $data['avatar'] ?? null);
-            
+
             // Sync roles
             $user->syncRoles([$data['role_id']]);
         });
@@ -186,17 +186,17 @@ class UserService
 
     public function updateShift(EmployeeShift $shift, User $user, array $data) {
         return DB::transaction(function() use ($data, $shift, $user) {
-            $shift->update([
-                'implemented_to' => date('Y-m-d'),
-                'status' => 'Inactive'
-            ]);
-
             EmployeeShift::create([
                 'user_id' => $user->id,
                 'start_time' => $data['start_time'],
                 'end_time' => $data['end_time'],
                 'total_time' => get_total_time_hh_mm_ss($data['start_time'], $data['end_time']),
                 'implemented_from' => date('Y-m-d')
+            ]);
+
+            $shift->update([
+                'implemented_to' => date('Y-m-d'),
+                'status' => 'Inactive'
             ]);
         }, 5);
     }
@@ -244,7 +244,7 @@ class UserService
         ]);
     }
 
-    
+
     private function attachAvatar(User $user, $avatar = null)
     {
         if ($avatar instanceof UploadedFile) {

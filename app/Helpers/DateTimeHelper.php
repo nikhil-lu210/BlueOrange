@@ -82,7 +82,7 @@ if (!function_exists('show_month')) {
     {
         // If no $month is passed, use the current date
         $carbon = $month ? Carbon::parse($month) : Carbon::now();
-        
+
         // Format to Month Year (e.g., September 2024)
         return $carbon->format('F Y');
     }
@@ -210,7 +210,7 @@ if (!function_exists('total_day_difference')) {
 
     /**
      * Get the total time difference between a start date and an end date in the format "x years y months z days".
-     * 
+     *
      * @param  string|int  $startDate  The start date or timestamp.
      * @param  string|int|null  $endDate  The end date or timestamp. Defaults to current date if not provided.
      * @return string
@@ -252,24 +252,35 @@ if (!function_exists('get_total_time_hh_mm_ss')) {
     /**
      * Calculate the total time difference between two timestamps in hh:mm:ss format.
      *
-     * @param string $startTime The start time in 'Y-m-d H:i:s' format or 'H:i:s' format.
-     * @param string $endTime The end time in 'Y-m-d H:i:s' format or 'H:i:s' format.
+     * @param string $startTime The start time in 'Y-m-d H:i:s' or 'H:i:s' format.
+     * @param string $endTime The end time in 'Y-m-d H:i:s' or 'H:i:s' format.
      * @return string Total time difference in 'hh:mm:ss' format.
      * @throws Exception if the input format is invalid.
      */
     function get_total_time_hh_mm_ss($startTime, $endTime)
     {
-        // Parse the timestamps to DateTime objects
-        $start = new DateTime($startTime);
-        $end = new DateTime($endTime);
+        $now = new DateTime(); // Get the current date
+
+        // Convert time-only strings into full datetime objects
+        $start = DateTime::createFromFormat('Y-m-d H:i', $now->format('Y-m-d') . ' ' . $startTime);
+        $end = DateTime::createFromFormat('Y-m-d H:i', $now->format('Y-m-d') . ' ' . $endTime);
+
+        // If end time is earlier than start time, it means it's on the next day
+        if ($end < $start) {
+            $end->modify('+1 day'); // Move end time to the next day
+        }
 
         // Calculate the difference
         $interval = $start->diff($end);
 
-        // Format the interval as 'hh:mm:ss'
-        return sprintf('%02d:%02d:%02d', $interval->h, $interval->i, $interval->s);
+        // Calculate total hours correctly
+        $totalHours = ($interval->days * 24) + $interval->h;
+
+        // Format as 'hh:mm:ss'
+        return sprintf('%02d:%02d:%02d', $totalHours, $interval->i, $interval->s);
     }
 }
+
 
 
 if (!function_exists('total_time_difference')) {
@@ -511,7 +522,7 @@ if (!function_exists('is_today_birthday')) {
 if (!function_exists('total_regular_working_days')) {
     /**
      * Calculate the number of working days in a given month, excluding weekends and holidays.
-     * 
+     *
      * @param string|null $month The month in 'Y-m' format (e.g., '2024-09'). If null, defaults to the previous month.
      * @return int The number of working days in the specified month.
      */
