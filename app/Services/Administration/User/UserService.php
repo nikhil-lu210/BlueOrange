@@ -25,6 +25,16 @@ class UserService
 {
     public function getUserListingData($request)
     {
+        $userIds = auth()->user()->user_interactions->pluck('id');
+
+
+        $teamLeaders = User::whereIn('id', $userIds)
+                            ->whereStatus('Active')
+                            ->get()
+                            ->filter(function ($user) {
+                                return $user->hasAnyPermission(['Daily Work Update Everything', 'Daily Work Update Update']);
+                            });
+
         $roles = $this->getAllRoles();
 
         $query = User::select(['id', 'userid', 'first_name', 'last_name', 'name', 'email', 'status'])
@@ -33,12 +43,33 @@ class UserService
         // Check if the authenticated user has 'User Everything' or 'User Create' permission
         if (!auth()->user()->hasAnyPermission(['User Everything', 'User Create', 'User Update', 'User Delete'])) {
             // Restrict to users based on user interactions
-            $query->whereIn('id', auth()->user()->user_interactions->pluck('id'));
+            $query->whereIn('id', $userIds);
+        }
+
+        // If a team leader ID is provided, filter employees under them
+        if ($request->team_leader_id) {
+            $teamLeader = User::find($request->team_leader_id);
+            if ($teamLeader) {
+                $employeeIds = $teamLeader->tl_employees->pluck('id');
+                $query->whereIn('id', $employeeIds);
+            }
         }
 
         // Apply role filter if provided
         if ($request->filled('role_id')) {
             $query->whereHas('roles', fn($role) => $role->where('roles.id', $request->role_id));
+        }
+
+        // Apply shift filter
+        if ($request->filled('start_time') && $request->filled('end_time')) {
+            $startTime = $request->input('start_time').':00';
+            $endTime = $request->input('end_time').':00';
+
+            $query->whereHas('employee_shifts', function ($shiftQuery) use ($startTime, $endTime) {
+                $shiftQuery->where('status', 'Active')
+                    ->whereTime('start_time', '=', $startTime)
+                    ->whereTime('end_time', '=', $endTime);
+            });
         }
 
         // Apply status filter
@@ -53,7 +84,7 @@ class UserService
 
         $users = $query->get();
 
-        return compact('roles', 'users');
+        return compact('teamLeaders', 'roles', 'users');
     }
 
     public function getAllRoles()
@@ -106,7 +137,7 @@ class UserService
         $notifiableUsers = User::whereStatus('Active')->get()->filter(function ($user) {
             return $user->hasAnyPermission(['User Everything', 'User Update']);
         });
-            
+
         foreach ($notifiableUsers as $key => $notifiableUser) {
             $notifiableUser->notify(new NewUserRegistrationNotification($user, $authUser));
         }
@@ -142,7 +173,7 @@ class UserService
         return User::with(['roles', 'media'])->findOrFail($user->id);
     }
 
-    
+
     public function updateUser(User $user, array $data)
     {
         return DB::transaction(function () use ($user, $data) {
@@ -177,7 +208,7 @@ class UserService
 
             // Handle avatar update
             $this->attachAvatar($user, $data['avatar'] ?? null);
-            
+
             // Sync roles
             $user->syncRoles([$data['role_id']]);
         });
@@ -186,17 +217,17 @@ class UserService
 
     public function updateShift(EmployeeShift $shift, User $user, array $data) {
         return DB::transaction(function() use ($data, $shift, $user) {
-            $shift->update([
-                'implemented_to' => date('Y-m-d'),
-                'status' => 'Inactive'
-            ]);
-
             EmployeeShift::create([
                 'user_id' => $user->id,
                 'start_time' => $data['start_time'],
                 'end_time' => $data['end_time'],
                 'total_time' => get_total_time_hh_mm_ss($data['start_time'], $data['end_time']),
                 'implemented_from' => date('Y-m-d')
+            ]);
+
+            $shift->update([
+                'implemented_to' => date('Y-m-d'),
+                'status' => 'Inactive'
             ]);
         }, 5);
     }
@@ -244,7 +275,7 @@ class UserService
         ]);
     }
 
-    
+
     private function attachAvatar(User $user, $avatar = null)
     {
         if ($avatar instanceof UploadedFile) {
