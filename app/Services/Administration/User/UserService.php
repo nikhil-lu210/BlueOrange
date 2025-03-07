@@ -25,6 +25,16 @@ class UserService
 {
     public function getUserListingData($request)
     {
+        $userIds = auth()->user()->user_interactions->pluck('id');
+
+
+        $teamLeaders = User::whereIn('id', $userIds)
+                            ->whereStatus('Active')
+                            ->get()
+                            ->filter(function ($user) {
+                                return $user->hasAnyPermission(['Daily Work Update Everything', 'Daily Work Update Update']);
+                            });
+
         $roles = $this->getAllRoles();
 
         $query = User::select(['id', 'userid', 'first_name', 'last_name', 'name', 'email', 'status'])
@@ -33,12 +43,33 @@ class UserService
         // Check if the authenticated user has 'User Everything' or 'User Create' permission
         if (!auth()->user()->hasAnyPermission(['User Everything', 'User Create', 'User Update', 'User Delete'])) {
             // Restrict to users based on user interactions
-            $query->whereIn('id', auth()->user()->user_interactions->pluck('id'));
+            $query->whereIn('id', $userIds);
+        }
+
+        // If a team leader ID is provided, filter employees under them
+        if ($request->team_leader_id) {
+            $teamLeader = User::find($request->team_leader_id);
+            if ($teamLeader) {
+                $employeeIds = $teamLeader->tl_employees->pluck('id');
+                $query->whereIn('id', $employeeIds);
+            }
         }
 
         // Apply role filter if provided
         if ($request->filled('role_id')) {
             $query->whereHas('roles', fn($role) => $role->where('roles.id', $request->role_id));
+        }
+
+        // Apply shift filter
+        if ($request->filled('start_time') && $request->filled('end_time')) {
+            $startTime = $request->input('start_time').':00';
+            $endTime = $request->input('end_time').':00';
+
+            $query->whereHas('employee_shifts', function ($shiftQuery) use ($startTime, $endTime) {
+                $shiftQuery->where('status', 'Active')
+                    ->whereTime('start_time', '=', $startTime)
+                    ->whereTime('end_time', '=', $endTime);
+            });
         }
 
         // Apply status filter
@@ -53,7 +84,7 @@ class UserService
 
         $users = $query->get();
 
-        return compact('roles', 'users');
+        return compact('teamLeaders', 'roles', 'users');
     }
 
     public function getAllRoles()
