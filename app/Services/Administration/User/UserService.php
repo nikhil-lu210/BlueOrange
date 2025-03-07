@@ -27,12 +27,11 @@ class UserService
     {
         $userIds = auth()->user()->user_interactions->pluck('id');
 
-
         $teamLeaders = User::whereIn('id', $userIds)
                             ->whereStatus('Active')
                             ->get()
                             ->filter(function ($user) {
-                                return $user->hasAnyPermission(['Daily Work Update Everything', 'Daily Work Update Update']);
+                                return $user->hasAnyPermission(['User Everything', 'User Create', 'User Update', 'User Delete']);
                             });
 
         $roles = $this->getAllRoles();
@@ -47,12 +46,13 @@ class UserService
         }
 
         // If a team leader ID is provided, filter employees under them
-        if ($request->team_leader_id) {
-            $teamLeader = User::find($request->team_leader_id);
-            if ($teamLeader) {
-                $employeeIds = $teamLeader->tl_employees->pluck('id');
-                $query->whereIn('id', $employeeIds);
-            }
+        if ($request->filled('team_leader_id')) {
+            $teamLeader = User::findOrFail($request->team_leader_id);
+
+            $query->whereHas('employee_team_leaders', function ($tlQuery) use ($teamLeader) {
+                $tlQuery->where('is_active', true)
+                    ->where('team_leader_id', $teamLeader->id);
+            });
         }
 
         // Apply role filter if provided
