@@ -11,7 +11,7 @@ class NotificationController extends Controller
 {
     public function index() {
         $notifications = auth()->user()->notifications;
-        
+
         return view('administration.notification.index', compact(['notifications']));
     }
 
@@ -29,7 +29,7 @@ class NotificationController extends Controller
             } else {
                 return redirect()->back();
             }
-            
+
         }
 
         return redirect()->back();
@@ -69,7 +69,7 @@ class NotificationController extends Controller
 
         foreach ($notifications as $notification) {
             $notification->delete();
-        }        
+        }
 
         toast('All Notification Has Been Deleted.', 'success');
         return redirect()->back();
@@ -79,18 +79,38 @@ class NotificationController extends Controller
     /**
      * to fetch it from client side js
      * public\assets\js\custom_js\notification\browser_notification.js
-     * 
-     * resources/views/layouts/administration/partials/scripts.blade.php 
+     *
+     * resources/views/layouts/administration/partials/scripts.blade.php
      */
-    public function getUnreadNotifications()
+    public function getUnreadNotificationsForBrowser()
     {
         // Check if the unread notifications are already cached
         $notifications = Cache::remember('unread_notifications_' . auth()->id(), 5, function () {
             // If not cached, fetch the notifications from the database
             return auth()->user()->unreadNotifications;
         });
+        // dd($notifications);
 
         // Return the cached notifications as JSON
         return response()->json($notifications);
+    }
+
+
+    /**
+     * mark notification as read from client side js
+     * public\assets\js\custom_js\notification\browser_notification.js
+     *
+     * resources/views/layouts/administration/partials/scripts.blade.php
+     */
+    public function markAsReadForBrowser($notification_id)
+    {
+        $notification = Auth::user()->notifications->find($notification_id);
+
+        if ($notification) {
+            $notification->markAsRead();
+        }
+
+        // Return the cached notification as JSON
+        return response()->json($notification);
     }
 }
