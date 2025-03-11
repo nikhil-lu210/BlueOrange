@@ -50,12 +50,12 @@
 
 <!-- Start row -->
 <div class="row g-4">
-    @foreach ($roles as $role) 
+    @foreach ($roles as $role)
         <div class="col-xl-4 col-lg-6 col-md-6">
             <div class="card">
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <h6 class="fw-normal mb-2">Total <strong>{{ $role->users()->count() }}</strong> Users</h6>
+                        <h6 class="fw-normal mb-2">Total <strong>{{ $role->active_users_count }}</strong> Active Users</h6>
                         <ul class="list-unstyled d-flex align-items-center avatar-group mb-0">
                             @foreach ($role->users->take(5) as $user)
                                 <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
@@ -68,9 +68,9 @@
                                     @endif
                                 </li>
                             @endforeach
-                            @if ($role->users->count() > 5)
-                                <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $role->users->count() - 5 }} More" class="avatar avatar-sm pull-up more-user-avatar">
-                                    <small>{{ ($role->users->count() - 5) < 10 ? $role->users->count() - 5 : '9' }}+</small>
+                            @if ($role->active_users_count > 5)
+                                <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $role->active_users_count - 5 }} More" class="avatar avatar-sm pull-up more-user-avatar">
+                                    <small>{{ ($role->active_users_count - 5) < 10 ? $role->active_users_count - 5 : '9' }}+</small>
                                 </li>
                             @endif
                         </ul>
@@ -126,7 +126,7 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <!-- Datatable js -->    
+    <!-- Datatable js -->
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>

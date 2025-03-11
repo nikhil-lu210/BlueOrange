@@ -44,8 +44,8 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0"><strong>{{ $role->name }}</strong> Role's Details</h5>
-        
-                @if (auth()->user()->hasRole('Developer') || ($role->name !== 'Developer' && $role->name !== 'Super Admin')) 
+
+                @if (auth()->user()->hasRole('Developer') || ($role->name !== 'Developer' && $role->name !== 'Super Admin'))
                     <div class="card-header-elements ms-auto">
                         <a href="{{ route('administration.settings.rolepermission.role.edit', ['role' => $role]) }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-edit ti-xs me-1"></span>
@@ -61,11 +61,11 @@
                             <dl class="row mb-0">
                                 <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Role Name:</dt>
                                 <dd class="col-sm-8">{{ $role->name }}</dd>
-                    
+
                                 <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Role Assigned:</dt>
                                 <dd class="col-sm-8">{{ date_time_ago($role->created_at) }}</dd>
-                    
-                                @if ($role->created_at != $role->updated_at) 
+
+                                @if ($role->created_at != $role->updated_at)
                                     <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Last Update:</dt>
                                     <dd class="col-sm-8">{{ date_time_ago($role->updated_at) }}</dd>
                                 @endif
@@ -75,7 +75,7 @@
                             <dl class="row mb-0">
                                 <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Total Permissions:</dt>
                                 <dd class="col-sm-8">{{ $role->permissions()->count() }}</dd>
-                                
+
                                 <dt class="col-sm-4 mb-2 fw-bold text-nowrap">Total Users:</dt>
                                 <dd class="col-sm-8">{{ $role->users()->count() }}</dd>
                             </dl>
@@ -84,17 +84,17 @@
                 </div>
                 <div class="col-md-12 mt-5">
                     <h5 class="text-center"><strong>{{ $role->name }}</strong> Role's Permissions</h5>
-                    
+
                     <div class="col-md-12 mb-4">
                         <div class="row justify-content-center">
                             <div class="col-md-8">
                                 <dl class="row mb-0">
-                                    @foreach ($permissionModules as $module) 
+                                    @foreach ($permissionModules as $module)
                                         <dt class="col-sm-4 mb-2 fw-bold text-nowrap">{{ $module->name }}:</dt>
                                         <dd class="col-sm-8">
                                             @foreach ($module->permissions as $permission)
                                                 <span class="badge bg-label-primary">{{ $permission->name }}</span>
-                                            @endforeach    
+                                            @endforeach
                                         </dd>
                                     @endforeach
                                 </dl>
@@ -102,8 +102,8 @@
                         </div>
                     </div>
                 </div>
-            </div>            
-        </div>        
+            </div>
+        </div>
     </div>
 </div>
 
@@ -114,50 +114,82 @@
                 <h5 class="mb-0">All Users of <strong>{{ $role->name }}</strong> Role's</h5>
             </div>
             <div class="card-body">
-                <table class="table data-table table-bordered table-responsive" style="width: 100%;">
-                    <thead>
-                        <tr>
-                            <th>Sl.</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($role->users as $key => $user) 
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
+                        <thead>
                             <tr>
-                                <th>#{{ serial($role->users, $key) }}</th>
-                                <td>
-                                    {!! show_user_name_and_avatar($user) !!}
-                                </td>
-                                <td>{{ $user->email }}</td>
-                                <td>
-                                    <div class="d-inline-block">
-                                        <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
-                                            <i class="text-primary ti ti-dots-vertical"></i>
-                                        </a>
-                                        <div class="dropdown-menu dropdown-menu-end m-0" style="">
-                                            <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="dropdown-item">
-                                                <i class="text-primary ti ti-pencil"></i> 
-                                                Edit
-                                            </a>
-                                            <div class="dropdown-divider"></div>
-                                            <a href="{{ route('administration.settings.user.destroy', ['user' => $user]) }}" class="dropdown-item text-danger delete-record">
-                                                <i class="ti ti-trash"></i> 
-                                                Delete
-                                            </a>
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="btn btn-sm btn-icon item-edit" data-bs-toggle="tooltip" title="Show Details">
-                                        <i class="text-primary ti ti-info-hexagon"></i>
-                                    </a>
-                                </td>
+                                <th>Sl.</th>
+                                <th>Employee ID</th>
+                                <th>Name</th>
+                                <th>Email & Shift</th>
+                                <th>Status</th>
+                                <th class="text-center">Action</th>
                             </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            @foreach ($role->users as $key => $user)
+                                <tr>
+                                    <th>#{{ serial($role->users, $key) }}</th>
+                                    <th>
+                                        <b class="text-primary fs-5">{{ $user->userid }}</b>
+                                        <br>
+                                        <small>
+                                            <a href="{{ route('administration.settings.user.user_interaction.index', ['user' => $user]) }}" target="_blank" class="mb-1 text-capitalize text-bold text-dark" title="Team Leader">
+                                                @isset ($user->active_team_leader)
+                                                    {{ $user->active_team_leader->employee->alias_name }}
+                                                @else
+                                                    {{ __('Not Assigned') }}
+                                                @endisset
+                                            </a>
+                                        </small>
+                                    </th>
+                                    <td>
+                                        {!! show_user_name_and_avatar($user) !!}
+                                    </td>
+                                    <td>
+                                        <a href="mailto:{{ optional($user->employee)->official_email }}" class="mb-1 text-bold" title="Official Email">
+                                            {{ optional($user->employee)->official_email }}
+                                        </a>
+                                        <br>
+                                        <b class="text-dark" title="Current Working Shift">
+                                            {{ show_time(optional($user->current_shift)->start_time). ' to '.show_time(optional($user->current_shift)->end_time) }}
+                                        </b>
+                                    </td>
+                                    <td>{!! show_status($user->status) !!}</td>
+                                    <td class="text-center">
+                                        @canany (['User Update', 'User Delete'])
+                                            <div class="d-inline-block">
+                                                <a href="javascript:void(0);" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    <i class="text-primary ti ti-dots-vertical"></i>
+                                                </a>
+                                                <div class="dropdown-menu dropdown-menu-end m-0" style="">
+                                                    @can ('User Update')
+                                                        <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="dropdown-item">
+                                                            <i class="text-primary ti ti-pencil"></i>
+                                                            Edit
+                                                        </a>
+                                                    @endcan
+                                                    @can ('User Delete')
+                                                        <div class="dropdown-divider"></div>
+                                                        <a href="{{ route('administration.settings.user.destroy', ['user' => $user]) }}" class="dropdown-item text-danger delete-record confirm-danger">
+                                                            <i class="ti ti-trash"></i>
+                                                            Delete
+                                                        </a>
+                                                    @endcan
+                                                </div>
+                                            </div>
+                                        @endcanany
+                                        <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="btn btn-sm btn-icon btn-primary item-edit" data-bs-toggle="tooltip" title="Show Details">
+                                            <i class="ti ti-info-hexagon"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -167,7 +199,7 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <!-- Datatable js -->    
+    <!-- Datatable js -->
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
@@ -177,7 +209,7 @@
     {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function () {
-            // 
+            //
         });
-    </script>    
+    </script>
 @endsection
