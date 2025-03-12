@@ -3,9 +3,7 @@
 namespace App\Livewire\Administration\Chatting;
 
 use Livewire\Component;
-use App\Models\Chatting\Chatting;
 use App\Models\Chatting\GroupChatting;
-use Illuminate\Support\Facades\Auth;
 
 class GroupChatBody extends Component
 {
@@ -28,8 +26,11 @@ class GroupChatBody extends Component
             toast('You are not authorised to view this group: '.$this->chattingGroup->name.'.','warning');
             return redirect()->route('administration.chatting.group.index');
         }
-        
+
         $this->messages = $this->chattingGroup->group_messages;
+
+        // Mark messages as read
+        $this->markMessagesAsRead();
         // dd($this->messages);
     }
 
@@ -45,6 +46,18 @@ class GroupChatBody extends Component
         $this->newMessage = '';
         $this->loadMessages();
         $this->dispatch('messageSent');
+    }
+
+    public function markMessagesAsRead()
+    {
+        $userId = auth()->user()->id;
+
+        foreach ($this->messages as $message) {
+            // Check if the user has already read the message
+            if (!$message->readByUsers()->where('user_id', $userId)->exists()) {
+                $message->readByUsers()->attach($userId, ['read_at' => now()]);
+            }
+        }
     }
 
 

@@ -105,6 +105,45 @@
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Custom Script Here
+        $(document).ready(function () {
+            function fetchNewGroupMessages() {
+                $.get("{{ route('administration.chatting.group.browser.fetch_unread') }}", function (data) {
+                    if (data && data.length > 0) {
+                        let newGroupMessageNotifications = JSON.parse(localStorage.getItem("newGroupMessageNotifications")) || [];
+
+                        data.forEach(message => {
+                            if (!newGroupMessageNotifications.includes(message.id)) {
+                                if (Notification.permission === "granted") {
+                                    let notif = new Notification("New Group Message in " + message.group_name, {
+                                        body: message.sender_name + ": " + message.message,
+                                        icon: "https://cdn-icons-png.flaticon.com/512/1827/1827301.png"
+                                    });
+
+                                    // notif.onclick = function () {
+                                    //     window.open("/chat/group/" + message.chatting_group_id, "_blank");
+                                    // };
+
+                                    // Mark this message as notified
+                                    newGroupMessageNotifications.push(message.id);
+                                    localStorage.setItem("newGroupMessageNotifications", JSON.stringify(newGroupMessageNotifications));
+                                } else {
+                                    Notification.requestPermission();
+                                }
+                            }
+                        });
+                    }
+                }).fail(function (err) {
+                    console.error("Error fetching new group messages:", err);
+                });
+            }
+
+            // Request notification permission when the page loads
+            if (Notification.permission !== "granted") {
+                Notification.requestPermission();
+            }
+
+            // Check for new messages every 30 seconds
+            setInterval(fetchNewGroupMessages, 30000);
+        });
     </script>
 @endsection

@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use App\Models\Chatting\ChattingGroup;
+use App\Models\Chatting\GroupChatting;
 
 class GroupChattingController extends Controller
 {
@@ -22,7 +23,7 @@ class GroupChattingController extends Controller
         $chatGroups = $this->chatGroups(auth()->user());
 
         $hasChat = false;
-        
+
         return view('administration.chatting.group.index', compact(['roles', 'chatGroups', 'hasChat']));
     }
 
@@ -36,11 +37,11 @@ class GroupChattingController extends Controller
         $roles = $this->getRoleUsers();
 
         $chatGroups = $this->chatGroups(auth()->user());
-        
+
         $hasChat = true;
 
         $activeGroup = $group->id;
-        
+
         $addUsersRoles = Role::select(['id', 'name'])
                     ->with([
                         'users' => function ($user) use ($group) {
@@ -65,9 +66,37 @@ class GroupChattingController extends Controller
 
 
     /**
-     * Store data 
+     * Fetch Unread messages
      */
-    public function store(Request $request) 
+    public function fetchUnreadMessagesForBrowser()
+    {
+        $userId = auth()->id();
+
+        // Get unread group messages for the user
+        $unreadMessages = GroupChatting::whereDoesntHave('readByUsers', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->with('sender', 'group')
+            ->latest()
+            ->limit(5)
+            ->get();
+
+        return response()->json($unreadMessages->map(function ($message) {
+            return [
+                'id' => $message->id,
+                'chatting_group_id' => $message->chatting_group_id,
+                'group_name' => $message->group->name,
+                'sender_name' => $message->sender->name,
+                'message' => $message->message,
+            ];
+        }));
+    }
+
+
+    /**
+     * Store data
+     */
+    public function store(Request $request)
     {
         /**
          * @var ChattingGroup|null $chatGroup
@@ -79,7 +108,7 @@ class GroupChattingController extends Controller
                 $chatGroup = ChattingGroup::create([
                     'name' => $request->name,
                 ]);
-                
+
                 // Assign ChattingGroup creator ID as group_users
                 $chatGroup->group_users()->attach(auth()->user()->id, ['role' => 'Admin']);
 
@@ -160,7 +189,7 @@ class GroupChattingController extends Controller
             DB::transaction(function () use ($group) {
                 // Detach all users from the group before deletion
                 $group->group_users()->detach();
-                
+
                 // Delete the group (soft delete or hard delete)
                 $group->delete();
             });
@@ -202,7 +231,7 @@ class GroupChattingController extends Controller
      */
     private function chatGroups() {
         $chatGroups = Auth::user()->chatting_groups;
-        
+
         return $chatGroups;
     }
 }
