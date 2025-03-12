@@ -102,6 +102,46 @@
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Custom Script Here
+        $(document).ready(function () {
+            function fetchNewMessages() {
+                $.get("{{ route('administration.chatting.browser.fetch_unread') }}", function (data) {
+                    if (data && data.length > 0) {
+                        let newMessageNotification = JSON.parse(localStorage.getItem("newMessageNotification")) || [];
+
+                        data.forEach(message => {
+                            if (!newMessageNotification.includes(message.id)) {
+                                // Check if browser notifications are allowed
+                                if (Notification.permission === "granted") {
+                                    let notif = new Notification("New Message from " + message.sender.name, {  // Use message.sender.name for the sender's name
+                                        body: message.message,
+                                        icon: "https://cdn-icons-png.flaticon.com/512/1827/1827301.png"
+                                    });
+
+                                    notif.onclick = function () {
+                                        window.open("/chat/" + message.sender.id, "_blank"); // Assuming sender has an `id` property
+                                    };
+
+                                    // Mark this message as notified
+                                    newMessageNotification.push(message.id);
+                                    localStorage.setItem("newMessageNotification", JSON.stringify(newMessageNotification));
+                                } else if (Notification.permission !== "denied") {
+                                    Notification.requestPermission();
+                                }
+                            }
+                        });
+                    }
+                }).fail(function (err) {
+                    console.error("Error fetching new messages:", err);
+                });
+            }
+
+            // Request notification permission when the page loads (only if not denied)
+            if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+
+            // Check for new messages every 30 seconds
+            setInterval(fetchNewMessages, 30000);
+        });
     </script>
 @endsection
