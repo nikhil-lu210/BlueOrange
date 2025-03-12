@@ -4,7 +4,7 @@ $(document).ready(function () {
     }
 
     function fetchNotifications() {
-        $.get("{{ route('administration.notification.get_unread') }}", function (data) {
+        $.get(unreadNotificationsUrl, function (data) {
             if (data.length > 0) {
                 $.each(data, function (index, notification) {
                     if (!isNotificationShown(notification.id)) {
@@ -31,7 +31,7 @@ $(document).ready(function () {
     }
 
     function markSingleNotificationAsRead(notificationId) {
-        $.get("{{ url('/notification/mark-as-read') }}/" + notificationId, function () {
+        $.get(markNotificationReadUrl + notificationId, function () {
             removeNotificationFromStorage(notificationId); // Remove from localStorage
         });
     }

@@ -19,8 +19,18 @@ class RoleController extends Controller
      */
     public function index()
     {
-        $roles = Role::with(['users', 'permissions'])->get();
-        return view('administration.settings.role.index', compact(['roles']));
+        $roles = Role::with([
+            'users' => function($userQuery) {
+                $userQuery->whereStatus('Active');
+            },
+            'permissions'
+        ])
+        ->withCount(['users as active_users_count' => function($query) {
+            $query->whereStatus('Active');
+        }])
+        ->get();
+
+        return view('administration.settings.role.index', compact('roles'));
     }
 
     /**
@@ -44,9 +54,9 @@ class RoleController extends Controller
                 $role = Role::create([
                     'name' => $request->name,
                 ]);
-                
+
                 $permissionIds = $request->input('permissions', []);
-                
+
                 $permissions = Permission::whereIn('id', $permissionIds)->get();
                 $role->syncPermissions($permissions);
             }, 5);
@@ -101,20 +111,20 @@ class RoleController extends Controller
                     'name' => $request->name ? $request->name : $role->name,
                     'updated_at' => now()
                 ]);
-                
+
                 $permissionIds = $request->input('permissions', []);
-                
+
                 $permissions = Permission::whereIn('id', $permissionIds)->get();
-                
+
                 $role->syncPermissions($permissions);
             }, 5);
-        
+
             toast('Role Has Been Updated.','success');
             return redirect()->back();
         } catch (Exception $e) {
             toast($e->getMessage(), 'error');
             return redirect()->back()->withInput();
-        }        
+        }
     }
 
     /**

@@ -21,7 +21,7 @@ class ChattingController extends Controller
         $contacts = $this->chatContacts();
 
         $hasChat = false;
-        
+
         return view('administration.chatting.index', compact(['chatUsers', 'contacts', 'hasChat']));
     }
 
@@ -47,15 +47,30 @@ class ChattingController extends Controller
                     ->where('receiver_id', auth()->user()->id)
                     ->whereNull('seen_at')
                     ->update(['seen_at' => now()]);
-        
+
         return view('administration.chatting.show', compact([
-            'chatUsers', 
-            'contacts', 
-            'hasChat', 
+            'chatUsers',
+            'contacts',
+            'hasChat',
             'user',
             'activeUser'
         ]));
     }
+
+    public function fetchUnreadMessagesForBrowser()
+    {
+        $userId = auth()->id();
+
+        // Fetch unread messages along with sender information
+        $unreadMessages = Chatting::where('receiver_id', $userId)
+            ->whereNull('seen_at')
+            ->orderBy('created_at', 'desc')
+            ->with('sender.employee') // Eager load sender
+            ->get();
+
+        return response()->json($unreadMessages);
+    }
+
 
 
     /**
@@ -102,7 +117,7 @@ class ChattingController extends Controller
         $chatContacts = Auth::user()->user_interactions->filter(function($user) {
             return $user->status === 'Active' && $user->id !== Auth::id();
         })->sortBy('name');
-        
+
         return $chatContacts;
     }
 }

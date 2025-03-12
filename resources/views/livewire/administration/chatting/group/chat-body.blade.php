@@ -16,7 +16,7 @@
                 </div>
 
                 @canany(['Group Chatting Create', 'Group Chatting Delete'])
-                    @if ($chattingGroup->creator_id == auth()->user()->id) 
+                    @if ($chattingGroup->creator_id == auth()->user()->id)
                         <div class="d-flex align-items-center">
                             <div class="dropdown d-flex align-self-center">
                                 <button class="btn p-0" type="button" id="chat-header-actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -30,8 +30,8 @@
                                             Add Users
                                         </a>
                                     @endcan
-    
-                                    
+
+
                                     @can ('Group Chatting Delete')
                                         <a class="dropdown-item text-danger confirm-danger" href="{{ route('administration.chatting.group.destroy', ['group' => $chattingGroup, 'groupid' => $chattingGroup->groupid]) }}">
                                             <i class="ti ti-trash"></i>
@@ -62,7 +62,7 @@
                             $imageURL = "https://fakeimg.pl/300/dddddd/?text=" . $message->sender->first_name;
                         }
                     @endphp
-        
+
                     @if ($currentDate !== $messageDate)
                         @php
                             $currentDate = $messageDate;
@@ -71,7 +71,7 @@
                             <div class="divider-text">{{ $message->created_at->format('F j, Y') }}</div>
                         </div>
                     @endif
-                    
+
                     @if ($message->sender_id === auth()->user()->id)
                         <li class="chat-message chat-message-right">
                             <div class="d-flex overflow-hidden">
@@ -80,8 +80,11 @@
                                         <div class="chat-message-text">
                                             <p class="mb-0">{!! $message->message !!}</p>
                                         </div>
+                                        @if ($message->readByUsers->count() > 0)
+                                            <small>Seen by: {{ $message->readByUsers->pluck('employee.alias_name')->join(', ') }}</small>
+                                        @endif
                                     @endif
-                                    @if (!is_null($message->file)) 
+                                    @if (!is_null($message->file))
                                         <a href="#" class="chat-message-text card h-100" target="_blank">
                                             <div class="card-body text-center">
                                               <div class="badge rounded p-2 bg-label-dark mb-2"><i class="ti ti-file ti-lg"></i></div>
@@ -124,8 +127,11 @@
                                         <div class="chat-message-text">
                                             <p class="mb-0">{!! $message->message !!}</p>
                                         </div>
+                                        @if ($message->readByUsers->count() > 0)
+                                            <small>Seen by: {{ $message->readByUsers->pluck('employee.alias_name')->join(', ') }}</small>
+                                        @endif
                                     @endif
-                                    @if (!is_null($message->file)) 
+                                    @if (!is_null($message->file))
                                         <a href="#" class="chat-message-text card h-100" target="_blank">
                                             <div class="card-body text-center">
                                               <div class="badge rounded p-2 bg-label-dark mb-2"><i class="ti ti-file ti-lg"></i></div>
@@ -162,6 +168,6 @@
                     </button>
                 </div>
             </form>
-        </div> 
+        </div>
     </div>
 </div>
