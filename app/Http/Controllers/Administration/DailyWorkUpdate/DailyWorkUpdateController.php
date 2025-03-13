@@ -9,8 +9,10 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Http\Requests\Administration\DailyWorkUpdate\DailyWorkUpdateStoreRequest;
+use App\Mail\Administration\DailyWorkUpdate\DailyWorkUpdateRequestMail;
 use App\Notifications\Administration\DailyWorkUpdate\DailyWorkUpdateCreateNotification;
 use App\Notifications\Administration\DailyWorkUpdate\DailyWorkUpdateUpdateNotification;
 
@@ -108,6 +110,9 @@ class DailyWorkUpdateController extends Controller
 
                 // Send Notification to System
                 $teamLeader->notify(new DailyWorkUpdateCreateNotification($workUpdate, auth()->user()));
+
+                // Send Mail to the Team Leader
+                Mail::to($teamLeader->employee->official_email)->send(new DailyWorkUpdateRequestMail($workUpdate, $teamLeader));
             });
 
             toast('Daily Work Update Has Been Submitted Successfully.', 'success');
