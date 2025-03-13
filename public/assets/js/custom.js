@@ -1,3 +1,16 @@
+$(document).ready(function () { // To Keep Browser Tab Active
+    function keepTabActive() {
+        let hiddenElement = document.createElement('span');
+        hiddenElement.innerHTML = '.';
+        hiddenElement.style.opacity = '0';
+        document.body.appendChild(hiddenElement);
+        hiddenElement.remove(); // Forces the DOM to update, preventing sleep
+    }
+
+    setInterval(keepTabActive, 20000); // Trigger every 20 seconds
+});
+
+
 $(document).ready(function(){
     $('[title]').tooltip({html: true});
 });
