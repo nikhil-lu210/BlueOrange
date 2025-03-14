@@ -109,16 +109,21 @@
                         let newMessageNotification = JSON.parse(localStorage.getItem("newMessageNotification")) || [];
 
                         data.forEach(message => {
+
                             if (!newMessageNotification.includes(message.id)) {
                                 // Check if browser notifications are allowed
                                 if (Notification.permission === "granted") {
-                                    let notif = new Notification("New Message from " + message.sender.name, {  // Use message.sender.name for the sender's name
+                                    let notif = new Notification("New Message from " + message.sender.name, {
                                         body: message.message,
                                         icon: "https://cdn-icons-png.flaticon.com/512/1827/1827301.png"
                                     });
 
+
                                     notif.onclick = function () {
-                                        window.open("/chat/" + message.sender.id, "_blank"); // Assuming sender has an `id` property
+                                        let chatUrl = "{{ route('administration.chatting.show', ['user' => '__USER__', 'userid' => '__USERID__']) }}";
+                                        chatUrl = chatUrl.replace("__USER__", message.sender).replace("__USERID__", message.sender.userid);
+
+                                        window.open(chatUrl, "_blank");
                                     };
 
                                     // Mark this message as notified
