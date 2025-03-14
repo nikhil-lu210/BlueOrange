@@ -121,7 +121,7 @@
 
                                     notif.onclick = function () {
                                         let groupChatUrl = "{{ route('administration.chatting.group.show', ['group' => '__GROUP__', 'groupid' => '__GROUPID__']) }}";
-                                        groupChatUrl = groupChatUrl.replace("__GROUP__", message.sender).replace("__GROUPID__", message.group.groupid);
+                                        groupChatUrl = groupChatUrl.replace("__GROUP__", message.group.id).replace("__GROUPID__", message.group.groupid);
 
                                         window.open(groupChatUrl, "_blank");
                                     };

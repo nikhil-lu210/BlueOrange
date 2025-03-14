@@ -118,10 +118,10 @@
                                         icon: "https://cdn-icons-png.flaticon.com/512/1827/1827301.png"
                                     });
 
-
                                     notif.onclick = function () {
                                         let chatUrl = "{{ route('administration.chatting.show', ['user' => '__USER__', 'userid' => '__USERID__']) }}";
-                                        chatUrl = chatUrl.replace("__USER__", message.sender).replace("__USERID__", message.sender.userid);
+                                        chatUrl = chatUrl.replace("__USER__", message.sender.id).replace("__USERID__", message.sender.userid);
+
 
                                         window.open(chatUrl, "_blank");
                                     };
