@@ -51,7 +51,7 @@
                 <div class="card">
                     <h5 class="card-header">
                         Book Dining Room For Your Shift
-                        (<b class="text-primary">{{ auth()->user()->current_shift->start_time. ' to ' . auth()->user()->current_shift->end_time }}</b>)
+                        (<b class="text-primary">{{ show_time(auth()->user()->current_shift->start_time, 'h:i A'). ' to ' . show_time(auth()->user()->current_shift->end_time, 'h:i A') }}</b>)
                     </h5>
                     <div class="card-body">
                         <form action="{{ route('administration.booking.dining_room.book') }}" method="post">
@@ -62,19 +62,23 @@
                                         $time = $slot['time'] ?? $slot;
                                         $disabled = $slot['disabled'] ?? false;
                                         $userHasBooking = $slot['user_has_booking'] ?? false;
+                                        $slotDateTime = \Carbon\Carbon::parse($time);  // Convert slot time to Carbon instance
                                     @endphp
-                                    <div class="col-md-3 mb-2 {{ $disabled ? 'col-disabled' : '' }}">
-                                        <button
-                                            class="btn {{ $userHasBooking ? 'btn-success' : ($disabled ? 'btn-outline-dark' : 'btn-outline-success') }} btn-block btn-lg time-btn mb-3"
-                                            name="booking_time"
-                                            value="{{ $time }}"
-                                            @disabled($disabled)
-                                            title="{{ $userHasBooking ? 'Cancel Your Booking?' : ($disabled ? 'You Cannot Book' : 'Book For '.show_time($time, 'h:i A')) }}"
-                                            type="{{ $userHasBooking ? 'submit' : ($disabled ? 'button' : 'submit') }}"
-                                        >
-                                            {{ show_time($time, 'h:i A') }}
-                                        </button>
-                                    </div>
+
+                                    @if ($slotDateTime->gt(now()))  <!-- Only display button if the time is in the future -->
+                                        <div class="col-md-3 mb-2 {{ $disabled ? 'col-disabled' : '' }}">
+                                            <button
+                                                class="btn {{ $userHasBooking ? 'btn-success' : ($disabled ? 'btn-outline-dark' : 'btn-outline-success') }} btn-block btn-lg time-btn mb-3"
+                                                name="booking_time"
+                                                value="{{ $time }}"
+                                                @disabled($disabled)
+                                                title="{{ $userHasBooking ? 'Cancel Your Booking?' : ($disabled ? 'You Cannot Book' : 'Book For '.show_time($time, 'h:i A')) }}"
+                                                type="{{ $userHasBooking ? 'submit' : ($disabled ? 'button' : 'submit') }}"
+                                            >
+                                                {{ show_time($time, 'h:i A') }}
+                                            </button>
+                                        </div>
+                                    @endif
                                 @endforeach
                             </div>
                         </form>
