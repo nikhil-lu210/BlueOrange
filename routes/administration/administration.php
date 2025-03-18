@@ -12,7 +12,7 @@ Route::prefix('')
         ->group(function () {
             // logs
             include_once 'logs/logs.php';
-            
+
             // localization
             include_once 'localization/localization.php';
 
@@ -45,7 +45,7 @@ Route::prefix('')
 
             // daily_work_update
             include_once 'daily_work_update/daily_work_update.php';
-            
+
             // Profile
             include_once 'profile/profile.php';
 
@@ -63,4 +63,7 @@ Route::prefix('')
 
             // IT Ticket
             include_once 'ticket/it_ticket.php';
+
+            // booking
+            include_once 'booking/booking.php';
         });
