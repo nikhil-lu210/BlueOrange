@@ -36,6 +36,8 @@
 
         @include('layouts.administration.partials.menus.it_ticket')
 
+        @include('layouts.administration.partials.menus.booking')
+
         <!-- Accounts -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">{{ __('Accounts') }}</span>

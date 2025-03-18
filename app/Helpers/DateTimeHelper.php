@@ -114,12 +114,13 @@ if (!function_exists('show_time')) {
      * Format a timestamp or date to a custom formatted time.
      *
      * @param  string  $datetime
+     * @param  string|null  $format
      * @return string
      */
-    function show_time($datetime)
+    function show_time($datetime, $format = null)
     {
         $carbon = Carbon::parse($datetime);
-        return $carbon->format('h:i:s A');
+        return $carbon->format($format ?? 'h:i:s A');
     }
 }
 
