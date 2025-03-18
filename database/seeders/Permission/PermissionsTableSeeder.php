@@ -36,6 +36,7 @@ class PermissionsTableSeeder extends Seeder
             'Group Chatting',
             'Leave Allowed',
             'Leave History',
+            'Dining Room Booking',
         ];
 
         foreach ($modules as $module) {
@@ -53,7 +54,7 @@ class PermissionsTableSeeder extends Seeder
 
             foreach ($permissions as $permission) {
                 $permissionName = "{$permissionModule->name} {$permission}";
-                
+
                 Permission::create([
                     'permission_module_id' => $permissionModule->id,
                     'name' => $permissionName,

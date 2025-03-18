@@ -29,19 +29,19 @@ class RolesTableSeeder extends Seeder
                     'App Setting Read',
                     'App Setting Update',
                     'App Setting Delete',
-                    
+
                     'Logs Everything',
                     'Logs Create',
                     'Logs Read',
                     'Logs Update',
                     'Logs Delete',
-                    
+
                     'Vault Everything',
                     'Vault Create',
                     'Vault Read',
                     'Vault Update',
                     'Vault Delete',
-                    
+
                     'IT Ticket Everything',
                     'IT Ticket Create',
                     'IT Ticket Read',
@@ -95,70 +95,76 @@ class RolesTableSeeder extends Seeder
                     'Daily Work Update Read',
                     'Daily Work Update Update',
                     'Daily Work Update Delete',
-                    
+
                     'Permission Everything',
                     'Permission Create',
                     'Permission Read',
                     'Permission Update',
                     'Permission Delete',
-                    
+
                     'Role Everything',
                     'Role Create',
                     'Role Read',
                     'Role Update',
                     'Role Delete',
-                    
+
                     'User Everything',
                     'User Create',
                     'User Read',
                     'User Update',
                     'User Delete',
-                    
+
                     'Salary Everything',
                     'Salary Create',
                     'Salary Read',
                     'Salary Update',
                     'Salary Delete',
-                    
+
                     'Income Everything',
                     'Income Create',
                     'Income Read',
                     'Income Update',
                     'Income Delete',
-                    
+
                     'Expense Everything',
                     'Expense Create',
                     'Expense Read',
                     'Expense Update',
                     'Expense Delete',
-                    
+
                     'Weekend Everything',
                     'Weekend Create',
                     'Weekend Read',
                     'Weekend Update',
                     'Weekend Delete',
-                    
+
                     'Holiday Everything',
                     'Holiday Create',
                     'Holiday Read',
                     'Holiday Update',
                     'Holiday Delete',
-                    
+
                     'Group Chatting Everything',
                     'Group Chatting Create',
                     'Group Chatting Read',
                     'Group Chatting Update',
                     'Group Chatting Delete',
+
+                    'Dining Room Booking Everything',
+                    'Dining Room Booking Create',
+                    'Dining Room Booking Read',
+                    'Dining Room Booking Update',
+                    'Dining Room Booking Delete',
                 ];
             } elseif ($role === 'Super Admin') {
                 $permissions = [
                     'Logs Read',
-                    
+
                     'Vault Create',
                     'Vault Read',
                     'Vault Update',
                     'Vault Delete',
-                    
+
                     'IT Ticket Create',
                     'IT Ticket Read',
                     'IT Ticket Update',
@@ -168,7 +174,7 @@ class RolesTableSeeder extends Seeder
                     'User Interaction Read',
                     'User Interaction Update',
                     'User Interaction Delete',
-                    
+
                     'Attendance Create',
                     'Attendance Read',
                     'Attendance Update',
@@ -203,52 +209,58 @@ class RolesTableSeeder extends Seeder
                     'Daily Work Update Read',
                     'Daily Work Update Update',
                     'Daily Work Update Delete',
-                    
+
                     'Role Create',
                     'Role Read',
                     'Role Update',
-                    
+
                     'User Create',
                     'User Read',
                     'User Update',
                     'User Delete',
-                    
+
                     'Salary Create',
                     'Salary Read',
                     'Salary Update',
                     'Salary Delete',
-                    
+
                     'Income Create',
                     'Income Read',
                     'Income Update',
                     'Income Delete',
-                    
+
                     'Expense Create',
                     'Expense Read',
                     'Expense Update',
                     'Expense Delete',
-                    
+
                     'Weekend Create',
                     'Weekend Read',
                     'Weekend Update',
                     'Weekend Delete',
-                    
+
                     'Holiday Create',
                     'Holiday Read',
                     'Holiday Update',
                     'Holiday Delete',
-                    
+
                     'Group Chatting Create',
                     'Group Chatting Read',
                     'Group Chatting Update',
                     'Group Chatting Delete',
+
+                    'Dining Room Booking Everything',
+                    'Dining Room Booking Create',
+                    'Dining Room Booking Read',
+                    'Dining Room Booking Update',
+                    'Dining Room Booking Delete',
                 ];
             } else {
                 $permissions = [
                     'Announcement Read',
-                    
+
                     'Attendance Read',
-                    
+
                     'Leave Allowed Read',
 
                     'Leave History Create',
@@ -256,19 +268,22 @@ class RolesTableSeeder extends Seeder
 
                     'Daily Break Create',
                     'Daily Break Read',
-                    
+
                     'Task Read',
 
                     'Daily Work Update Create',
                     'Daily Work Update Read',
-                    
+
                     'User Read',
 
                     'Salary Read',
-                    
+
                     'Holiday Read',
-                    
+
                     'Group Chatting Read',
+
+                    'Dining Room Booking Create',
+                    'Dining Room Booking Read',
                 ];
             }
 
