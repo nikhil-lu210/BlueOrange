@@ -68,7 +68,7 @@
                                     @if ($slotDateTime->gt(now()))  <!-- Only display button if the time is in the future -->
                                         <div class="col-md-3 mb-2 {{ $disabled ? 'col-disabled' : '' }}">
                                             <button
-                                                class="btn {{ $userHasBooking ? 'btn-success' : ($disabled ? 'btn-outline-dark' : 'btn-outline-success') }} btn-block btn-lg time-btn mb-3"
+                                                class="btn {{ $userHasBooking ? 'btn-success' : ($disabled ? 'btn-label-dark' : 'btn-outline-success bg-label-success') }} btn-block btn-lg time-btn mb-3"
                                                 name="booking_time"
                                                 value="{{ $time }}"
                                                 @disabled($disabled)
