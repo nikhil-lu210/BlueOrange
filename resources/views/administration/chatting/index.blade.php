@@ -101,7 +101,7 @@
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
-    <script>
+    {{-- <script>
         $(document).ready(function () {
             function fetchNewMessages() {
                 $.get("{{ route('administration.chatting.browser.fetch_unread') }}", function (data) {
@@ -148,5 +148,5 @@
             // Check for new messages every 30 seconds
             setInterval(fetchNewMessages, 30000);
         });
-    </script>
+    </script> --}}
 @endsection

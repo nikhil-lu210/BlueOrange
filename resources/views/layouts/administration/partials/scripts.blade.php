@@ -21,6 +21,12 @@
 <script>
     var unreadNotificationsUrl = "{{ url('/notification/get-unread-notifications-for-browser') }}";
     var markNotificationReadUrl = "{{ url('/notification/mark-as-read-notifications-for-browser/') }}";
+
+    var unreadPrivateMessagesNotificationUrl = "{{ url('/chatting/private/browser-unread-messages') }}";
+    var markPrivateMessageReadUrl = "{{ url('/chatting/private/') }}";
+
+    var unreadGroupMessagesNotificationUrl = "{{ url('/chatting/group/browser-unread-messages') }}";
+    var markGroupMessageReadUrl = "{{ url('/chatting/group/') }}";
 </script>
 <script src="{{ asset('assets/js/custom_js/notification/browser_notification.js') }}"></script>
 

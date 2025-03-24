@@ -57,7 +57,7 @@ class DiningRoomBookingService
             ->where('user_id', '!=', auth()->id()) // Exclude the current user's booking
             ->count();
 
-        // Disable the time if it is past or if there are 6 or more bookings (excluding the user's booking)
+        // Disable the time if it is past or if there are 8 or more bookings (excluding the user's booking)
         if ($userBooking) {
             // If the user has already booked this time, keep it enabled
             if ($userBooking->booking_time == $time) {
@@ -74,8 +74,8 @@ class DiningRoomBookingService
                 ];
             }
         } else {
-            // Disable time if it has 6 bookings or it's in the past
-            $disabled = $isPast || $bookingCount >= 6;
+            // Disable time if it has 8 bookings or it's in the past
+            $disabled = $isPast || $bookingCount >= 8;
             $availableTimeSlots[$index] = [
                 'time' => $time,
                 'disabled' => $disabled,
@@ -116,7 +116,7 @@ class DiningRoomBookingService
                             ->where('status', '!=', 'Cancelled')
                             ->count();
 
-        return $slotBookings >= 6;
+        return $slotBookings >= 8;
     }
 
     public function createBooking($user, $bookingDate, $bookingTime)
