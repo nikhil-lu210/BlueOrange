@@ -1,4 +1,4 @@
-<li class="menu-item {{ request()->is('chatting/private*') ? 'active' : '' }}">
+<li class="menu-item {{ request()->is('chatting/one-to-one*') ? 'active' : '' }}">
     <a href="{{ route('administration.chatting.index') }}" class="menu-link">
         <i class="menu-icon tf-icons ti ti-message"></i>
         <div data-i18n="Chattings">{{ __('Chattings') }}</div>

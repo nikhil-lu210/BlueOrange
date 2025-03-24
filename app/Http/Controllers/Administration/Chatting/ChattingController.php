@@ -72,6 +72,17 @@ class ChattingController extends Controller
     }
 
 
+    /**
+     * Read Browser Notification
+     */
+    public function readBrowserNotification($id, $userid)
+    {
+        $user = User::whereId($id)->whereUserid($userid)->firstOrFail();
+
+        return redirect()->route('administration.chatting.show', ['user' => $user, 'userid' => $user->userid]);
+    }
+
+
 
     /**
      * get all users with whom the auth user chatted
