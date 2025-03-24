@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use App\Models\Chatting\ChattingGroup;
 use App\Models\Chatting\GroupChatting;
 
@@ -61,25 +62,38 @@ class GroupChattingController extends Controller
                     ->distinct()
                     ->get();
 
+        // Clear the cache for unread group messages
+        $userId = auth()->id();
+        $cacheKey = "unread_group_messages_for_user_{$userId}";
+        Cache::forget($cacheKey);
+
         return view('administration.chatting.group.show', compact(['group', 'roles', 'chatGroups', 'hasChat', 'activeGroup', 'addUsersRoles']));
     }
 
 
     /**
-     * Fetch Unread messages
+     * Fetch Unread group messages for browser notification
      */
     public function fetchUnreadMessagesForBrowser()
     {
         $userId = auth()->id();
 
-        // Get unread group messages for the user
-        $unreadMessages = GroupChatting::whereDoesntHave('readByUsers', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-            ->with('sender', 'group')
-            ->latest()
-            ->limit(5)
-            ->get();
+        // Cache key with user-specific key for uniqueness
+        $cacheKey = "unread_group_messages_for_user_{$userId}";
+
+        // Cache expiration time in seconds (e.g., 5 minutes)
+        $cacheExpiration = 300; // 5 minutes
+
+        // Try fetching from the cache, or if not found, retrieve from the database and cache it
+        $unreadMessages = Cache::remember($cacheKey, $cacheExpiration, function () use ($userId) {
+            return GroupChatting::whereDoesntHave('readByUsers', function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })
+                ->with('sender', 'group')
+                ->latest()
+                ->limit(5)
+                ->get();
+        });
 
         return response()->json($unreadMessages->map(function ($message) {
             return [

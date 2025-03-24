@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Administration\Chatting;
 
+use Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Chatting\Chatting;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
-use Auth;
+use Illuminate\Support\Facades\Cache;
 
 class ChattingController extends Controller
 {
@@ -48,6 +49,11 @@ class ChattingController extends Controller
                     ->whereNull('seen_at')
                     ->update(['seen_at' => now()]);
 
+        // Cache key with user-specific key for uniqueness
+        $userID = auth()->id();
+        $cacheKey = "unread_messages_for_user_{$userID}";
+        Cache::forget($cacheKey);
+
         return view('administration.chatting.show', compact([
             'chatUsers',
             'contacts',
@@ -57,19 +63,32 @@ class ChattingController extends Controller
         ]));
     }
 
+
+    /**
+     * Fetch unread messages for browser notification
+     */
     public function fetchUnreadMessagesForBrowser()
     {
         $userId = auth()->id();
 
-        // Fetch unread messages along with sender information
-        $unreadMessages = Chatting::where('receiver_id', $userId)
-            ->whereNull('seen_at')
-            ->orderBy('created_at', 'desc')
-            ->with('sender.employee') // Eager load sender
-            ->get();
+        // Cache key with user-specific key for uniqueness
+        $cacheKey = "unread_messages_for_user_{$userId}";
+
+        // Cache expiration time in seconds (e.g., 5 minutes)
+        $cacheExpiration = 300; // 5 minutes
+
+        // Try fetching from the cache, or if not found, retrieve from the database and cache it
+        $unreadMessages = Cache::remember($cacheKey, $cacheExpiration, function () use ($userId) {
+            return Chatting::where('receiver_id', $userId)
+                ->whereNull('seen_at')
+                ->orderBy('created_at', 'desc')
+                ->with('sender.employee') // Eager load sender
+                ->get();
+        });
 
         return response()->json($unreadMessages);
     }
+
 
 
     /**
