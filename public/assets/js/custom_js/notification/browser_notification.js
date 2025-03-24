@@ -53,7 +53,7 @@ $(document).ready(function () {
         localStorage.setItem("shownNotifications", JSON.stringify(updatedNotifications));
     }
 
-    setInterval(fetchNotifications, 60000);
+    // setInterval(fetchNotifications, 60000);
 // });
 
 
@@ -105,7 +105,7 @@ $(document).ready(function () {
     }
 
     // Check for new messages every 30 seconds
-    setInterval(fetchNewMessages, 30000);
+    // setInterval(fetchNewMessages, 30000);
 
 
 
@@ -151,5 +151,19 @@ $(document).ready(function () {
     }
 
     // Check for new messages every 30 seconds
-    setInterval(fetchNewGroupMessages, 30000);
+    // setInterval(fetchNewGroupMessages, 30000);
+
+    // Optional: start intervals but less frequent
+    setInterval(fetchNotifications, 120000); // every 2 minutes
+    setInterval(fetchNewMessages, 60000);    // every 1 minute
+    setInterval(fetchNewGroupMessages, 60000); // every 1 minute
+
+    // Add visibility change listener here:
+    document.addEventListener("visibilitychange", function () {
+        if (document.visibilityState === "visible") {
+            fetchNotifications();
+            fetchNewMessages();
+            fetchNewGroupMessages();
+        }
+    });
 });
