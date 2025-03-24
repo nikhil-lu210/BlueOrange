@@ -54,4 +54,106 @@ $(document).ready(function () {
     }
 
     setInterval(fetchNotifications, 60000);
+// });
+
+
+
+
+
+    /**
+     * Chatting Notification for Browser
+     */
+    function fetchNewMessages() {
+        $.get(unreadPrivateMessagesNotificationUrl, function (data) {
+            // console.log(unreadPrivateMessagesNotificationUrl);
+
+            if (data && data.length > 0) {
+                let newMessageNotification = JSON.parse(localStorage.getItem("newMessageNotification")) || [];
+
+                data.forEach(message => {
+
+                    if (!newMessageNotification.includes(message.id)) {
+                        // Check if browser notifications are allowed
+                        if (Notification.permission === "granted") {
+                            let notif = new Notification("New Message from " + message.sender.name, {
+                                body: message.message,
+                                icon: "https://cdn-icons-png.flaticon.com/512/1827/1827301.png"
+                            });
+
+                            notif.onclick = function () {
+                                let chatUrl = "{{ route('administration.chatting.show', ['user' => '__USER__', 'userid' => '__USERID__']) }}";
+                                chatUrl = chatUrl.replace("__USER__", message.sender.id).replace("__USERID__", message.sender.userid);
+
+                                window.open(chatUrl, "_blank");
+                            };
+
+                            // Mark this message as notified
+                            newMessageNotification.push(message.id);
+                            localStorage.setItem("newMessageNotification", JSON.stringify(newMessageNotification));
+                        } else if (Notification.permission !== "denied") {
+                            Notification.requestPermission();
+                        }
+                    }
+                });
+            }
+        }).fail(function (err) {
+            console.error("Error fetching new messages:", err);
+        });
+    }
+
+    // Request notification permission when the page loads (only if not denied)
+    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+        Notification.requestPermission();
+    }
+
+    // Check for new messages every 30 seconds
+    setInterval(fetchNewMessages, 30000);
+
+
+
+    /**
+     * Group Chatting Notification For Browser
+     */
+    function fetchNewGroupMessages() {
+        $.get(unreadGroupMessagesNotificationUrl, function (data) {
+            // console.log(unreadGroupMessagesNotificationUrl);
+            if (data && data.length > 0) {
+                let newGroupMessageNotifications = JSON.parse(localStorage.getItem("newGroupMessageNotifications")) || [];
+
+                data.forEach(message => {
+                    if (!newGroupMessageNotifications.includes(message.id)) {
+                        if (Notification.permission === "granted") {
+                            let notif = new Notification("New Group Message in " + message.group_name, {
+                                body: message.sender_name + ": " + message.message,
+                                icon: "https://cdn-icons-png.flaticon.com/512/1827/1827301.png"
+                            });
+
+                            notif.onclick = function () {
+                                let groupChatUrl = "{{ route('administration.chatting.group.show', ['group' => '__GROUP__', 'groupid' => '__GROUPID__']) }}";
+                                groupChatUrl = groupChatUrl.replace("__GROUP__", message.group.id).replace("__GROUPID__", message.group.groupid);
+
+                                window.open(groupChatUrl, "_blank");
+                            };
+
+                            // Mark this message as notified
+                            newGroupMessageNotifications.push(message.id);
+                            localStorage.setItem("newGroupMessageNotifications", JSON.stringify(newGroupMessageNotifications));
+                        } else {
+                            Notification.requestPermission();
+                        }
+                    }
+                });
+            }
+        }).fail(function (err) {
+            console.error("Error fetching new group messages:", err);
+        });
+    }
+
+    // Request notification permission when the page loads
+    if (Notification.permission !== "granted") {
+        Notification.requestPermission();
+    }
+
+    // Check for new messages every 30 seconds
+    setInterval(fetchNewGroupMessages, 30000);
 });
