@@ -93,6 +93,19 @@ class GroupChattingController extends Controller
     }
 
 
+
+    /**
+     * Read Browser Notification
+     */
+    public function readBrowserNotification($groupId)
+    {
+        $group = ChattingGroup::whereId($groupId)->firstOrFail();
+
+        return redirect()->route('administration.chatting.group.show', ['group' => $group, 'groupid' => $group->groupid]);
+    }
+
+
+
     /**
      * Store data
      */

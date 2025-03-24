@@ -64,8 +64,8 @@ $(document).ready(function () {
      * Chatting Notification for Browser
      */
     function fetchNewMessages() {
-        $.get(unreadPrivateMessagesNotificationUrl, function (data) {
-            // console.log(unreadPrivateMessagesNotificationUrl);
+        $.get(unreadOneToOneMessagesNotificationUrl, function (data) {
+            // console.log(unreadOneToOneMessagesNotificationUrl);
 
             if (data && data.length > 0) {
                 let newMessageNotification = JSON.parse(localStorage.getItem("newMessageNotification")) || [];
@@ -81,9 +81,7 @@ $(document).ready(function () {
                             });
 
                             notif.onclick = function () {
-                                let chatUrl = "{{ route('administration.chatting.show', ['user' => '__USER__', 'userid' => '__USERID__']) }}";
-                                chatUrl = chatUrl.replace("__USER__", message.sender.id).replace("__USERID__", message.sender.userid);
-
+                                chatUrl = markOneToOneMessageReadUrl +'/'+ message.sender.id +'/'+ message.sender.userid;
                                 window.open(chatUrl, "_blank");
                             };
 
@@ -129,9 +127,7 @@ $(document).ready(function () {
                             });
 
                             notif.onclick = function () {
-                                let groupChatUrl = "{{ route('administration.chatting.group.show', ['group' => '__GROUP__', 'groupid' => '__GROUPID__']) }}";
-                                groupChatUrl = groupChatUrl.replace("__GROUP__", message.group.id).replace("__GROUPID__", message.group.groupid);
-
+                                groupChatUrl = markGroupMessageReadUrl +'/'+ message.chatting_group_id;
                                 window.open(groupChatUrl, "_blank");
                             };
 

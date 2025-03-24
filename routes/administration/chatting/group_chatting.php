@@ -17,4 +17,5 @@ Route::controller(GroupChattingController::class)->prefix('group')->name('group.
     Route::get('/{group}/{groupid}/destroy', 'destroy')->name('destroy');
 
     Route::get('/browser-unread-messages', 'fetchUnreadMessagesForBrowser')->name('browser.fetch_unread');
+    Route::get('/read-browser-notification-message/show/{groupId}', 'readBrowserNotification')->name('browser.read.message');
 });
