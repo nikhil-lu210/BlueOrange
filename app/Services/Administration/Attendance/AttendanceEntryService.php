@@ -49,7 +49,7 @@ class AttendanceEntryService
             ->where('clock_in_date', $currentDate)
             ->where('type', 'Regular')
             ->first();
-            
+
         if ($existingRegularAttendance && $type === 'Regular') {
             throw new Exception('You have already clocked in as Regular today.');
         }
@@ -113,13 +113,8 @@ class AttendanceEntryService
         // Convert total time to HH:MM:SS format
         $formattedTotalTime = $this->formatTime($totalSeconds);
 
-        // Check attendance type and adjust time accordingly
-        if ($existingAttendance->type === 'Regular') {
-            $formattedAdjustedTotalTime = $this->adjustForShiftTime($existingAttendance, $totalSeconds, $formattedTotalTime);
-        } else {
-            // For Overtime type, use the full time as is
-            $formattedAdjustedTotalTime = $formattedTotalTime;
-        }
+        // If the total time is more then total working hour, then set the adjusted time to total working hour
+        $formattedAdjustedTotalTime = $this->adjustForShiftTime($existingAttendance, $totalSeconds, $formattedTotalTime);
 
         // Update the existing attendance record with clock_out time, total_time, and total_adjusted_time
         $existingAttendance->update([
