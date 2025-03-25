@@ -14,7 +14,7 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
     {
         $this->attendances = $attendances;
     }
-    
+
     /**
     * @return \Illuminate\Support\Collection
     */
@@ -26,7 +26,7 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
                 'clock_in_date' => get_date_only($attendance->clock_in_date),
                 'clock_in' => show_time($attendance->clock_in),
                 'clock_out' => $attendance->clock_out ? show_time($attendance->clock_out) : NULL,
-                'total_time' => $attendance->type == 'Regular' ? $attendance->total_adjusted_time : $attendance->total_time,
+                'total_time' => $attendance->total_adjusted_time ?? $attendance->total_time,
                 'type' => $attendance->type,
                 'total_over_break' => $attendance->total_over_break,
                 'clockin_medium' => $attendance->clockin_medium,

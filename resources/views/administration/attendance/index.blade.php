@@ -237,10 +237,10 @@
                                                 @else
                                                     <b class="text-success text-uppercase">Running</b>
                                                 @endisset
-                                                <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Total Working Time">{{ $attendance->total_time }}</small>
+                                                <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Total Working Time">{{ $attendance->total_adjusted_time ?? $attendance->total_time }}</small>
                                             @else
                                                 <b class="text-warning">
-                                                    {{ total_time($attendance->total_time) }}
+                                                    {{ total_time($attendance->total_adjusted_time ?? $attendance->total_time) }}
                                                 </b>
                                             @endif
                                         </div>
