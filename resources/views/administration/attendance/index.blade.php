@@ -226,23 +226,25 @@
                                     </td>
                                     <td>
                                         <div class="d-grid">
-                                            @if ($attendance->type == 'Regular')
-                                                @isset($attendance->total_adjusted_time)
-                                                    @php
-                                                        $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
-                                                    @endphp
-                                                    <b title="Adjusted Total Time">
+                                            @isset($attendance->total_adjusted_time)
+                                                @php
+                                                    $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
+                                                @endphp
+                                                <b title="Adjusted Total Time">
+                                                    @if ($attendance->type == 'Regular')
                                                         {!! total_time_with_min_hour($attendance->total_adjusted_time, $totalWorkingHour) !!}
-                                                    </b>
-                                                @else
-                                                    <b class="text-success text-uppercase">Running</b>
-                                                @endisset
-                                                <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Total Working Time">{{ $attendance->total_adjusted_time ?? $attendance->total_time }}</small>
-                                            @else
-                                                <b class="text-warning">
-                                                    {{ total_time($attendance->total_adjusted_time ?? $attendance->total_time) }}
+                                                    @else
+                                                        <b class="text-warning">
+                                                            {{ total_time($attendance->total_adjusted_time ?? $attendance->total_time) }}
+                                                        </b>
+                                                    @endif
                                                 </b>
-                                            @endif
+                                                <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Total Working Time">
+                                                    {{ total_time($attendance->total_time) }}
+                                                </small>
+                                            @else
+                                                <b class="text-success text-uppercase">Running</b>
+                                            @endisset
                                         </div>
                                     </td>
                                     <td class="text-center">
