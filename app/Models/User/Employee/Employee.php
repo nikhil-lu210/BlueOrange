@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Employee extends Model
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, EmployeeRelations, HasCustomRouteId;
-    
+
     protected $cascadeDeletes = ['user'];
 
     protected $fillable = [
@@ -26,5 +26,7 @@ class Employee extends Model
         'official_email',
         'personal_contact_no',
         'official_contact_no',
+        'religion_id',
+        'gender',
     ];
 }

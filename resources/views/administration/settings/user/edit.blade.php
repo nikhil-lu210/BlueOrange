@@ -11,6 +11,9 @@
     {{--  External CSS  --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
+
+    {{-- Bootstrap Select --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -51,7 +54,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Edit User Info of <b class="text-primary">{{ $user->name .' ('. $user->employee->alias_name .')' }}</b></h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-arrow-left ti-xs me-1"></span>
@@ -88,7 +91,7 @@
                     </div>
 
                     <hr class="my-3" />
-                    
+
                     <div class="row">
                         <div class="mb-3 col-md-6">
                             <label for="role_id" class="form-label">Select Role <strong class="text-danger">*</strong></label>
@@ -201,6 +204,30 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="religion_id" class="form-label">{{ __('Select Religion') }}</label>
+                            <select name="religion_id" id="religion_id" class="form-select bootstrap-select w-100 @error('religion_id') is-invalid @enderror"  data-style="btn-default">
+                                <option value="">{{ __('Select Religion') }}</option>
+                                @foreach ($religions as $religion)
+                                    <option value="{{ $religion->id }}" @selected(optional($user->religion)->id == $religion->id)>{{ $religion->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('religion_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="gender" class="form-label">{{ __('Select Gender') }}</label>
+                            <select name="gender" id="gender" class="form-select bootstrap-select w-100 @error('gender') is-invalid @enderror"  data-style="btn-default">
+                                <option value="">{{ __('Select Gender') }}</option>
+                                <option value="Male" @selected($user->employee->gender === 'Male')>Male</option>
+                                <option value="Female" @selected($user->employee->gender === 'Female')>Female</option>
+                                <option value="Other" @selected($user->employee->gender === 'Other')>Other</option>
+                            </select>
+                            @error('gender')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
                     </div>
                     <div class="mt-2 float-end">
                         <button type="reset" onclick="return confirm('Sure Want To Reset?');" class="btn btn-outline-danger me-2">Reset Form</button>
@@ -209,7 +236,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -222,10 +249,22 @@
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
+
+    {{-- Bootstrap Select --}}
+    <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
+    <script>
+        $(document).ready(function() {
+            $('.bootstrap-select').each(function() {
+                if (!$(this).data('bs.select')) { // Check if it's already initialized
+                    $(this).selectpicker();
+                }
+            });
+        });
+    </script>
     <script>
         $(document).ready(function () {
             let accountUserImage = $("#uploadedAvatar");
@@ -246,22 +285,22 @@
             }
         });
     </script>
-    
+
     <script>
         $(document).ready(function () {
             $("#editEmail").on("click", function () {
                 $(this).addClass("d-none");
                 $("#doneEditEmail").removeClass("d-none");
                 $("#editableInput").removeClass("editable-input");
-                
+
                 $("#email").prop("readonly", false);
             });
-            
+
             $("#doneEditEmail").on("click", function () {
                 $(this).addClass("d-none");
                 $("#editEmail").removeClass("d-none");
                 $("#editableInput").addClass("editable-input");
-                
+
                 $("#email").prop("readonly", true);
             });
         });

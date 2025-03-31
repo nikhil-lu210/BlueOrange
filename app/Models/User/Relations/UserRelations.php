@@ -8,6 +8,7 @@ use App\Models\Vault\Vault;
 use App\Models\Salary\Salary;
 use App\Models\Ticket\ItTicket;
 use App\Models\Task\TaskComment;
+use App\Models\Religion\Religion;
 use App\Models\Shortcut\Shortcut;
 use App\Models\User\LoginHistory;
 use App\Models\Leave\LeaveAllowed;
@@ -25,6 +26,7 @@ use App\Models\Announcement\AnnouncementComment;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 trait UserRelations
 {
@@ -34,6 +36,12 @@ trait UserRelations
     public function employee(): HasOne
     {
         return $this->hasOne(Employee::class);
+    }
+
+    // Define the one-to-many relationship with Religion through Employee
+    public function religion(): HasOneThrough
+    {
+        return $this->hasOneThrough(Religion::class, Employee::class, 'user_id', 'id', 'id', 'religion_id');
     }
 
 
