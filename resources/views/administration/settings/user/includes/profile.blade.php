@@ -25,7 +25,7 @@
                         <span class="fw-medium mx-2 text-heading">User ID:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <b class="text-dark">{{ $user->userid }}</b>  
+                        <b class="text-dark">{{ $user->userid }}</b>
                     </dd>
                 </dl>
                 <dl class="row mb-1">
@@ -34,7 +34,7 @@
                         <span class="fw-medium mx-2 text-heading">Alias Name:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ optional($user->employee)->alias_name }}</span>  
+                        <span>{{ optional($user->employee)->alias_name }}</span>
                     </dd>
                 </dl>
                 <dl class="row mb-1">
@@ -46,7 +46,7 @@
                         <a href="mailto:{{ $user->email }}" class="text-primary">{{ $user->email }}</a>
                     </dd>
                 </dl>
-                @if ($user->employee->official_email) 
+                @if ($user->employee->official_email)
                     <dl class="row mb-1">
                         <dt class="col-sm-4 fw-medium text-nowrap">
                             <i class="ti ti-mail-star text-heading"></i>
@@ -57,7 +57,7 @@
                         </dd>
                     </dl>
                 @endif
-                @if ($user->employee->official_contact_no) 
+                @if ($user->employee->official_contact_no)
                     <dl class="row mb-1">
                         <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                             <i class="ti ti-phone-call text-heading"></i>
@@ -104,7 +104,7 @@
                     <dd class="col-sm-8">
                         @if ($user->hasMedia('barcode'))
                             <img src="{{ $user->getFirstMediaUrl('barcode') }}" alt="{{ $user->name }} BAR-CODE" class="d-block h-auto" width="300px">
-                            
+
                             <a href="{{ spatie_media_download($user->getFirstMedia('barcode')) }}" target="_blank" class="text-bold text-muted" title="Download Barcode">
                                 {{ $user->userid }}
                             </a>
@@ -125,9 +125,31 @@
                         <span class="fw-medium mx-2 text-heading">Full Name:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ $user->name }}</span>  
+                        <span>{{ $user->name }}</span>
                     </dd>
                 </dl>
+                @isset ($user->employee->gender)
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 fw-medium text-nowrap">
+                            <i class="ti ti-{{ $user->employee->gender === 'Male' ? 'man' : 'woman' }} text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">Gender:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span>{{ optional($user->employee)->gender }}</span>
+                        </dd>
+                    </dl>
+                @endisset
+                @isset ($user->employee->religion)
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 fw-medium text-nowrap">
+                            <i class="ti ti-pray text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">Religion:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span>{{ optional($user->employee)->religion->name }}</span>
+                        </dd>
+                    </dl>
+                @endisset
                 <dl class="row mb-1">
                     <dt class="col-sm-4 fw-medium text-nowrap">
                         <i class="ti ti-mail text-heading"></i>
@@ -152,7 +174,7 @@
                         <span class="fw-medium mx-2 text-heading">Father Name:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ optional($user->employee)->father_name }}</span>  
+                        <span>{{ optional($user->employee)->father_name }}</span>
                     </dd>
                 </dl>
                 <dl class="row mb-1">
@@ -161,7 +183,7 @@
                         <span class="fw-medium mx-2 text-heading">Mother Name:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ optional($user->employee)->mother_name }}</span>  
+                        <span>{{ optional($user->employee)->mother_name }}</span>
                     </dd>
                 </dl>
                 <dl class="row mb-1">
@@ -172,7 +194,7 @@
                     <dd class="col-sm-8">
                         <span>{{ show_date(optional($user->employee)->birth_date) }}</span>
                         <br>
-                        @if (is_today_birthday(optional($user->employee)->birth_date)) 
+                        @if (is_today_birthday(optional($user->employee)->birth_date))
                             <small class="mt-1 badge bg-success">
                                 <span class="text-bold text-capitalize">Happy Birthday {{ get_employee_name($user) }}</span>
                             </small>
@@ -198,22 +220,22 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end m-0" style="">
                             <a href="{{ route('administration.settings.user.salary.index', ['user' => $user]) }}" class="dropdown-item">
-                                <i class="text-primary ti ti-history me-1"></i> 
+                                <i class="text-primary ti ti-history me-1"></i>
                                 Salary History
                             </a>
                             <a href="{{ route('administration.settings.user.salary.monthly.index', ['user' => $user]) }}" class="dropdown-item">
-                                <i class="text-primary ti ti-calendar-time me-1"></i> 
+                                <i class="text-primary ti ti-calendar-time me-1"></i>
                                 Monthly Salary History
                             </a>
                             <div class="dropdown-divider"></div>
                             <a href="{{ route('administration.settings.user.salary.create', ['user' => $user]) }}" class="dropdown-item btn btn-primary waves-effect">
-                                <i class="ti ti-plus me-1"></i> 
+                                <i class="ti ti-plus me-1"></i>
                                 Upgrade Salary
                             </a>
                         </div>
                     </div>
                 </div>
-                @if ($user->current_salary) 
+                @if ($user->current_salary)
                     <div class="card-body">
                         <dl class="row mt-3 mb-1">
                             <dt class="col-5 mb-2 fw-medium text-nowrap">
@@ -251,7 +273,7 @@
                                 <span><i class="ti ti-currency-taka"></i>{{ format_number($user->current_salary->medical_allowance) }}</span>
                             </dd>
                         </dl>
-                        @if ($user->current_salary->night_shift_allowance) 
+                        @if ($user->current_salary->night_shift_allowance)
                             <dl class="row mt-3 mb-1">
                                 <dt class="col-5 mb-2 fw-medium text-nowrap">
                                     <i class="ti ti-coin"></i>

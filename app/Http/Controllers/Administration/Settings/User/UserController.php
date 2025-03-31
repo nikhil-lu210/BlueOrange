@@ -39,7 +39,7 @@ class UserController extends Controller
         // foreach ($users as $key => $user) {
         //     $this->generateBarCode($user);
         // }
-        
+
         return view('administration.settings.user.barcode', compact(['users']));
     }
 
@@ -107,8 +107,9 @@ class UserController extends Controller
     {
         $user = $this->userService->getUser($user);
         $roles = $this->userService->getAllRoles();
+        $religions = $this->userService->getAllReligions();
 
-        return view('administration.settings.user.edit', compact(['roles', 'user']));
+        return view('administration.settings.user.edit', compact(['roles', 'religions', 'user']));
     }
 
     /**
@@ -164,7 +165,7 @@ class UserController extends Controller
             return back()->withError($e->getMessage())->withInput();
         }
     }
-    
+
 
     /**
      * Remove the specified resource from storage.
@@ -182,11 +183,11 @@ class UserController extends Controller
     }
 
 
-    public function generateQrCode(User $user) 
+    public function generateQrCode(User $user)
     {
         try {
             $this->userService->generateQrCode($user);
-    
+
             toast('QR Code Generated Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
@@ -195,11 +196,11 @@ class UserController extends Controller
     }
 
 
-    public function generateBarCode(User $user) 
+    public function generateBarCode(User $user)
     {
         try {
             $this->userService->generateBarCode($user);
-    
+
             toast('Bar Code Generated Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {

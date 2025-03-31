@@ -19,6 +19,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Mail\Administration\User\UserCredentialsMail;
 use App\Mail\Administration\User\UserStatusUpdateNotifyMail;
+use App\Models\Religion\Religion;
 use App\Notifications\Administration\NewUserRegistrationNotification;
 
 class UserService
@@ -90,6 +91,11 @@ class UserService
     public function getAllRoles()
     {
         return Role::select(['id', 'name'])->orderBy('name')->get();
+    }
+
+    public function getAllReligions()
+    {
+        return Religion::select(['id', 'name'])->get();
     }
 
     public function createUser(array $data)
@@ -170,7 +176,7 @@ class UserService
         }
 
         // Fetch the user with the required relationships
-        return User::with(['roles', 'media'])->findOrFail($user->id);
+        return User::with(['roles', 'employee.religion', 'media'])->findOrFail($user->id);
     }
 
 
@@ -203,6 +209,8 @@ class UserService
                     'official_email' => $data['official_email'],
                     'personal_contact_no' => $data['personal_contact_no'],
                     'official_contact_no' => $data['official_contact_no'],
+                    'religion_id' => $data['religion_id'],
+                    'gender' => $data['gender'],
                 ]);
             }
 
