@@ -27,7 +27,7 @@ class BreakStartStopService
         }
 
         // Check shift constraints
-        $this->checkShiftTimeConstraints($user, $currentTime);
+        // $this->checkShiftTimeConstraints($user, $currentTime);
 
         // Check clock-in/clock-out constraints
         $this->checkClockTimeConstraints($user, $currentTime);
