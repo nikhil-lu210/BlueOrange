@@ -115,7 +115,9 @@
                 </dl>
             </div>
         </div>
+    </div>
 
+    <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-body">
                 <small class="card-text text-uppercase">Personal Information</small>
