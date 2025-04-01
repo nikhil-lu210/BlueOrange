@@ -30,7 +30,7 @@
                     </li>
                 </ul>
             </div>
-        </div>        
+        </div>
         <!-- /Light-Dark Mode -->
 
         <ul class="navbar-nav flex-row align-items-center ms-auto">
@@ -40,7 +40,7 @@
                     <i class="ti ti-language rounded-circle ti-md"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    @foreach (config('localization.languages') as $lang) 
+                    @foreach (config('localization.languages') as $lang)
                         <li>
                             <a class="dropdown-item" href="{{ route('administration.localization', ['lang' => $lang['key']]) }}" data-language="{{ $lang['key'] }}">
                                 <span class="align-middle">{{ $lang['value'] }}</span>
@@ -85,7 +85,7 @@
             <li class="nav-item dropdown-notifications navbar-dropdown dropdown me-3 me-xl-1">
                 <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown" data-bs-auto-close="outside" aria-expanded="false">
                     <i class="ti ti-bell ti-md"></i>
-                    @if (auth()->user()->unreadNotifications->count() > 0) 
+                    @if (auth()->user()->unreadNotifications->count() > 0)
                         <span class="badge bg-danger rounded-pill badge-notifications">
                             {{ auth()->user()->unreadNotifications->count() }}
                         </span>
@@ -95,7 +95,7 @@
                     <li class="dropdown-menu-header border-bottom">
                         <div class="dropdown-header d-flex align-items-center py-3">
                             <h5 class="text-body mb-0 me-auto">{{ __('topnav.notifications') }}</h5>
-                            @if (auth()->user()->unreadNotifications->count() > 0) 
+                            @if (auth()->user()->unreadNotifications->count() > 0)
                                 <a href="{{ route('administration.notification.mark_all_as_read') }}" class="dropdown-notifications-all text-body confirm-success" data-bs-toggle="tooltip" data-bs-placement="top" title="Mark all as read">
                                     <i class="ti ti-mail-opened fs-4"></i>
                                 </a>
@@ -110,9 +110,9 @@
                                         <div class="flex-shrink-0 me-3">
                                             <div class="avatar">
                                                 <span class="avatar-initial rounded-circle bg-label-primary">
-                                                    @if (isset($notification->data['icon'])) 
+                                                    @if (isset($notification->data['icon']))
                                                         <i class="ti ti-{{ $notification->data['icon'] }} ti-md"></i>
-                                                    @else 
+                                                    @else
                                                         <i class="ti ti-bell ti-md"></i>
                                                     @endif
                                                 </span>
@@ -177,9 +177,9 @@
                                     </div>
                                 </div>
                                 <div class="flex-grow-1">
-                                    @if (!is_null(auth()->user()->employee->alias_name)) 
+                                    @if (!is_null(auth()->user()->employee->alias_name))
                                         <span class="fw-medium d-block">{{ auth()->user()->employee->alias_name }}</span>
-                                    @else 
+                                    @else
                                         <span class="fw-medium d-block">{{ auth()->user()->name }}</span>
                                     @endif
                                     <small class="text-muted">{{ auth()->user()->role->name }}</small>
@@ -206,13 +206,20 @@
                         <div class="dropdown-divider"></div>
                     </li>
                     <li>
-                        <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                            <i class="ti ti-logout me-2 ti-sm"></i>
-                            <span class="align-middle">{{ __('topnav.logout') }}</span>
-                        </a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
+                        @if (!session()->has('impersonate'))
+                            <a class="dropdown-item" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                <i class="ti ti-logout me-2 ti-sm"></i>
+                                <span class="align-middle">{{ __('topnav.logout') }}</span>
+                            </a>
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                        @else
+                            <a class="dropdown-item confirm-warning" href="{{ route('custom_auth.impersonate.revert') }}">
+                                <i class="ti ti-logout me-2 ti-sm"></i>
+                                <span class="align-middle">{{ __('Logout & Revert') }}</span>
+                            </a>
+                        @endif
                     </li>
                 </ul>
             </li>

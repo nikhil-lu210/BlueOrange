@@ -72,16 +72,16 @@
         case 'Active':
             $statusColor = 'success';
             break;
-        
+
         case 'Fired':
             $statusColor = 'danger';
             break;
-        
-        
+
+
         case 'Resigned':
             $statusColor = 'warning';
             break;
-        
+
         default:
             $statusColor = 'dark';
             break;
@@ -106,11 +106,11 @@
                             <p class="fw-bold text-dark mb-1">ID: <span class="text-primary">{{ $user->userid }}</span></p>
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
                                 <li class="list-inline-item d-flex gap-1">
-                                    <i class="ti ti-crown"></i> 
+                                    <i class="ti ti-crown"></i>
                                     {{ $user->role->name }}
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" title="Joining Date">
-                                    <i class="ti ti-calendar"></i> 
+                                    <i class="ti ti-calendar"></i>
                                     {{ show_date($user->employee->joining_date) }}
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" title="Click to Update Shift">
@@ -129,10 +129,18 @@
                                 </li>
                             </ul>
                         </div>
-                        <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="btn btn-primary waves-effect waves-light">
-                            <i class="ti ti-pencil me-1"></i>
-                            Edit User 
-                        </a>
+                        <div class="actions">
+                            <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="btn btn-primary waves-effect waves-light">
+                                <i class="ti ti-pencil me-1"></i>
+                                Edit User
+                            </a>
+                            @hasanyrole(['Developer', 'Super Admin'])
+                                <a href="{{ route('custom_auth.impersonate.login', ['user' => $user]) }}" class="btn btn-dark waves-effect waves-light confirm-warning">
+                                    <i class="ti ti-lock me-1"></i>
+                                    Login As {{ $user->alias_name }}
+                                </a>
+                            @endhasanyrole
+                        </div>
                     </div>
                 </div>
             </div>
@@ -147,28 +155,28 @@
         <ul class="nav nav-pills flex-column flex-sm-row mb-4">
             <li class="nav-item">
                 <a class="nav-link {{ request()->is('settings/user/show/*/profile*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">
-                    <i class="ti-xs ti ti-user-check me-1"></i> 
+                    <i class="ti-xs ti ti-user-check me-1"></i>
                     Profile
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link {{ request()->is('settings/user/show/*/attendance*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.attendance', ['user' => $user]) }}">
-                    <i class="ti-xs ti ti-clock-dollar me-1"></i> 
+                    <i class="ti-xs ti ti-clock-dollar me-1"></i>
                     Attendance
                 </a>
             </li>
-            @can ('User Interaction Read') 
+            @can ('User Interaction Read')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('settings/user/show/*/user_interaction*') ? 'active' : '' }}" href="{{ route('administration.settings.user.user_interaction.index', ['user' => $user]) }}">
-                        <i class="ti-xs ti ti-users-group me-1"></i> 
+                        <i class="ti-xs ti ti-users-group me-1"></i>
                         User Interactions
                     </a>
                 </li>
             @endcan
-            @can ('Leave Allowed Read') 
+            @can ('Leave Allowed Read')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('settings/user/show/*/allowed_leaves*') ? 'active' : '' }}" href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $user]) }}">
-                        <i class="ti-xs ti ti-calendar-x me-1"></i> 
+                        <i class="ti-xs ti ti-calendar-x me-1"></i>
                         Allowed Leaves
                     </a>
                 </li>
@@ -196,7 +204,7 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <!-- Datatable js -->    
+    <!-- Datatable js -->
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
@@ -208,8 +216,8 @@
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
-    
-    
+
+
     {{--  External Javascript Links --}}
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
@@ -222,7 +230,7 @@
             $('.time-picker').flatpickr({
                 enableTime: true,
                 noCalendar: true
-            }); 
+            });
         });
     </script>
 @endsection
