@@ -48,10 +48,14 @@ cat ~/.ssh/id_rsa.pub
 ## **Step 5: Test SSH Connection**
 Now, in Git Bash, run:
 ```bash
-ssh username@yourdomain.com -p 22
+ssh username@yourdomain.com -p 2222
 ```
 - Replace `username` with your **cPanel username**.
 - Replace `yourdomain.com` with your **actual domain name**.
+For example:
+```bash
+ssh staffi7@yourdomain.com -p 2222
+```
 
 If everything is correct, it should connect **without asking for a password**.
 
