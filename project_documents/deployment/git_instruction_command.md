@@ -1,16 +1,16 @@
 git checkout develop
 git pull origin develop
-git checkout -b release-v1.0.0
-git push origin release-v1.0.0
+git checkout -b release-v1.1.0
+git push origin release-v1.1.0
 git add .
-git commit -m "Fix bug in release v1.0.0"
-git push origin release-v1.0.0
+git commit -m "Updated Welcome Pages in release v1.1.0"
+git push origin release-v1.1.0
 git checkout master
 git pull origin master
-git merge --no-ff release-v1.0.0 -m "Merge release v1.0.0 into master"
+git merge --no-ff release-v1.1.0 -m "Merge release v1.1.0 into master"
 git push origin master
 git checkout develop
-git merge --no-ff release-v1.0.0 -m "Merge release v1.0.0 into develop"
+git merge --no-ff release-v1.1.0 -m "Merge release v1.1.0 into develop"
 git push origin develop
-git branch -d release-v1.0.0
-git push origin --delete release-v1.0.0
+git branch -d release-v1.1.0
+git push origin --delete release-v1.1.0
