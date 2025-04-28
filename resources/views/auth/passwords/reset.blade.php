@@ -13,7 +13,7 @@
         <meta name="description" content="Blue Orange Web Application | Staff-India" />
 
         <!-- Favicon -->
-        <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+        <link rel="icon" type="image/x-icon" href="{{ asset(config('app.favicon')) }}" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
