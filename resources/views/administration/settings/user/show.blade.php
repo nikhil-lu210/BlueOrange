@@ -130,10 +130,16 @@
                             </ul>
                         </div>
                         <div class="actions">
-                            <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="btn btn-primary waves-effect waves-light">
-                                <i class="ti ti-pencil me-1"></i>
-                                Edit User
-                            </a>
+                            @canany (['User Everything', 'User Update'])
+                                <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="btn btn-primary waves-effect waves-light">
+                                    <i class="ti ti-pencil me-1"></i>
+                                    Edit User
+                                </a>
+                                <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#updatePasswordModal" class="btn btn-warning waves-effect waves-light">
+                                    <i class="ti ti-lock-cog me-1"></i>
+                                    Update Password
+                                </a>
+                            @endcanany
                             @hasanyrole(['Developer', 'Super Admin'])
                                 <a href="{{ route('custom_auth.impersonate.login', ['user' => $user]) }}" class="btn btn-dark waves-effect waves-light confirm-warning">
                                     <i class="ti ti-lock me-1"></i>
@@ -197,6 +203,8 @@
     @include('administration.settings.user.modals.user_shift_update_modal')
 
     @include('administration.settings.user.modals.user_status_update_modal')
+
+    @include('administration.settings.user.modals.user_password_update_modal')
 @endcanany
 
 @endsection

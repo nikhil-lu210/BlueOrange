@@ -166,6 +166,24 @@ class UserController extends Controller
         }
     }
 
+    /**
+     * User Password Update
+     */
+    public function updatePassword(Request $request, User $user) {
+        $validatedPassword = $request->validate([
+            'user_password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        try {
+            $this->userService->updatePassword($user, $validatedPassword);
+
+            toast($user->alias_name. '\'s Password Has Been Updated', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return back()->withError($e->getMessage())->withInput();
+        }
+    }
+
 
     /**
      * Remove the specified resource from storage.

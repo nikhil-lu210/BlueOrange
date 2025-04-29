@@ -255,6 +255,14 @@ class UserService
         }, 5);
     }
 
+    public function updatePassword(User $user, array $data) {
+        return DB::transaction(function() use ($data, $user) {
+            $user->update([
+                'password' => Hash::make($data['user_password']),
+            ]);
+        }, 5);
+    }
+
     public function deleteUser(User $user)
     {
         return DB::transaction(function () use ($user) {
