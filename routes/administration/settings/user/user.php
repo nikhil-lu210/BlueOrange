@@ -23,13 +23,15 @@ Route::prefix('user')->name('user.')->group(function () {
 
         Route::get('/generate-qr-code/{user}', 'generateQrCode')->name('generate.qr.code')->can('User Create');
         Route::get('/generate-bar-code/{user}', 'generateBarCode')->name('generate.bar.code')->can('User Create');
-        
+
         Route::get('/show/{user}/profile', 'showProfile')->name('show.profile')->can('User Read');
         Route::get('/show/{user}/attendance', 'showAttendance')->name('show.attendance')->can('User Read');
 
         Route::post('/shift/{shift}/update/{user}', 'updateShift')->name('shift.update')->can('User Update');
 
         Route::put('/status/update/{user}', 'updateStatus')->name('status.update')->can('User Update');
+
+        Route::put('/password/update/{user}', 'updatePassword')->name('password.update')->can('User Update');
     });
 
     Route::controller(UserImportController::class)->prefix('create/import')->name('import.')->group(function () {
