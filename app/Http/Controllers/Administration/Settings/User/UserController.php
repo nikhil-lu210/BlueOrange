@@ -174,6 +174,8 @@ class UserController extends Controller
             'user_password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
+        abort_if($user->role->name === 'Developer', 403, 'You are not authorized to update this user\'s password.');
+
         try {
             $this->userService->updatePassword($user, $validatedPassword);
 
