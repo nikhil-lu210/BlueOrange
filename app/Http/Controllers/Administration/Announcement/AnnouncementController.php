@@ -46,7 +46,7 @@ class AnnouncementController extends Controller
         }
 
         if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $monthYear = Carbon::parse($request->created_month_year);
             $query->whereYear('created_at', $monthYear->year)
                   ->whereMonth('created_at', $monthYear->month);
         }
@@ -55,7 +55,7 @@ class AnnouncementController extends Controller
 
         return view('administration.announcement.index', compact(['roles', 'announcements']));
     }
-    
+
     /**
      * Display a listing of the resource.
      */
@@ -80,7 +80,7 @@ class AnnouncementController extends Controller
                         ->orderBy('name', 'asc');
             }
         ])->get();
-        
+
         return view('administration.announcement.create', compact(['roles']));
     }
 
@@ -105,7 +105,7 @@ class AnnouncementController extends Controller
                 } else {
                     $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $announcement->recipients)->get();
                 }
-                
+
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new AnnouncementCreateNotification($announcement, auth()->user()));
@@ -115,7 +115,7 @@ class AnnouncementController extends Controller
                     Mail::to($notifiableUser->email)->queue(new NewAnnouncementMail($announcement, $notifiableUser));
                 }
             });
-            
+
             toast('Announcement assigned successfully.', 'success');
             return redirect()->route('administration.announcement.index');
         } catch (Exception $e) {
@@ -153,7 +153,7 @@ class AnnouncementController extends Controller
             // Update announcement with updated read_by_at array
             $announcement->update(['read_by_at' => json_encode($readBy)]);
         }
-        
+
         // dd($announcement->isAuthorized());
         return view('administration.announcement.show', compact('announcement'));
     }
@@ -170,7 +170,7 @@ class AnnouncementController extends Controller
                         ->orderBy('name', 'asc');
             }
         ])->get();
-        
+
         return view('administration.announcement.edit', compact(['announcement', 'roles']));
     }
 
@@ -186,7 +186,7 @@ class AnnouncementController extends Controller
                 'description' => $request->description,
                 'recipients' => $request->recipients ?? null
             ]);
-            
+
             toast('Announcement updated successfully.', 'success');
             return redirect()->route('administration.announcement.show', ['announcement' => $announcement]);
         } catch (Exception $e) {
@@ -203,7 +203,7 @@ class AnnouncementController extends Controller
     {
         try {
             $announcement->delete();
-            
+
             toast('Announcement deleted successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {

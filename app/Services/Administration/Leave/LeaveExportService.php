@@ -30,7 +30,7 @@ class LeaveExportService
 
         // Handle leave_month_year filter
         if ($request->has('leave_month_year') && !is_null($request->leave_month_year)) {
-            $monthYearDate = Carbon::createFromFormat('F Y', $request->leave_month_year);
+            $monthYearDate = Carbon::parse($request->leave_month_year);
             $query->whereYear('date', $monthYearDate->year)
                 ->whereMonth('date', $monthYearDate->month);
             $monthYear = '_of_' . $monthYearDate->format('m_Y');

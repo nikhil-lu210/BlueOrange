@@ -46,7 +46,7 @@ class ExpenseExportService
         }
 
         if ($request->filled('for_month')) {
-            $monthYearDate = Carbon::createFromFormat('F Y', $request->for_month);
+            $monthYearDate = Carbon::parse($request->for_month);
             $query->whereYear('date', $monthYearDate->year)
                   ->whereMonth('date', $monthYearDate->month);
         } elseif (!$request->has('filter_expenses')) {
@@ -76,7 +76,7 @@ class ExpenseExportService
         }
 
         if ($request->filled('for_month')) {
-            $monthYearDate = Carbon::createFromFormat('F Y', $request->for_month);
+            $monthYearDate = Carbon::parse($request->for_month);
             $monthYear = '_for_' . $monthYearDate->format('m_Y');
         }
 

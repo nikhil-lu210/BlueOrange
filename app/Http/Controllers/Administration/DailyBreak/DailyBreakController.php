@@ -45,7 +45,7 @@ class DailyBreakController extends Controller
     public function myDailyBreaks(Request $request)
     {
         $dailyBreaks = $this->getDailyBreaksQuery($request, auth()->user()->id)->get();
-                                    
+
         return view('administration.daily_break.my', compact(['dailyBreaks']));
     }
 
@@ -64,7 +64,7 @@ class DailyBreakController extends Controller
         $breaks = DailyBreak::where('user_id', $user->id)->where('date', $currentDate)->get();
 
         $activeBreak = DailyBreak::where('user_id', $user->id)->whereNull('break_out_at')->whereNull('total_time')->first();
-        
+
         return view('administration.daily_break.create', compact(['attendance', 'breaks', 'activeBreak']));
     }
 
@@ -183,7 +183,7 @@ class DailyBreakController extends Controller
     {
         try {
             $break->delete();
-            
+
             toast('Daily Break deleted successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
@@ -224,8 +224,8 @@ class DailyBreakController extends Controller
     private function getDailyBreaksQuery(Request $request, int $userId = null)
     {
         $query = DailyBreak::with([
-                                'user:id,userid,name', 
-                                'user.media', 
+                                'user:id,userid,name',
+                                'user.media',
                                 'user.roles'
                             ])
                             ->orderByDesc('break_in_at');
@@ -237,7 +237,7 @@ class DailyBreakController extends Controller
 
         // Handle month/year filtering
         if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $monthYear = Carbon::parse($request->created_month_year);
             $query->whereYear('date', $monthYear->year)
                 ->whereMonth('date', $monthYear->month);
         } else {

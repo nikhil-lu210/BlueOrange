@@ -63,7 +63,7 @@ class AttendanceIssueController extends Controller
 
         // Handle month/year filtering
         if ($request->has('issue_month_year') && !is_null($request->issue_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->issue_month_year);
+            $monthYear = Carbon::parse($request->issue_month_year);
             $query->whereYear('clock_in_date', $monthYear->year)
                 ->whereMonth('clock_in_date', $monthYear->month);
         } else {
@@ -87,7 +87,7 @@ class AttendanceIssueController extends Controller
 
         return view('administration.attendance.issue.index', compact(['teamLeaders', 'users', 'issues']));
     }
-    
+
     /**
      * Display a listing of the resource.
      */
@@ -162,7 +162,7 @@ class AttendanceIssueController extends Controller
                     'clock_out' => $request->clock_out,
                     'reason' => $request->reason,
                     'type' => $request->type,
-                ]);            
+                ]);
 
                 // Send Notification to Team Leader
                 auth()->user()->active_team_leader->notify(new AttendanceIssueStoreNotification($issue, auth()->user()));

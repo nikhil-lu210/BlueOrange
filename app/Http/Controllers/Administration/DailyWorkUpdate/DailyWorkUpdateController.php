@@ -222,7 +222,7 @@ class DailyWorkUpdateController extends Controller
         }
 
         if ($request->filled('created_month_year')) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $monthYear = Carbon::parse($request->created_month_year);
             $query->whereYear('date', $monthYear->year)
                   ->whereMonth('date', $monthYear->month);
         } elseif (!$request->has('filter_work_updates')) {
