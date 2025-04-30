@@ -33,25 +33,30 @@ class LeaveHistoryController extends Controller
      */
     public function index(Request $request)
     {
-        // dd($request->all());
         $userIds = auth()->user()->user_interactions->pluck('id');
 
-        
-        $teamLeaders = User::whereIn('id', $userIds)
-                            ->whereStatus('Active')
-                            ->get()
-                            ->filter(function ($user) {
-                                return $user->hasAnyPermission(['Leave History Everything', 'Leave History Update']);
-                            });
+        // Optimize team leaders query
+        $teamLeaders = User::with(['permissions', 'roles'])
+            ->whereIn('id', $userIds)
+            ->whereStatus('Active')
+            ->get();
 
-        // Eager load all necessary relationships
+        // Optimize users query
         $users = User::with(['roles', 'media', 'shortcuts', 'employee'])
             ->whereIn('id', $userIds)
             ->whereStatus('Active')
-            ->get(['id', 'name']);
+            ->select(['id', 'name'])
+            ->get();
 
-        // Get daily breaks with the pre-loaded users
+        // Optimize leaves query with necessary relationships
         $leaves = $this->leaveHistoryService->getLeavesQuery($request)
+            ->with([
+                'user.media',
+                'user.roles',
+                'files',
+                'reviewer',
+                'leave_allowed'
+            ])
             ->whereIn('user_id', $userIds)
             ->get();
 
@@ -63,7 +68,6 @@ class LeaveHistoryController extends Controller
      */
     public function my(Request $request)
     {
-        // Get daily breaks with the pre-loaded users
         $leaves = $this->leaveHistoryService->getLeavesQuery($request, auth()->user()->id)->get();
 
         return view('administration.leave.my', compact(['leaves']));
@@ -83,7 +87,6 @@ class LeaveHistoryController extends Controller
      */
     public function store(LeaveHistoryStoreRequest $request)
     {
-        // dd($user->active_team_leader->employee->official_email, $request->validated());
         try {
             $user = Auth::user();
             $this->leaveHistoryService->store($user, $request->validated());
@@ -111,7 +114,7 @@ class LeaveHistoryController extends Controller
     public function approve(LeaveApprovalRequest $request, LeaveHistory $leaveHistory)
     {
         $this->leaveHistoryService->approve($request, $leaveHistory);
-        
+
         toast('Leave request approved and leave balance updated successfully.', 'success');
         return redirect()->back();
     }
@@ -158,7 +161,7 @@ class LeaveHistoryController extends Controller
         ]);
         // dd($leaveHistory->toArray(), $request->all());
         $this->leaveHistoryService->cancel($request, $leaveHistory);
-        
+
         toast('Leave request has been Canceled Successfully.', 'success');
         return redirect()->back();
     }
@@ -186,3 +189,6 @@ class LeaveHistoryController extends Controller
         }
     }
 }
+
+
+

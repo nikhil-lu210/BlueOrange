@@ -28,9 +28,19 @@ class LeaveHistoryService
     public function getLeavesQuery($request, int $userId = null): Builder
     {
         $query = LeaveHistory::with([
-            'user:id,userid,name',
-            'user.media',
-            'user.roles',
+            'user' => function($query) {
+                $query->select('id', 'userid', 'name')
+                      ->with(['media', 'roles']);
+            }
+        ])
+        ->select([
+            'id',
+            'user_id',
+            'date',
+            'total_leave',
+            'type',
+            'status',
+            'created_at'
         ])
         ->orderByDesc('date')
         ->orderBy('created_at');
@@ -329,4 +339,5 @@ class LeaveHistoryService
         return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
 }
+
 
