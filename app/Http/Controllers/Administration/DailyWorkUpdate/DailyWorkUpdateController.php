@@ -60,6 +60,7 @@ class DailyWorkUpdateController extends Controller
         if (!$request->has('filter_work_updates') && auth()->user()->tl_employees_daily_work_updates->count() < 1) {
             $dailyWorkUpdates = DailyWorkUpdate::whereUserId($authUserID)
                                 ->orWhere('team_leader_id', $authUserID)
+                                ->orderByDesc('created_at')
                                 ->get();
         } else {
             $dailyWorkUpdates = $this->getFilteredDailyWorkUpdates($request, $authUserID);

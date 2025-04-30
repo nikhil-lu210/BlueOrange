@@ -160,7 +160,7 @@
                                 <th>Employee ID</th>
                                 <th>Name</th>
                                 <th>Email & Shift</th>
-                                <th>Status</th>
+                                <th class="text-center">Religion & Gender</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -193,7 +193,11 @@
                                             {{ show_time(optional($user->current_shift)->start_time). ' to '.show_time(optional($user->current_shift)->end_time) }}
                                         </b>
                                     </td>
-                                    <td>{!! show_status($user->status) !!}</td>
+                                    <td class="text-center">
+                                        <b class="text-bold text-dark">{{ optional(optional($user->employee)->religion)->name }}</b>
+                                        <br>
+                                        <span class="text-bold text-muted">{{ optional($user->employee)->gender }}</sp>
+                                    </td>
                                     <td class="text-center">
                                         @canany (['User Update', 'User Delete'])
                                             <div class="d-inline-block">
