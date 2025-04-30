@@ -106,8 +106,8 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">
-                    <span>Attendances of </span>
-                    <span class="text-bold">{{ date('d M Y') }}</span>
+                    <span>Attendances of last </span>
+                    <span class="text-bold text-primary">{{ $hours }} Hours</span>
                 </h5>
             </div>
             <div class="card-body">
