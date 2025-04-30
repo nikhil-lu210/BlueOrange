@@ -30,7 +30,7 @@ class BreakExportService
 
         // Handle created_month_year filter
         if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-            $monthYearDate = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $monthYearDate = Carbon::parse($request->created_month_year);
             $query->whereYear('date', $monthYearDate->year)
                 ->whereMonth('date', $monthYearDate->month);
             $monthYear = '_of_' . $monthYearDate->format('m_Y');

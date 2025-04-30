@@ -10,13 +10,13 @@ use App\Http\Controllers\Controller;
 
 class LoginLogoutHistoryController extends Controller
 {
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $users = User::select(['id', 'name'])->whereStatus('Active')->orderBy('name')->get();
-        
+
         $query = LoginHistory::with([
-            'user:id,userid,name', 
-            'user.media', 
+            'user:id,userid,name',
+            'user.media',
             'user.roles'
         ])
         ->orderByDesc('created_at');
@@ -26,7 +26,7 @@ class LoginLogoutHistoryController extends Controller
         }
 
         if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $monthYear = Carbon::parse($request->created_month_year);
             $query->whereYear('login_time', $monthYear->year)
                 ->whereMonth('login_time', $monthYear->month);
         } else {

@@ -22,7 +22,7 @@ class HolidayController extends Controller
         $query = Holiday::select(['id', 'name', 'date', 'description', 'is_active']);
 
         if ($request->has('month_year') && !is_null($request->month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->month_year);
+            $monthYear = Carbon::parse($request->month_year);
 
             $query->whereYear('date', $monthYear->year)->whereMonth('date', $monthYear->month);
         }

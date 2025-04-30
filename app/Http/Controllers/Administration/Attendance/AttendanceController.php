@@ -44,7 +44,7 @@ class AttendanceController extends Controller
             // Inside your controller
             $attendanceService = new AttendanceService();
             $user = User::whereId($request->user_id)->firstOrFail();
-            $month = $request->created_month_year ? Carbon::createFromFormat('F Y', $request->created_month_year) : Carbon::now()->format('Y-m-d');
+            $month = $request->created_month_year ? Carbon::parse($request->created_month_year) : Carbon::now()->format('Y-m-d');
 
             $total['regularWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Regular', $month);
             $total['overtimeWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Overtime', $month);
@@ -73,7 +73,7 @@ class AttendanceController extends Controller
 
         // Inside your controller
         $attendanceService = new AttendanceService();
-        $month = $request->created_month_year ? Carbon::createFromFormat('F Y', $request->created_month_year) : Carbon::now()->format('Y-m-d');
+        $month = $request->created_month_year ? Carbon::parse($request->created_month_year) : Carbon::now()->format('Y-m-d');
 
         $total['regularWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Regular', $month);
         $total['overtimeWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Overtime', $month);
@@ -263,7 +263,7 @@ class AttendanceController extends Controller
 
         // Handle created_month_year filter
         if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-            $monthYearDate = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $monthYearDate = Carbon::parse($request->created_month_year);
             $query->whereYear('clock_in', $monthYearDate->year)
                 ->whereMonth('clock_in', $monthYearDate->month);
             $monthYear = '_of_' . $monthYearDate->format('m_Y');
@@ -325,7 +325,7 @@ class AttendanceController extends Controller
 
         // Filter by created month and year if provided
         if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->created_month_year);
+            $monthYear = Carbon::parse($request->created_month_year);
             $query->whereYear('clock_in', $monthYear->year)
                   ->whereMonth('clock_in', $monthYear->month);
         } else {

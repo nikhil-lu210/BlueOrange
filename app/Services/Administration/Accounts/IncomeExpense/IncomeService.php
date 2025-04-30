@@ -63,7 +63,7 @@ class IncomeService
     private function applyDateFilter($query, Request $request)
     {
         if ($request->filled('for_month')) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->input('for_month'));
+            $monthYear = Carbon::parse($request->input('for_month'));
             $query->whereYear('date', $monthYear->year)
                   ->whereMonth('date', $monthYear->month);
         } elseif (!$request->has('filter_incomes')) {

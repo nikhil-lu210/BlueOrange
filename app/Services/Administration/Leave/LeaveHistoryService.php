@@ -28,8 +28,8 @@ class LeaveHistoryService
     public function getLeavesQuery($request, int $userId = null): Builder
     {
         $query = LeaveHistory::with([
-            'user:id,userid,name', 
-            'user.media', 
+            'user:id,userid,name',
+            'user.media',
             'user.roles',
         ])
         ->orderByDesc('date')
@@ -56,7 +56,7 @@ class LeaveHistoryService
 
         // Handle month/year filtering
         if ($request->has('leave_month_year') && !is_null($request->leave_month_year)) {
-            $monthYear = Carbon::createFromFormat('F Y', $request->leave_month_year);
+            $monthYear = Carbon::parse($request->leave_month_year);
             $query->whereYear('date', $monthYear->year)
                 ->whereMonth('date', $monthYear->month);
         } else {
@@ -82,7 +82,7 @@ class LeaveHistoryService
         return $query;
     }
 
-    
+
     /**
      * Store leave history records for the user.
      *
@@ -329,3 +329,4 @@ class LeaveHistoryService
         return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }
 }
+
