@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
@@ -109,7 +109,7 @@
                             <select name="clock_in_date" id="clock_in_date" class="select2 form-select @error('clock_in_date') is-invalid @enderror" data-allow-clear="true" required>
                                 <option value="" selected>{{ __('Select Clock-In Date') }}</option>
                                 @foreach ($dates as $date)
-                                    <option value="{{ $date }}" {{ old('clock_in_date') ? 'selected' : '' }}>
+                                    <option value="{{ $date }}" {{ old('clock_in_date') == $date ? 'selected' : '' }}>
                                         {{ show_date($date) }}
                                     </option>
                                 @endforeach
@@ -123,7 +123,7 @@
                             <select name="attendance_id" id="attendance_id" class="select2 form-select @error('attendance_id') is-invalid @enderror" data-allow-clear="true" required>
                                 <option value="" selected>{{ __('Select Attendance') }}</option>
                                 @foreach ($attendances as $attendance)
-                                    <option value="{{ $attendance->id }}" {{ old('attendance_id') ? 'selected' : '' }}>
+                                    <option value="{{ $attendance->id }}" {{ old('attendance_id') == $attendance->id ? 'selected' : '' }}>
                                         {{ show_date_time($attendance->clock_in) }} | {{ $attendance->type }}
                                     </option>
                                 @endforeach
@@ -166,7 +166,7 @@
                             @enderror
                         </div>
                     </div>
-                    
+
                     <div class="col-md-12 text-end">
                         <button type="submit" class="btn btn-primary">
                             <span class="tf-icon ti ti-check ti-xs me-1"></span>
@@ -175,7 +175,7 @@
                     </div>
                 </div>
             </div>
-        </form>        
+        </form>
     </div>
 </div>
 <!-- End row -->
@@ -192,7 +192,7 @@
     <!-- Vendors JS -->
     <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
