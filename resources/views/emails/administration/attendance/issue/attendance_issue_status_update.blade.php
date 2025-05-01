@@ -9,14 +9,14 @@
 @section('content')
 <!-- Start Content -->
 <div>
-    Hello {{ $data->user->name }},
+    Hello {{ $data->user->alias_name }},
     <br>
-    You Attendance Issue has been {{ $data->status }} by {{ $user->name }}. 
+    You Attendance Issue has been {{ $data->status }} by {{ $user->alias_name }}.
     <br>
-    The Attendance Issue: 
+    The Attendance Issue:
     <a href="{{ route('administration.attendance.issue.show', ['issue' => $data]) }}">
         <strong>{{ $data->title }}</strong>
-    </a>.
+    </a>
 </div>
 <!-- End Content -->
 @endsection
