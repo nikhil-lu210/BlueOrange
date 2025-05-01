@@ -43,7 +43,7 @@ class TaskStatusUpdateNotification extends Notification
             'url'   => $url,
             'icon'   => 'brand-stackshare',
             'title'   => 'Task Marked As '. $this->task->status,
-            'message'     => 'Task ('. $this->task->title .') status has been marked as '. $this->task->status .' by '. $this->authUser->name,
+            'message'     => 'Task ('. $this->task->title .') status has been marked as '. $this->task->status .' by '. $this->authUser->alias_name,
         ];
     }
 }

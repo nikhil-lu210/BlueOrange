@@ -47,7 +47,7 @@ class DailyWorkUpdateCreateNotification extends Notification
             'url'   => $url,
             'icon'   => 'speakerphone',
             'title'   => 'New Work Update Arrived',
-            'message'     => 'A New Work Update Has Been Submitted By '. $this->authUser->name,
+            'message'     => 'A New Work Update Has Been Submitted By '. $this->authUser->alias_name,
         ];
     }
 }

@@ -26,7 +26,7 @@
                     </span>
                     <div class="timeline-event">
                         <div class="timeline-header">
-                            <h6 class="mb-0">{{ $history->user->name }}</h6>
+                            <h6 class="mb-0">{{ $history->user->alias_name }}</h6>
                             <small class="text-muted">{{ $history->progress }}%</small>
                         </div>
                         <small class="text-muted"><span class="text-dark">Total Worked: </span>{{ total_time($history->total_worked) }}</small>
@@ -34,5 +34,5 @@
                 </li>
             @endforeach
         </ul>
-    </div>    
+    </div>
 </div>

@@ -43,7 +43,7 @@ class TaskAddUsersNotification extends Notification
             'url'   => $url,
             'icon'   => 'brand-stackshare',
             'title'   => 'Task Assigned',
-            'message'     => 'A Task ('. $this->task->title .') Has Been to You by '. $this->authUser->name,
+            'message'     => 'A Task ('. $this->task->title .') Has Been assigned to You by '. $this->authUser->alias_name,
         ];
     }
 }

@@ -43,7 +43,7 @@ class TaskFileUploadNotification extends Notification
             'url'   => $url,
             'icon'   => 'brand-stackshare',
             'title'   => 'New Task File(s) Uploaded',
-            'message'     => 'New Task File(s) has been uploaded by '. $this->authUser->name,
+            'message'     => 'New Task File(s) has been uploaded by '. $this->authUser->alias_name,
         ];
     }
 }

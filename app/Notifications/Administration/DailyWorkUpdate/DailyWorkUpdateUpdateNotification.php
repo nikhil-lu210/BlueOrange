@@ -47,7 +47,7 @@ class DailyWorkUpdateUpdateNotification extends Notification
             'url'   => $url,
             'icon'   => 'speakerphone',
             'title'   => 'Work Update (' . get_date_only($this->workUpdate->date) . ')',
-            'message'     => 'Your Daily Work Update Has Been Rated By '. $this->authUser->name,
+            'message'     => 'Your Daily Work Update Has Been Rated By '. $this->authUser->alias_name,
         ];
     }
 }

@@ -11,7 +11,7 @@
 <div>
     Hello {{ $user->alias_name }},
     <br>
-    The <b>Work Update of {{ show_date($data->date) }}</b> has been submitted by <b>{{ $data->user->name }}</b>.
+    The <b>Work Update of {{ show_date($data->date) }}</b> has been submitted by <b>{{ $data->user->alias_name }}</b>.
     <br>
     Work Update Link:
     <a href="{{ route('administration.daily_work_update.show', ['daily_work_update' => $data]) }}">

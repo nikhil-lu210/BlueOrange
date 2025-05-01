@@ -43,7 +43,7 @@ class TaskUpdateNotification extends Notification
             'url'   => $url,
             'icon'   => 'brand-stackshare',
             'title'   => 'Task Has Been Updated',
-            'message'     => 'Task ('. $this->task->title .') has been updated by '. $this->authUser->name,
+            'message'     => 'Task ('. $this->task->title .') has been updated by '. $this->authUser->alias_name,
         ];
     }
 }

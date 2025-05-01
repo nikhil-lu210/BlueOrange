@@ -47,7 +47,7 @@ class LeaveStoreNotification extends Notification
             'url'   => $url,
             'icon'   => 'calendar-pause',
             'title'   => 'New Leave Request',
-            'message'     => 'A New Leave Request Has Been Created By '. $this->authUser->name,
+            'message'     => 'A New Leave Request Has Been Created By '. $this->authUser->alias_name,
         ];
     }
 }

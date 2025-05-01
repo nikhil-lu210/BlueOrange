@@ -45,7 +45,7 @@ class ItTicketCreateNotification extends Notification
             'url'   => $url,
             'icon'   => 'ticket',
             'title'   => 'New IT Ticket Arrived',
-            'message'     => 'A New IT Ticket Has Been Arised By '. $this->authUser->name,
+            'message'     => 'A New IT Ticket Has Been Arised By '. $this->authUser->alias_name,
         ];
     }
 }

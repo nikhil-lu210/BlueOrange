@@ -3,7 +3,7 @@
         <h5 class="mb-0">Task Comments</h5>
 
         <div class="card-header-elements ms-auto">
-            @if ($task->users->contains(auth()->user()->id) || $task->creator_id == auth()->user()->id) 
+            @if ($task->users->contains(auth()->user()->id) || $task->creator_id == auth()->user()->id)
                 <button type="button" class="btn btn-primary btn-xs" title="Create Comment" data-bs-toggle="collapse" data-bs-target="#taskComment" aria-expanded="false" aria-controls="taskComment">
                     <span class="tf-icon ti ti-message-circle ti-xs me-1"></span>
                     Comment
@@ -42,12 +42,12 @@
                 </form>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-md-12 comments">
                 <table class="table">
                     <tbody>
-                        @foreach ($task->comments as $comment) 
+                        @foreach ($task->comments as $comment)
                             <tr class="border-0 border-bottom-0">
                                 <td class="border-0 border-bottom-0">
                                     <div class="d-flex justify-content-between align-items-center user-name">
@@ -55,14 +55,14 @@
                                             <div class="avatar-wrapper">
                                                 <div class="avatar me-2">
                                                     @if (auth()->user()->hasMedia('avatar'))
-                                                        <img src="{{ $comment->commenter->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $comment->commenter->name }} Avatar" class="h-auto rounded-circle">
+                                                        <img src="{{ $comment->commenter->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $comment->commenter->alias_name }} Avatar" class="h-auto rounded-circle">
                                                     @else
-                                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $comment->commenter->name }} No Avatar" class="h-auto rounded-circle">
+                                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $comment->commenter->alias_name }} No Avatar" class="h-auto rounded-circle">
                                                     @endif
                                                 </div>
                                               </div>
                                               <div class="d-flex flex-column">
-                                                <span class="fw-medium">{{ $comment->commenter->name }}</span>
+                                                <span class="fw-medium">{{ $comment->commenter->alias_name }}</span>
                                                 <small class="text-muted">{{ $comment->commenter->role->name }}</small>
                                             </div>
                                         </div>
@@ -72,9 +72,9 @@
                                         <p>{{ $comment->comment }}</p>
                                     </div>
 
-                                    @if ($comment->files->count() > 0) 
+                                    @if ($comment->files->count() > 0)
                                         <div class="d-flex flex-wrap gap-2 pt-1 mb-3">
-                                            @foreach ($comment->files as $commentFile) 
+                                            @foreach ($comment->files as $commentFile)
                                                 <a href="{{ file_media_download($commentFile) }}" target="_blank" class="me-3 badge bg-label-dark" title="Click Here to Download {{ $commentFile->original_name }}">
                                                     <i class="ti ti-file-download fw-bold fs-6"></i>
                                                     <span class="fw-medium">{{ $commentFile->original_name }}</span>

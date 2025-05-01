@@ -45,7 +45,7 @@ class TaskCreateNotification extends Notification
             'url'   => $url,
             'icon'   => 'brand-stackshare',
             'title'   => 'New Task Arrived',
-            'message'     => 'A New Task Has Been Assigned To You By '. $this->authUser->name,
+            'message'     => 'A New Task Has Been Assigned To You By '. $this->authUser->alias_name,
         ];
     }
 }

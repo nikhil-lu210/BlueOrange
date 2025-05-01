@@ -9,7 +9,7 @@
 @section('content')
 <!-- Start Content -->
 <div>
-    Hello {{ $data->first_name }},
+    Hello {{ $data->alias_name }},
     <br>
     You have been assigned to <a href="{{ config('app.url') }}"><strong>{{ config('app.name') }}</strong></a>. Your login credential has been given below.
 </div>

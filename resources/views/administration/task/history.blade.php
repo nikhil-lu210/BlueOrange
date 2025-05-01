@@ -61,7 +61,7 @@
         <div class="card">
             <div class="card-header header-elements">
                 <h5 class="mb-0">{{ $task->title }}</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="btn btn-sm btn-dark">
                         <span class="tf-icon ti ti-arrow-left ti-xs me-1"></span>
@@ -71,20 +71,20 @@
             </div>
             <div class="card-body bg-label-secondary">
                 <ul class="timeline timeline-center mt-5">
-                    @foreach ($histories as $key => $history) 
+                    @foreach ($histories as $key => $history)
                         <li class="timeline-item {{ $loop->last ? 'border-0 pb-0' : '' }}">
                             <span class="timeline-indicator timeline-indicator-primary" data-aos="zoom-in" data-aos-delay="200">
                                 @if ($history->user->hasMedia('avatar'))
-                                    <img src="{{ $history->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle cursor-pointer" width="40" title="{{ $history->user->name }}">
+                                    <img src="{{ $history->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle cursor-pointer" width="40" title="{{ $history->user->alias_name }}">
                                 @else
-                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="rounded-circle cursor-pointer" width="40" title="{{ $history->user->name }}">
+                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="rounded-circle cursor-pointer" width="40" title="{{ $history->user->alias_name }}">
                                 @endif
                             </span>
                             <div class="timeline-event card p-0" data-aos="fade-right">
                                 <div class="card-header d-flex justify-content-between align-items-center flex-wrap pb-3 pt-3">
-                                    <h6 class="card-title mb-0">{{ $history->user->name }}</h6>
+                                    <h6 class="card-title mb-0">{{ $history->user->alias_name }}</h6>
                                     <div class="meta">
-                                        @if ($history->status === 'Working') 
+                                        @if ($history->status === 'Working')
                                             <span class="badge rounded-pill bg-label-primary">Working</span>
                                         @else
                                             <span class="text-bold text-success">{{ $history->progress }}%</span>
@@ -100,7 +100,7 @@
                                         </div>
                                         <div class="mb-sm-0 mb-3">
                                             <p class="text-muted mb-1">Ends At</p>
-                                            @if (!is_null($history->ends_at)) 
+                                            @if (!is_null($history->ends_at))
                                                 <p class="mb-0">{{ show_time($history->ends_at) }}</p>
                                             @else
                                                 <p class="mb-0 badge bg-label-primary">{{ $history->status }}</p>
@@ -108,14 +108,14 @@
                                         </div>
                                         <div class="mb-sm-0 mb-3">
                                             <p class="text-muted mb-1">Total Worked</p>
-                                            @if (!is_null($history->total_worked)) 
+                                            @if (!is_null($history->total_worked))
                                                 <p class="mb-0">{{ total_time($history->total_worked) }}</p>
                                             @else
                                                 <p class="mb-0 badge bg-label-primary">{{ $history->status }}</p>
                                             @endif
                                         </div>
                                     </div>
-                                    @if ($history->files->count() > 0) 
+                                    @if ($history->files->count() > 0)
                                         <div class="mt-3">
                                             <button class="btn btn-label-primary btn-xs btn-block" type="button" data-bs-toggle="collapse" data-bs-target="#showFiles{{ $key }}" aria-expanded="false" aria-controls="showFiles{{ $key }}">
                                                 <i class="ti ti-files"></i>
@@ -155,7 +155,7 @@
     {{--  External Javascript Links --}}
     {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/animate-on-scroll/animate-on-scroll.js') }}"></script>
-    
+
     <!-- Page JS -->
     <script src="{{ asset('assets/js/extended-ui-timeline.js') }}"></script>
 @endsection

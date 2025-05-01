@@ -9,9 +9,9 @@
 @section('content')
 <!-- Start Content -->
 <div>
-    Hello {{ $user->name }},
+    Hello {{ $user->alias_name }},
     <br>
-    There is a new Announcement created by {{ $data->announcer->name }}. 
+    There is a new Announcement created by {{ $data->announcer->alias_name }}.
     <br>
     The Announcement: <a href="{{ route('administration.announcement.show', ['announcement' => $data]) }}"><strong>{{ $data->title }}</strong></a>.
 </div>

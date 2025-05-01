@@ -44,7 +44,7 @@ class ProfileUpdateNofication extends Notification
             'url'   => $url,
             'icon'   => 'user',
             'title'   => $this->user->employee->alias_name. '\'s Profile Updated',
-            'message'     => $this->user->name.'\'s Has Been Updated His/Her Profile.',
+            'message'     => $this->user->alias_name.'\'s Has Been Updated His/Her Profile.',
         ];
     }
 }
