@@ -154,16 +154,16 @@ $(document).ready(function () {
     // setInterval(fetchNewGroupMessages, 30000);
 
     // Optional: start intervals but less frequent
-    setInterval(fetchNotifications, 120000); // every 2 minutes
-    setInterval(fetchNewMessages, 60000);    // every 1 minute
-    setInterval(fetchNewGroupMessages, 60000); // every 1 minute
+    setInterval(fetchNotifications, 300000); // every 5 minutes
+    // setInterval(fetchNewMessages, 60000);    // every 1 minute
+    // setInterval(fetchNewGroupMessages, 60000); // every 1 minute
 
     // Add visibility change listener here:
     document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "visible") {
             fetchNotifications();
-            fetchNewMessages();
-            fetchNewGroupMessages();
+            // fetchNewMessages();
+            // fetchNewGroupMessages();
         }
     });
 });
