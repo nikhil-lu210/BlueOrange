@@ -109,21 +109,23 @@ class AttendanceIssueController extends Controller
      */
     public function create()
     {
-        $startOfMonth = now()->startOfMonth()->format('Y-m-d'); // First day of the current month
+        $startDate = now()->subDays(44)->format('Y-m-d'); // 45 days including today
         $today = now()->format('Y-m-d'); // Today's date
 
-        $dates = collect(range(0, now()->day - 1))->map(function ($day) {
+        // Generate last 45 days' dates
+        $dates = collect(range(0, 44))->map(function ($day) {
             return now()->subDays($day)->format('Y-m-d');
         })->values();
 
-        // Fetch attendances within the current month
+        // Fetch attendances within the last 45 days
         $attendances = Attendance::where('user_id', auth()->id())
-            ->whereBetween('clock_in_date', [$startOfMonth, $today])
+            ->whereBetween('clock_in_date', [$startDate, $today])
             ->orderByDesc('clock_in_date')
             ->get();
 
         return view('administration.attendance.issue.create', compact(['dates', 'attendances']));
     }
+
 
 
     /**

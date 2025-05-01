@@ -12,7 +12,7 @@
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
@@ -53,7 +53,7 @@
             <div class="card mb-4">
                 <div class="card-header header-elements">
                     <h5 class="mb-0">Assign Attendance</h5>
-            
+
                     <div class="card-header-elements ms-auto">
                         <a href="{{ route('administration.attendance.import.index') }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-upload ti-xs me-1"></span>
@@ -68,7 +68,7 @@
                             <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true" required>
                                 <option value="" selected>Select Employee</option>
                                 @foreach ($users as $user)
-                                    <option value="{{ $user->id }}" {{ old('user_id') ? 'selected' : '' }}>
+                                    <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
                                         {{ get_employee_name($user) }}
                                     </option>
                                 @endforeach
@@ -110,7 +110,7 @@
                             @enderror
                         </div>
                     </div>
-                    
+
                     <div class="col-md-12 text-end">
                         <button type="submit" class="btn btn-success">
                             <span class="tf-icon ti ti-check ti-xs me-1"></span>
@@ -119,7 +119,7 @@
                     </div>
                 </div>
             </div>
-        </form>        
+        </form>
     </div>
 </div>
 <!-- End row -->
@@ -133,7 +133,7 @@
 
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
@@ -163,7 +163,7 @@
             $('.time-picker').flatpickr({
                 enableTime: true,
                 noCalendar: true
-            }); 
+            });
         });
     </script>
 @endsection
