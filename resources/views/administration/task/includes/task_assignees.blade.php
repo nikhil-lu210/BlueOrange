@@ -1,7 +1,7 @@
 <div class="card card-action mb-4">
     <div class="card-header align-items-center">
         <h5 class="card-action-title mb-0">Task Assignees</h5>
-        @if (auth()->user()->id == $task->creator->id) 
+        @if (auth()->user()->id == $task->creator->id)
             <div class="card-action-element">
                 <div class="dropdown">
                     <button type="button" class="btn dropdown-toggle hide-arrow p-0" data-bs-toggle="dropdown" aria-expanded="false">
@@ -30,7 +30,7 @@
     </div>
     <div class="card-body">
         <ul class="list-unstyled mb-0">
-            @foreach ($task->users as $user) 
+            @foreach ($task->users as $user)
                 <li class="mb-3">
                     <div class="d-flex align-items-start">
                         <div class="d-flex align-items-start">
@@ -42,7 +42,7 @@
                                 @endif
                             </div>
                             <div class="me-2 ms-1">
-                                <h6 class="mb-0">{{ $user->name }}</h6>
+                                <h6 class="mb-0">{{ $user->alias_name }}</h6>
                                 <small class="text-muted fs-tiny">{{ show_date($user->pivot->created_at) }}</small>
                             </div>
                         </div>

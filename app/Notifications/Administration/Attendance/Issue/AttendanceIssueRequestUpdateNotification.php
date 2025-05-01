@@ -47,7 +47,7 @@ class AttendanceIssueRequestUpdateNotification extends Notification
             'url'   => $url,
             'icon'   => 'bell-question',
             'title'   => 'Attendance Issue '. $this->issue->status,
-            'message'     => 'Attendance Issue Has Been '. $this->issue->status .' By '. $this->authUser->name,
+            'message'     => 'Attendance Issue Has Been '. $this->issue->status .' By '. $this->authUser->alias_name,
         ];
     }
 }

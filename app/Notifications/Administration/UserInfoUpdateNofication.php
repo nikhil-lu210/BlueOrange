@@ -46,7 +46,7 @@ class UserInfoUpdateNofication extends Notification
             'url'   => $url,
             'icon'   => 'user',
             'title'   => 'User Info Updated',
-            'message'     => 'Your User Info Has Been Updated by, '. $this->authUser->name,
+            'message'     => 'Your User Info Has Been Updated by, '. $this->authUser->alias_name,
         ];
     }
 }

@@ -47,7 +47,7 @@ class AttendanceIssueStoreNotification extends Notification
             'url'   => $url,
             'icon'   => 'bell-question',
             'title'   => 'New Attendance Issue',
-            'message'     => 'A New Attendance Issue Has Been Created By '. $this->authUser->name,
+            'message'     => 'A New Attendance Issue Has Been Created By '. $this->authUser->alias_name,
         ];
     }
 }

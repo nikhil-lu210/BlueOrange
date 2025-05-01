@@ -47,7 +47,7 @@ class AnnouncementCreateNotification extends Notification
             'url'   => $url,
             'icon'   => 'speakerphone',
             'title'   => 'New Announcement Arrived',
-            'message'     => 'A New Announcement Has Been Created By '. $this->authUser->name,
+            'message'     => 'A New Announcement Has Been Created By '. $this->authUser->alias_name,
         ];
     }
 }

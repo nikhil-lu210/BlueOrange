@@ -45,7 +45,7 @@ class ItTicketRunningNotification extends Notification
             'url'   => $url,
             'icon'   => 'ticket',
             'title'   => 'IT Ticket On Progress',
-            'message'     => 'Your IT Ticket Is On Progress, By '. $this->authUser->name,
+            'message'     => 'Your IT Ticket Is On Progress, By '. $this->authUser->alias_name,
         ];
     }
 }

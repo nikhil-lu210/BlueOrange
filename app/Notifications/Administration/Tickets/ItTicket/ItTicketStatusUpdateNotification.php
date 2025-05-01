@@ -45,7 +45,7 @@ class ItTicketStatusUpdateNotification extends Notification
             'url'   => $url,
             'icon'   => 'ticket',
             'title'   => 'IT Ticket Has Been '. $this->ticket->status,
-            'message'     => 'Your IT Ticket Has Been '. $this->ticket->status .' By '. $this->authUser->name,
+            'message'     => 'Your IT Ticket Has Been '. $this->ticket->status .' By '. $this->authUser->alias_name,
         ];
     }
 }

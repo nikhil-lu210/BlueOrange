@@ -17,7 +17,7 @@
                             <option value="" selected>Select User</option>
                             @foreach ($task->users as $user)
                                 <option value="{{ $user->id }}" {{ $user->id == old('user') ? 'selected' : '' }}>
-                                    {{ $user->name }}
+                                    {{ $user->alias_name }}
                                 </option>
                             @endforeach
                         </select>

@@ -9,9 +9,9 @@
 @section('content')
 <!-- Start Content -->
 <div>
-    Hello {{ $user->name }},
+    Hello {{ $user->alias_name }},
     <br>
-    The Task <b>({{ $data->title }})'s</b> status has been updated to <b>{{ $data->status }}</b> by {{ $data->creator->name }}.
+    The Task <b>({{ $data->title }})'s</b> status has been updated to <b>{{ $data->status }}</b> by {{ $data->creator->alias_name }}.
     <br>
     <br>
     The Task: <a href="{{ route('administration.task.show', ['task' => $data, 'taskid' => $data->taskid]) }}"><strong>{{ $data->title }}</strong></a>.

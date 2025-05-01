@@ -59,7 +59,7 @@
                 case 'Active':
                 case 'Low':
                     return 'info';
-                
+
                 case 'Running':
                 case 'Medium':
                     return 'primary';
@@ -90,7 +90,7 @@
                                 <div class="d-flex align-items-center">
                                     <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2 mt-1">
                                         @foreach ($task->users as $user)
-                                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
+                                            <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->alias_name }}" class="avatar avatar-sm pull-up">
                                                 @if ($user->hasMedia('avatar'))
                                                     <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
                                                 @else
@@ -105,16 +105,16 @@
                                 </div>
                             @endif
                         </div>
-                        
+
                         <div class="actions d-flex">
-                            @can ('Task Read') 
+                            @can ('Task Read')
                                 @if ($task->creator_id === auth()->user()->id)
                                     <button type="button" class="btn btn-primary me-1" title="Update Task Status" data-bs-toggle="modal" data-bs-target="#taskStatusModal">
                                         <i class="ti ti-check me-1" style="margin-top: -3px;"></i>
                                         Update Status
                                     </button>
                                 @endif
-                                @if ($task->users->contains(auth()->user()->id) && ($task->status == 'Active' || $task->status == 'Running')) 
+                                @if ($task->users->contains(auth()->user()->id) && ($task->status == 'Active' || $task->status == 'Running'))
                                     @if (!$isWorking)
                                         <form action="{{ route('administration.task.history.start', ['task' => $task]) }}" method="post">
                                             @csrf
@@ -141,37 +141,37 @@
     <div class="col-md-5">
         {{-- <!-- About Task --> --}}
         @include('administration.task.includes.about_task')
-        
+
         {{-- Task Assignees --}}
         @include('administration.task.includes.task_assignees')
-        
+
         {{-- Task History Summary --}}
-        @if ($task->histories->count() > 0) 
+        @if ($task->histories->count() > 0)
             @include('administration.task.includes.task_history_summary')
         @endif
     </div>
-    
+
     <div class="col-md-7">
         {{-- Task Details --}}
         @include('administration.task.includes.task_details')
-        
+
         {{-- <!-- Task Files --> --}}
         @include('administration.task.includes.task_files')
 
 
         {{-- Task Comments --}}
         @include('administration.task.includes.task_comments')
-    </div>    
+    </div>
     {{-- Task Details --}}
 </div>
 <!-- End row -->
 
 {{-- Page Modal --}}
-@if ($lastActiveTaskHistory) 
+@if ($lastActiveTaskHistory)
     @include('administration.task.modals.task_stop')
 @endif
 
-@if ($task->creator_id == auth()->user()->id) 
+@if ($task->creator_id == auth()->user()->id)
     @include('administration.task.modals.task_status')
 @endif
 

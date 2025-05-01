@@ -47,7 +47,7 @@ class LeaveRequestUpdateNotification extends Notification
             'url'   => $url,
             'icon'   => 'calendar-pause',
             'title'   => 'Leave Request '. $this->leave->status,
-            'message'     => 'Leave Request Has Been '. $this->leave->status .' By '. $this->authUser->name,
+            'message'     => 'Leave Request Has Been '. $this->leave->status .' By '. $this->authUser->alias_name,
         ];
     }
 }

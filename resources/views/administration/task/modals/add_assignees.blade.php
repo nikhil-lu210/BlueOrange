@@ -19,7 +19,7 @@
                                 <optgroup label="{{ $role->name }}">
                                     @foreach ($role->users as $user)
                                         <option value="{{ $user->id }}" {{ in_array($user->id, old('users', [])) ? 'selected' : '' }}>
-                                            {{ $user->name }}
+                                            {{ $user->alias_name }}
                                         </option>
                                     @endforeach
                                 </optgroup>

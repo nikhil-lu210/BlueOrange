@@ -43,7 +43,7 @@ class TaskCommentNotification extends Notification
             'url'   => $url,
             'icon'   => 'message-circle',
             'title'   => 'New Comment on Task',
-            'message'     => 'A new comment arrived on a task by '. $this->authUser->name,
+            'message'     => 'A new comment arrived on a task by '. $this->authUser->alias_name,
         ];
     }
 }

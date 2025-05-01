@@ -9,11 +9,11 @@
 @section('content')
 <!-- Start Content -->
 <div>
-    Hello {{ $data->user->name }},
+    Hello {{ $data->user->alias_name }},
     <br>
-    You Leave Request has been {{ $data->status }} by {{ $user->name }}. 
+    You Leave Request has been {{ $data->status }} by {{ $user->alias_name }}.
     <br>
-    The Leave Request: 
+    The Leave Request:
     <a href="{{ route('administration.leave.history.show', ['leaveHistory' => $data]) }}">
         <strong>{{ __('Details.') }}</strong>
     </a>.
