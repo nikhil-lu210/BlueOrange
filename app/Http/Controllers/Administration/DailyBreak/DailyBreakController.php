@@ -226,6 +226,7 @@ class DailyBreakController extends Controller
         $query = DailyBreak::with([
                                 'user:id,userid,name',
                                 'user.media',
+                                'user.employee',
                                 'user.roles'
                             ])
                             ->orderByDesc('break_in_at');
