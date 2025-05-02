@@ -192,10 +192,10 @@
                                         @endif
                                     </td>
                                     <td>
-                                        {!! show_user_name_and_avatar($dailyUpdate->user) !!}
+                                        {!! show_user_name_and_avatar($dailyUpdate->user, role: null) !!}
                                     </td>
                                     <td>
-                                        {!! show_user_name_and_avatar($dailyUpdate->team_leader) !!}
+                                        {!! show_user_name_and_avatar($dailyUpdate->team_leader, role: null) !!}
                                     </td>
                                     <td>
                                         <small class="text-bold">{{ show_date($dailyUpdate->created_at) }}</small>

@@ -44,8 +44,9 @@ class DailyWorkUpdateController extends Controller
         // Preload permissions for all users to avoid n+1 queries
         $this->preloadPermissionsForUsers($userIds->toArray());
 
-        // Filter team leaders using cached permissions
+        // Filter team leaders using cached permissions and load necessary relationships
         $teamLeaders = User::whereIn('id', $userIds)
+                            ->with(['employee', 'roles']) // Load relationships needed for the view
                             ->whereStatus('Active')
                             ->get()
                             ->filter(function ($user) {
@@ -255,8 +256,9 @@ class DailyWorkUpdateController extends Controller
             }
         }
 
-        // Get users with the required permission
+        // Get users with the required permission and load necessary relationships
         $users = User::select(['id', 'name'])
+            ->with(['employee', 'roles']) // Load relationships needed for the view
             ->whereIn('id', $usersWithPermission)
             ->whereStatus('Active')
             ->get();
@@ -440,8 +442,9 @@ class DailyWorkUpdateController extends Controller
             }
         }
 
-        // Get users with the required permission
+        // Get users with the required permission and load necessary relationships
         $users = User::select(['id', 'name'])
+            ->with(['employee', 'roles']) // Load relationships needed for the view
             ->whereIn('id', $usersWithPermission)
             ->whereStatus('Active')
             ->get();
@@ -471,10 +474,20 @@ class DailyWorkUpdateController extends Controller
 
     /**
      * Helper method to filter Daily Work Updates
+     * Loads necessary relationships for the view
      */
     private function getFilteredDailyWorkUpdates(Request $request, $teamLeaderId = null)
     {
-        $query = DailyWorkUpdate::query()->orderByDesc('created_at');
+        $query = DailyWorkUpdate::query()
+                ->with([
+                    'user' => function($query) {
+                        $query->with(['employee', 'roles', 'media']);
+                    },
+                    'team_leader' => function($query) {
+                        $query->with(['employee', 'roles', 'media']);
+                    }
+                ])
+                ->orderByDesc('created_at');
 
         if ($teamLeaderId) {
             $query->where('team_leader_id', $teamLeaderId);
