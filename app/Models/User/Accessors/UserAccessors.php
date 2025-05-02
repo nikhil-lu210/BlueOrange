@@ -7,6 +7,7 @@ use App\Models\Salary;
 use App\Models\EmployeeShift;
 use App\Models\Leave\LeaveAllowed;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 
 trait UserAccessors
@@ -14,14 +15,14 @@ trait UserAccessors
     /**
      * Get the first role of the user.
      *
-     * @return \Spatie\Permission\Models\Role|null 
+     * @return \Spatie\Permission\Models\Role|null
      * The first role assigned to the user or null if no roles are assigned.
      */
     public function getRoleAttribute(): ?Role
     {
         return $this->roles->first();
     }
-    
+
     /**
      * Get the fullname with alias_name of the user.
      */
@@ -30,7 +31,7 @@ trait UserAccessors
         $fullName = $this->name. ' ('. $this->employee->alias_name. ')';
         return $fullName;
     }
-    
+
     /**
      * Get the alias_name of the user.
      */
@@ -38,7 +39,7 @@ trait UserAccessors
     {
         return $this->employee->alias_name;
     }
-    
+
     /**
      * Get the currently active employee shift.
      *
@@ -101,16 +102,41 @@ trait UserAccessors
      */
     public function getUserInteractionsAttribute()
     {
-        // Fetch the users this user has interacted with
-        $interactedUsers = $this->interacted_users()->get();
+        // Use a static cache to prevent duplicate queries
+        static $cache = [];
 
-        // Fetch the users who have interacted with this user
-        $interactingUsers = $this->interacting_users()->get();
+        // Create a unique key for this user
+        $cacheKey = 'user_interactions_' . $this->id;
 
-        // Merge both collections
-        $users = $interactedUsers->merge($interactingUsers)->unique('id');
+        // Check if we already have the interactions in the cache
+        if (isset($cache[$cacheKey])) {
+            return $cache[$cacheKey];
+        }
+
+        // Optimize by using a single query with UNION
+        $interactedUsers = DB::table('users')
+            ->select('users.*')
+            ->join('user_interactions', 'users.id', '=', 'user_interactions.interacted_user_id')
+            ->where('user_interactions.user_id', $this->id)
+            ->whereNull('users.deleted_at');
+
+        $interactingUsers = DB::table('users')
+            ->select('users.*')
+            ->join('user_interactions', 'users.id', '=', 'user_interactions.user_id')
+            ->where('user_interactions.interacted_user_id', $this->id)
+            ->whereNull('users.deleted_at')
+            ->union($interactedUsers);
+
+        // Get the results as a collection of User models
+        $userIds = $interactingUsers->pluck('id')->unique();
+        $users = User::whereIn('id', $userIds)->get();
 
         // Add the current user
-        return $users->push($this)->unique('id');
+        $result = $users->push($this)->unique('id');
+
+        // Cache the result
+        $cache[$cacheKey] = $result;
+
+        return $result;
     }
 }

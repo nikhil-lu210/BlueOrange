@@ -74,7 +74,7 @@ class AttendanceService
 
     /**
      * Get user's total working hours for a specific month and type.
-     * 
+     *
      * @param  mixed $user
      * @param  string|null $month
      * @param  string|null $type ('Regular' or 'Overtime', or null for both)
@@ -110,46 +110,72 @@ class AttendanceService
 
     /**
      * Get the user's total break time.
-     * 
+     *
      * @param  mixed $user
-     * @param  \Illuminate\Support\Collection $attendances
+     * @param  string|null $month
+     * @return string
      */
-    public function userTotalBreakTime($user, $attendances)
+    public function userTotalBreakTime($user, $month = null)
     {
-        $totalSeconds = 0;
+        // Get attendance IDs for the user and month
+        $query = Attendance::where('user_id', $user->id);
 
-        // Loop through the user's attendances and sum the total break time
-        foreach ($attendances as $attendance) {
-            $totalBreakTime = $attendance->total_break_time;
-
-            if ($totalBreakTime) {
-                $totalSeconds += $this->timeToSeconds($totalBreakTime);
-            }
+        // Filter by month if provided
+        if ($month) {
+            $query->whereBetween('clock_in_date', [
+                Carbon::parse($month)->startOfMonth()->format('Y-m-d'),
+                Carbon::parse($month)->endOfMonth()->format('Y-m-d')
+            ]);
         }
 
-        return $this->secondsToTimeFormat($totalSeconds);
+        $attendanceIds = $query->pluck('id');
+
+        // Use a single query to get the sum of total_time from daily_breaks
+        $totalBreakTime = \App\Models\DailyBreak\DailyBreak::whereIn('attendance_id', $attendanceIds)
+            ->whereNotNull('break_out_at')
+            ->selectRaw('SEC_TO_TIME(SUM(TIME_TO_SEC(total_time))) as total_break_time')
+            ->value('total_break_time');
+
+        if (!$totalBreakTime) {
+            return '00:00:00';
+        }
+
+        return $totalBreakTime;
     }
 
     /**
      * Get the user's total overbreak time.
-     * 
+     *
      * @param  mixed $user
-     * @param  \Illuminate\Support\Collection $attendances
+     * @param  string|null $month
+     * @return string
      */
-    public function userTotalOverBreakTime($user, $attendances)
+    public function userTotalOverBreakTime($user, $month = null)
     {
-        $totalSeconds = 0;
+        // Get attendance IDs for the user and month
+        $query = Attendance::where('user_id', $user->id);
 
-        // Loop through the user's attendances and sum the total overbreak time
-        foreach ($attendances as $attendance) {
-            $totalOverBreak = $attendance->total_over_break;
-
-            if ($totalOverBreak) {
-                $totalSeconds += $this->timeToSeconds($totalOverBreak);
-            }
+        // Filter by month if provided
+        if ($month) {
+            $query->whereBetween('clock_in_date', [
+                Carbon::parse($month)->startOfMonth()->format('Y-m-d'),
+                Carbon::parse($month)->endOfMonth()->format('Y-m-d')
+            ]);
         }
 
-        return $this->secondsToTimeFormat($totalSeconds);
+        $attendanceIds = $query->pluck('id');
+
+        // Use a single query to get the sum of over_break from daily_breaks
+        $totalOverBreakTime = \App\Models\DailyBreak\DailyBreak::whereIn('attendance_id', $attendanceIds)
+            ->whereNotNull('break_out_at')
+            ->selectRaw('SEC_TO_TIME(SUM(TIME_TO_SEC(over_break))) as total_over_break')
+            ->value('total_over_break');
+
+        if (!$totalOverBreakTime) {
+            return '00:00:00';
+        }
+
+        return $totalOverBreakTime;
     }
 
 
@@ -173,7 +199,7 @@ class AttendanceService
         $hours = floor($totalSeconds / 3600); // Convert total seconds to hours
         $minutes = floor(($totalSeconds % 3600) / 60); // Remaining minutes
         $seconds = $totalSeconds % 60; // Remaining seconds
-    
+
         // Format the time as HH:MM:SS
         return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
     }

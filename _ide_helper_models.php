@@ -24,7 +24,7 @@ namespace App\Models\Announcement{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $announcer
+ * @property-read \App\Models\User|null $announcer
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Announcement\AnnouncementComment> $comments
  * @property-read int|null $comments_count
  * @method static \Illuminate\Database\Eloquent\Builder|Announcement newModelQuery()
@@ -57,8 +57,8 @@ namespace App\Models\Announcement{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Announcement\Announcement $announcement
- * @property-read \App\Models\User $commenter
+ * @property-read \App\Models\Announcement\Announcement|null $announcement
+ * @property-read \App\Models\User|null $commenter
  * @method static \Illuminate\Database\Eloquent\Builder|AnnouncementComment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AnnouncementComment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|AnnouncementComment onlyTrashed()
@@ -107,11 +107,13 @@ namespace App\Models\Attendance{
  * @property-read \App\Models\User|null $clockout_scanner
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\DailyBreak\DailyBreak> $daily_breaks
  * @property-read int|null $daily_breaks_count
- * @property-read \App\Models\EmployeeShift\EmployeeShift $employee_shift
+ * @property-read \App\Models\EmployeeShift\EmployeeShift|null $employee_shift
  * @property-read mixed $total_break_time
  * @property-read int $total_breaks_taken
  * @property-read mixed $total_over_break
- * @property-read \App\Models\User $user
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Issue\AttendanceIssue> $issues
+ * @property-read int|null $issues_count
+ * @property-read \App\Models\User|null $user
  * @method static \Database\Factories\Attendance\AttendanceFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Attendance newQuery()
@@ -146,6 +148,89 @@ namespace App\Models\Attendance{
 	class Attendance extends \Eloquent {}
 }
 
+namespace App\Models\Attendance\Issue{
+/**
+ * App\Models\Attendance\Issue\AttendanceIssue
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int|null $attendance_id
+ * @property int $employee_shift_id
+ * @property int|null $updated_by
+ * @property string $title
+ * @property \Illuminate\Support\Carbon $clock_in_date
+ * @property \Illuminate\Support\Carbon $clock_in
+ * @property \Illuminate\Support\Carbon $clock_out
+ * @property string|array $reason
+ * @property string $type
+ * @property string $status
+ * @property string|array|null $note
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\Attendance\Attendance|null $attendance
+ * @property-read \App\Models\EmployeeShift\EmployeeShift|null $employee_shift
+ * @property-read \App\Models\User|null $updater
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue query()
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereAttendanceId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereClockIn($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereClockInDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereClockOut($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereEmployeeShiftId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereNote($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereReason($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereTitle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereType($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereUpdatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|AttendanceIssue withoutTrashed()
+ */
+	class AttendanceIssue extends \Eloquent {}
+}
+
+namespace App\Models\Booking\DiningRoomBooking{
+/**
+ * App\Models\Booking\DiningRoomBooking\DiningRoomBooking
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property int $employee_shift_id
+ * @property string $booking_date
+ * @property string $booking_time
+ * @property string $status
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking query()
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking whereBookingDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking whereBookingTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking whereEmployeeShiftId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|DiningRoomBooking withoutTrashed()
+ */
+	class DiningRoomBooking extends \Eloquent {}
+}
+
 namespace App\Models\Chatting{
 /**
  * App\Models\Chatting\Chatting
@@ -159,8 +244,8 @@ namespace App\Models\Chatting{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $receiver
- * @property-read \App\Models\User $sender
+ * @property-read \App\Models\User|null $receiver
+ * @property-read \App\Models\User|null $sender
  * @property-read \App\Models\Task\Task|null $task
  * @method static \Illuminate\Database\Eloquent\Builder|Chatting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Chatting newQuery()
@@ -192,7 +277,7 @@ namespace App\Models\Chatting{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $creator
+ * @property-read \App\Models\User|null $creator
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Chatting\GroupChatting> $group_messages
  * @property-read int|null $group_messages_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $group_users
@@ -216,6 +301,31 @@ namespace App\Models\Chatting{
 
 namespace App\Models\Chatting{
 /**
+ * App\Models\Chatting\GroupChatRead
+ *
+ * @property int $id
+ * @property int $group_chatting_id
+ * @property int $user_id
+ * @property string $read_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Chatting\GroupChatting|null $groupChatting
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatRead newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatRead newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatRead query()
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatRead whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatRead whereGroupChattingId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatRead whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatRead whereReadAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatRead whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|GroupChatRead whereUserId($value)
+ */
+	class GroupChatRead extends \Eloquent {}
+}
+
+namespace App\Models\Chatting{
+/**
  * App\Models\Chatting\GroupChatting
  *
  * @property int $id
@@ -225,8 +335,10 @@ namespace App\Models\Chatting{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Chatting\ChattingGroup $group
- * @property-read \App\Models\User $sender
+ * @property-read \App\Models\Chatting\ChattingGroup|null $group
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $readByUsers
+ * @property-read int|null $read_by_users_count
+ * @property-read \App\Models\User|null $sender
  * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|GroupChatting onlyTrashed()
@@ -263,10 +375,10 @@ namespace App\Models\DailyBreak{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Attendance\Attendance $attendance
+ * @property-read \App\Models\Attendance\Attendance|null $attendance
  * @property-write mixed $clock_in
  * @property-write mixed $clock_out
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\User|null $user
  * @method static \Database\Factories\DailyBreak\DailyBreakFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|DailyBreak newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DailyBreak newQuery()
@@ -311,8 +423,8 @@ namespace App\Models\DailyWorkUpdate{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileMedia\FileMedia> $files
  * @property-read int|null $files_count
- * @property-read \App\Models\User $team_leader
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\User|null $team_leader
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|DailyWorkUpdate onlyTrashed()
@@ -352,7 +464,7 @@ namespace App\Models\EmployeeShift{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Attendance\Attendance> $attendances
  * @property-read int|null $attendances_count
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|EmployeeShift onlyTrashed()
@@ -391,7 +503,7 @@ namespace App\Models\FileMedia{
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Model|\Eloquent $fileable
- * @property-read \App\Models\User $uploader
+ * @property-read \App\Models\User|null $uploader
  * @method static \Illuminate\Database\Eloquent\Builder|FileMedia newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FileMedia newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|FileMedia onlyTrashed()
@@ -460,8 +572,8 @@ namespace App\Models\IncomeExpense{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\IncomeExpense\IncomeExpenseCategory $category
- * @property-read \App\Models\User $creator
+ * @property-read \App\Models\IncomeExpense\IncomeExpenseCategory|null $category
+ * @property-read \App\Models\User|null $creator
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileMedia\FileMedia> $files
  * @property-read int|null $files_count
  * @method static \Database\Factories\IncomeExpense\ExpenseFactory factory($count = null, $state = [])
@@ -501,8 +613,8 @@ namespace App\Models\IncomeExpense{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\IncomeExpense\IncomeExpenseCategory $category
- * @property-read \App\Models\User $creator
+ * @property-read \App\Models\IncomeExpense\IncomeExpenseCategory|null $category
+ * @property-read \App\Models\User|null $creator
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileMedia\FileMedia> $files
  * @property-read int|null $files_count
  * @method static \Database\Factories\IncomeExpense\IncomeFactory factory($count = null, $state = [])
@@ -576,7 +688,7 @@ namespace App\Models\Leave{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Leave\LeaveHistory> $leave_histories
  * @property-read int|null $leave_histories_count
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveAllowed newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveAllowed newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveAllowed onlyTrashed()
@@ -611,7 +723,7 @@ namespace App\Models\Leave{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveAvailable newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveAvailable newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveAvailable onlyTrashed()
@@ -652,9 +764,9 @@ namespace App\Models\Leave{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileMedia\FileMedia> $files
  * @property-read int|null $files_count
- * @property-read \App\Models\Leave\LeaveAllowed $leave_allowed
+ * @property-read \App\Models\Leave\LeaveAllowed|null $leave_allowed
  * @property-read \App\Models\User|null $reviewer
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveHistory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveHistory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LeaveHistory onlyTrashed()
@@ -706,6 +818,32 @@ namespace App\Models{
 	class PermissionModule extends \Eloquent {}
 }
 
+namespace App\Models\Religion{
+/**
+ * App\Models\Religion\Religion
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $slug
+ * @property \Illuminate\Support\Carbon|null $deleted_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User\Employee\Employee> $employees
+ * @property-read int|null $employees_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $users
+ * @property-read int|null $users_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Religion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Religion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Religion onlyTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Religion query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Religion whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Religion whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Religion whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Religion whereSlug($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Religion withTrashed()
+ * @method static \Illuminate\Database\Eloquent\Builder|Religion withoutTrashed()
+ */
+	class Religion extends \Eloquent {}
+}
+
 namespace App\Models\Salary\Monthly{
 /**
  * App\Models\Salary\Monthly\MonthlySalary
@@ -733,8 +871,8 @@ namespace App\Models\Salary\Monthly{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Salary\Monthly\MonthlySalaryBreakdown> $monthly_salary_breakdowns
  * @property-read int|null $monthly_salary_breakdowns_count
  * @property-read \App\Models\User|null $payer
- * @property-read \App\Models\Salary\Salary $salary
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\Salary\Salary|null $salary
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|MonthlySalary newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|MonthlySalary newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|MonthlySalary onlyTrashed()
@@ -775,7 +913,7 @@ namespace App\Models\Salary\Monthly{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\Salary\Monthly\MonthlySalary $monthly_salary
+ * @property-read \App\Models\Salary\Monthly\MonthlySalary|null $monthly_salary
  * @method static \Illuminate\Database\Eloquent\Builder|MonthlySalaryBreakdown newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|MonthlySalaryBreakdown newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|MonthlySalaryBreakdown onlyTrashed()
@@ -815,7 +953,7 @@ namespace App\Models\Salary{
  * @property \Illuminate\Support\Carbon|null $deleted_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Salary\Monthly\MonthlySalary> $monthly_salaries
  * @property-read int|null $monthly_salaries_count
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|Salary newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Salary newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Salary onlyTrashed()
@@ -874,7 +1012,7 @@ namespace App\Models\Shortcut{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|Shortcut newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Shortcut newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Shortcut onlyTrashed()
@@ -912,7 +1050,7 @@ namespace App\Models\Task{
  * @property-read \App\Models\Chatting\Chatting|null $chatting
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\TaskComment> $comments
  * @property-read int|null $comments_count
- * @property-read \App\Models\User $creator
+ * @property-read \App\Models\User|null $creator
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileMedia\FileMedia> $files
  * @property-read int|null $files_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Task\TaskHistory> $histories
@@ -954,12 +1092,12 @@ namespace App\Models\Task{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $commenter
+ * @property-read \App\Models\User|null $commenter
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\FileMedia\FileMedia> $files
  * @property-read int|null $files_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
- * @property-read \App\Models\Task\Task $task
+ * @property-read \App\Models\Task\Task|null $task
  * @method static \Illuminate\Database\Eloquent\Builder|TaskComment newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskComment newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskComment onlyTrashed()
@@ -997,8 +1135,8 @@ namespace App\Models\Task{
  * @property-read int|null $files_count
  * @property-read \Spatie\MediaLibrary\MediaCollections\Models\Collections\MediaCollection<int, \Spatie\MediaLibrary\MediaCollections\Models\Media> $media
  * @property-read int|null $media_count
- * @property-read \App\Models\Task\Task $task
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\Task\Task|null $task
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|TaskHistory onlyTrashed()
@@ -1037,7 +1175,7 @@ namespace App\Models\Ticket{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $creator
+ * @property-read \App\Models\User|null $creator
  * @property-read \App\Models\User|null $solver
  * @method static \Illuminate\Database\Eloquent\Builder|ItTicket newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|ItTicket newQuery()
@@ -1098,9 +1236,11 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $employee_team_leaders
  * @property-read int|null $employee_team_leaders_count
  * @property-read \App\Models\User|null $active_team_leader
+ * @property-read string $alias_name
  * @property-read \App\Models\LeaveAllowed|null $allowed_leave
  * @property-read \App\Models\Salary|null $current_salary
  * @property-read \App\Models\EmployeeShift|null $current_shift
+ * @property-read string $full_name
  * @property-read \Spatie\Permission\Models\Role|null $role
  * @property-read \App\Models\Collection $user_interactions
  * @property-read \Illuminate\Database\Eloquent\Collection<int, User> $interacted_users
@@ -1129,6 +1269,7 @@ namespace App\Models{
  * @property-read int|null $paid_salaries_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Permission> $permissions
  * @property-read int|null $permissions_count
+ * @property-read \App\Models\Religion\Religion|null $religion
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Spatie\Permission\Models\Role> $roles
  * @property-read int|null $roles_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Salary\Salary> $salaries
@@ -1195,7 +1336,10 @@ namespace App\Models\User\Employee{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $user
+ * @property int|null $religion_id
+ * @property string|null $gender
+ * @property-read \App\Models\Religion\Religion|null $religion
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|Employee newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Employee newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Employee onlyTrashed()
@@ -1205,6 +1349,7 @@ namespace App\Models\User\Employee{
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereDeletedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereFatherName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereGender($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereJoiningDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereMotherName($value)
@@ -1212,6 +1357,7 @@ namespace App\Models\User\Employee{
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereOfficialEmail($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee wherePersonalContactNo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee wherePersonalEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Employee whereReligionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Employee withTrashed()
@@ -1234,7 +1380,7 @@ namespace App\Models\User{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $user
+ * @property-read \App\Models\User|null $user
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|LoginHistory onlyTrashed()
@@ -1269,7 +1415,7 @@ namespace App\Models\Vault{
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property \Illuminate\Support\Carbon|null $deleted_at
- * @property-read \App\Models\User $creator
+ * @property-read \App\Models\User|null $creator
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\User> $viewers
  * @property-read int|null $viewers_count
  * @method static \Illuminate\Database\Eloquent\Builder|Vault newModelQuery()

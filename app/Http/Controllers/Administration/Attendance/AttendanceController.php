@@ -20,9 +20,46 @@ class AttendanceController extends Controller
 {
     protected $timeZone;
 
+    protected $authUser = null;
+
     public function __construct() {
         // Get the current timezone set in the system (PHP default)
         $this->timeZone = date_default_timezone_get();
+    }
+
+    /**
+     * Get the authenticated user with all necessary relationships.
+     * This method caches the user to prevent duplicate queries.
+     */
+    protected function getAuthUser()
+    {
+        if ($this->authUser === null) {
+            $this->authUser = User::with([
+                'roles',
+                'employee',
+                'shortcuts',
+                // Load media with specific columns to avoid duplicate queries
+                'media' => function($query) {
+                    $query->select(['id', 'model_id', 'model_type', 'disk', 'collection_name', 'file_name']);
+                },
+                'employee_shifts' => function($query) {
+                    $query->where('status', 'Active')
+                          ->latest('created_at')
+                          ->limit(1);
+                }
+            ])->find(auth()->id());
+
+            // Preload the current_shift property to avoid n+1 queries
+            if ($this->authUser && $this->authUser->relationLoaded('employee_shifts')) {
+                $activeShift = $this->authUser->employee_shifts->first();
+                if ($activeShift) {
+                    // Store the active shift in a property for easy access
+                    $this->authUser->active_shift = $activeShift;
+                }
+            }
+        }
+
+        return $this->authUser;
     }
 
     /**
@@ -30,32 +67,66 @@ class AttendanceController extends Controller
      */
     public function index(Request $request)
     {
-        $users = User::select(['id', 'name'])
-                     ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+        // Get the authenticated user using our cached method
+        $authUser = $this->getAuthUser();
+
+        // Optimize user query by selecting only necessary columns
+        // and using a join instead of loading all user_interactions
+        $users = User::select(['users.id', 'users.name'])
+                     ->join('user_interactions', function($join) use ($authUser) {
+                         $join->on('users.id', '=', 'user_interactions.interacted_user_id')
+                              ->where('user_interactions.user_id', '=', $authUser->id);
+                     })
+                     ->orWhere('users.id', $authUser->id)
                      ->whereStatus('Active')
+                     ->distinct()
                      ->get();
 
+        // Get attendances with optimized query
         $attendances = $this->getAttendancesQuery($request)
                             ->orderByDesc('clock_in')
                             ->get();
 
         $total = null;
         if ($request->user_id) {
-            // Inside your controller
             $attendanceService = new AttendanceService();
-            $user = User::whereId($request->user_id)->firstOrFail();
+
+            // Don't load the full User model again if it's the auth user
+            $userId = (int)$request->user_id;
+            if ($userId === $authUser->id) {
+                $user = $authUser;
+            } else {
+                $user = User::with([
+                    'employee_shifts' => function($query) {
+                        $query->where('status', 'Active')
+                              ->latest('created_at')
+                              ->limit(1);
+                    },
+                    'employee'
+                ])
+                ->select(['id', 'name'])
+                ->findOrFail($userId);
+
+                // Store the active shift in a property for easy access
+                if ($user->relationLoaded('employee_shifts')) {
+                    $activeShift = $user->employee_shifts->first();
+                    if ($activeShift) {
+                        $user->active_shift = $activeShift;
+                    }
+                }
+            }
+
             $month = $request->created_month_year ? Carbon::parse($request->created_month_year) : Carbon::now()->format('Y-m-d');
 
+            // Use optimized methods that don't require looping through attendances
             $total['regularWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Regular', $month);
             $total['overtimeWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Overtime', $month);
-            $total['breakTime'] = $attendanceService->userTotalBreakTime($user, $attendances);
-            $total['overBreakTime'] = $attendanceService->userTotalOverBreakTime($user, $attendances);
-
-            // dd($total['regularWorkedHours']);
+            $total['breakTime'] = $attendanceService->userTotalBreakTime($user, $month);
+            $total['overBreakTime'] = $attendanceService->userTotalOverBreakTime($user, $month);
         }
 
         // Check if the user has already clocked in today
-        $clockedIn = $this->getUserClockedInStatus(auth()->user()->id);
+        $clockedIn = $this->getUserClockedInStatus($authUser->id);
 
         return view('administration.attendance.index', compact('users', 'attendances', 'clockedIn', 'total'));
     }
@@ -65,22 +136,23 @@ class AttendanceController extends Controller
      */
     public function myAttendances(Request $request)
     {
-        $user = auth()->user();
+        // Get the authenticated user using our cached method
+        $user = $this->getAuthUser();
+
         $attendances = $this->getAttendancesQuery($request, $user->id)
                             ->latest()
-                            ->distinct()
                             ->get();
 
-        // Inside your controller
         $attendanceService = new AttendanceService();
         $month = $request->created_month_year ? Carbon::parse($request->created_month_year) : Carbon::now()->format('Y-m-d');
 
+        // Use optimized methods that don't require looping through attendances
         $total['regularWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Regular', $month);
         $total['overtimeWorkedHours'] = $attendanceService->userTotalWorkingHour($user, 'Overtime', $month);
-        $total['breakTime'] = $attendanceService->userTotalBreakTime($user, $attendances);
-        $total['overBreakTime'] = $attendanceService->userTotalOverBreakTime($user, $attendances);
+        $total['breakTime'] = $attendanceService->userTotalBreakTime($user, $month);
+        $total['overBreakTime'] = $attendanceService->userTotalOverBreakTime($user, $month);
 
-        // Check if the user has already clocked in today
+        // Check if the user has already clocked in today - use the user we already have
         $clockedIn = $this->getUserClockedInStatus($user->id);
 
         return view('administration.attendance.my', compact('attendances', 'clockedIn', 'total'));
@@ -91,8 +163,11 @@ class AttendanceController extends Controller
      */
     public function create()
     {
+        // Get the authenticated user using our cached method
+        $authUser = $this->getAuthUser();
+
         $users = User::select(['id', 'name'])
-                        ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereIn('id', $authUser->user_interactions->pluck('id'))
                         ->whereStatus('Active')
                         ->get();
 
@@ -144,7 +219,8 @@ class AttendanceController extends Controller
     // Clockin
     public function clockIn(Request $request)
     {
-        $user = auth()->user();
+        // Get the authenticated user using our cached method
+        $user = $this->getAuthUser();
         $attendanceType = $request->attendance;
 
         try {
@@ -162,7 +238,8 @@ class AttendanceController extends Controller
     // Clockout
     public function clockOut()
     {
-        $user = auth()->user();
+        // Get the authenticated user using our cached method
+        $user = $this->getAuthUser();
 
         try {
             $attendanceService = new AttendanceEntryService($user);
@@ -241,13 +318,18 @@ class AttendanceController extends Controller
      */
     public function export(Request $request)
     {
-        // Building the query based on filters
-        $query = Attendance::with([
-            'user:id,name',
-            'employee_shift:id,start_time,end_time'
-        ])
-        ->whereHas('user')
-        ->orderBy(User::select('name')->whereColumn('users.id', 'attendances.user_id')); // order by asc
+        // Building the query based on filters with optimized select and joins
+        $query = Attendance::select([
+                'attendances.id', 'attendances.user_id', 'attendances.employee_shift_id',
+                'attendances.clock_in_date', 'attendances.clock_in', 'attendances.clock_out',
+                'attendances.total_time', 'attendances.total_adjusted_time', 'attendances.type'
+            ])
+            ->with([
+                'user:id,name',
+                'employee_shift:id,start_time,end_time'
+            ])
+            ->join('users', 'users.id', '=', 'attendances.user_id')
+            ->orderBy('users.name'); // Order by user name
 
         // Initialize variables for filename parts
         $userName = '';
@@ -256,21 +338,20 @@ class AttendanceController extends Controller
 
         // Handle user_id filter
         if ($request->has('user_id') && !is_null($request->user_id)) {
-            $query->where('user_id', $request->user_id);
-            $user = User::find($request->user_id);
+            $query->where('attendances.user_id', $request->user_id);
+            $user = User::select('name')->find($request->user_id);
             $userName = $user ? '_of_' . strtolower(str_replace(' ', '_', $user->name)) : '';
         }
 
         // Handle created_month_year filter
         if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
             $monthYearDate = Carbon::parse($request->created_month_year);
-            $query->whereYear('clock_in', $monthYearDate->year)
-                ->whereMonth('clock_in', $monthYearDate->month);
+            $query->whereYear('attendances.clock_in', $monthYearDate->year)
+                ->whereMonth('attendances.clock_in', $monthYearDate->month);
             $monthYear = '_of_' . $monthYearDate->format('m_Y');
         } else {
-            // dd(Carbon::now()->startOfMonth()->format('Y-m-d'), Carbon::now()->endOfMonth()->format('Y-m-d'));
             if (!$request->has('filter_attendance')) {
-                $query->whereBetween('clock_in_date', [
+                $query->whereBetween('attendances.clock_in_date', [
                     Carbon::now()->startOfMonth()->format('Y-m-d'),
                     Carbon::now()->endOfMonth()->format('Y-m-d')
                 ]);
@@ -279,8 +360,7 @@ class AttendanceController extends Controller
 
         // Handle type filter
         if ($request->has('type') && !is_null($request->type)) {
-            $query->where('type', $request->type);
-
+            $query->where('attendances.type', $request->type);
             $clockinType = strtolower($request->type). '_';
         }
 
@@ -306,32 +386,54 @@ class AttendanceController extends Controller
      */
     private function getAttendancesQuery(Request $request, $userId = null)
     {
-        $query = Attendance::with([
-            'user:id,userid,name,first_name,last_name',
-            'user.media',
-            'user.roles',
-            'employee_shift:id,start_time,end_time',
-            'daily_breaks'
+        // Only select necessary columns and optimize eager loading
+        $query = Attendance::select([
+            'attendances.id', 'attendances.user_id', 'attendances.employee_shift_id',
+            'attendances.clock_in_date', 'attendances.clock_in', 'attendances.clock_out',
+            'attendances.total_time', 'attendances.total_adjusted_time', 'attendances.type'
         ]);
 
+        // Load user with specific columns and nested relationships
+        $query->with([
+            'user' => function($query) {
+                $query->select(['id', 'userid', 'name', 'first_name', 'last_name'])
+                      ->with([
+                          'employee:id,user_id,alias_name',
+                          'roles:id,name'
+                          // We're not loading media here to avoid duplicate queries
+                          // Media is already loaded in getAuthUser() for the authenticated user
+                      ]);
+            },
+            'employee_shift:id,start_time,end_time'
+        ]);
+
+        // Always load daily_breaks for the index view to prevent n+1 queries
+        // Only select the necessary columns from daily_breaks
+        $query->with(['daily_breaks' => function($query) {
+            $query->select([
+                'id', 'attendance_id', 'break_in_at', 'break_out_at',
+                'total_time', 'over_break'
+            ])->whereNotNull('break_out_at');
+        }]);
+
         if ($userId) {
-            $query->where('user_id', $userId);
+            $query->where('attendances.user_id', $userId);
         }
 
         // Filter by user_id if provided
         if ($request->has('user_id') && !is_null($request->user_id)) {
-            $query->where('user_id', $request->user_id);
+            $query->where('attendances.user_id', $request->user_id);
         }
 
         // Filter by created month and year if provided
         if ($request->has('created_month_year') && !is_null($request->created_month_year)) {
             $monthYear = Carbon::parse($request->created_month_year);
-            $query->whereYear('clock_in', $monthYear->year)
-                  ->whereMonth('clock_in', $monthYear->month);
+            $query->whereYear('attendances.clock_in', $monthYear->year)
+                  ->whereMonth('attendances.clock_in', $monthYear->month);
         } else {
             // Apply default filter if no filter_attendance is set
             if (!$request->has('filter_attendance')) {
-                $query->whereBetween('clock_in_date', [
+                $query->whereBetween('attendances.clock_in_date', [
                     Carbon::now()->startOfMonth()->format('Y-m-d'),
                     Carbon::now()->endOfMonth()->format('Y-m-d')
                 ]);
@@ -340,7 +442,7 @@ class AttendanceController extends Controller
 
         // Filter by type if provided
         if ($request->has('type') && !is_null($request->type)) {
-            $query->where('type', $request->type);
+            $query->where('attendances.type', $request->type);
         }
 
         return $query;
@@ -348,10 +450,12 @@ class AttendanceController extends Controller
 
     /**
      * Check if the user has already clocked in today.
+     * Only select necessary columns to reduce data transfer.
      */
     private function getUserClockedInStatus($userId)
     {
-        return Attendance::where('user_id', $userId)
+        return Attendance::select(['id', 'user_id', 'clock_in'])
+                         ->where('user_id', $userId)
                          ->whereNull('clock_out')
                          ->first();
     }

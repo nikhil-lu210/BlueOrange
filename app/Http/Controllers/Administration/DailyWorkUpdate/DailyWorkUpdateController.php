@@ -18,20 +18,29 @@ use App\Notifications\Administration\DailyWorkUpdate\DailyWorkUpdateUpdateNotifi
 
 class DailyWorkUpdateController extends Controller
 {
+    // Cache for user permissions to avoid duplicate queries
+    protected static $userPermissionsCache = [];
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        // dd(auth()->user()->tl_employees);
-        $userIds = auth()->user()->user_interactions->pluck('id');
+        // Get the authenticated user
+        $authUser = auth()->user();
 
+        // Get user interactions using the optimized accessor (now cached)
+        $userIds = $authUser->user_interactions->pluck('id');
 
+        // Preload permissions for all users to avoid n+1 queries
+        $this->preloadPermissionsForUsers($userIds->toArray());
+
+        // Filter team leaders using cached permissions
         $teamLeaders = User::whereIn('id', $userIds)
                             ->whereStatus('Active')
                             ->get()
                             ->filter(function ($user) {
-                                return $user->hasAnyPermission(['Daily Work Update Everything', 'Daily Work Update Update']);
+                                return $this->userHasAnyPermission($user, ['Daily Work Update Everything', 'Daily Work Update Update']);
                             });
 
         $roles = $this->getRolesWithPermission();
@@ -39,6 +48,59 @@ class DailyWorkUpdateController extends Controller
         $dailyWorkUpdates = $this->getFilteredDailyWorkUpdates($request);
 
         return view('administration.daily_work_update.index', compact('teamLeaders', 'roles', 'dailyWorkUpdates'));
+    }
+
+    /**
+     * Preload permissions for a set of users to avoid n+1 queries
+     *
+     * @param array $userIds
+     */
+    protected function preloadPermissionsForUsers(array $userIds)
+    {
+        // Skip if already loaded
+        if (!empty(self::$userPermissionsCache)) {
+            return;
+        }
+
+        // Load all permissions for these users in a single query
+        $permissions = DB::table('permissions')
+            ->select('permissions.name', 'model_has_permissions.model_id')
+            ->join('model_has_permissions', 'permissions.id', '=', 'model_has_permissions.permission_id')
+            ->whereIn('model_has_permissions.model_id', $userIds)
+            ->where('model_has_permissions.model_type', 'App\\Models\\User')
+            ->get();
+
+        // Organize permissions by user
+        foreach ($permissions as $permission) {
+            if (!isset(self::$userPermissionsCache[$permission->model_id])) {
+                self::$userPermissionsCache[$permission->model_id] = [];
+            }
+            self::$userPermissionsCache[$permission->model_id][] = $permission->name;
+        }
+    }
+
+    /**
+     * Check if a user has any of the given permissions using the cache
+     *
+     * @param User $user
+     * @param array $permissions
+     * @return bool
+     */
+    protected function userHasAnyPermission($user, array $permissions)
+    {
+        // If not in cache, fall back to the standard method
+        if (!isset(self::$userPermissionsCache[$user->id])) {
+            return $user->hasAnyPermission($permissions);
+        }
+
+        // Check if any of the required permissions exist in the user's cached permissions
+        foreach ($permissions as $permission) {
+            if (in_array($permission, self::$userPermissionsCache[$user->id])) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -189,17 +251,52 @@ class DailyWorkUpdateController extends Controller
 
     /**
      * Helper method to get roles with 'Daily Work Update Create' permission
+     * Uses cached permissions to avoid duplicate queries
      */
     private function getRolesWithPermission()
     {
-        return Role::select(['id', 'name'])
-            ->with(['users' => function ($user) {
-                $user->permission('Daily Work Update Create')
-                    ->select(['id', 'name'])
-                    ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                    ->whereStatus('Active');
-            }])
+        // Get user interactions using the optimized accessor (now cached)
+        $userIds = auth()->user()->user_interactions->pluck('id');
+
+        // Preload permissions if not already loaded
+        $this->preloadPermissionsForUsers($userIds->toArray());
+
+        // Get all users with the required permission
+        $usersWithPermission = [];
+        foreach ($userIds as $userId) {
+            if (isset(self::$userPermissionsCache[$userId]) &&
+                in_array('Daily Work Update Create', self::$userPermissionsCache[$userId])) {
+                $usersWithPermission[] = $userId;
+            }
+        }
+
+        // Get users with the required permission
+        $users = User::select(['id', 'name'])
+            ->whereIn('id', $usersWithPermission)
+            ->whereStatus('Active')
             ->get();
+
+        // Get roles for these users
+        $userRoleIds = DB::table('model_has_roles')
+            ->whereIn('model_id', $users->pluck('id'))
+            ->where('model_type', 'App\\Models\\User')
+            ->pluck('role_id')
+            ->unique();
+
+        // Get roles with users
+        $roles = Role::select(['id', 'name'])
+            ->whereIn('id', $userRoleIds)
+            ->get();
+
+        // Attach users to their roles
+        foreach ($roles as $role) {
+            $roleUsers = $users->filter(function($user) use ($role) {
+                return $user->roles->contains('id', $role->id);
+            });
+            $role->setRelation('users', $roleUsers);
+        }
+
+        return $roles;
     }
 
     /**
