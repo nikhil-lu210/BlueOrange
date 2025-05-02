@@ -187,9 +187,8 @@ if (!function_exists('show_user_name_and_avatar')) {
 if (!function_exists('get_employee_name')) {
 
     /**
-     * Get the employee alias name if available, otherwise return the user's full name.
-     * If the alias name is present, return it in the format "alias_name (full_name)".
-     * This function assumes that user.employee is already eager loaded to prevent n+1 queries.
+     * Get the employee alias name if available, otherwise return the user's full name. This function
+     * assumes that user.employee is already eager loaded to prevent n+1 queries.
      *
      * @param  \App\Models\User  $user
      * @return string  The formatted name.
@@ -201,16 +200,30 @@ if (!function_exists('get_employee_name')) {
             return 'Unknown User';
         }
 
-        // Check if employee relation is loaded to prevent additional queries
-        if ($user->relationLoaded('employee') && $user->employee) {
-            $aliasName = $user->employee->alias_name;
+        // Use a static cache to prevent duplicate employee queries
+        static $employeeCache = [];
 
-            // Return the formatted name based on the presence of alias_name
-            if (!empty($aliasName)) {
-                return $aliasName . ' (' . $user->name . ')'; // Return alias_name with full name in parentheses
-            }
+        if (!$user->relationLoaded('employee') && !isset($employeeCache[$user->id])) {
+            // Only query once per user ID per request lifecycle
+            $employee = Employee::select('id', 'user_id', 'alias_name')
+                               ->where('user_id', $user->id)
+                               ->first();
+
+            // Cache the result
+            $employeeCache[$user->id] = $employee;
+
+            // Set the relation manually to prevent future queries
+            $user->setRelation('employee', $employee);
         }
 
-        return $user->name; // Return the user's full name if alias_name is null or employee not loaded
+        // Get employee from relation or cache
+        $employee = $user->relationLoaded('employee') ? $user->employee : $employeeCache[$user->id] ?? null;
+
+        // Format and return the name
+        if ($employee && !empty($employee->alias_name)) {
+            return $employee->alias_name . ' (' . $user->name . ')';
+        }
+
+        return $user->name;
     }
 }
