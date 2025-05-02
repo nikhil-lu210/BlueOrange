@@ -156,14 +156,45 @@ if (!function_exists('show_user_name_and_avatar')) {
         }
 
         $aliasNameHtml = '';
-        if ($alias && $user->relationLoaded('employee')) {
-            $aliasName = $user->employee ? $user->employee->alias_name : '';
+        if ($alias) {
+            // Use a static cache to prevent duplicate employee queries
+            static $employeeCache = [];
+
+            if (!$user->relationLoaded('employee') && !isset($employeeCache[$user->id])) {
+                // Only query once per user ID per request lifecycle
+                $employee = Employee::select('id', 'user_id', 'alias_name')
+                                   ->where('user_id', $user->id)
+                                   ->first();
+
+                // Cache the result
+                $employeeCache[$user->id] = $employee;
+
+                // Set the relation manually to prevent future queries
+                $user->setRelation('employee', $employee);
+            }
+
+            // Get employee from relation or cache
+            $employee = $user->relationLoaded('employee') ? $user->employee : $employeeCache[$user->id] ?? null;
+            $aliasName = $employee ? $employee->alias_name : '';
             $aliasNameHtml = '<a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '" target="_blank" class="text-bold">' . htmlspecialchars($aliasName) . '</a>';
         }
 
         $roleHtml = '';
-        if ($role && $user->relationLoaded('roles')) {
-            $roleName = $user->roles->isNotEmpty() ? $user->roles->first()->name : '';
+        if ($role) {
+            // Use a static cache to prevent duplicate role queries
+            static $roleCache = [];
+
+            if (!$user->relationLoaded('roles') && !isset($roleCache[$user->id])) {
+                // Only query once per user ID per request lifecycle
+                $user->load('roles:id,name');
+
+                // Cache the roles
+                $roleCache[$user->id] = $user->roles;
+            }
+
+            // Get roles from relation or cache
+            $roles = $user->relationLoaded('roles') ? $user->roles : $roleCache[$user->id] ?? collect();
+            $roleName = $roles->isNotEmpty() ? $roles->first()->name : '';
             $roleHtml = '<small class="text-truncate text-muted">' . htmlspecialchars($roleName) . '</small>';
         }
 
@@ -227,3 +258,4 @@ if (!function_exists('get_employee_name')) {
         return $user->name;
     }
 }
+
