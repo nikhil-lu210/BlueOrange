@@ -105,8 +105,8 @@
                     </div>
 
                     <div class="col-md-12 text-end">
-                        @if (request()->team_leader_id || request()->user_id || request()->issue_month_year || request()->type || request()->status)
-                            <a href="{{ route('administration.attendance.issue.index') }}" class="btn btn-danger confirm-warning">
+                        @if (request()->solved_by || request()->creator_id || request()->ticket_month_year || request()->status)
+                            <a href="{{ route('administration.ticket.it_ticket.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
                             </a>
@@ -126,7 +126,25 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">All IT Tickets</h5>
+                <h5 class="mb-0">
+                    @if(request()->has('filter_tickets'))
+                        @if(request()->filled('status'))
+                            {{ __(request()->status) }}
+                        @endif
+                        IT Tickets
+                        @if(request()->filled('ticket_month_year'))
+                            of {{ request()->ticket_month_year }}
+                        @endif
+                        @if(request()->filled('solved_by') && $ticketSolvers->where('id', request()->solved_by)->first())
+                            solved by {{ get_employee_name($ticketSolvers->where('id', request()->solved_by)->first()) }}
+                        @endif
+                        @if(request()->filled('creator_id') && $users->where('id', request()->creator_id)->first())
+                            created by {{ get_employee_name($users->where('id', request()->creator_id)->first()) }}
+                        @endif
+                    @else
+                        All IT Tickets of {{ date('F Y') }}
+                    @endif
+                </h5>
 
                 <div class="card-header-elements ms-auto">
                     @can ('IT Ticket Create')
@@ -254,3 +272,4 @@
         });
     </script>
 @endsection
+
