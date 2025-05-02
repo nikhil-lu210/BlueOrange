@@ -19,8 +19,23 @@ class ItTicketController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        $userIds = auth()->user()->user_interactions->pluck('id');
+
+        $ticketSolvers = User::whereIn('id', $userIds)
+                            ->whereStatus('Active')
+                            ->get()
+                            ->filter(function ($user) {
+                                return $user->hasAnyPermission(['IT Ticket Everything', 'IT Ticket Update']);
+                            });
+
+        // Eager load all necessary relationships
+        $users = User::with(['roles', 'media', 'shortcuts', 'employee'])
+                            ->whereIn('id', $userIds)
+                            ->whereStatus('Active')
+                            ->get(['id', 'name']);
+
         $itTickets = ItTicket::with(['creator', 'solver'])->whereBetween('created_at', [
             Carbon::now()->startOfMonth()->format('Y-m-d'),
             Carbon::now()->endOfMonth()->format('Y-m-d')
@@ -28,9 +43,9 @@ class ItTicketController extends Controller
         ->orderByDesc('created_at')
         ->get();
 
-        return view('administration.ticket.it_ticket.index', compact(['itTickets']));
+        return view('administration.ticket.it_ticket.index', compact(['itTickets', 'ticketSolvers', 'users']));
     }
-    
+
     /**
      * Display a listing of the resource.
      */
@@ -64,7 +79,7 @@ class ItTicketController extends Controller
             'title' => ['required', 'string', 'min:5', 'max:200'],
             'description' => ['required', 'string', 'min:10'],
         ]);
-        
+
         try {
             $itTicket = null;
 
@@ -77,7 +92,7 @@ class ItTicketController extends Controller
                 ]);
 
                 $notifiableUsers = User::whereStatus('Active')->get();
-                    
+
                 foreach ($notifiableUsers as $key => $notifiableUser) {
                     if ($notifiableUser->hasAnyPermission(['IT Ticket Everything', 'IT Ticket Update'])) {
                         $notifiableUser->notify(new ItTicketCreateNotification($itTicket, auth()->user()));
@@ -100,7 +115,7 @@ class ItTicketController extends Controller
     {
         // Update the 'seen_by' data for the current user
         $this->updateSeenBy($itTicket);
-        
+
         return view('administration.ticket.it_ticket.show', compact(['itTicket']));
     }
 
@@ -180,7 +195,7 @@ class ItTicketController extends Controller
             'title' => ['sometimes', 'string', 'min:5', 'max:200'],
             'description' => ['sometimes', 'string', 'min:10'],
         ]);
-        
+
         try {
             $itTicket->update([
                 'title' => $request->input('title'),
