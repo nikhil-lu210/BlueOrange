@@ -111,7 +111,24 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">My IT Tickets</h5>
+                <h5 class="mb-0">
+                    @if(request()->has('filter_tickets'))
+                        My
+                        @if(request()->filled('status'))
+                            <b class="text-dark">{{ __(request()->status) }}</b>
+                        @endif
+                        IT Tickets
+                        @if(request()->filled('ticket_month_year'))
+                            Of <b class="text-dark">{{ request()->ticket_month_year }}</b>
+                        @endif
+                        @if(request()->filled('solved_by'))
+                            Solved By
+                            <b class="text-dark">{{ show_employee_data(request()->solved_by, 'alias_name') }}</b>
+                        @endif
+                    @else
+                        My IT Tickets Of {{ date('F Y') }}
+                    @endif
+                </h5>
 
                 <div class="card-header-elements ms-auto">
                     @can ('IT Ticket Create')
@@ -235,3 +252,4 @@
         });
     </script>
 @endsection
+
