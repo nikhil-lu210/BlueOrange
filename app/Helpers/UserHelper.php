@@ -126,10 +126,12 @@ if (!function_exists('show_user_name_and_avatar')) {
                 // Use cached avatar HTML
                 $avatarHtml = $mediaCache[$user->id];
             } else {
-                // Check if media is already loaded to prevent additional queries
-                if ($user->relationLoaded('media') && $user->media->isNotEmpty()) {
-                    $avatarMedia = $user->media->first();
-                    $avatarUrl = $avatarMedia ? $avatarMedia->getUrl('thumb') : '';
+                // Force a direct query to get the avatar media
+                $avatarMedia = $user->getMedia('avatar')->first();
+
+                if ($avatarMedia) {
+                    // Get the URL for the thumb conversion
+                    $avatarUrl = $avatarMedia->getUrl('thumb');
                     $avatarHtml = '<img src="' . $avatarUrl . '" alt="' . htmlspecialchars($user->name) . ' Avatar" class="rounded-circle">';
                 } else {
                     $initials = profile_name_pic($user);
@@ -156,45 +158,14 @@ if (!function_exists('show_user_name_and_avatar')) {
         }
 
         $aliasNameHtml = '';
-        if ($alias) {
-            // Use a static cache to prevent duplicate employee queries
-            static $employeeCache = [];
-
-            if (!$user->relationLoaded('employee') && !isset($employeeCache[$user->id])) {
-                // Only query once per user ID per request lifecycle
-                $employee = Employee::select('id', 'user_id', 'alias_name')
-                                   ->where('user_id', $user->id)
-                                   ->first();
-
-                // Cache the result
-                $employeeCache[$user->id] = $employee;
-
-                // Set the relation manually to prevent future queries
-                $user->setRelation('employee', $employee);
-            }
-
-            // Get employee from relation or cache
-            $employee = $user->relationLoaded('employee') ? $user->employee : $employeeCache[$user->id] ?? null;
-            $aliasName = $employee ? $employee->alias_name : '';
+        if ($alias && $user->relationLoaded('employee')) {
+            $aliasName = $user->employee ? $user->employee->alias_name : '';
             $aliasNameHtml = '<a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '" target="_blank" class="text-bold">' . htmlspecialchars($aliasName) . '</a>';
         }
 
         $roleHtml = '';
-        if ($role) {
-            // Use a static cache to prevent duplicate role queries
-            static $roleCache = [];
-
-            if (!$user->relationLoaded('roles') && !isset($roleCache[$user->id])) {
-                // Only query once per user ID per request lifecycle
-                $user->load('roles:id,name');
-
-                // Cache the roles
-                $roleCache[$user->id] = $user->roles;
-            }
-
-            // Get roles from relation or cache
-            $roles = $user->relationLoaded('roles') ? $user->roles : $roleCache[$user->id] ?? collect();
-            $roleName = $roles->isNotEmpty() ? $roles->first()->name : '';
+        if ($role && $user->relationLoaded('roles')) {
+            $roleName = $user->roles->isNotEmpty() ? $user->roles->first()->name : '';
             $roleHtml = '<small class="text-truncate text-muted">' . htmlspecialchars($roleName) . '</small>';
         }
 
@@ -258,4 +229,5 @@ if (!function_exists('get_employee_name')) {
         return $user->name;
     }
 }
+
 
