@@ -57,9 +57,19 @@ class AttendanceEntryService
         $location = Location::get(get_public_ip());
 
         $attendance = DB::transaction(function () use ($clockInTimestamp, $currentDate, $type, $clockInMedium, $scannerId, $location) {
+            // Get the active employee shift
+            $activeShift = $this->user->employee_shifts()
+                ->where('status', 'Active')
+                ->latest('created_at')
+                ->first();
+
+            if (!$activeShift) {
+                throw new Exception('No active shift found for this user.');
+            }
+
             return Attendance::create([
                 'user_id' => $this->user->id,
-                'employee_shift_id' => $this->user->current_shift->id,
+                'employee_shift_id' => $activeShift->id,
                 'clock_in_date' => $currentDate,
                 'clock_in' => $clockInTimestamp,
                 'type' => $type,

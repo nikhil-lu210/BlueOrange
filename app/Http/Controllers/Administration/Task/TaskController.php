@@ -34,7 +34,7 @@ class TaskController extends Controller
         $roles = Role::select(['id', 'name'])
                         ->with([
                             'users' => function ($user) {
-                                $user->permission('Task Create')
+                                $user->with(['employee'])->permission('Task Create')
                                     ->select(['id', 'name'])
                                     ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
                                     ->whereStatus('Active');
@@ -46,17 +46,18 @@ class TaskController extends Controller
                         ->distinct()
                         ->get();
 
-        $assignees = User::permission('Task Read')
+        $assignees = User::with(['employee'])->permission('Task Read')
                         ->select(['id', 'name'])
                         ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
                         ->whereStatus('Active')
                         ->get();
 
         $query = Task::with([
-            'creator' => function($query) {
-                $query->select(['id', 'first_name', 'last_name']);
-            },
-            'users'
+            'creator:id,userid',
+            'creator.employee',
+            'users',
+            'users.media',
+            'users.employee'
         ])->orderByDesc('created_at');
 
         if ($request->has('creator_id') && !is_null($request->creator_id)) {
@@ -74,24 +75,30 @@ class TaskController extends Controller
         }
 
         $tasks = $query->get();
-                    
+
         return view('administration.task.index', compact(['tasks', 'roles', 'assignees']));
     }
-    
+
     /**
      * Display a listing of the resource.
      */
     public function my(Request $request)
     {
-        $creators = User::permission('Task Create')->select(['id', 'name'])->get();
+        $creators = User::with(['employee'])->permission('Task Create')->select(['id', 'name'])->get();
 
-        $query = Task::with(['creator:id,first_name,last_name,name'])
-                        ->where(function ($taskQuery) {
-                            $taskQuery->whereHas('users', function ($userQuery) {
-                                $userQuery->where('user_id', auth()->id());
-                            })->orWhere('creator_id', auth()->id());
-                        })
-                        ->orderByDesc('created_at');
+        $query = Task::with([
+                    'creator:id,userid',
+                    'creator.employee',
+                    'users',
+                    'users.media',
+                    'users.employee'
+                ])
+                ->where(function ($taskQuery) {
+                    $taskQuery->whereHas('users', function ($userQuery) {
+                        $userQuery->where('user_id', auth()->id());
+                    })->orWhere('creator_id', auth()->id());
+                })
+                ->orderByDesc('created_at');
 
         if ($request->has('creator_id') && !is_null($request->creator_id)) {
             $query->where('creator_id', $request->creator_id);
@@ -136,7 +143,7 @@ class TaskController extends Controller
                         ->orderBy('name', 'asc');
             }
         ])->get();
-        
+
         return view('administration.task.create', compact(['roles']));
     }
 
@@ -153,7 +160,7 @@ class TaskController extends Controller
                         ->orderBy('name', 'asc');
             }
         ])->get();
-        
+
         return view('administration.task.create_chat_task', compact(['roles', 'message']));
     }
 
@@ -192,7 +199,7 @@ class TaskController extends Controller
 
                 $notifiableUsers = [];
                 $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-                
+
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new TaskCreateNotification($task, auth()->user()));
@@ -224,13 +231,13 @@ class TaskController extends Controller
             403,
             'You are not authorized to view this task as you are not the assigner, assignee, Developer, or Superadmin.'
         );
-        
+
 
         $task = Task::with([
-                'creator', 
-                'users', 
-                'files', 
-                'comments.files', 
+                'creator',
+                'users',
+                'files',
+                'comments.files',
                 'histories' => function ($history) {
                     $history->whereStatus('Completed')->orderBy('ends_at', 'desc')->get();
                 }
@@ -260,7 +267,7 @@ class TaskController extends Controller
                 ->whereStatus('Active');
             }
         ])->get();
-        
+
 
         return view('administration.task.show', compact(['task', 'isWorking', 'lastActiveTaskHistory', 'roles']));
     }
@@ -278,7 +285,7 @@ class TaskController extends Controller
             403,
             'You are not authorized to view this task as you are not the assigner, assignee, Developer, or Superadmin.'
         );
-        
+
         $roles = Role::with([
             'users' => function ($query) {
                 $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
@@ -308,7 +315,7 @@ class TaskController extends Controller
 
                 $notifiableUsers = [];
                 $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-                
+
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new TaskUpdateNotification($task, auth()->user()));
@@ -317,7 +324,7 @@ class TaskController extends Controller
                     Mail::to($notifiableUser->email)->queue(new UpdateTaskMail($task, $notifiableUser));
                 }
             });
-            
+
             toast('Task Updated successfully.', 'success');
             return redirect()->route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]);
         } catch (Exception $e) {
@@ -333,7 +340,7 @@ class TaskController extends Controller
         // dd($task);
         try {
             $task->delete();
-            
+
             toast('Task Has Been Delete Successfully.', 'success');
             return redirect()->route('administration.task.index');
         } catch (Exception $e) {
@@ -367,7 +374,7 @@ class TaskController extends Controller
 
                 $notifiableUsers = [];
                 $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $request->users)->get();
-                
+
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new TaskAddUsersNotification($task, auth()->user()));
@@ -437,7 +444,7 @@ class TaskController extends Controller
 
                 $notifiableUsers = [];
                 $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-                
+
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new TaskFileUploadNotification($task, auth()->user()));
@@ -464,7 +471,7 @@ class TaskController extends Controller
         $request->validate([
             'status' => ['required', 'in:Active,Running,Completed,Cancelled']
         ]);
-        
+
         try {
             DB::transaction(function() use ($request, $task) {
                 $task->update([
@@ -475,7 +482,7 @@ class TaskController extends Controller
 
                 $notifiableUsers = [];
                 $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-                
+
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new TaskStatusUpdateNotification($task, auth()->user()));

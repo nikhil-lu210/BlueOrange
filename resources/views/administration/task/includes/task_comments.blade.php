@@ -51,21 +51,7 @@
                             <tr class="border-0 border-bottom-0">
                                 <td class="border-0 border-bottom-0">
                                     <div class="d-flex justify-content-between align-items-center user-name">
-                                        <div class="d-flex commenter">
-                                            <div class="avatar-wrapper">
-                                                <div class="avatar me-2">
-                                                    @if (auth()->user()->hasMedia('avatar'))
-                                                        <img src="{{ $comment->commenter->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $comment->commenter->alias_name }} Avatar" class="h-auto rounded-circle">
-                                                    @else
-                                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $comment->commenter->alias_name }} No Avatar" class="h-auto rounded-circle">
-                                                    @endif
-                                                </div>
-                                              </div>
-                                              <div class="d-flex flex-column">
-                                                <span class="fw-medium">{{ $comment->commenter->alias_name }}</span>
-                                                <small class="text-muted">{{ $comment->commenter->role->name }}</small>
-                                            </div>
-                                        </div>
+                                        {!! show_user_name_and_avatar($comment->commenter, name: null) !!}
                                         <small class="date-time text-muted">{{ date_time_ago($comment->created_at) }}</small>
                                     </div>
                                     <div class="d-flex mt-2">

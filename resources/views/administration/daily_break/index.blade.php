@@ -12,11 +12,11 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    
+
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -64,7 +64,7 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        
+
                         <div class="mb-3 col-md-3">
                             <label class="form-label">{{ __('Breaks Of') }}</label>
                             <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
@@ -84,10 +84,10 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                    </div> 
-                    
+                    </div>
+
                     <div class="col-md-12 text-end">
-                        @if (request()->user_id || request()->created_month_year || request()->type) 
+                        @if (request()->user_id || request()->created_month_year || request()->type)
                             <a href="{{ route('administration.daily_break.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
@@ -117,11 +117,11 @@
                     <span class="text-bold">{{ request()->user_id ? show_user_data(request()->user_id, 'name') : 'All Users' }}</span>
                     <sup>(<b>Month: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
                 </h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     @if ($dailyBreaks->count() > 0)
                         <a href="{{ route('administration.daily_break.export', [
-                            'user_id' => request('user_id'), 
+                            'user_id' => request('user_id'),
                             'created_month_year' => request('created_month_year'),
                             'type' => request('type'),
                             'filter_breaks' => request('filter_breaks')
@@ -147,7 +147,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($dailyBreaks as $key => $break) 
+                            @foreach ($dailyBreaks as $key => $break)
                                 <tr>
                                     <th>#{{ serial($dailyBreaks, $key) }}</th>
                                     <td>
@@ -164,7 +164,7 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @isset ($break->break_out_at) 
+                                        @isset ($break->break_out_at)
                                             <span class="text-bold text-dark">{{ show_time($break->break_out_at) }}</span>
                                         @else
                                             <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
@@ -191,7 +191,7 @@
                                         @endisset
                                     </td>
                                     <td class="text-center">
-                                        @can ('Daily Break Delete') 
+                                        @can ('Daily Break Delete')
                                             <a href="{{ route('administration.daily_break.destroy', ['break' => $break]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Break?">
                                                 <i class="text-white ti ti-trash"></i>
                                             </a>
@@ -206,7 +206,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -225,7 +225,7 @@
 
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
 @endsection

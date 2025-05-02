@@ -22,12 +22,12 @@ class User extends Authenticatable implements HasMedia
 {
     use HasApiTokens, HasFactory, Notifiable, Authorizable, HasRoles, InteractsWithMedia, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
 
-    // Relations 
+    // Relations
     use UserRelations;
 
     // Accessors & Mutators
     use UserAccessors, UserMutators;
-    
+
     protected $cascadeDeletes = [
         // 'employee',
     ];
@@ -38,12 +38,9 @@ class User extends Authenticatable implements HasMedia
         'deleted_at'
     ];
 
-    protected $with = [
-        'roles', 
-        'employee', 
-        'media', 
-        'shortcuts'
-    ];
+    // We're removing the automatic loading of relationships to prevent n+1 queries
+    // Instead, we'll explicitly load what we need in each controller
+    protected $with = [];
 
     /**
      * The attributes that are mass assignable.

@@ -100,6 +100,8 @@ if (!function_exists('show_user_name_and_avatar')) {
 
     /**
      * Display the user name, alias, avatar, and role in a consistent layout.
+     * This function assumes that user.employee, user.media, and user.roles are already eager loaded
+     * to prevent n+1 queries.
      *
      * @param  \App\Models\User  $user
      * @param  bool  $name   Whether to display the user's name.
@@ -110,15 +112,34 @@ if (!function_exists('show_user_name_and_avatar')) {
      */
     function show_user_name_and_avatar($user, $name = true, $alias = true, $avatar = true, $role = true)
     {
+        // Check if user is valid
+        if (!$user) {
+            return '<div class="text-muted">User not found</div>';
+        }
+
         $avatarHtml = '';
         if ($avatar) {
-            if ($user->hasMedia('avatar')) {
-                $avatarUrl = $user->getFirstMediaUrl('avatar', 'thumb');
-                $avatarHtml = '<img src="' . $avatarUrl . '" alt="' . htmlspecialchars($user->name) . ' Avatar" class="rounded-circle">';
+            // Use a static cache to prevent duplicate media queries for the same user
+            static $mediaCache = [];
+
+            if (isset($mediaCache[$user->id])) {
+                // Use cached avatar HTML
+                $avatarHtml = $mediaCache[$user->id];
             } else {
-                $initials = profile_name_pic($user);
-                $avatarHtml = '<span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">' . $initials . '</span>';
+                // Check if media is already loaded to prevent additional queries
+                if ($user->relationLoaded('media') && $user->media->isNotEmpty()) {
+                    $avatarMedia = $user->media->first();
+                    $avatarUrl = $avatarMedia ? $avatarMedia->getUrl('thumb') : '';
+                    $avatarHtml = '<img src="' . $avatarUrl . '" alt="' . htmlspecialchars($user->name) . ' Avatar" class="rounded-circle">';
+                } else {
+                    $initials = profile_name_pic($user);
+                    $avatarHtml = '<span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">' . $initials . '</span>';
+                }
+
+                // Cache the avatar HTML for this user
+                $mediaCache[$user->id] = $avatarHtml;
             }
+
             $avatarHtml = '
             <div class="avatar-wrapper">
                 <div class="avatar me-2">
@@ -136,13 +157,44 @@ if (!function_exists('show_user_name_and_avatar')) {
 
         $aliasNameHtml = '';
         if ($alias) {
-            $aliasName = optional($user->employee)->alias_name ?? '';
+            // Use a static cache to prevent duplicate employee queries
+            static $employeeCache = [];
+
+            if (!$user->relationLoaded('employee') && !isset($employeeCache[$user->id])) {
+                // Only query once per user ID per request lifecycle
+                $employee = Employee::select('id', 'user_id', 'alias_name')
+                                   ->where('user_id', $user->id)
+                                   ->first();
+
+                // Cache the result
+                $employeeCache[$user->id] = $employee;
+
+                // Set the relation manually to prevent future queries
+                $user->setRelation('employee', $employee);
+            }
+
+            // Get employee from relation or cache
+            $employee = $user->relationLoaded('employee') ? $user->employee : $employeeCache[$user->id] ?? null;
+            $aliasName = $employee ? $employee->alias_name : '';
             $aliasNameHtml = '<a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '" target="_blank" class="text-bold">' . htmlspecialchars($aliasName) . '</a>';
         }
 
         $roleHtml = '';
         if ($role) {
-            $roleName = $user->role->name ?? '';
+            // Use a static cache to prevent duplicate role queries
+            static $roleCache = [];
+
+            if (!$user->relationLoaded('roles') && !isset($roleCache[$user->id])) {
+                // Only query once per user ID per request lifecycle
+                $user->load('roles:id,name');
+
+                // Cache the roles
+                $roleCache[$user->id] = $user->roles;
+            }
+
+            // Get roles from relation or cache
+            $roles = $user->relationLoaded('roles') ? $user->roles : $roleCache[$user->id] ?? collect();
+            $roleName = $roles->isNotEmpty() ? $roles->first()->name : '';
             $roleHtml = '<small class="text-truncate text-muted">' . htmlspecialchars($roleName) . '</small>';
         }
 
@@ -166,22 +218,44 @@ if (!function_exists('show_user_name_and_avatar')) {
 if (!function_exists('get_employee_name')) {
 
     /**
-     * Get the employee alias name if available, otherwise return the user's full name.
-     * If the alias name is present, return it in the format "alias_name (full_name)".
+     * Get the employee alias name if available, otherwise return the user's full name. This function
+     * assumes that user.employee is already eager loaded to prevent n+1 queries.
      *
      * @param  \App\Models\User  $user
      * @return string  The formatted name.
      */
     function get_employee_name($user)
     {
-        // Check if the user has an employee and alias_name is present
-        $aliasName = optional($user->employee)->alias_name;
-
-        // Return the formatted name based on the presence of alias_name
-        if (is_null($aliasName)) {
-            return $user->name; // Return the user's full name if alias_name is null
+        // Check if user is valid
+        if (!$user) {
+            return 'Unknown User';
         }
 
-        return $aliasName . ' (' . $user->name . ')'; // Return alias_name with full name in parentheses
+        // Use a static cache to prevent duplicate employee queries
+        static $employeeCache = [];
+
+        if (!$user->relationLoaded('employee') && !isset($employeeCache[$user->id])) {
+            // Only query once per user ID per request lifecycle
+            $employee = Employee::select('id', 'user_id', 'alias_name')
+                               ->where('user_id', $user->id)
+                               ->first();
+
+            // Cache the result
+            $employeeCache[$user->id] = $employee;
+
+            // Set the relation manually to prevent future queries
+            $user->setRelation('employee', $employee);
+        }
+
+        // Get employee from relation or cache
+        $employee = $user->relationLoaded('employee') ? $user->employee : $employeeCache[$user->id] ?? null;
+
+        // Format and return the name
+        if ($employee && !empty($employee->alias_name)) {
+            return $employee->alias_name . ' (' . $user->name . ')';
+        }
+
+        return $user->name;
     }
 }
+

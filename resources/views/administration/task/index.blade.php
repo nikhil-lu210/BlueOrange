@@ -12,11 +12,11 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    
+
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -67,7 +67,7 @@
                             <label for="creator_id" class="form-label">Select Task Creator</label>
                             <select name="creator_id" id="creator_id" class="select2 form-select @error('creator_id') is-invalid @enderror" data-allow-clear="true">
                                 <option value="" {{ is_null(request()->creator_id) ? 'selected' : '' }}>Select Creator</option>
-                                
+
                                 @foreach ($roles as $role)
                                     <optgroup label="{{ $role->name }}">
                                         @foreach ($role->users as $creator)
@@ -110,9 +110,9 @@
                             @enderror
                         </div>
                     </div>
-                    
+
                     <div class="col-md-12 text-end">
-                        @if (request()->creator_id || request()->user_id || request()->status) 
+                        @if (request()->creator_id || request()->user_id || request()->status)
                             <a href="{{ route('administration.task.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 Reset Filters
@@ -125,7 +125,7 @@
                     </div>
                 </div>
             </div>
-        </form>        
+        </form>
     </div>
 </div>
 
@@ -134,9 +134,9 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">All Tasks</h5>
-        
+
                 <div class="card-header-elements ms-auto">
-                    @can ('Task Create') 
+                    @can ('Task Create')
                         <a href="{{ route('administration.task.create') }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-plus ti-xs me-1"></span>
                             Create Task
@@ -158,7 +158,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($tasks as $key => $task) 
+                            @foreach ($tasks as $key => $task)
                                 <tr>
                                     <th>#{{ serial($tasks, $key) }}</th>
                                     <td>
@@ -173,7 +173,7 @@
                                             <div class="d-flex align-items-center">
                                                 <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2 mt-1">
                                                     @foreach ($task->users->take(6) as $user)
-                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
+                                                        <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->alias_name }}" class="avatar avatar-sm pull-up">
                                                             @if ($user->hasMedia('avatar'))
                                                                 <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
                                                             @else
@@ -191,9 +191,9 @@
                                         @endif
                                     </td>
                                     <td>
-                                        @if (!is_null($task->deadline)) 
+                                        @if (!is_null($task->deadline))
                                             <b>{{ show_date($task->deadline) }}</b>
-                                        @else 
+                                        @else
                                             <span class="badge bg-success">Ongoing Task</span>
                                         @endif
                                         <br>
@@ -201,19 +201,19 @@
                                     </td>
                                     <td>{!! show_status($task->status) !!}</td>
                                     <td class="text-center">
-                                        @if ($task->creator_id == auth()->user()->id) 
-                                            @can ('Task Delete') 
+                                        @if ($task->creator_id == auth()->user()->id)
+                                            @can ('Task Delete')
                                                 <a href="{{ route('administration.task.destroy', ['task' => $task]) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" data-bs-toggle="tooltip" title="Delete Task?">
                                                     <i class="ti ti-trash"></i>
                                                 </a>
                                             @endcan
-                                            @can ('Task Update') 
+                                            @can ('Task Update')
                                                 <a href="{{ route('administration.task.edit', ['task' => $task]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Task?">
                                                     <i class="ti ti-pencil"></i>
                                                 </a>
                                             @endcan
                                         @endif
-                                        @can ('Task Read') 
+                                        @can ('Task Read')
                                             <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                                 <i class="ti ti-info-hexagon"></i>
                                             </a>
@@ -225,7 +225,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
