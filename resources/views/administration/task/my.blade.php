@@ -12,11 +12,11 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    
+
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -133,9 +133,9 @@
                             @enderror
                         </div>
                     </div>
-                    
+
                     <div class="col-md-12 text-end">
-                        @if (request()->creator_id || request()->user_id || request()->status) 
+                        @if (request()->creator_id || request()->user_id || request()->status)
                             <a href="{{ route('administration.task.my') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 Reset Filters
@@ -148,7 +148,7 @@
                     </div>
                 </div>
             </div>
-        </form>        
+        </form>
     </div>
 </div>
 
@@ -156,9 +156,9 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">My Tasks <sup class="text-muted">(Assigned to me / Created by me)</sup></h5>        
+                <h5 class="mb-0">My Tasks <sup class="text-muted">(Assigned to me / Created by me)</sup></h5>
                 <div class="card-header-elements ms-auto">
-                    @can ('Task Create') 
+                    @can ('Task Create')
                         <a href="{{ route('administration.task.create') }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-plus ti-xs me-1"></span>
                             Create Task
@@ -178,7 +178,7 @@
                             <span class="percentage-value">{{ $statusPercentages['active'] }}%</span>
                         </div>
                     @endif
-                
+
                     @if ($statusPercentages['running'] > 0)
                         <div class="progress-bar fw-medium text-start bg-label-primary px-3 rounded-0 text-center" role="progressbar"
                             style="width: {{ $statusPercentages['running'] }}%" aria-valuenow="{{ $statusPercentages['running'] }}"
@@ -186,7 +186,7 @@
                             <span class="percentage-value">{{ $statusPercentages['running'] }}%</span>
                         </div>
                     @endif
-                
+
                     @if ($statusPercentages['completed'] > 0)
                         <div class="progress-bar fw-medium text-start bg-label-success px-3 rounded-0 text-center" role="progressbar"
                             style="width: {{ $statusPercentages['completed'] }}%" aria-valuenow="{{ $statusPercentages['completed'] }}"
@@ -194,7 +194,7 @@
                             <span class="percentage-value">{{ $statusPercentages['completed'] }}%</span>
                         </div>
                     @endif
-                
+
                     @if ($statusPercentages['canceled'] > 0)
                         <div class="progress-bar fw-medium text-start bg-label-danger px-3 rounded-0 text-center" role="progressbar"
                             style="width: {{ $statusPercentages['canceled'] }}%" aria-valuenow="{{ $statusPercentages['canceled'] }}"
@@ -213,7 +213,7 @@
                                         case 'Active':
                                         case 'Low':
                                             return 'info';
-                                        
+
                                         case 'Running':
                                         case 'Medium':
                                             return 'primary';
@@ -244,9 +244,9 @@
                                         </div>
                                         <div class="li-wrapper d-flex justify-content-start align-items-center" title="Task Deadline">
                                             <div class="list-content">
-                                                @if (!is_null($task->deadline)) 
+                                                @if (!is_null($task->deadline))
                                                     <b class="text-dark">{{ show_date($task->deadline) }}</b>
-                                                @else 
+                                                @else
                                                     <span class="badge bg-success">Ongoing Task</span>
                                                 @endif
                                                 <br>
@@ -270,7 +270,7 @@
                                                     <div class="d-flex align-items-center">
                                                         <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2 mt-1">
                                                             @foreach ($task->users->take(6) as $user)
-                                                                <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->name }}" class="avatar avatar-sm pull-up">
+                                                                <li data-bs-toggle="tooltip" data-popup="tooltip-custom" data-bs-placement="top" title="{{ $user->alias_name }}" class="avatar avatar-sm pull-up">
                                                                     @if ($user->hasMedia('avatar'))
                                                                         <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle">
                                                                     @else
@@ -289,7 +289,7 @@
                                             </div>
                                         </div>
                                     </a>
-                                @empty 
+                                @empty
                                     <h4 class="text-center text-muted mt-3">{{ __('No Tasks Available') }}</h4>
                                 @endforelse
 
@@ -303,7 +303,7 @@
                     {{-- Pagination Ends --}}
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
