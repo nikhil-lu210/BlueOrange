@@ -21,30 +21,43 @@ class ItTicketController extends Controller
      */
     public function index(Request $request)
     {
-        $userIds = auth()->user()->user_interactions->pluck('id'); // Get all user IDs
+        // Get the authenticated user
+        $authUser = auth()->user();
 
-        $ticketSolvers = User::whereIn('id', $userIds) // Filter by user IDs
+        // Get user interactions
+        $userIds = $authUser->user_interactions->pluck('id');
+
+        // Get ticket solvers
+        $ticketSolvers = User::with(['employee'])->whereIn('id', $userIds)
                             ->whereStatus('Active')
                             ->get()
                             ->filter(function ($user) {
                                 return $user->hasAnyPermission(['IT Ticket Everything', 'IT Ticket Update']);
                             });
 
-        $users = User::with(['media', 'employee']) // Filter by user IDs
-                            ->whereIn('id', $userIds)
-                            ->whereStatus('Active')
-                            ->get(['id', 'name']);
+        // Get users for filtering
+        $users = User::with(['roles', 'media', 'employee'])
+                    ->whereIn('id', $userIds)
+                    ->whereStatus('Active')
+                    ->get(['id', 'name']);
 
+        // Build the query with necessary relationships
         $query = ItTicket::with([
-                'creator.media', 'creator.employee', 'creator.roles', 'solver.employee'
-            ])->orderByDesc('created_at');
+                'creator' => function($query) {
+                    $query->with(['employee', 'roles', 'media']);
+                },
+                'solver' => function($query) {
+                    $query->with(['employee', 'roles', 'media']);
+                }
+            ])
+            ->orderByDesc('created_at');
 
         // Apply solver filter if provided
         if ($request->filled('solved_by')) {
             $query->where('solved_by', $request->solved_by);
         }
 
-        // Apply user filter if provided
+        // Apply creator filter if provided
         if ($request->filled('creator_id')) {
             $query->where('creator_id', $request->creator_id);
         }
@@ -61,32 +74,75 @@ class ItTicketController extends Controller
                   ->whereMonth('created_at', $monthYear->month);
         } elseif (!$request->has('filter_tickets')) {
             // Default to current month if no specific filter is applied
-            $query->whereBetween('created_at', [
-                Carbon::now()->startOfMonth()->format('Y-m-d'),
-                Carbon::now()->endOfMonth()->format('Y-m-d')
-            ]);
+            $query->whereYear('created_at', Carbon::now()->year)
+                  ->whereMonth('created_at', Carbon::now()->month);
         }
 
+        // Execute the query
         $itTickets = $query->get();
-        // dd($itTickets);
 
-        return view('administration.ticket.it_ticket.index', compact(['itTickets', 'ticketSolvers', 'users']));
+        return view('administration.ticket.it_ticket.index', compact('itTickets', 'ticketSolvers', 'users'));
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the resource for the authenticated user.
      */
-    public function my()
+    public function my(Request $request)
     {
-        $itTickets = ItTicket::with(['creator', 'solver'])
-                            ->where(function ($query) {
-                                $query->where('creator_id', auth()->user()->id)
-                                    ->orWhere('solved_by', auth()->user()->id);
-                            })
-                            ->orderByDesc('created_at')
-                            ->get();
+        // Get the authenticated user
+        $authUser = auth()->user();
 
-        return view('administration.ticket.it_ticket.my', compact(['itTickets']));
+        // Get user interactions
+        $userIds = $authUser->user_interactions->pluck('id');
+
+        // Get ticket solvers for the filter dropdown
+        $ticketSolvers = User::with(['employee'])->whereIn('id', $userIds)
+                            ->whereStatus('Active')
+                            ->get()
+                            ->filter(function ($user) {
+                                return $user->hasAnyPermission(['IT Ticket Everything', 'IT Ticket Update']);
+                            });
+
+        // Build the query with necessary relationships
+        $query = ItTicket::with([
+                    'creator' => function($query) {
+                        $query->with(['employee', 'roles', 'media']);
+                    },
+                    'solver' => function($query) {
+                        $query->with(['employee', 'roles', 'media']);
+                    }
+                ])
+                ->where(function ($query) use ($authUser) {
+                    $query->where('creator_id', $authUser->id)
+                        ->orWhere('solved_by', $authUser->id);
+                })
+                ->orderByDesc('created_at');
+
+        // Apply solver filter if provided
+        if ($request->filled('solved_by')) {
+            $query->where('solved_by', $request->solved_by);
+        }
+
+        // Apply status filter if provided
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // Apply date filter
+        if ($request->filled('ticket_month_year')) {
+            $monthYear = Carbon::parse($request->ticket_month_year);
+            $query->whereYear('created_at', $monthYear->year)
+                  ->whereMonth('created_at', $monthYear->month);
+        } elseif (!$request->has('filter_tickets')) {
+            // Default to current month if no specific filter is applied
+            $query->whereYear('created_at', Carbon::now()->year)
+                  ->whereMonth('created_at', Carbon::now()->month);
+        }
+
+        // Execute the query
+        $itTickets = $query->get();
+
+        return view('administration.ticket.it_ticket.my', compact('itTickets', 'ticketSolvers'));
     }
 
     /**
@@ -277,4 +333,6 @@ class ItTicketController extends Controller
         }
     }
 }
+
+
 
