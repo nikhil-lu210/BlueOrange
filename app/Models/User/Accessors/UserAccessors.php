@@ -14,13 +14,29 @@ trait UserAccessors
 {
     /**
      * Get the first role of the user.
+     * Uses caching to prevent duplicate queries.
      *
      * @return \Spatie\Permission\Models\Role|null
      * The first role assigned to the user or null if no roles are assigned.
      */
     public function getRoleAttribute(): ?Role
     {
-        return $this->roles->first();
+        // Use a static cache to prevent duplicate queries
+        static $roleCache = [];
+
+        // Create a unique key for this user
+        $cacheKey = 'user_role_' . $this->id;
+
+        // Check if we already have the role in the cache
+        if (isset($roleCache[$cacheKey])) {
+            return $roleCache[$cacheKey];
+        }
+
+        // Get the first role and cache it
+        $role = $this->roles->first();
+        $roleCache[$cacheKey] = $role;
+
+        return $role;
     }
 
     /**
