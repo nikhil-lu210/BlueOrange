@@ -70,17 +70,16 @@ class AttendanceController extends Controller
         // Get the authenticated user using our cached method
         $authUser = $this->getAuthUser();
 
+        $userIds = $authUser->user_interactions->pluck('id');
+
         // Optimize user query by selecting only necessary columns
         // and using a join instead of loading all user_interactions
         $users = User::select(['users.id', 'users.name'])
-                     ->join('user_interactions', function($join) use ($authUser) {
-                         $join->on('users.id', '=', 'user_interactions.interacted_user_id')
-                              ->where('user_interactions.user_id', '=', $authUser->id);
-                     })
-                     ->orWhere('users.id', $authUser->id)
-                     ->whereStatus('Active')
-                     ->distinct()
-                     ->get();
+                    ->whereIn('id', $userIds)
+                    ->orWhere('users.id', $authUser->id)
+                    ->whereStatus('Active')
+                    ->distinct()
+                    ->get();
 
         // Get attendances with optimized query
         $attendances = $this->getAttendancesQuery($request)
