@@ -41,7 +41,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">QR Code Attendance</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <button id="scanQrBtn" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-qrcode ti-xs me-1"></span>
@@ -64,7 +64,7 @@
                     </div>
                 </div>
             </div>
-        </div>      
+        </div>
     </div>
 </div>
 
@@ -91,25 +91,13 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($attendances as $key => $attendance) 
+                            @foreach ($attendances as $key => $attendance)
                                 <tr>
                                     <th>#{{ serial($attendances, $key) }}</th>
                                     <td>
-                                        <div class="d-flex justify-content-start align-items-center user-name">
-                                            <div class="avatar-wrapper">
-                                                <div class="avatar me-2">
-                                                    @if ($attendance->user->hasMedia('avatar'))
-                                                        <img src="{{ $attendance->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $attendance->user->name }} Avatar" class="rounded-circle">
-                                                    @else
-                                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="{{ $attendance->user->name }} No Avatar" class="rounded-circle">
-                                                    @endif
-                                                </div>
-                                            </div>
-                                            <div class="d-flex flex-column">
-                                                <a href="javascript:void(0);" target="_blank" class="emp_name text-truncate text-bold">{{ $attendance->user->name }}</a>
-                                                <small class="emp_post text-truncate text-muted">{{ $attendance->user->role->name }}</small>
-                                            </div>
-                                        </div>
+                                        @if ($attendance->user)
+                                            {!! show_user_name_and_avatar($attendance->user, role: null) !!}
+                                        @endif
                                     </td>
                                     <td>
                                         <div class="d-grid">
@@ -153,7 +141,7 @@
                                             @else
                                                 <b class="text-success text-uppercase">Running</b>
                                             @endisset
-                                            @if ($attendance->type == 'Regular') 
+                                            @if ($attendance->type == 'Regular')
                                                 @php
                                                     $totalTimeDifferent = total_time_difference($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
                                                 @endphp
@@ -165,12 +153,12 @@
                                     </td>
                                     <td>
                                         <span class="text-dark text-truncate">
-                                            <b>Clock-In:</b> 
+                                            <b>Clock-In:</b>
                                             <span>{{ optional($attendance->clockin_scanner)->name }}</span>
                                         </span>
                                         <br>
                                         <span class="text-dark text-truncate">
-                                            <b>Clock-Out:</b> 
+                                            <b>Clock-Out:</b>
                                             <span>{{ optional($attendance->clockout_scanner)->name }}</span>
                                         </span>
                                     </td>
@@ -180,7 +168,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -204,18 +192,18 @@
         $(document).ready(function() {
             $('#scanQrBtn').click(function () {
                 const scannerId = '{{ $scanner->userid }}';
-                
+
                 // Show the QR code reader div
                 $('#qr-reader').show();
-        
+
                 const qrCodeSuccessCallback = (decodedText, decodedResult) => {
                     // Handle success when QR code is scanned
                     $('#qr-reader-results').html(`Scanned result: ${decodedText}`);
-        
+
                     // Assuming decodedText is the userID, redirect to the attendance route
                     let attendanceUrl = `/attendance/qrcode/scan/${scannerId}/${decodedText}`;
                     window.location.href = attendanceUrl;
-        
+
                     // Stop the scanning once the code is found
                     html5QrCode.stop().then(() => {
                         console.log("QR Code scanning stopped.");
@@ -223,14 +211,14 @@
                         console.error("Error stopping scanning: ", err);
                     });
                 };
-        
+
                 const qrCodeErrorCallback = (errorMessage) => {
                     // Optionally handle errors (e.g., no QR code found)
                     console.warn(`QR Code scan error: ${errorMessage}`);
                 };
-        
+
                 const html5QrCode = new Html5Qrcode("qr-reader");
-        
+
                 // Start the QR code scanner
                 html5QrCode.start(
                     { facingMode: "environment" }, // Use the back camera
@@ -246,23 +234,23 @@
             });
         });
     </script>
-    
+
     <script>
         $(document).ready(function() {
             $('#scanQrBtnOvertime').click(function () {
                 const scannerID = '{{ $scanner->userid }}';
-                
+
                 // Show the QR code reader div
                 $('#qr-reader').show();
-        
+
                 const qrCodeSuccessCallback = (decodedText, decodedResult) => {
                     // Handle success when QR code is scanned
                     $('#qr-reader-results').html(`Scanned result: ${decodedText}`);
-        
+
                     // Assuming decodedText is the userID, redirect to the attendance route
                     let attendanceUrl = `/attendance/qrcode/scan/${scannerID}/${decodedText}/Overtime`;
                     window.location.href = attendanceUrl;
-        
+
                     // Stop the scanning once the code is found
                     html5QrCode.stop().then(() => {
                         console.log("QR Code scanning stopped.");
@@ -270,14 +258,14 @@
                         console.error("Error stopping scanning: ", err);
                     });
                 };
-        
+
                 const qrCodeErrorCallback = (errorMessage) => {
                     // Optionally handle errors (e.g., no QR code found)
                     console.warn(`QR Code scan error: ${errorMessage}`);
                 };
-        
+
                 const html5QrCode = new Html5Qrcode("qr-reader");
-        
+
                 // Start the QR code scanner
                 html5QrCode.start(
                     { facingMode: "environment" }, // Use the back camera

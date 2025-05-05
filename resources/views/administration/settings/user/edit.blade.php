@@ -83,7 +83,7 @@
                                 <span class="d-none d-sm-block">Reset</span>
                             </button>
 
-                            <div class="text-muted">Allowed JPG, JPEG or PNG. Max size of 2MB</div>
+                            <div class="text-muted">Upload a <b class="text-dark">Square Image (1:1 ratio) in JPG, JPEG, or PNG</b> format. Maximum size: <b class="text-dark">2MB</b>.</div>
                             @error('avatar')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
@@ -143,7 +143,7 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label for="alias_name" class="form-label">{{ __('Alias Name') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="alias_name" name="alias_name" value="{{ old('alias_name', optional($user->employee)->alias_name) }}" placeholder="{{ __('Alias Name') }}" class="form-control @error('alias_name') is-invalid @enderror"/>
+                            <input type="text" id="alias_name" name="alias_name" value="{{ old('alias_name', optional($user->employee)->alias_name) }}" placeholder="{{ __('Alias Name') }}" class="form-control @error('alias_name') is-invalid @enderror" required/>
                             @error('alias_name')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
@@ -205,8 +205,8 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="religion_id" class="form-label">{{ __('Select Religion') }}</label>
-                            <select name="religion_id" id="religion_id" class="form-select bootstrap-select w-100 @error('religion_id') is-invalid @enderror"  data-style="btn-default">
+                            <label for="religion_id" class="form-label">{{ __('Select Religion') }} <strong class="text-danger">*</strong></label>
+                            <select name="religion_id" id="religion_id" class="form-select bootstrap-select w-100 @error('religion_id') is-invalid @enderror"  data-style="btn-default" required>
                                 <option value="">{{ __('Select Religion') }}</option>
                                 @foreach ($religions as $religion)
                                     <option value="{{ $religion->id }}" @selected(optional($user->religion)->id == $religion->id)>{{ $religion->name }}</option>
@@ -217,8 +217,8 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label for="gender" class="form-label">{{ __('Select Gender') }}</label>
-                            <select name="gender" id="gender" class="form-select bootstrap-select w-100 @error('gender') is-invalid @enderror"  data-style="btn-default">
+                            <label for="gender" class="form-label">{{ __('Select Gender') }} <strong class="text-danger">*</strong></label>
+                            <select name="gender" id="gender" class="form-select bootstrap-select w-100 @error('gender') is-invalid @enderror"  data-style="btn-default" required>
                                 <option value="">{{ __('Select Gender') }}</option>
                                 <option value="Male" @selected($user->employee->gender === 'Male')>Male</option>
                                 <option value="Female" @selected($user->employee->gender === 'Female')>Female</option>
@@ -318,3 +318,4 @@
         });
     </script>
 @endsection
+
