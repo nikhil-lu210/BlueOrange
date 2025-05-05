@@ -234,10 +234,15 @@ class TaskController extends Controller
 
 
         $task = Task::with([
-                'creator',
-                'users',
+                'creator.employee',
+                'creator.media',
+                'users.employee',
+                'users.media',
                 'files',
                 'comments.files',
+                'comments.commenter.roles',
+                'comments.commenter.employee',
+                'comments.commenter.media',
                 'histories' => function ($history) {
                     $history->whereStatus('Completed')->orderBy('ends_at', 'desc')->get();
                 }
