@@ -12,7 +12,7 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    
+
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
@@ -53,7 +53,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Barcode Daily Break</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.daily_break.barcode.scanner') }}" class="btn btn-sm btn-dark" title="Reload Page?">
                         <span class="tf-icon ti ti-reload ti-xs me-1"></span>
@@ -115,7 +115,7 @@
                     </div>
                 </form>
             </div>
-        </div>      
+        </div>
     </div>
 </div>
 
@@ -143,11 +143,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($breaks as $key => $break) 
+                            @foreach ($breaks as $key => $break)
                                 <tr>
                                     <th>#{{ serial($breaks, $key) }}</th>
                                     <td>
-                                        {!! show_user_name_and_avatar($break->user, name:null, role: null) !!}
+                                        {!! show_user_name_and_avatar($break->user, role: null) !!}
                                     </td>
                                     <td>
                                         <small class="badge bg-{{ $break->type === 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</small>
@@ -158,17 +158,17 @@
                                         </div>
                                     </td>
                                     <td>
-                                        @isset ($break->break_out_at) 
+                                        @isset ($break->break_out_at)
                                             <span class="text-bold text-success">{{ show_time($break->break_out_at) }}</span>
                                         @else
                                             <span class="badge bg-label-danger text-bold" title="Break Running">{{ __('Running') }}</span>
                                         @endisset
                                     </td>
                                     <td class="text-center">
-                                        @isset ($break->total_time) 
+                                        @isset ($break->total_time)
                                             <div class="d-grid">
                                                 <span class="text-bold badge bg-label-warning mb-1">{{ total_time($break->total_time) }}</span>
-                                                @isset ($break->over_break) 
+                                                @isset ($break->over_break)
                                                     <small class="text-bold badge bg-label-danger">
                                                         <span>Overbreak: {{ total_time($break->over_break) }}</span>
                                                     </small>
@@ -189,7 +189,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
