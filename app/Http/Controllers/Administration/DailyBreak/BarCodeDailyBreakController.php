@@ -25,9 +25,10 @@ class BarCodeDailyBreakController extends Controller
 
         // Query to get breaks created today
         $breaks = DailyBreak::with([
-            'user:id,userid,name', 
-            'user.media', 
-            'user.roles', 
+            'user:id,userid,name',
+            'user.employee',
+            'user.media',
+            'user.roles',
             'attendance'
         ])
         ->whereBetween('created_at', [$startOfDay, $endOfDay])

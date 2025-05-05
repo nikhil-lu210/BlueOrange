@@ -4,11 +4,11 @@ namespace App\Http\Controllers\Administration\Attendance;
 
 use Exception;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Attendance\Attendance;
-use App\Services\Administration\Attendance\AttendanceEntryService;
 use App\Http\Controllers\Controller;
+use App\Services\Administration\Attendance\AttendanceEntryService;
+use Illuminate\Http\Request;
 
 class BarCodeAttendanceController extends Controller
 {
@@ -24,6 +24,7 @@ class BarCodeAttendanceController extends Controller
         // Query to get attendances from last $hours hours
         $attendances = Attendance::with([
             'user:id,userid,name',
+            'user.employee',
             'user.media',
             'user.roles',
             'employee_shift:id,start_time,end_time'
@@ -74,3 +75,4 @@ class BarCodeAttendanceController extends Controller
         }
     }
 }
+

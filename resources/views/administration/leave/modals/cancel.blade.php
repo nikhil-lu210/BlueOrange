@@ -3,11 +3,11 @@
         case 'Earned':
             $typeBg = 'success';
             break;
-        
+
         case 'Sick':
             $typeBg = 'warning';
             break;
-        
+
         default:
             $typeBg = 'danger';
             break;
@@ -22,7 +22,7 @@
             <div class="modal-body">
                 <div class="text-center mb-4">
                     <h3 class="role-title mb-2">Cancel Leave</h3>
-                    <p class="text-muted">Cancel the <b class="text-{{ $typeBg }}">{{ $leaveHistory->type }} Leave</b> request of <b class="text-primary">{{ $leaveHistory->user->name }}</b></p>
+                    <p class="text-muted">Cancel the <b class="text-{{ $typeBg }}">{{ $leaveHistory->type }} Leave</b> request of <b class="text-primary">{{ $leaveHistory->user->alias_name }}</b></p>
                 </div>
                 <!-- Status form -->
                 <form method="post" action="{{ route('administration.leave.history.cancel', ['leaveHistory' => $leaveHistory]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">

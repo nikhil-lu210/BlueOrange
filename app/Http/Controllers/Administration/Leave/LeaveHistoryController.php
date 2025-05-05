@@ -36,7 +36,7 @@ class LeaveHistoryController extends Controller
         $userIds = auth()->user()->user_interactions->pluck('id');
 
         // Optimize team leaders query
-        $teamLeaders = User::with(['permissions', 'roles'])
+        $teamLeaders = User::with(['permissions', 'roles', 'employee'])
             ->whereIn('id', $userIds)
             ->whereStatus('Active')
             ->get();
@@ -51,10 +51,12 @@ class LeaveHistoryController extends Controller
         // Optimize leaves query with necessary relationships
         $leaves = $this->leaveHistoryService->getLeavesQuery($request)
             ->with([
+                'user.employee',
                 'user.media',
                 'user.roles',
                 'files',
                 'reviewer',
+                'reviewer.employee',
                 'leave_allowed'
             ])
             ->whereIn('user_id', $userIds)
@@ -104,7 +106,16 @@ class LeaveHistoryController extends Controller
      */
     public function show(LeaveHistory $leaveHistory)
     {
-        // dd($leaveHistory);
+        $leaveHistory->load([
+            'user.employee',
+            'user.media',
+            'user.roles',
+            'files',
+            'reviewer',
+            'reviewer.employee',
+            'leave_allowed'
+        ]);
+
         return view('administration.leave.show', compact(['leaveHistory']));
     }
 
@@ -189,6 +200,7 @@ class LeaveHistoryController extends Controller
         }
     }
 }
+
 
 
 

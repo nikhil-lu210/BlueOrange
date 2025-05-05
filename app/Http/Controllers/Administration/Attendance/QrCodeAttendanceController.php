@@ -25,9 +25,10 @@ class QrCodeAttendanceController extends Controller
 
         // Query to get attendances created today
         $attendances = Attendance::with([
-            'user:id,userid,name', 
-            'user.media', 
-            'user.roles', 
+            'user:id,userid,name',
+            'user.employee',
+            'user.media',
+            'user.roles',
             'employee_shift:id,start_time,end_time'
         ])
         ->whereBetween('created_at', [$startOfDay, $endOfDay])
@@ -47,7 +48,7 @@ class QrCodeAttendanceController extends Controller
         $user = User::where('userid', $qr_code)->firstOrFail();
         $currentTime = now();
         $currentDate = $currentTime->toDateString();
-        
+
         // Check if the user has an open attendance session (clocked in but not clocked out)
         $openAttendance = Attendance::where('user_id', $user->id)
             ->whereNull('clock_out')
