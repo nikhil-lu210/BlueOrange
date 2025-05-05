@@ -45,7 +45,12 @@ class AttendanceIssueController extends Controller
         $startOfMonth = now()->startOfMonth()->format('Y-m-d'); // First day of the current month
         $today = now()->format('Y-m-d'); // Today's date
 
-        $query = AttendanceIssue::orderByDesc('clock_in_date');
+        $query = AttendanceIssue::with([
+                                        'user:id,userid,name',
+                                        'user.media',
+                                        'user.employee',
+                                        'user.roles',
+                                    ])->orderByDesc('clock_in_date');
 
         // If a team leader ID is provided, filter employees under them
         if ($request->team_leader_id) {
@@ -96,7 +101,12 @@ class AttendanceIssueController extends Controller
         $startOfMonth = now()->startOfMonth()->format('Y-m-d'); // First day of the current month
         $today = now()->format('Y-m-d'); // Today's date
 
-        $issues = AttendanceIssue::whereUserId(auth()->user()->id)
+        $issues = AttendanceIssue::with([
+                                        'user:id,userid,name',
+                                        'user.media',
+                                        'user.employee',
+                                        'user.roles',
+                                    ])->whereUserId(auth()->user()->id)
                                 ->whereBetween('clock_in_date', [$startOfMonth, $today])
                                 ->orderByDesc('clock_in_date')
                                 ->get();
