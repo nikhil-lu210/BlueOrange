@@ -7,11 +7,11 @@
                 <span class="fw-medium mx-2 text-heading">Requested Type:</span>
             </dt>
             <dd class="col-sm-8">
-                @if ($leaveHistory->type === 'Earned') 
+                @if ($leaveHistory->type === 'Earned')
                     <span class="badge bg-success">{{ __('Earned Leave') }}</span>
-                @elseif ($leaveHistory->type === 'Sick') 
+                @elseif ($leaveHistory->type === 'Sick')
                     <span class="badge bg-warning">{{ __('Sick Leave') }}</span>
-                @else 
+                @else
                     <span class="badge bg-danger">{{ __('Casual Leave') }}</span>
                 @endif
             </dd>
@@ -40,13 +40,13 @@
                 <span class="fw-medium mx-2 text-heading">Status:</span>
             </dt>
             <dd class="col-sm-8">
-                @if ($leaveHistory->status === 'Approved') 
+                @if ($leaveHistory->status === 'Approved')
                     <span class="badge bg-success">{{ __('Approved') }}</span>
-                @elseif ($leaveHistory->status === 'Rejected') 
+                @elseif ($leaveHistory->status === 'Rejected')
                     <span class="badge bg-danger">{{ __('Rejected') }}</span>
-                @elseif ($leaveHistory->status === 'Pending') 
+                @elseif ($leaveHistory->status === 'Pending')
                     <span class="badge bg-primary">{{ __('Pending') }}</span>
-                @else 
+                @else
                     <span class="badge bg-danger">{{ __('Canceled') }}</span>
                 @endif
 
@@ -61,14 +61,14 @@
                 @endisset
             </dd>
         </dl>
-        @isset ($leaveHistory->reviewed_by) 
+        @isset ($leaveHistory->reviewed_by)
             <dl class="row mb-1">
                 <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                     <i class="ti ti-user-cog"></i>
                     <span class="fw-medium mx-2 text-heading">Reviewed By:</span>
                 </dt>
                 <dd class="col-sm-8">
-                    {!! show_user_name_and_avatar($leaveHistory->reviewer, name: null) !!}
+                    {!! show_user_name_and_avatar($leaveHistory->reviewer, role: null) !!}
                 </dd>
             </dl>
         @endisset
@@ -83,7 +83,7 @@
                 </dd>
             </dl>
         @endisset
-        @if (!is_null($leaveHistory->reviewer_note) && ($leaveHistory->status === 'Rejected' || $leaveHistory->status === 'Canceled')) 
+        @if (!is_null($leaveHistory->reviewer_note) && ($leaveHistory->status === 'Rejected' || $leaveHistory->status === 'Canceled'))
             <dl class="row mb-1">
                 <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                     <i class="ti ti-user-edit"></i>

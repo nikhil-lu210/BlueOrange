@@ -42,10 +42,10 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0"><a href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $leaveHistory->user]) }}" target="_blank" class="text-bold">{{ $leaveHistory->user->name }}</a> Leave History's Details</h5>
-        
+                <h5 class="mb-0"><a href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $leaveHistory->user]) }}" target="_blank" class="text-bold">{{ $leaveHistory->user->alias_name }}</a> Leave History's Details</h5>
+
                 @canany(['Leave History Update', 'Leave History Delete'])
-                    @if ($leaveHistory->status === 'Pending') 
+                    @if ($leaveHistory->status === 'Pending')
                         <div class="card-header-elements ms-auto">
                             <button type="button" data-bs-toggle="modal" data-bs-target="#approveLeaveModal" class="btn btn-sm btn-success">
                                 <span class="tf-icon ti ti-check ti-xs me-1"></span>
@@ -57,7 +57,7 @@
                             </button>
                         </div>
                     @endif
-                    @if ($leaveHistory->status === 'Approved') 
+                    @if ($leaveHistory->status === 'Approved')
                         <div class="card-header-elements ms-auto">
                             <button type="button" data-bs-toggle="modal" data-bs-target="#cancelLeaveModal" class="btn btn-sm btn-danger">
                                 <span class="tf-icon ti ti-ban ti-xs me-1"></span>
@@ -72,7 +72,7 @@
                     <div class="col-md-6">
                         @include('administration.leave.includes.leave_history_details')
 
-                        @if ($leaveHistory->status === 'Pending') 
+                        @if ($leaveHistory->status === 'Pending')
                             @include('administration.leave.includes.available_leaves')
                         @endif
                     </div>
@@ -80,7 +80,7 @@
                     <div class="col-md-6">
                         @include('administration.leave.includes.leave_reason')
 
-                        @if ($leaveHistory->files->count() > 0) 
+                        @if ($leaveHistory->files->count() > 0)
                             @include('administration.leave.includes.leave_proof_files')
                         @endif
                     </div>
@@ -91,7 +91,7 @@
 </div>
 <!-- End row -->
 
-@if ($leaveHistory->status === 'Pending') 
+@if ($leaveHistory->status === 'Pending')
     {{-- Approve Modal --}}
     @include('administration.leave.modals.approve')
     {{-- Reject Modal --}}
@@ -129,5 +129,5 @@
                 noCalendar: true,
             });
         });
-    </script>    
+    </script>
 @endsection
