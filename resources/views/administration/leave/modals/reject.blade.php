@@ -25,14 +25,15 @@
                     <p class="text-muted">Reject the <b class="text-{{ $typeBg }}">{{ $leaveHistory->type }} Leave</b> request of <b class="text-primary">{{ $leaveHistory->user->alias_name }}</b></p>
                 </div>
                 <!-- Status form -->
-                <form method="post" action="{{ route('administration.leave.history.reject', ['leaveHistory' => $leaveHistory]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">
+                <form method="post" action="{{ route('administration.leave.history.reject', ['leaveHistory' => $leaveHistory]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off" id="rejectLeaveForm">
                     @csrf
                     @method('PUT')
-                    <div class="col-md-12 mb-3">
+                    <div class="mb-3 col-12">
                         <label class="form-label">Rejection Reason <strong class="text-danger">*</strong></label>
-                        <textarea class="form-control" name="reviewer_note" rows="3" placeholder="Ex: You are not eligible for this leave.">{{ old('reviewer_note') }}</textarea>
+                        <div name="reviewer_note" id="leaveRejectNoteEditor">{!! old('reviewer_note') !!}</div>
+                        <textarea class="d-none" name="reviewer_note" id="leaveRejectNoteInput">{{ old('reviewer_note') }}</textarea>
                         @error('reviewer_note')
-                            <span class="text-danger">{{ $message }}</span>
+                            <b class="text-danger">{{ $message }}</b>
                         @enderror
                     </div>
                     <div class="col-12 text-center mt-4">

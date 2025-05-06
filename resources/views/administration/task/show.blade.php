@@ -9,6 +9,9 @@
 @section('css_links')
     {{--  External CSS  --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -182,6 +185,9 @@
     {{--  External Javascript Links --}}
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
+    <!-- Vendors JS -->
+    <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
     {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
@@ -200,6 +206,57 @@
                 todayHighlight: true,
                 autoclose: true,
                 orientation: 'auto right'
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var fullToolbar = [
+                [{ font: [] }, { size: [] }],
+                ["bold", "italic", "underline", "strike"],
+                [{ color: [] }, { background: [] }],
+                [{ script: "super" }, { script: "sub" }],
+                [{ header: "1" }, { header: "2" }, "blockquote"],
+                [{ list: "ordered" }, { list: "bullet" }],
+            ];
+
+            var taskCommentEditor = new Quill("#taskCommentEditor", {
+                bounds: "#taskCommentEditor",
+                placeholder: "Ex: Your task need to be completed by 20th of this month.",
+                modules: {
+                    formula: true,
+                    toolbar: fullToolbar,
+                },
+                theme: "snow",
+            });
+
+            // Set the editor content to the old comment if validation fails
+            @if(old('comment'))
+                taskCommentEditor.root.innerHTML = {!! json_encode(old('comment')) !!};
+            @endif
+
+            $('#taskCommentForm').on('submit', function() {
+                $('#comment-input').val(taskCommentEditor.root.innerHTML);
+            });
+
+            var taskStopNoteEditor = new Quill("#taskStopNoteEditor", {
+                bounds: "#taskStopNoteEditor",
+                placeholder: "Ex: Completed the task.",
+                modules: {
+                    formula: true,
+                    toolbar: fullToolbar,
+                },
+                theme: "snow",
+            });
+
+            // Set the editor content to the old note if validation fails
+            @if(old('note'))
+                taskStopNoteEditor.root.innerHTML = {!! json_encode(old('note')) !!};
+            @endif
+
+            $('#stopTaskForm').on('submit', function() {
+                $('#note-input').val(taskStopNoteEditor.root.innerHTML);
             });
         });
     </script>

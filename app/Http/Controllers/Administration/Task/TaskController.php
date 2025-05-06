@@ -239,12 +239,16 @@ class TaskController extends Controller
                 'users.employee',
                 'users.media',
                 'files',
-                'comments.files',
-                'comments.commenter.roles',
-                'comments.commenter.employee',
-                'comments.commenter.media',
+                'comments' => function ($comment) {
+                    $comment->with([
+                        'files',
+                        'commenter.roles',
+                        'commenter.employee',
+                        'commenter.media',
+                    ])->orderByDesc('created_at')->get();
+                },
                 'histories' => function ($history) {
-                    $history->whereStatus('Completed')->orderBy('ends_at', 'desc')->get();
+                    $history->whereStatus('Completed')->orderByDesc('ends_at')->get();
                 }
             ])
             ->whereId($task->id)
@@ -260,7 +264,7 @@ class TaskController extends Controller
         $lastActiveTaskHistory = $task->histories()
                         ->whereUserId(auth()->id())
                         ->where('status', 'Working')
-                        ->latest('started_at')
+                        ->orderByDesc('started_at')
                         ->first();
 
         $roles = Role::with([

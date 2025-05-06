@@ -83,16 +83,16 @@
                 </dd>
             </dl>
         @endisset
-        @if (!is_null($leaveHistory->reviewer_note) && ($leaveHistory->status === 'Rejected' || $leaveHistory->status === 'Canceled'))
-            <dl class="row mb-1">
-                <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                    <i class="ti ti-user-edit"></i>
-                    <span class="fw-medium mx-2 text-heading">Reviewer Note:</span>
-                </dt>
-                <dd class="col-sm-8">
+    </div>
+
+    @if (!is_null($leaveHistory->reviewer_note) && ($leaveHistory->status === 'Rejected' || $leaveHistory->status === 'Canceled'))
+        <div class="card-body">
+            <small class="card-text text-uppercase">Reviewer Note (<b class="text-dar">{{ $leaveHistory->status }} Reason</b>)</small>
+            <dl class="row mt-3 mb-1">
+                <dd class="col-12">
                     {!! $leaveHistory->reviewer_note !!}
                 </dd>
             </dl>
-        @endif
-    </div>
+        </div>
+    @endif
 </div>
