@@ -42,8 +42,8 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0"><b>{{ $break->user->name }}</b> Daily Break's Details</h5>
-        
+                <h5 class="mb-0"><b>{{ $break->user->alias_name }}'s</b> {{ $break->type }} Break Details of {{ show_date($break->attendance->clock_in_date) }}</h5>
+
                 @canany(['Daily Break Update', 'Daily Break Delete'])
                     <div class="card-header-elements ms-auto">
                         <button type="button" data-bs-toggle="modal" data-bs-target="#editDailyBreak" class="btn btn-sm btn-primary">
@@ -65,9 +65,9 @@
                                         <span class="fw-medium mx-2 text-heading">Break Type:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        @if ($break->type == 'Short') 
+                                        @if ($break->type == 'Short')
                                             <span class="badge bg-primary">{{ __('Short Break') }}</span>
-                                        @else 
+                                        @else
                                             <span class="badge bg-warning">{{ __('Long Break') }}</span>
                                         @endif
                                     </dd>
@@ -107,7 +107,7 @@
                                         @endif
                                     </dd>
                                 </dl>
-                                @isset ($break->over_break) 
+                                @isset ($break->over_break)
                                     <dl class="row mb-1">
                                         <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                                             <i class="ti ti-clock-plus"></i>
@@ -136,7 +136,7 @@
                                         <span>{{ $break->break_out_ip }}</span>
                                     </dd>
                                 </dl>
-                                @isset ($break->note) 
+                                @isset ($break->note)
                                     <dl class="row mb-1">
                                         <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                                             <i class="ti ti-notes text-heading"></i>
@@ -164,7 +164,9 @@
                                         <span class="fw-medium mx-2 text-heading">Date:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        <span class="text-bold badge bg-label-dark">{{ show_date($attendance->clock_in_date) }}</span>
+                                        <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" target="_blank" title="Show Attenance Details">
+                                            <span class="text-bold badge bg-label-dark">{{ show_date($attendance->clock_in_date) }}</span>
+                                        </a>
                                     </dd>
                                 </dl>
                                 <dl class="row mb-1">
@@ -263,7 +265,7 @@
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -353,5 +355,5 @@
                 noCalendar: true,
             });
         });
-    </script>    
+    </script>
 @endsection

@@ -50,8 +50,8 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0"><strong>{{ $attendance->user->name }}</strong> Attendance's Details</h5>
-        
+                <h5 class="mb-0"><strong>{{ $attendance->user->alias_name }}'s</strong> {{ $attendance->type }} Attendance Details of {{ show_date($attendance->clock_in_date) }}</h5>
+
                 @canany(['Attendance Update', 'Attendance Delete'])
                     <div class="card-header-elements ms-auto">
                         <button type="button" data-bs-toggle="modal" data-bs-target="#editAttendance" class="btn btn-sm btn-primary">
@@ -82,9 +82,9 @@
                                         <span class="fw-medium mx-2 text-heading">Attendance Type:</span>
                                     </dt>
                                     <dd class="col-sm-8">
-                                        @if ($attendance->type == 'Regular') 
+                                        @if ($attendance->type == 'Regular')
                                             <span class="badge bg-primary">{{ __('Regular Attendance') }}</span>
-                                        @else 
+                                        @else
                                             <span class="badge bg-warning">{{ __('Overtime Attendance') }}</span>
                                         @endif
                                     </dd>
@@ -228,8 +228,8 @@
                                         <span>{{ $attendance->zip_code }}</span>
                                     </dd>
                                 </dl>
-                                
-                                @canany (['Attendance Update', 'Attendance Delete']) 
+
+                                @canany (['Attendance Update', 'Attendance Delete'])
                                     <hr>
                                     <dl class="row mb-1">
                                         <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
@@ -278,20 +278,20 @@
                                 <div class="d-flex">
                                     <small class="card-text text-uppercase">Daily Break's Details</small>
                                     <div class="ms-auto" style="margin-top: -5px;">
-                                        @isset ($attendance->total_break_time) 
+                                        @isset ($attendance->total_break_time)
                                             <small class="badge bg-dark" title="Total Break Taken">
                                                 {{ total_time($attendance->total_break_time) }}
                                             </small>
                                         @endisset
-                                        @isset ($attendance->total_over_break) 
+                                        @isset ($attendance->total_over_break)
                                             <small class="badge bg-danger" title="Total Over Break">
                                                 {{ total_time($attendance->total_over_break) }}
                                             </small>
                                         @endisset
-                                    </div> 
+                                    </div>
                                 </div>
                                 <ul class="timeline mb-0 pb-1 mt-4">
-                                    @forelse ($attendance->daily_breaks as $key => $break) 
+                                    @forelse ($attendance->daily_breaks as $key => $break)
                                         <li class="timeline-item ps-4 {{ $loop->last ? 'border-transparent' : 'border-left-dashed pb-1' }}">
                                             <span class="timeline-indicator-advanced timeline-indicator-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">
                                                 <i class="ti ti-{{ $break->break_out_at ? 'clock-stop' : 'clock-play' }}"></i>
@@ -304,7 +304,7 @@
                                                 </div>
                                                 <small class="text-muted mb-0">
                                                     {{ show_time($break->break_in_at) }}
-                                                    @if (!is_null($break->break_out_at)) 
+                                                    @if (!is_null($break->break_out_at))
                                                         <span>to</span>
                                                         <span>{{ show_time($break->break_out_at) }}</span>
                                                     @else
@@ -324,30 +324,30 @@
                                                 </h6>
                                             </div>
                                         </li>
-                                    @empty 
+                                    @empty
                                         <div class="text-center text-bold text-muted fs-2">No Breaks</div>
                                     @endforelse
                                 </ul>
                             </div>
                         </div>
-                        
+
                         <div class="card mt-3">
                             <div class="card-body">
                                 <div class="d-flex">
                                     <small class="card-text text-uppercase">Attendance Issues</small>
                                 </div>
                                 <ul class="timeline mb-0 pb-1 mt-4">
-                                    @forelse ($attendance->issues as $key => $issue) 
+                                    @forelse ($attendance->issues as $key => $issue)
                                         @php
                                             switch ($issue->status) {
                                                 case 'Approved':
                                                     $color = 'success';
                                                     break;
-                                                
+
                                                 case 'Rejected':
                                                     $color = 'danger';
                                                     break;
-                                                
+
                                                 default:
                                                     $color = 'primary';
                                                     break;
@@ -371,7 +371,7 @@
                                                 </h6>
                                             </div>
                                         </li>
-                                    @empty 
+                                    @empty
                                         <div class="text-center text-bold text-muted fs-2">No Issues</div>
                                     @endforelse
                                 </ul>
@@ -380,7 +380,7 @@
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -470,11 +470,11 @@
                     $(this).selectpicker();
                 }
             });
-            
+
             $('.date-time-picker').flatpickr({
                 enableTime: true,
                 dateFormat: 'Y-m-d H:i'
-            }); 
+            });
         });
-    </script>    
+    </script>
 @endsection

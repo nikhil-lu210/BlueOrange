@@ -195,6 +195,16 @@ class AttendanceIssueController extends Controller
      */
     public function show(AttendanceIssue $issue)
     {
+        $issue->load([
+            'user.employee',
+            'user.media',
+            'user.roles',
+            'attendance',
+            'updater.employee',
+            'updater.media',
+            'updater.roles',
+        ]);
+
         return view('administration.attendance.issue.show', compact(['issue']));
     }
 
