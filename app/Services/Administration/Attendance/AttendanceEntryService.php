@@ -102,6 +102,14 @@ class AttendanceEntryService
             throw new Exception('You have not clocked in today.');
         }
 
+        // Check if at least 2 minutes have passed since clock-in
+        $clockInTime = $existingAttendance->clock_in;
+        $minClockOutTime = Carbon::parse($clockInTime)->addMinutes(2);
+
+        if (Carbon::parse($clockOutTime ?? $currentTime) < $minClockOutTime) {
+            throw new Exception('You cannot clock out before 2 minutes from clock-in time.');
+        }
+
         // Stop any active running breaks
         $activeRunningBreak = DailyBreak::where('user_id', $userId)
             ->where('attendance_id', $existingAttendance->id)
@@ -230,3 +238,4 @@ class AttendanceEntryService
         }
     }
 }
+

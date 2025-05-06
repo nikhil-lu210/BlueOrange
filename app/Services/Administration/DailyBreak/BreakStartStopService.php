@@ -67,6 +67,14 @@ class BreakStartStopService
             throw new Exception('You have no running break.');
         }
 
+        // Check if at least 2 minutes have passed since break-start
+        $breakStartTime = $existingBreak->break_in_at;
+        $minBreakStopTime = Carbon::parse($breakStartTime)->addMinutes(2);
+
+        if (Carbon::parse($currentTime) < $minBreakStopTime) {
+            throw new Exception('You cannot stop break before 2 minutes from break-start time.');
+        }
+
         $location = Location::get(get_public_ip());
         $breakStopTime = $currentTime->timestamp; // Use timestamp
         $breakStartTime = $existingBreak->break_in_at->timestamp;
