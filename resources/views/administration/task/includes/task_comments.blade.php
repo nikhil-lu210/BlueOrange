@@ -15,14 +15,15 @@
     <div class="card-body">
         <div class="row">
             <div class="col-md-12">
-                <form action="{{ route('administration.task.comment.store', ['task' => $task]) }}" method="post" enctype="multipart/form-data" autocomplete="off">
+                <form action="{{ route('administration.task.comment.store', ['task' => $task]) }}" method="post" enctype="multipart/form-data" autocomplete="off" id="taskCommentForm">
                     @csrf
                     <div class="collapse" id="taskComment">
                         <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <textarea class="form-control" name="comment" rows="2" placeholder="Ex: I Didn't Understand The Task." required>{{ old('comment') }}</textarea>
+                            <div class="mb-3 col-md-12">
+                                <div name="comment" id="taskCommentEditor">{!! old('comment') !!}</div>
+                                <textarea class="d-none" name="comment" id="comment-input">{{ old('comment') }}</textarea>
                                 @error('comment')
-                                    <span class="text-danger">{{ $message }}</span>
+                                    <b class="text-danger">{{ $message }}</b>
                                 @enderror
                             </div>
                             <div class="col-md-12 mb-1">
@@ -55,7 +56,7 @@
                                         <small class="date-time text-muted">{{ date_time_ago($comment->created_at) }}</small>
                                     </div>
                                     <div class="d-flex mt-2">
-                                        <p>{{ $comment->comment }}</p>
+                                        <div class="d-block">{!! $comment->comment !!}</div>
                                     </div>
 
                                     @if ($comment->files->count() > 0)

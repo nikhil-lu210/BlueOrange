@@ -9,7 +9,7 @@
                     <p class="text-muted">Stop The Task For Now</p>
                 </div>
                 <!-- Holiday Create form -->
-                <form method="post" action="{{ route('administration.task.history.stop', ['task' => $task, 'taskHistory' => $lastActiveTaskHistory]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">
+                <form method="post" action="{{ route('administration.task.history.stop', ['task' => $task, 'taskHistory' => $lastActiveTaskHistory]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off" id="stopTaskForm">
                     @csrf
                     <div class="col-md-8">
                         <label class="form-label">Files</label>
@@ -25,11 +25,12 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                    <div class="col-md-12">
+                    <div class="mb-3 col-md-12">
                         <label class="form-label">Note <strong class="text-danger">*</strong></label>
-                        <textarea class="form-control" name="note" rows="3" placeholder="Ex: I have done the second module of this task.">{{ old('note') }}</textarea>
+                        <div name="note" id="taskStopNoteEditor">{!! old('note') !!}</div>
+                        <textarea class="d-none" name="note" id="note-input">{{ old('note') }}</textarea>
                         @error('note')
-                            <span class="text-danger">{{ $message }}</span>
+                            <b class="text-danger">{{ $message }}</b>
                         @enderror
                     </div>
                     <div class="col-12 text-center mt-4">

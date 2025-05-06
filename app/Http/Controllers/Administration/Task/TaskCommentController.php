@@ -25,7 +25,7 @@ class TaskCommentController extends Controller
             'comment' => ['required', 'string', 'min:10'],
             'files.*' => ['nullable', 'max:5000']
         ]);
-        
+
         try {
             DB::transaction(function () use ($request, $task) {
                 $comment = TaskComment::create([
@@ -55,7 +55,7 @@ class TaskCommentController extends Controller
                 $notifiableUsers = [];
                 // Retrieve the notifiable users based on the combined list of user IDs
                 $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-                
+
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new TaskCommentNotification($task, auth()->user()));
@@ -64,7 +64,7 @@ class TaskCommentController extends Controller
                     Mail::to($notifiableUser->email)->queue(new NewCommentOnTaskMail($task, $notifiableUser, auth()->user()));
                 }
             });
-            
+
             toast('Task Comment Submitted Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
