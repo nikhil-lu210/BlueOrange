@@ -40,7 +40,7 @@
     <li class="breadcrumb-item">{{ __('Attendance') }}</li>
     <li class="breadcrumb-item">{{ __('Attendance Issue') }}</li>
     <li class="breadcrumb-item">
-        @can ('Update Attenance Issue') 
+        @can ('Update Attenance Issue')
             <a href="{{ route('administration.attendance.issue.index') }}">{{ __('All Issues') }}</a>
         @else
             <a href="{{ route('administration.attendance.issue.my') }}">{{ __('My Issues') }}</a>
@@ -63,17 +63,17 @@
                             <h4 class="mb-0">{{ $issue->title }}</h4>
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Issue Created By" data-bs-placement="bottom">
-                                    <i class="ti ti-crown"></i> 
-                                    {{ $issue->user->name }}
+                                    <i class="ti ti-crown"></i>
+                                    {{ $issue->user->alias_name }}
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Issue Creation Date & Time">
-                                    <i class="ti ti-calendar"></i> 
+                                    <i class="ti ti-calendar"></i>
                                     {{ show_date_time($issue->created_at) }}
                                 </li>
                             </ul>
                         </div>
-                        @if ($issue->status === 'Pending') 
-                            @can ('Announcement Update') 
+                        @if ($issue->status === 'Pending')
+                            @can ('Announcement Update')
                                 <div class="card-header-elements ms-auto">
                                     <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectAttendanceIssueModal">
                                         <span class="tf-icon ti ti-ban ti-xs me-1"></span>
@@ -97,7 +97,7 @@
         @include('administration.attendance.issue.partials._issue_details')
     </div>
 
-    @if ($issue->attendance) 
+    @if ($issue->attendance)
         <div class="col-md-5">
             @include('administration.attendance.issue.partials._attendance_details')
         </div>
@@ -121,7 +121,7 @@
     <!-- Vendors JS -->
     <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>

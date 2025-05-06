@@ -113,7 +113,7 @@ class DailyBreakController extends Controller
      */
     public function show(DailyBreak $break)
     {
-        // dd($break);
+        $break->load(['user.media', 'user.roles', 'user.employee', 'attendance']);
         return view('administration.daily_break.show', compact(['break']));
     }
 
