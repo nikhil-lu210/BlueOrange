@@ -8,9 +8,11 @@
 
 @section('css_links')
     {{--  External CSS  --}}
-    {{-- <!-- Vendors CSS --> --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/flatpickr/flatpickr.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -108,10 +110,12 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
+
+    <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
 @endsection
 
 @section('custom_script')
@@ -127,6 +131,38 @@
             $('.time-picker').flatpickr({
                 enableTime: true,
                 noCalendar: true,
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var fullToolbar = [
+                [{ font: [] }, { size: [] }],
+                ["bold", "italic", "underline", "strike"],
+                [{ color: [] }, { background: [] }],
+                [{ script: "super" }, { script: "sub" }],
+                [{ header: "1" }, { header: "2" }, "blockquote"],
+                [{ list: "ordered" }, { list: "bullet" }],
+            ];
+
+            var leaveRejectNoteEditor = new Quill("#leaveRejectNoteEditor", {
+                bounds: "#leaveRejectNoteEditor",
+                placeholder: "Ex: Completed the task.",
+                modules: {
+                    formula: true,
+                    toolbar: fullToolbar,
+                },
+                theme: "snow",
+            });
+
+            // Set the editor content to the old reviewer_note if validation fails
+            @if(old('reviewer_note'))
+                leaveRejectNoteEditor.root.innerHTML = {!! json_encode(old('reviewer_note')) !!};
+            @endif
+
+            $('#rejectLeaveForm').on('submit', function() {
+                $('#leaveRejectNoteInput').val(leaveRejectNoteEditor.root.innerHTML);
             });
         });
     </script>
