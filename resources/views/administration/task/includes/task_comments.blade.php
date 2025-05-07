@@ -65,7 +65,7 @@
                                             <div class="d-flex flex-wrap gap-2 pt-1 mb-2">
                                                 @foreach ($comment->files as $commentFile)
                                                     @if (in_array($commentFile->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']))
-                                                        <div class="comment-image-container border-1">
+                                                        <div class="comment-image-container border-1" title="Click to view {{ $commentFile->original_name }}">
                                                             <a href="{{ file_media_download($commentFile) }}" data-lightbox="comment-images-{{ $comment->id }}" data-title="{{ $commentFile->original_name }}">
                                                                 <img src="{{ file_media_download($commentFile) }}" alt="{{ $commentFile->original_name }}" class="img-fluid img-thumbnail" style="width: 150px; height: 100px; object-fit: cover;">
                                                             </a>

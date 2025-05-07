@@ -28,9 +28,17 @@
                         @foreach ($task->files as $file)
                             <tr>
                                 <td>
-                                    <b class="text-dark" title="{{ $file->original_name }}">
-                                        {{ show_content($file->original_name, 20) }}
-                                    </b>
+                                    @if (in_array($file->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']))
+                                        <div class="task-image-container" title="Click to view {{ $file->original_name }}">
+                                            <a href="{{ file_media_download($file) }}" data-lightbox="task-images" data-title="{{ $file->original_name }}">
+                                                <img src="{{ file_media_download($file) }}" alt="{{ $file->original_name }}" class="img-fluid img-thumbnail" style="width: 150px; height: 100px; object-fit: cover;">
+                                            </a>
+                                        </div>
+                                    @else
+                                        <b class="text-dark" title="{{ $file->original_name }}">
+                                            {{ show_content($file->original_name, 20) }}
+                                        </b>
+                                    @endif
                                 </td>
                                 <td>{{ get_file_media_size($file) }}</td>
                                 <td>{{ date_time_ago($file->created_at) }}</td>
@@ -56,3 +64,4 @@
 
 {{-- Add Task Files Modal --}}
 @include('administration.task.modals.add_task_files')
+
