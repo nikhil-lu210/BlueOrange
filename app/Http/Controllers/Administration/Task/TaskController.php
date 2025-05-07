@@ -198,14 +198,14 @@ class TaskController extends Controller
                 $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
 
                 $notifiableUsers = [];
-                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
+                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
 
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new TaskCreateNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email & Dispatch the email to the queue
-                    Mail::to($notifiableUser->email)->queue(new NewTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->employee->official_email)->queue(new NewTaskMail($task, $notifiableUser));
                 }
             });
 
@@ -323,14 +323,14 @@ class TaskController extends Controller
                 $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
 
                 $notifiableUsers = [];
-                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
+                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
 
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new TaskUpdateNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->queue(new UpdateTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->employee->official_email)->queue(new UpdateTaskMail($task, $notifiableUser));
                 }
             });
 
@@ -382,14 +382,14 @@ class TaskController extends Controller
                 }
 
                 $notifiableUsers = [];
-                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $request->users)->get();
+                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $request->users)->get();
 
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new TaskAddUsersNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->queue(new AddUsersTaskMail($task, $notifiableUser));
+                    Mail::to($notifiableUser->employee->official_email)->queue(new AddUsersTaskMail($task, $notifiableUser));
                 }
             });
 
