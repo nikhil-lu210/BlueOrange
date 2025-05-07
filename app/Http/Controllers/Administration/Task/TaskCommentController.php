@@ -54,14 +54,14 @@ class TaskCommentController extends Controller
 
                 $notifiableUsers = [];
                 // Retrieve the notifiable users based on the combined list of user IDs
-                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
+                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
 
                 foreach ($notifiableUsers as $notifiableUser) {
                     // Send Notification to System
                     $notifiableUser->notify(new TaskCommentNotification($task, auth()->user()));
 
                     // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->queue(new NewCommentOnTaskMail($task, $notifiableUser, auth()->user()));
+                    Mail::to($notifiableUser->employee->official_email)->queue(new NewCommentOnTaskMail($task, $notifiableUser, auth()->user()));
                 }
             });
 
