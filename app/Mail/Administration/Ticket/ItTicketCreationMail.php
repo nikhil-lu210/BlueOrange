@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail\Administration\DailyWorkUpdate;
+namespace App\Mail\Administration\Ticket;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -10,19 +10,19 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class DailyWorkUpdateRequestMail extends Mailable implements ShouldQueue
+class ItTicketCreationMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $data;
+    public $itTicket;
     public $user;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($data, $user)
+    public function __construct($itTicket, $user)
     {
-        $this->data = $data;
+        $this->itTicket = $itTicket;
         $this->user = $user;
     }
 
@@ -33,7 +33,7 @@ class DailyWorkUpdateRequestMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'Daily Work Update By ' . $this->data->user->alias_name . ' of ' . show_date($this->data->date),
+            subject: 'New IT Ticket By ' . $this->itTicket->creator->alias_name,
         );
     }
 
@@ -43,9 +43,9 @@ class DailyWorkUpdateRequestMail extends Mailable implements ShouldQueue
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.administration.daily_work_update.daily_work_update_request',
+            markdown: 'emails.administration.ticket.it_ticket_creation',
             with: [
-                'data' => $this->data,
+                'itTicket' => $this->itTicket,
                 'user' => $this->user
             ]
         );

@@ -2,7 +2,7 @@
 
 
 @section('email_title')
-    <span style="text-align: center;">{{ show_date($data->date) }} Work Update By {{ $data->user->name }}</span>
+    <span style="text-align: center;">{{ show_date($data->date) }} Work Update By {{ $data->user->alias_name }}</span>
 @endsection
 
 

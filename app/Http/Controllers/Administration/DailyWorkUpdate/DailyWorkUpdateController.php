@@ -341,7 +341,7 @@ class DailyWorkUpdateController extends Controller
                 $teamLeader->notify(new DailyWorkUpdateCreateNotification($workUpdate, auth()->user()));
 
                 // Send Mail to the Team Leader
-                Mail::to($teamLeader->employee->official_email)->send(new DailyWorkUpdateRequestMail($workUpdate, $teamLeader));
+                Mail::to($teamLeader->employee->official_email)->queue(new DailyWorkUpdateRequestMail($workUpdate, $teamLeader));
             });
 
             toast('Daily Work Update Has Been Submitted Successfully.', 'success');
