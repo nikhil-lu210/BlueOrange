@@ -1,6 +1,7 @@
 /usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock \
-/opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --stop-when-empty --tries=3 \
+/usr/local/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --stop-when-empty --tries=3 \
 >> /home/staffi7/app.staff-india.com/storage/logs/queue-cron.log 2>&1
+
 
 
 
