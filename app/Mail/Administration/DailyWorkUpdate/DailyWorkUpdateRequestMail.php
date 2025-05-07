@@ -10,7 +10,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class DailyWorkUpdateRequestMail extends Mailable
+class DailyWorkUpdateRequestMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
