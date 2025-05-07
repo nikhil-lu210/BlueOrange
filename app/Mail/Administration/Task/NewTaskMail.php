@@ -33,7 +33,7 @@ class NewTaskMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'New Task Assigned By '. $this->data->creator->name,
+            subject: 'New Task Assigned By '. $this->data->creator->alias_name,
         );
     }
 

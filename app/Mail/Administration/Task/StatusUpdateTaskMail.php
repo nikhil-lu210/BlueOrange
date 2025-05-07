@@ -33,7 +33,7 @@ class StatusUpdateTaskMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'Task ('. $this->data->taskid .') marked as '. $this->data->status
+            subject: 'Task ('. $this->data->taskid .') marked as '. $this->data->status . ' by '. $this->data->creator->alias_name,
         );
     }
 

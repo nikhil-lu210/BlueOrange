@@ -33,7 +33,7 @@ class DailyWorkUpdateRequestMail extends Mailable
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'Daily Work Update By ' . $this->data->user->name . ' of ' . show_date($this->data->date),
+            subject: 'Daily Work Update By ' . $this->data->user->alias_name . ' of ' . show_date($this->data->date),
         );
     }
 
