@@ -33,7 +33,7 @@ class NewAttendanceIssueMail extends Mailable
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'New Attendance Issue By '. $this->data->user->name,
+            subject: 'New Attendance Issue By '. $this->data->user->alias_name,
         );
     }
 

@@ -33,7 +33,7 @@ class LeaveRequestStatusUpdateMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'Leave Request '. $this->data->status .' By '. $this->user->name,
+            subject: 'Leave Request '. $this->data->status .' By '. $this->user->alias_name,
         );
     }
 

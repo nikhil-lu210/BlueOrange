@@ -33,7 +33,7 @@ class FileUploadForTaskMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'New File(s) Uploaded For Task ('. $this->data->taskid .')'
+            subject: 'New File(s) Uploaded For Task ('. $this->data->taskid .') by '. $this->data->creator->alias_name,
         );
     }
 

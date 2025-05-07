@@ -43,8 +43,8 @@ class MonthlySalaryNotification extends Notification
         return [
             'url'   => $url,
             'icon'   => 'currency-taka',
-            'title'   => 'Salary Paid For' . show_month($this->monthly_salary->for_month),
-            'message'     => show_month($this->monthly_salary->for_month) . ' Salary Has Been Paid By '. $this->monthly_salary->payer->name,
+            'title'   => 'Salary Paid For ' . show_month($this->monthly_salary->for_month),
+            'message'     => show_month($this->monthly_salary->for_month) . ' Salary Has Been Paid By '. $this->monthly_salary->payer->alias_name,
         ];
     }
 }
