@@ -60,34 +60,29 @@
                                     </div>
 
                                     @if ($comment->files->count() > 0)
-                                        {{-- Display images first --}}
-                                        @if ($comment->files->whereIn('mime_type', ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'])->count() > 0)
-                                            <div class="d-flex flex-wrap gap-2 pt-1 mb-2">
-                                                @foreach ($comment->files as $commentFile)
-                                                    @if (in_array($commentFile->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']))
-                                                        <div class="comment-image-container border-1" title="Click to view {{ $commentFile->original_name }}">
-                                                            <a href="{{ file_media_download($commentFile) }}" data-lightbox="comment-images-{{ $comment->id }}" data-title="{{ $commentFile->original_name }}">
-                                                                <img src="{{ file_media_download($commentFile) }}" alt="{{ $commentFile->original_name }}" class="img-fluid img-thumbnail" style="width: 150px; height: 100px; object-fit: cover;">
-                                                            </a>
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        @endif
-
-                                        {{-- Display other files in a separate row --}}
-                                        @if ($comment->files->whereNotIn('mime_type', ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'])->count() > 0)
-                                            <div class="d-flex flex-wrap gap-2 mb-3">
-                                                @foreach ($comment->files as $commentFile)
-                                                    @if (!in_array($commentFile->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']))
-                                                        <a href="{{ file_media_download($commentFile) }}" target="_blank" class="me-3 badge bg-label-dark" title="Click Here to Download {{ $commentFile->original_name }}">
-                                                            <i class="ti ti-file-download fw-bold fs-6"></i>
-                                                            <span class="fw-medium">{{ $commentFile->original_name }}</span>
+                                        <div class="d-flex flex-wrap gap-2 pt-1 mb-3">
+                                            @foreach ($comment->files as $commentFile)
+                                                @if (in_array($commentFile->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']))
+                                                    <div class="comment-image-container" title="Click to view {{ $commentFile->original_name }}">
+                                                        <a href="{{ file_media_download($commentFile) }}" data-lightbox="comment-images" data-title="{{ $commentFile->original_name }}">
+                                                            <img src="{{ file_media_download($commentFile) }}" alt="{{ $commentFile->original_name }}" class="img-fluid img-thumbnail" style="width: 150px; height: 100px; object-fit: cover;">
                                                         </a>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        @endif
+                                                    </div>
+                                                @else
+                                                    <div class="file-thumbnail-container" style="width: 150px; height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.25rem;" title="Click to Download {{ $commentFile->original_name }}">
+                                                        <a href="{{ file_media_download($commentFile) }}" target="_blank" class="text-decoration-none">
+                                                            <div class="d-flex flex-column align-items-center">
+                                                                <i class="ti ti-file-download fs-2 mb-2 text-primary"></i>
+                                                                <span class="text-center small fw-medium" style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                                                                    {{ show_content($commentFile->original_name, 15) }}
+                                                                </span>
+                                                                <small class="text-muted">{{ strtoupper(pathinfo($commentFile->original_name, PATHINFO_EXTENSION)) }}</small>
+                                                            </div>
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            @endforeach
+                                        </div>
                                     @endif
                                 </td>
                             </tr>
