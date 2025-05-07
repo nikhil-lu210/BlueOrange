@@ -2,7 +2,7 @@
     <div class="card-header header-elements pt-3 pb-3">
         <h5 class="mb-0">Task Files</h5>
 
-        @if (auth()->user()->id == $task->creator->id) 
+        @if (auth()->user()->id == $task->creator->id)
             <div class="card-header-elements ms-auto">
                 <button type="button" class="btn btn-xs btn-primary" title="Click to upload files for {{ $task->title }}" data-bs-toggle="modal" data-bs-target="#addTaskFilesModal">
                     <span class="tf-icon ti ti-upload ti-xs me-1"></span>
@@ -11,7 +11,7 @@
             </div>
         @endif
     </div>
-    
+
     @if ($task->files->count() > 0)
         <div class="card-body">
             <div class="table-responsive">
@@ -25,7 +25,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($task->files as $file) 
+                        @foreach ($task->files as $file)
                             <tr>
                                 <td>
                                     <b class="text-dark" title="{{ $file->original_name }}">
@@ -35,7 +35,7 @@
                                 <td>{{ get_file_media_size($file) }}</td>
                                 <td>{{ date_time_ago($file->created_at) }}</td>
                                 <td class="text-center">
-                                    @if ($task->creator_id == auth()->user()->id) 
+                                    @if ($task->creator_id == auth()->user()->id)
                                         <a href="{{ file_media_destroy($file) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" title="Delete {{ $file->original_name }}">
                                             <i class="ti ti-trash"></i>
                                         </a>
