@@ -1,7 +1,13 @@
-/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --stop-when-empty && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:retry --after=1440
+/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock \
+/opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --stop-when-empty --tries=3 \
+>> /home/staffi7/app.staff-india.com/storage/logs/queue-cron.log 2>&1
 
 
-/usr/bin/flock -n /home/staffi7/staff-india.co.uk/blueorange/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:work --stop-when-empty && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:retry --after=1440
+
+/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --stop-when-empty && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:retry all
 
 
-/usr/bin/flock -n /home/staffi7/staff-india.co.uk/blueorange/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:work --once && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:retry --after=1440
+/usr/bin/flock -n /home/staffi7/staff-india.co.uk/blueorange/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:work --stop-when-empty && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:retry all
+
+
+/usr/bin/flock -n /home/staffi7/staff-india.co.uk/blueorange/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:work --once && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:retry all
