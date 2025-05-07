@@ -35,6 +35,23 @@
         border: 3px solid var(--bs-border-color);
         border-radius: 5px;
     }
+    .file-thumbnail-container {
+        width: 150px;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+    .file-thumbnail-container .file-name {
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     </style>
 @endsection
 

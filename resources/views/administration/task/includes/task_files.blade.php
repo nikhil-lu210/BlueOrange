@@ -35,9 +35,9 @@
                                             </a>
                                         </div>
                                     @else
-                                        <div class="file-thumbnail-container" style="width: 150px; height: 100px; display: flex; flex-direction: column; justify-content: center; align-items: center; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 0.25rem;">
+                                        <div class="file-thumbnail-container">
                                             <i class="ti ti-file-download fs-2 mb-2 text-primary"></i>
-                                            <span class="text-center small fw-medium" style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $file->original_name }}">
+                                            <span class="file-name text-center small fw-medium" title="{{ $file->original_name }}">
                                                 {{ show_content($file->original_name, 15) }}
                                             </span>
                                             <small class="text-muted">{{ strtoupper(pathinfo($file->original_name, PATHINFO_EXTENSION)) }}</small>
