@@ -1,16 +1,16 @@
 git checkout develop
 git pull origin develop
-git checkout -b release-v1.3.9
-git push origin release-v1.3.9
+git checkout -b release-v1.4.0
+git push origin release-v1.4.0
 git add .
-git commit -m "Attenance relationship eagerloading Updated in release v1.3.9"
-git push origin release-v1.3.9
+git commit -m "File Thumbnails Updated And Ready to setup Cron Job in release v1.4.0"
+git push origin release-v1.4.0
 git checkout master
 git pull origin master
-git merge --no-ff release-v1.3.9 -m "Merge release v1.3.9 into master"
+git merge --no-ff release-v1.4.0 -m "Merge release v1.4.0 into master"
 git push origin master
 git checkout develop
-git merge --no-ff release-v1.3.9 -m "Merge release v1.3.9 into develop"
+git merge --no-ff release-v1.4.0 -m "Merge release v1.4.0 into develop"
 git push origin develop
-git branch -d release-v1.3.9
-git push origin --delete release-v1.3.9
+git branch -d release-v1.4.0
+git push origin --delete release-v1.4.0
