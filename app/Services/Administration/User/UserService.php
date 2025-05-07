@@ -38,7 +38,7 @@ class UserService
         $roles = $this->getAllRoles();
 
         $query = User::select(['id', 'userid', 'first_name', 'last_name', 'name', 'email', 'status'])
-                    ->with(['media', 'roles:id,name']);
+                    ->with(['media', 'employee', 'roles:id,name']);
 
         // Check if the authenticated user has 'User Everything' or 'User Create' permission
         if (!auth()->user()->hasAnyPermission(['User Everything', 'User Create', 'User Update', 'User Delete'])) {
