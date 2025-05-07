@@ -3,11 +3,13 @@
 namespace App\Services\Administration\Ticket;
 
 use App\Models\Ticket\ItTicket;
+use App\Mail\Administration\Ticket\ItTicketCreationMail;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use App\Notifications\Administration\Tickets\ItTicket\ItTicketCreateNotification;
 use App\Notifications\Administration\Tickets\ItTicket\ItTicketRunningNotification;
 use App\Notifications\Administration\Tickets\ItTicket\ItTicketStatusUpdateNotification;
-use Illuminate\Support\Facades\DB;
 
 class ItTicketService
 {
@@ -89,12 +91,14 @@ class ItTicketService
 
     private function notifyTicketCreation(ItTicket $itTicket, User $creator): void
     {
-        $notifiableUsers = User::whereStatus('Active')->get();
+        $notifiableUsers = User::whereStatus('Active')->get()->filter(function ($user) {
+            return $user->hasAnyPermission(['IT Ticket Everything', 'IT Ticket Update']);
+        });
 
-        foreach ($notifiableUsers as $notifiableUser) {
-            if ($notifiableUser->hasAnyPermission(['IT Ticket Everything', 'IT Ticket Update'])) {
-                $notifiableUser->notify(new ItTicketCreateNotification($itTicket, $creator));
-            }
+        foreach ($notifiableUsers as $user) {
+            $user->notify(new ItTicketCreateNotification($itTicket, $creator));
+
+            Mail::to($user->employee->official_email)->queue(new ItTicketCreationMail($itTicket, $user));
         }
     }
 }
