@@ -14,16 +14,18 @@ class UserStatusUpdateNotifyMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 
-    public $data;
     public $user;
+    public $notifiableUser;
+    public $authUser;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($data, $user)
+    public function __construct($user, $notifiableUser, $authUser)
     {
-        $this->data = $data;
         $this->user = $user;
+        $this->notifiableUser = $notifiableUser;
+        $this->authUser = $authUser;
     }
 
     /**
@@ -33,7 +35,7 @@ class UserStatusUpdateNotifyMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: $this->data->employee->alias_name. '\'s Status Marked As '. $this->data->status .' By '. auth()->user()->alias_name,
+            subject: $this->user->name. '\'s Status Marked As '. $this->user->status .' By '. $this->authUser->employee->alias_name,
         );
     }
 
@@ -45,8 +47,8 @@ class UserStatusUpdateNotifyMail extends Mailable implements ShouldQueue
         return new Content(
             markdown: 'emails.administration.user.status_update',
             with: [
-                'data' => $this->data,
-                'user' => $this->user
+                'user' => $this->user,
+                'notifiableUser' => $this->notifiableUser
             ]
         );
     }

@@ -246,11 +246,11 @@ class UserService
                 'status' => $data['status']
             ]);
 
-            $notifiableUsers = User::whereStatus('Active')->get();
+            $notifiableUsers = User::with(['employee'])->whereStatus('Active')->get();
 
             // Send Mail to the Issue Applier by Queue
             foreach ($notifiableUsers as $notifiableUser) {
-                Mail::to($notifiableUser->employee->official_email)->queue(new UserStatusUpdateNotifyMail($user, $notifiableUser));
+                Mail::to($notifiableUser->employee->official_email)->queue(new UserStatusUpdateNotifyMail($user, $notifiableUser, auth()->user()));
             }
         }, 5);
     }
