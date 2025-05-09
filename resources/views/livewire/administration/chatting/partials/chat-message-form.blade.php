@@ -23,12 +23,24 @@
         </div>
     @endif
 
+    @if($file)
+        <div class="selected-file mb-2 p-2 bg-light rounded">
+            <div class="d-flex justify-content-between align-items-center">
+                <span><i class="ti ti-paperclip me-1"></i> {{ $file->getClientOriginalName() }}</span>
+                <button type="button" class="btn btn-sm text-danger" wire:click="$set('file', null)">
+                    <i class="ti ti-x"></i>
+                </button>
+            </div>
+        </div>
+    @endif
+
     <form wire:submit.prevent="sendMessage" class="form-send-message d-flex justify-content-between align-items-center" enctype="multipart/form-data">
         @csrf
         <textarea
             wire:model="newMessage"
             class="form-control message-input border-0 me-3 shadow-none"
             placeholder="Type your message here (Shift+Enter for new line)"
+            required
             rows="1"
             x-data="{}"
             x-on:keydown.enter="
@@ -44,7 +56,7 @@
         <div class="message-actions d-flex align-items-center">
             <label for="attach-doc" class="form-label mb-0 me-2" title="Upload File">
                 <i class="ti ti-paperclip ti-sm cursor-pointer"></i>
-                <input type="file" id="attach-doc" wire:model="file" hidden accept=".jpg,.jpeg,.png,.gif,.pdf,.doc,.docx,.xls,.xlsx,.zip" />
+                <input type="file" id="attach-doc" wire:model="file" hidden accept=".jpg,.jpeg,.png,.gif,.webp,.pdf,.xls,.xlsx,.doc,.docx,.txt,.csv,.zip,.rar" />
             </label>
             <button type="submit" class="btn btn-primary d-flex send-msg-btn">
                 <i class="ti ti-send me-md-1 me-0"></i>
@@ -52,15 +64,4 @@
             </button>
         </div>
     </form>
-
-    @if($file)
-        <div class="selected-file mt-2 p-2 bg-light rounded">
-            <div class="d-flex justify-content-between align-items-center">
-                <span><i class="ti ti-paperclip me-1"></i> {{ $file->getClientOriginalName() }}</span>
-                <button type="button" class="btn btn-sm text-danger" wire:click="$set('file', null)">
-                    <i class="ti ti-x"></i>
-                </button>
-            </div>
-        </div>
-    @endif
 </div>

@@ -1,3 +1,27 @@
+{{-- Display files from the chat_file_media table --}}
+@if ($message->files->count() > 0)
+    <div class="chat-message-files mt-2">
+        @foreach ($message->files as $file)
+            @if ($file->is_image)
+                <div class="chat-message-image mt-1" style="width: 170px;">
+                    <a href="{{ asset('storage/' . $file->file_path) }}" class="image-link" target="_blank">
+                        <img src="{{ asset('storage/' . $file->file_path) }}" class="img-responsive img-thumbnail">
+                    </a>
+                    <small class="d-block text-muted mt-1">{{ $file->original_name }}</small>
+                </div>
+            @else
+                <a href="{{ asset('storage/' . $file->file_path) }}" class="chat-message-text card h-100" target="_blank" download="{{ $file->original_name }}">
+                    <div class="card-body text-center">
+                        <div class="badge rounded p-2 bg-label-dark mb-2"><i class="ti ti-file-download ti-lg"></i></div>
+                        <p class="mb-0">{{ $file->original_name }}</p>
+                    </div>
+                </a>
+            @endif
+        @endforeach
+    </div>
+@endif
+
+{{-- Keep backward compatibility with old file field --}}
 @if (!is_null($message->file))
     @php
         $fileExtension = pathinfo($message->file, PATHINFO_EXTENSION);

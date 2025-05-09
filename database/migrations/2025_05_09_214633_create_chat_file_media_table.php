@@ -11,22 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('chattings', function (Blueprint $table) {
+        Schema::create('chat_file_media', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('sender_id')
+            $table->foreignId('chatting_id')
+                ->constrained('chattings')
+                ->onUpdate('cascade')
+                ->onDelete('cascade');
+
+            $table->foreignId('uploader_id')
                 ->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->foreignId('receiver_id')
-                ->constrained('users')
-                ->onUpdate('cascade')
-                ->onDelete('cascade');
-
-            $table->text('message')->nullable();
-
-            $table->dateTime('seen_at')->nullable();
+            $table->string('file_name');
+            $table->string('file_path');
+            $table->string('mime_type');
+            $table->string('file_extension');
+            $table->integer('file_size');
+            $table->string('original_name');
+            $table->boolean('is_image')->default(false);
 
             $table->timestamps();
             $table->softDeletes();
@@ -38,8 +42,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('chattings');
-        Schema::table("chattings", function ($table) {
+        Schema::dropIfExists('chat_file_media');
+        Schema::table("chat_file_media", function ($table) {
             $table->dropSoftDeletes();
         });
     }

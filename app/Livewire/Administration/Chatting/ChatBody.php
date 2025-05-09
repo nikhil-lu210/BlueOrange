@@ -5,6 +5,7 @@ namespace App\Livewire\Administration\Chatting;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use App\Models\Chatting\Chatting;
+use App\Models\Chatting\ChatFileMedia;
 use Illuminate\Support\Facades\Auth;
 
 class ChatBody extends Component
@@ -37,7 +38,7 @@ class ChatBody extends Component
         }
 
         if ($this->receiver) {
-            $this->messages = Chatting::with(['sender.media', 'receiver.media', 'task'])->where(function ($query) {
+            $this->messages = Chatting::with(['sender.media', 'receiver.media', 'task', 'files'])->where(function ($query) {
                     $query->where('sender_id', auth()->user()->id)
                         ->where('receiver_id', $this->receiver->id);
                 })
@@ -71,13 +72,6 @@ class ChatBody extends Component
 
     public function sendMessage()
     {
-        $filePath = null;
-
-        if ($this->file) {
-            $fileName = time() . '_' . $this->file->getClientOriginalName();
-            $filePath = $this->file->storeAs('chat_files', $fileName, 'public');
-        }
-
         // Convert newlines to <br> tags for proper display
         $formattedMessage = $this->newMessage;
         if ($formattedMessage) {
@@ -90,17 +84,47 @@ class ChatBody extends Component
             'sender_id' => auth()->user()->id,
             'receiver_id' => $this->receiver->id,
             'message' => $formattedMessage,
-            'file' => $filePath,
+            'file' => null, // We'll use the chat_file_media table instead
         ];
 
         // Add reply information if replying to a message
         if ($this->replyToMessageId && $this->replyToMessage) {
-            // You could store this in a separate table or as JSON in a column
-            // For now, we'll just add it to the message for demonstration
             $message['reply_to_id'] = $this->replyToMessageId;
         }
 
-        Chatting::create($message);
+        // Create the chat message
+        $chatMessage = Chatting::create($message);
+
+        // Process and store file if any
+        if ($this->file) {
+            // Generate a unique folder path for this chat
+            $folderPath = 'chat_files/' . auth()->id() . '/' . $this->receiver->id;
+
+            // Create a unique filename
+            $fileName = time() . '_' . $this->file->getClientOriginalName();
+
+            // Store the file
+            $filePath = $this->file->storeAs($folderPath, $fileName, 'public');
+
+            // Get file extension
+            $fileExtension = $this->file->getClientOriginalExtension();
+
+            // Check if it's an image
+            $isImage = in_array(strtolower($fileExtension), ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg']);
+
+            // Create file media record
+            ChatFileMedia::create([
+                'chatting_id' => $chatMessage->id,
+                'uploader_id' => auth()->id(),
+                'file_name' => $fileName,
+                'file_path' => $filePath,
+                'mime_type' => $this->file->getMimeType(),
+                'file_extension' => $fileExtension,
+                'file_size' => $this->file->getSize(),
+                'original_name' => $this->file->getClientOriginalName(),
+                'is_image' => $isImage,
+            ]);
+        }
 
         $this->newMessage = '';
         $this->file = null;
@@ -109,6 +133,8 @@ class ChatBody extends Component
         $this->loadMessages();
         $this->dispatch('messageSent');
     }
+
+
 
     public function render()
     {

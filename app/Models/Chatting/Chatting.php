@@ -21,7 +21,6 @@ class Chatting extends Model
         'sender_id',
         'receiver_id',
         'message',
-        'file',
         'seen_at',
         'reply_to_id'
     ];

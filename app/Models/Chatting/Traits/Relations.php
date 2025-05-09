@@ -5,6 +5,7 @@ namespace App\Models\Chatting\Traits;
 use App\Models\Task\Task;
 use App\Models\User;
 use App\Models\Chatting\Chatting;
+use App\Models\Chatting\ChatFileMedia;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -51,5 +52,13 @@ trait Relations
     public function replies(): HasMany
     {
         return $this->hasMany(Chatting::class, 'reply_to_id');
+    }
+
+    /**
+     * Get all files attached to this message
+     */
+    public function files(): HasMany
+    {
+        return $this->hasMany(ChatFileMedia::class);
     }
 }

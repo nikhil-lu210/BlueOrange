@@ -9,6 +9,8 @@
 <!-- /Sidebar Right -->
 @endsection
 
+
+
 @section('custom_script')
 <!-- Ensure jQuery is loaded first -->
 <script>
