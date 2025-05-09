@@ -74,6 +74,11 @@
                                     @if (!is_null($message->message))
                                         <small class="text-muted d-block text-right">{{ show_time($message->created_at) }}</small>
                                         <div class="chat-message-text position-relative {{ $isBeingRepliedTo ? 'border-2 border-dark' : '' }}">
+                                            @isset($message->reply_to)
+                                                <blockquote style="border-left: 2px solid #ddd; margin-left: 0; font-style: italic; background-color: #887dff; padding: 5px; padding-left: 10px;">
+                                                    {!! $message->reply_to->message !!}
+                                                </blockquote>
+                                            @endisset
                                             <p class="mb-0">{!! $message->message !!}</p>
                                         </div>
                                         @isset ($message->task)
@@ -81,16 +86,16 @@
                                                 <a href="{{ route('administration.task.show', ['task' => $message->task, 'taskid' => $message->task->taskid]) }}" target="_blank" class="text-bold text-dark">Show Task</a>
                                             </small>
                                         @else
-                                            @can ('Task Create')
-                                                <small class="float-left pt-1">
-                                                    <a href="javascript:void(0);" class="text-bold" wire:click="$set('replyToMessageId', {{ $message->id }})" title="Reply" style="margin-right: 10px;">
-                                                        <i class="ti ti-arrow-back-up fs-4"></i>
-                                                    </a>
+                                            <small class="float-left pt-1">
+                                                <a href="javascript:void(0);" class="text-bold" wire:click="$set('replyToMessageId', {{ $message->id }})" title="Reply" style="margin-right: 10px;">
+                                                    <i class="ti ti-arrow-back-up fs-4"></i>
+                                                </a>
+                                                @can ('Task Create')
                                                     <a href="{{ route('administration.task.create.chat.task', ['message' => $message]) }}" target="_blank" class="text-bold" title="Create New Task">
                                                         <i class="ti ti-brand-stackshare"></i>
                                                     </a>
-                                                </small>
-                                            @endcan
+                                                @endcan
+                                            </small>
                                         @endisset
                                     @endif
                                     @if (!is_null($message->file))
@@ -140,6 +145,11 @@
                                     @if (!is_null($message->message))
                                         <small class="text-muted d-block text-left">{{ show_time($message->created_at) }}</small>
                                         <div class="chat-message-text position-relative {{ $isBeingRepliedTo ? 'border-2 border-dark' : '' }}">
+                                            @isset($message->reply_to)
+                                                <blockquote style="border-left: 2px solid #ddd; margin-left: 0; font-style: italic; background-color: #f0f0f0; padding: 5px; padding-left: 10px;">
+                                                    {!! $message->reply_to->message !!}
+                                                </blockquote>
+                                            @endisset
                                             <p class="mb-0">{!! $message->message !!}</p>
                                         </div>
                                         @isset ($message->task)
@@ -147,16 +157,16 @@
                                                 <a href="{{ route('administration.task.show', ['task' => $message->task, 'taskid' => $message->task->taskid]) }}" target="_blank" class="text-bold text-dark">Show Task</a>
                                             </small>
                                         @else
-                                            @can ('Task Create')
-                                                <small class="float-right pt-1">
+                                            <small class="float-right pt-1">
+                                                @can ('Task Create')
                                                     <a href="{{ route('administration.task.create.chat.task', ['message' => $message]) }}" target="_blank" class="text-bold" title="Create New Task" style="margin-right: 10px;">
                                                         <i class="ti ti-brand-stackshare"></i>
                                                     </a>
-                                                    <a href="javascript:void(0);" class="text-bold" wire:click="$set('replyToMessageId', {{ $message->id }})" title="Reply">
-                                                        <i class="ti ti-arrow-back-up fs-4"></i>
-                                                    </a>
-                                                </small>
-                                            @endcan
+                                                @endcan
+                                                <a href="javascript:void(0);" class="text-bold" wire:click="$set('replyToMessageId', {{ $message->id }})" title="Reply">
+                                                    <i class="ti ti-arrow-back-up fs-4"></i>
+                                                </a>
+                                            </small>
                                         @endisset
                                     @endif
                                     @if (!is_null($message->file))

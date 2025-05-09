@@ -22,7 +22,8 @@ class Chatting extends Model
         'receiver_id',
         'message',
         'file',
-        'seen_at'
+        'seen_at',
+        'reply_to_id'
     ];
 
     protected $casts = [
