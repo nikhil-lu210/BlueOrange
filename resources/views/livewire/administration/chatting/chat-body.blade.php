@@ -131,11 +131,14 @@
                 <textarea
                     wire:model="newMessage"
                     class="form-control message-input border-0 me-3 shadow-none"
-                    placeholder="Type your message here"
+                    placeholder="Type your message here (Shift+Enter for new line)"
                     rows="1"
                     x-data="{}"
-                    x-on:keydown.enter.prevent="
-                        if (!$event.shiftKey) {
+                    x-on:keydown.enter="
+                        if ($event.shiftKey) {
+                            // Allow Shift+Enter to create a new line (default behavior)
+                        } else {
+                            // Submit form when Enter is pressed without Shift
                             $event.preventDefault();
                             $wire.sendMessage();
                         }

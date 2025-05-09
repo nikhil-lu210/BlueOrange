@@ -1,11 +1,36 @@
+<style>
+    .message-input {
+        min-height: 38px;
+        max-height: 150px;
+        overflow-y: auto;
+        resize: none;
+    }
+</style>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Auto-resize textarea
         const textarea = document.querySelector('.message-input');
         if (textarea) {
+            // Initial resize
+            textarea.style.height = 'auto';
+            textarea.style.height = (textarea.scrollHeight) + 'px';
+
+            // Resize on input
             textarea.addEventListener('input', function() {
                 this.style.height = 'auto';
                 this.style.height = (this.scrollHeight) + 'px';
+            });
+
+            // Resize when Shift+Enter is pressed
+            textarea.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && e.shiftKey) {
+                    // Wait for the new line to be added
+                    setTimeout(() => {
+                        this.style.height = 'auto';
+                        this.style.height = (this.scrollHeight) + 'px';
+                    }, 0);
+                }
             });
         }
 
@@ -54,4 +79,4 @@
             });
         });
     });
-</script>
+</style>
