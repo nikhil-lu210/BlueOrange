@@ -3,16 +3,24 @@
 namespace App\Livewire\Administration\Chatting;
 
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use App\Models\Chatting\Chatting;
 use Illuminate\Support\Facades\Auth;
 
 class ChatBody extends Component
 {
+    use WithFileUploads;
+
     public $messages;
     public $receiver;
     public $newMessage;
+    public $file;
+    public $replyToMessageId = null;
+    public $replyToMessage = null;
 
-    protected $listeners = ['messageSent' => 'loadMessages'];
+    protected $listeners = [
+        'messageSent' => 'loadMessages'
+    ];
 
     public function mount($user)
     {
@@ -27,7 +35,7 @@ class ChatBody extends Component
             toast('You are not authorised to interact with '.$this->receiver->name.'.','warning');
             return redirect()->route('administration.chatting.index');
         }
-        
+
         if ($this->receiver) {
             $this->messages = Chatting::with(['sender.media', 'receiver.media', 'task'])->where(function ($query) {
                     $query->where('sender_id', auth()->user()->id)
@@ -49,19 +57,41 @@ class ChatBody extends Component
     }
 
 
+
+    public function updatedReplyToMessageId($value)
+    {
+        if ($value) {
+            $this->replyToMessage = Chatting::find($value);
+        } else {
+            $this->replyToMessage = null;
+        }
+    }
+
+
+
     public function sendMessage()
     {
+        $filePath = null;
+
+        if ($this->file) {
+            $fileName = time() . '_' . $this->file->getClientOriginalName();
+            $filePath = $this->file->storeAs('chat_files', $fileName, 'public');
+        }
+
         Chatting::create([
             'sender_id' => auth()->user()->id,
             'receiver_id' => $this->receiver->id,
             'message' => $this->newMessage,
+            'file' => $filePath,
         ]);
 
         $this->newMessage = '';
+        $this->file = null;
+        $this->replyToMessageId = null;
+        $this->replyToMessage = null;
         $this->loadMessages();
         $this->dispatch('messageSent');
     }
-
 
     public function render()
     {
