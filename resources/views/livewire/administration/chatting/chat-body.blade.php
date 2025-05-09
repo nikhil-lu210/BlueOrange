@@ -10,12 +10,12 @@
                             <img src="{{ $receiver->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-sidebar-right" width="40">
                         @else
                             <span class="avatar-initial rounded-circle bg-dark border border-1" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-sidebar-right">
-                                {{ substr($receiver->name, 0, 1) }}
+                                {{ substr($receiver->alias_name, 0, 1) }}
                             </span>
                         @endif
                     </div>
                     <div class="chat-contact-info flex-grow-1 ms-2">
-                        <h6 class="m-0">{{ get_employee_name($receiver) }}</h6>
+                        <h6 class="m-0">{{ $receiver->alias_name }}</h6>
                         <small class="user-status text-muted">{{ $receiver->role->name }}</small>
                     </div>
                 </div>
@@ -49,7 +49,7 @@
                         if ($message->sender->hasMedia('avatar')) {
                             $imageURL = $message->sender->getFirstMediaUrl('avatar', 'thumb');
                         } else {
-                            $imageURL = "https://fakeimg.pl/300/dddddd/?text=" . $message->sender->first_name;
+                            $imageURL = "https://fakeimg.pl/300/dddddd/?text=" . $message->sender->alias_name;
                         }
 
                         // Check if this message is being replied to
@@ -92,15 +92,6 @@
                             @if ($isCurrentUser)
                                 <div class="user-avatar flex-shrink-0 ms-3">
                                     @include('livewire.administration.chatting.partials.avatar')
-                                </div>
-                            @endif
-
-                            {{-- Read Status Indicator --}}
-                            @if ($isCurrentUser)
-                                @include('livewire.administration.chatting.partials.read-status')
-                            @else
-                                <div class="ms-1">
-                                    @include('livewire.administration.chatting.partials.read-status')
                                 </div>
                             @endif
                         </div>
