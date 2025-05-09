@@ -78,11 +78,18 @@ class ChatBody extends Component
             $filePath = $this->file->storeAs('chat_files', $fileName, 'public');
         }
 
+        // Convert newlines to <br> tags for proper display
+        $formattedMessage = $this->newMessage;
+        if ($formattedMessage) {
+            // Replace newlines with <br> tags
+            $formattedMessage = nl2br($formattedMessage);
+        }
+
         // Create the new message
         $message = [
             'sender_id' => auth()->user()->id,
             'receiver_id' => $this->receiver->id,
-            'message' => $this->newMessage,
+            'message' => $formattedMessage,
             'file' => $filePath,
         ];
 

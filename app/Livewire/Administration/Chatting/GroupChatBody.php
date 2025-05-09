@@ -37,10 +37,17 @@ class GroupChatBody extends Component
 
     public function sendMessage()
     {
+        // Convert newlines to <br> tags for proper display
+        $formattedMessage = $this->newMessage;
+        if ($formattedMessage) {
+            // Replace newlines with <br> tags
+            $formattedMessage = nl2br($formattedMessage);
+        }
+
         GroupChatting::create([
             'chatting_group_id' => $this->chattingGroup->id,
             'sender_id' => auth()->user()->id,
-            'message' => $this->newMessage,
+            'message' => $formattedMessage,
         ]);
 
         $this->newMessage = '';

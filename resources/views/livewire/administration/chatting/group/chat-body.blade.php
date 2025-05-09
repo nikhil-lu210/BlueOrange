@@ -156,7 +156,22 @@
         <div class="chat-history-footer shadow-sm">
             <form wire:submit.prevent="sendMessage" class="form-send-message d-flex justify-content-between align-items-center" enctype="multipart/form-data">
                 @csrf
-                <input wire:model="newMessage" class="form-control message-input border-0 me-3 shadow-none" placeholder="Type your message here" />
+                <textarea
+                    wire:model="newMessage"
+                    class="form-control message-input border-0 me-3 shadow-none"
+                    placeholder="Type your message here (Shift+Enter for new line)"
+                    rows="1"
+                    x-data="{}"
+                    x-on:keydown.enter="
+                        if ($event.shiftKey) {
+                            // Allow Shift+Enter to create a new line (default behavior)
+                        } else {
+                            // Submit form when Enter is pressed without Shift
+                            $event.preventDefault();
+                            $wire.sendMessage();
+                        }
+                    "
+                ></textarea>
                 <div class="message-actions d-flex align-items-center">
                     {{-- <label for="attach-doc" class="form-label mb-0" title="Upload File">
                         <i class="ti ti-photo ti-sm cursor-pointer mx-3"></i>
@@ -169,5 +184,8 @@
                 </div>
             </form>
         </div>
+
+        {{-- Include Chat Scripts as blade file --}}
+        @include('livewire.administration.chatting.partials.chat-scripts')
     </div>
 </div>
