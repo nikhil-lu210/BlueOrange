@@ -59,8 +59,15 @@
                         $isCurrentUser = $message->sender_id === auth()->user()->id;
                     @endphp
 
-                    {{-- Date Divider --}}
-                    @include('livewire.administration.chatting.partials.date-divider')
+                    {{-- Date Divider if date changes --}}
+                    @if ($currentDate !== $messageDate)
+                        @php
+                            $currentDate = $messageDate;
+                        @endphp
+                        <div class="divider divider-dotted">
+                            <div class="divider-text">{{ $message->created_at->format('F j, Y') }}</div>
+                        </div>
+                    @endif
 
                     {{-- Message Item --}}
                     <li class="chat-message {{ $isCurrentUser ? 'chat-message-right' : '' }}">
