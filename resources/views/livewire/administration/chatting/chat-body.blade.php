@@ -1,5 +1,6 @@
 <div class="col app-chat-history bg-body">
     <div class="chat-history-wrapper">
+        {{-- Chat Header --}}
         <div class="chat-history-header border-bottom">
             <div class="d-flex justify-content-between align-items-center">
                 <div class="d-flex overflow-hidden align-items-center">
@@ -32,6 +33,8 @@
                 </div>
             </div>
         </div>
+
+        {{-- Chat Messages --}}
         <div class="chat-history-body bg-body" wire:keep-alive>
             <ul class="list-unstyled chat-history">
                 @php
@@ -51,171 +54,65 @@
 
                         // Check if this message is being replied to
                         $isBeingRepliedTo = $replyToMessageId == $message->id;
+
+                        // Check if message is from current user
+                        $isCurrentUser = $message->sender_id === auth()->user()->id;
                     @endphp
 
-                    @if ($currentDate !== $messageDate)
-                        @php
-                            $currentDate = $messageDate;
-                        @endphp
-                        <div class="divider divider-dotted">
-                            <div class="divider-text">{{ $message->created_at->format('F j, Y') }}</div>
-                        </div>
-                    @endif
+                    {{-- Date Divider --}}
+                    @include('livewire.administration.chatting.partials.date-divider')
 
-                    @if ($message->sender_id === auth()->user()->id)
-                        <li class="chat-message chat-message-right">
-                            <div class="d-flex overflow-hidden">
-                                @if (!is_null($message->seen_at))
-                                    <i class="ti ti-checks ti-xs me-1 text-success" data-bs-toggle="tooltip" title="Seen At: {{ show_time($message->seen_at) }}"></i>
-                                @else
-                                    <i class="ti ti-check ti-xs me-1"></i>
-                                @endif
-                                <div class="chat-message-wrapper flex-grow-1">
-                                    @if (!is_null($message->message))
-                                        <small class="text-muted d-block text-right">{{ show_time($message->created_at) }}</small>
-                                        <div class="chat-message-text position-relative {{ $isBeingRepliedTo ? 'border-2 border-dark' : '' }}">
-                                            @isset($message->reply_to)
-                                                <blockquote style="border-left: 2px solid #ddd; margin-left: 0; font-style: italic; background-color: #887dff; padding: 5px; padding-left: 10px;">
-                                                    {!! $message->reply_to->message !!}
-                                                </blockquote>
-                                            @endisset
-                                            <p class="mb-0">{!! $message->message !!}</p>
-                                        </div>
-                                        @isset ($message->task)
-                                            <small class="float-left pt-1" title="Show Related Task">
-                                                <a href="{{ route('administration.task.show', ['task' => $message->task, 'taskid' => $message->task->taskid]) }}" target="_blank" class="text-bold text-dark">Show Task</a>
-                                            </small>
-                                        @else
-                                            <small class="float-left pt-1">
-                                                <a href="javascript:void(0);" class="text-bold" wire:click="$set('replyToMessageId', {{ $message->id }})" title="Reply" style="margin-right: 10px;">
-                                                    <i class="ti ti-arrow-back-up fs-4"></i>
-                                                </a>
-                                                @can ('Task Create')
-                                                    <a href="{{ route('administration.task.create.chat.task', ['message' => $message]) }}" target="_blank" class="text-bold" title="Create New Task">
-                                                        <i class="ti ti-brand-stackshare"></i>
-                                                    </a>
-                                                @endcan
-                                            </small>
-                                        @endisset
-                                    @endif
-                                    @if (!is_null($message->file))
-                                        @php
-                                            $fileExtension = pathinfo($message->file, PATHINFO_EXTENSION);
-                                            $isImage = in_array(strtolower($fileExtension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                                            $fileName = pathinfo($message->file, PATHINFO_BASENAME);
-                                        @endphp
-
-                                        @if ($isImage)
-                                            <div class="chat-message-image mt-1" style="width: 170px;">
-                                                <a href="{{ asset('storage/' . $message->file) }}" class="image-link" target="_blank">
-                                                    <img src="{{ asset('storage/' . $message->file) }}" class="img-responsive img-thumbnail">
-                                                </a>
-                                                <small class="d-block text-muted mt-1">{{ $fileName }}</small>
-                                            </div>
-                                        @else
-                                            <a href="{{ asset('storage/' . $message->file) }}" class="chat-message-text card h-100" target="_blank">
-                                                <div class="card-body text-center">
-                                                    <div class="badge rounded p-2 bg-label-dark mb-2"><i class="ti ti-file-download ti-lg"></i></div>
-                                                    <p class="mb-0">{{ $fileName }}</p>
-                                                </div>
-                                            </a>
-                                        @endif
-                                    @endif
-                                </div>
-                                <div class="user-avatar flex-shrink-0 ms-3">
-                                    <div class="avatar avatar-sm">
-                                        @if ($key === 0 || $messages[$key - 1]->sender_id !== $message->sender_id)
-                                            <img src="{{ $imageURL }}" alt="Avatar" class="rounded-circle" />
-                                        @endif
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                    @else
-                        <li class="chat-message">
-                            <div class="d-flex overflow-hidden">
+                    {{-- Message Item --}}
+                    <li class="chat-message {{ $isCurrentUser ? 'chat-message-right' : '' }}">
+                        <div class="d-flex overflow-hidden">
+                            @if (!$isCurrentUser)
                                 <div class="user-avatar flex-shrink-0 me-3">
-                                    <div class="avatar avatar-sm">
-                                        @if ($key === 0 || $messages[$key - 1]->sender_id !== $message->sender_id)
-                                            <img src="{{ $imageURL }}" alt="Avatar" class="rounded-circle" />
-                                        @endif
-                                    </div>
+                                    @include('livewire.administration.chatting.partials.avatar')
                                 </div>
-                                <div class="chat-message-wrapper flex-grow-1">
-                                    @if (!is_null($message->message))
-                                        <small class="text-muted d-block text-left">{{ show_time($message->created_at) }}</small>
-                                        <div class="chat-message-text position-relative {{ $isBeingRepliedTo ? 'border-2 border-dark' : '' }}">
-                                            @isset($message->reply_to)
-                                                <blockquote style="border-left: 2px solid #ddd; margin-left: 0; font-style: italic; background-color: #f0f0f0; padding: 5px; padding-left: 10px;">
-                                                    {!! $message->reply_to->message !!}
-                                                </blockquote>
-                                            @endisset
-                                            <p class="mb-0">{!! $message->message !!}</p>
-                                        </div>
-                                        @isset ($message->task)
-                                            <small class="float-right pt-1" title="Show Related Task">
-                                                <a href="{{ route('administration.task.show', ['task' => $message->task, 'taskid' => $message->task->taskid]) }}" target="_blank" class="text-bold text-dark">Show Task</a>
-                                            </small>
-                                        @else
-                                            <small class="float-right pt-1">
-                                                @can ('Task Create')
-                                                    <a href="{{ route('administration.task.create.chat.task', ['message' => $message]) }}" target="_blank" class="text-bold" title="Create New Task" style="margin-right: 10px;">
-                                                        <i class="ti ti-brand-stackshare"></i>
-                                                    </a>
-                                                @endcan
-                                                <a href="javascript:void(0);" class="text-bold" wire:click="$set('replyToMessageId', {{ $message->id }})" title="Reply">
-                                                    <i class="ti ti-arrow-back-up fs-4"></i>
-                                                </a>
-                                            </small>
-                                        @endisset
-                                    @endif
-                                    @if (!is_null($message->file))
-                                        @php
-                                            $fileExtension = pathinfo($message->file, PATHINFO_EXTENSION);
-                                            $isImage = in_array(strtolower($fileExtension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                                            $fileName = pathinfo($message->file, PATHINFO_BASENAME);
-                                        @endphp
+                            @endif
 
-                                        @if ($isImage)
-                                            <div class="chat-message-image mt-1" style="width: 170px;">
-                                                <a href="{{ asset('storage/' . $message->file) }}" class="image-link" target="_blank">
-                                                    <img src="{{ asset('storage/' . $message->file) }}" class="img-responsive img-thumbnail">
-                                                </a>
-                                                <small class="d-block text-muted mt-1">{{ $fileName }}</small>
-                                            </div>
-                                        @else
-                                            <a href="{{ asset('storage/' . $message->file) }}" class="chat-message-text card h-100" target="_blank">
-                                                <div class="card-body text-center">
-                                                    <div class="badge rounded p-2 bg-label-dark mb-2"><i class="ti ti-file-download ti-lg"></i></div>
-                                                    <p class="mb-0">{{ $fileName }}</p>
-                                                </div>
-                                            </a>
-                                        @endif
-                                    @endif
-                                </div>
-                                @if (!is_null($message->seen_at))
-                                    <i class="ti ti-checks ti-xs me-1 text-success" data-bs-toggle="tooltip" title="Seen At: {{ show_time($message->seen_at) }}"></i>
-                                @else
-                                    <i class="ti ti-check ti-xs me-1"></i>
-                                @endif
+                            <div class="chat-message-wrapper flex-grow-1">
+                                {{-- Message Content --}}
+                                @include('livewire.administration.chatting.partials.message-content')
+
+                                {{-- Message Actions --}}
+                                @include('livewire.administration.chatting.partials.message-actions')
+
+                                {{-- File Attachment --}}
+                                @include('livewire.administration.chatting.partials.file-attachment')
                             </div>
-                        </li>
-                    @endif
+
+                            @if ($isCurrentUser)
+                                <div class="user-avatar flex-shrink-0 ms-3">
+                                    @include('livewire.administration.chatting.partials.avatar')
+                                </div>
+                            @endif
+
+                            {{-- Read Status Indicator --}}
+                            @if ($isCurrentUser)
+                                @include('livewire.administration.chatting.partials.read-status')
+                            @else
+                                <div class="ms-1">
+                                    @include('livewire.administration.chatting.partials.read-status')
+                                </div>
+                            @endif
+                        </div>
+                    </li>
                 @endforeach
             </ul>
         </div>
 
-        <!-- Chat message form -->
+        {{-- Chat Message Form --}}
         <div class="chat-history-footer shadow-sm">
             @if($replyToMessage)
-                <div class="reply-to-message bg-light p-2 mb-2y" style="position: absolute; bottom: 70px; left: 23px; width: auto; border-radius: 5px;">
+                <div class="reply-to-message">
                     <div class="d-flex justify-content-between align-items-center position-relative" style="padding-right: 25px;">
                         <div>
                             <small class="text-muted">
                                 Replying to
-                                <strong>{{ $replyToMessage->sender_id == auth()->id() ? 'your message' : $replyToMessage->sender->name }}</strong>
+                                <strong>{{ $replyToMessage->sender_id == auth()->id() ? 'Your Message' : $replyToMessage->sender->alias_name }}</strong>
                             </small>
-                            <p class="mb-0 text-truncate" style="max-width: 250px;">
+                            <p class="mb-0 reply-message-preview">
                                 @if(is_object($replyToMessage) && $replyToMessage->message)
                                     {!! $replyToMessage->message !!}
                                 @else
@@ -224,7 +121,7 @@
                             </p>
                             <small class="text-muted">{{ $replyToMessage->created_at->format('d M Y, h:i A') }}</small>
                         </div>
-                        <a href="javascript:void(0);" class="text-bold text-danger position-absolute" style="right: -5px; top: -5px;" wire:click="$set('replyToMessageId', null)">
+                        <a href="javascript:void(0);" class="text-bold text-danger reply-close-btn" wire:click="$set('replyToMessageId', null)">
                             <i class="ti ti-x text-bold"></i>
                         </a>
                     </div>
@@ -270,62 +167,7 @@
             @endif
         </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                // Auto-resize textarea
-                const textarea = document.querySelector('.message-input');
-                if (textarea) {
-                    textarea.addEventListener('input', function() {
-                        this.style.height = 'auto';
-                        this.style.height = (this.scrollHeight) + 'px';
-                    });
-                }
-
-                // Scroll to bottom of chat
-                const scrollToBottom = function() {
-                    const chatHistory = document.querySelector('.chat-history-body');
-                    if (chatHistory) {
-                        chatHistory.scrollTop = chatHistory.scrollHeight;
-                    }
-                };
-
-                // Scroll to input when replying
-                const scrollToInput = function() {
-                    const chatFooter = document.querySelector('.chat-history-footer');
-                    if (chatFooter) {
-                        chatFooter.scrollIntoView({ behavior: 'smooth' });
-
-                        // Focus on the input field
-                        setTimeout(() => {
-                            const textarea = document.querySelector('.message-input');
-                            if (textarea) {
-                                textarea.focus();
-                            }
-                        }, 300);
-                    }
-                };
-
-                scrollToBottom();
-
-                // Re-initialize event listeners after Livewire updates
-                document.addEventListener('livewire:load', function() {
-                    Livewire.hook('message.processed', (message, component) => {
-                        // Check if replyToMessageId was updated
-                        if (message.updateQueue && message.updateQueue.some(update => update.payload.name === 'replyToMessageId')) {
-                            if (message.updateQueue.find(update => update.payload.name === 'replyToMessageId').payload.value) {
-                                // If replying to a message, scroll to input
-                                scrollToInput();
-                            } else {
-                                // If canceling reply, scroll to bottom
-                                scrollToBottom();
-                            }
-                        } else {
-                            // For other updates, scroll to bottom
-                            scrollToBottom();
-                        }
-                    });
-                });
-            });
-        </script>
+        {{-- Include Chat Scripts as blade file --}}
+        @include('livewire.administration.chatting.partials.chat-scripts')
     </div>
 </div>

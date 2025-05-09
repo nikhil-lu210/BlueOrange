@@ -1,0 +1,57 @@
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Auto-resize textarea
+        const textarea = document.querySelector('.message-input');
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        }
+
+        // Scroll to bottom of chat
+        const scrollToBottom = function() {
+            const chatHistory = document.querySelector('.chat-history-body');
+            if (chatHistory) {
+                chatHistory.scrollTop = chatHistory.scrollHeight;
+            }
+        };
+
+        // Scroll to input when replying
+        const scrollToInput = function() {
+            const chatFooter = document.querySelector('.chat-history-footer');
+            if (chatFooter) {
+                chatFooter.scrollIntoView({ behavior: 'smooth' });
+
+                // Focus on the input field
+                setTimeout(() => {
+                    const textarea = document.querySelector('.message-input');
+                    if (textarea) {
+                        textarea.focus();
+                    }
+                }, 300);
+            }
+        };
+
+        scrollToBottom();
+
+        // Re-initialize event listeners after Livewire updates
+        document.addEventListener('livewire:load', function() {
+            Livewire.hook('message.processed', (message, component) => {
+                // Check if replyToMessageId was updated
+                if (message.updateQueue && message.updateQueue.some(update => update.payload.name === 'replyToMessageId')) {
+                    if (message.updateQueue.find(update => update.payload.name === 'replyToMessageId').payload.value) {
+                        // If replying to a message, scroll to input
+                        scrollToInput();
+                    } else {
+                        // If canceling reply, scroll to bottom
+                        scrollToBottom();
+                    }
+                } else {
+                    // For other updates, scroll to bottom
+                    scrollToBottom();
+                }
+            });
+        });
+    });
+</script>

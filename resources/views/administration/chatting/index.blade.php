@@ -11,6 +11,7 @@
     {{--  External CSS  --}}
     {{-- <!-- Page CSS --> --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/app-chat.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/chat-custom.css') }}" />
 
     @livewireStyles
 @endsection
