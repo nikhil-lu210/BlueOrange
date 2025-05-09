@@ -45,3 +45,10 @@
 .action-btn-right-margin {
     margin-right: 10px;
 }
+
+.message-input {
+    min-height: 38px;
+    max-height: 150px;
+    overflow-y: auto;
+    resize: none;
+}

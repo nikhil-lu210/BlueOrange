@@ -10,6 +10,14 @@
 @endsection
 
 @section('custom_script')
+<!-- Ensure jQuery is loaded first -->
+<script>
+    // Check if jQuery is already loaded, if not, load it
+    if (typeof jQuery === 'undefined') {
+        document.write('<script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"><\/script>');
+    }
+</script>
+
 <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
 

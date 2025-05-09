@@ -1,12 +1,3 @@
-<style>
-    .message-input {
-        min-height: 38px;
-        max-height: 150px;
-        overflow-y: auto;
-        resize: none;
-    }
-</style>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Auto-resize textarea
@@ -79,4 +70,4 @@
             });
         });
     });
-</style>
+</script>
