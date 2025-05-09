@@ -48,6 +48,9 @@
                         } else {
                             $imageURL = "https://fakeimg.pl/300/dddddd/?text=" . $message->sender->first_name;
                         }
+
+                        // Check if this message is being replied to
+                        $isBeingRepliedTo = $replyToMessageId == $message->id;
                     @endphp
 
                     @if ($currentDate !== $messageDate)
@@ -70,7 +73,7 @@
                                 <div class="chat-message-wrapper flex-grow-1">
                                     @if (!is_null($message->message))
                                         <small class="text-muted d-block text-right">{{ show_time($message->created_at) }}</small>
-                                        <div class="chat-message-text position-relative">
+                                        <div class="chat-message-text position-relative {{ $isBeingRepliedTo ? 'border-2 border-dark' : '' }}">
                                             <p class="mb-0">{!! $message->message !!}</p>
                                         </div>
                                         @isset ($message->task)
@@ -136,7 +139,7 @@
                                 <div class="chat-message-wrapper flex-grow-1">
                                     @if (!is_null($message->message))
                                         <small class="text-muted d-block text-left">{{ show_time($message->created_at) }}</small>
-                                        <div class="chat-message-text position-relative">
+                                        <div class="chat-message-text position-relative {{ $isBeingRepliedTo ? 'border-2 border-dark' : '' }}">
                                             <p class="mb-0">{!! $message->message !!}</p>
                                         </div>
                                         @isset ($message->task)
@@ -195,23 +198,27 @@
         <!-- Chat message form -->
         <div class="chat-history-footer shadow-sm">
             @if($replyToMessage)
-            <div class="reply-to-message bg-light p-2 mb-2 border-start border-3 border-primary">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <small class="text-muted">Replying to</small>
-                        <p class="mb-0 text-truncate" style="max-width: 250px;">
-                            @if(is_object($replyToMessage) && $replyToMessage->message)
-                                {{ $replyToMessage->message }}
-                            @else
-                                Message
-                            @endif
-                        </p>
+                <div class="reply-to-message bg-light p-2 mb-2y" style="position: absolute; bottom: 70px; left: 23px; width: auto; border-radius: 5px;">
+                    <div class="d-flex justify-content-between align-items-center position-relative" style="padding-right: 25px;">
+                        <div>
+                            <small class="text-muted">
+                                Replying to
+                                <strong>{{ $replyToMessage->sender_id == auth()->id() ? 'your message' : $replyToMessage->sender->name }}</strong>
+                            </small>
+                            <p class="mb-0 text-truncate" style="max-width: 250px;">
+                                @if(is_object($replyToMessage) && $replyToMessage->message)
+                                    {!! $replyToMessage->message !!}
+                                @else
+                                    Message
+                                @endif
+                            </p>
+                            <small class="text-muted">{{ $replyToMessage->created_at->format('d M Y, h:i A') }}</small>
+                        </div>
+                        <a href="javascript:void(0);" class="text-bold text-danger position-absolute" style="right: -5px; top: -5px;" wire:click="$set('replyToMessageId', null)">
+                            <i class="ti ti-x text-bold"></i>
+                        </a>
                     </div>
-                    <button type="button" class="btn btn-sm text-danger" wire:click="$set('replyToMessageId', null)">
-                        <i class="ti ti-x"></i>
-                    </button>
                 </div>
-            </div>
             @endif
 
             <form wire:submit.prevent="sendMessage" class="form-send-message d-flex justify-content-between align-items-center" enctype="multipart/form-data">
@@ -272,12 +279,40 @@
                     }
                 };
 
+                // Scroll to input when replying
+                const scrollToInput = function() {
+                    const chatFooter = document.querySelector('.chat-history-footer');
+                    if (chatFooter) {
+                        chatFooter.scrollIntoView({ behavior: 'smooth' });
+
+                        // Focus on the input field
+                        setTimeout(() => {
+                            const textarea = document.querySelector('.message-input');
+                            if (textarea) {
+                                textarea.focus();
+                            }
+                        }, 300);
+                    }
+                };
+
                 scrollToBottom();
 
                 // Re-initialize event listeners after Livewire updates
                 document.addEventListener('livewire:load', function() {
                     Livewire.hook('message.processed', (message, component) => {
-                        scrollToBottom();
+                        // Check if replyToMessageId was updated
+                        if (message.updateQueue && message.updateQueue.some(update => update.payload.name === 'replyToMessageId')) {
+                            if (message.updateQueue.find(update => update.payload.name === 'replyToMessageId').payload.value) {
+                                // If replying to a message, scroll to input
+                                scrollToInput();
+                            } else {
+                                // If canceling reply, scroll to bottom
+                                scrollToBottom();
+                            }
+                        } else {
+                            // For other updates, scroll to bottom
+                            scrollToBottom();
+                        }
                     });
                 });
             });

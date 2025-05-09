@@ -61,7 +61,7 @@ class ChatBody extends Component
     public function updatedReplyToMessageId($value)
     {
         if ($value) {
-            $this->replyToMessage = Chatting::find($value);
+            $this->replyToMessage = Chatting::with(['sender', 'receiver'])->find($value);
         } else {
             $this->replyToMessage = null;
         }
@@ -78,12 +78,22 @@ class ChatBody extends Component
             $filePath = $this->file->storeAs('chat_files', $fileName, 'public');
         }
 
-        Chatting::create([
+        // Create the new message
+        $message = [
             'sender_id' => auth()->user()->id,
             'receiver_id' => $this->receiver->id,
             'message' => $this->newMessage,
             'file' => $filePath,
-        ]);
+        ];
+
+        // Add reply information if replying to a message
+        if ($this->replyToMessageId && $this->replyToMessage) {
+            // You could store this in a separate table or as JSON in a column
+            // For now, we'll just add it to the message for demonstration
+            $message['reply_to_id'] = $this->replyToMessageId;
+        }
+
+        Chatting::create($message);
 
         $this->newMessage = '';
         $this->file = null;
