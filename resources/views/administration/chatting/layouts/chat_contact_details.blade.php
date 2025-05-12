@@ -16,7 +16,7 @@
     <div class="sidebar-body px-4 pb-4">
         <div class="my-4">
             <small class="text-muted text-uppercase">Shared Media</small>
-            <div class="shared-media-container mt-3">
+            <div class="shared-media-container mt-3" style="max-height: 40vh; overflow-y: auto;">
                 @if($sharedFiles->count() > 0)
                     <div class="d-flex flex-wrap gap-2">
                         @foreach($sharedFiles as $file)
