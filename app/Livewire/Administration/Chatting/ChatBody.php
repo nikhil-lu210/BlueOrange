@@ -109,7 +109,7 @@ class ChatBody extends Component
         // Process and store file if any
         if ($this->file) {
             // Generate a unique folder path for this chat
-            $folderPath = 'chat_files/' . auth()->id() . '/' . $this->receiver->id;
+            $folderPath = 'chat_files/' . auth()->user()->userid . '/' . $this->receiver->userid;
 
             // Create a unique filename
             $fileName = time() . '_' . $this->file->getClientOriginalName();
@@ -126,7 +126,7 @@ class ChatBody extends Component
             // Create file media record
             ChatFileMedia::create([
                 'chatting_id' => $chatMessage->id,
-                'uploader_id' => auth()->id(),
+                'uploader_id' => auth()->user()->id,
                 'file_name' => $fileName,
                 'file_path' => $filePath,
                 'mime_type' => $this->file->getMimeType(),
