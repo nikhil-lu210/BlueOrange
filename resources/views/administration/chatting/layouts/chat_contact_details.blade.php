@@ -17,23 +17,6 @@
         <div class="my-4">
             <small class="text-muted text-uppercase">Shared Media</small>
             <div class="shared-media-container mt-3">
-                @php
-                    // Get all files shared between the current user and the selected user
-                    $sharedFiles = \App\Models\Chatting\ChatFileMedia::whereHas('chatting', function($query) use ($user) {
-                        $query->where(function($q) use ($user) {
-                            $q->where('sender_id', auth()->id())
-                              ->where('receiver_id', $user->id);
-                        })->orWhere(function($q) use ($user) {
-                            $q->where('sender_id', $user->id)
-                              ->where('receiver_id', auth()->id());
-                        });
-                    })
-                    ->with('chatting')
-                    ->orderBy('created_at', 'desc')
-                    ->take(10)
-                    ->get();
-                @endphp
-
                 @if($sharedFiles->count() > 0)
                     <div class="d-flex flex-wrap gap-2">
                         @foreach($sharedFiles as $file)

@@ -9,6 +9,7 @@ use App\Models\Chatting\Chatting;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Chatting\ChatFileMedia;
 
 class ChattingController extends Controller
 {
@@ -49,6 +50,20 @@ class ChattingController extends Controller
                     ->whereNull('seen_at')
                     ->update(['seen_at' => now()]);
 
+        $sharedFiles = ChatFileMedia::whereHas('chatting', function($query) use ($user) {
+                        $query->where(function($q) use ($user) {
+                            $q->where('sender_id', auth()->id())
+                              ->where('receiver_id', $user->id);
+                        })->orWhere(function($q) use ($user) {
+                            $q->where('sender_id', $user->id)
+                              ->where('receiver_id', auth()->id());
+                        });
+                    })
+                    ->with('chatting')
+                    ->orderBy('created_at', 'desc')
+                    ->take(10)
+                    ->get();
+
         // Cache key with user-specific key for uniqueness
         $userID = auth()->id();
         $cacheKey = "unread_messages_for_user_{$userID}";
@@ -59,7 +74,8 @@ class ChattingController extends Controller
             'contacts',
             'hasChat',
             'user',
-            'activeUser'
+            'activeUser',
+            'sharedFiles'
         ]));
     }
 
