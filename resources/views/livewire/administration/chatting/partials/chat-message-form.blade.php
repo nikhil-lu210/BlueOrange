@@ -24,13 +24,15 @@
     @endif
 
     @if($file)
-        <div class="selected-file mb-2 p-2 bg-light rounded">
-            <div class="d-flex justify-content-between align-items-center">
-                <span><i class="ti ti-paperclip me-1"></i> {{ $file->getClientOriginalName() }}</span>
-                <button type="button" class="btn btn-sm text-danger" wire:click="$set('file', null)">
-                    <i class="ti ti-x"></i>
-                </button>
-            </div>
+        <div class="selected-file file-thumbnail-container">
+            <i class="ti ti-file-download fs-2 mb-2 text-primary"></i>
+            <span class="file-name text-center small fw-medium" title="{{ $file->getClientOriginalName() }}">
+                {{ show_content($file->getClientOriginalName(), 15) }}
+            </span>
+            <small class="text-muted">{{ strtoupper(pathinfo($file->getClientOriginalName(), PATHINFO_EXTENSION)) }}</small>
+            <a href="javascript:void(0);" class="text-bold text-danger" style="position: absolute; top: 0; right: 0;" wire:click="$set('file', null)">
+                <i class="ti ti-x"></i>
+            </a>
         </div>
     @endif
 
