@@ -44,16 +44,7 @@
             placeholder="Type your message here (Shift+Enter for new line)"
             required
             rows="1"
-            x-data="{}"
-            x-on:keydown.enter="
-                if ($event.shiftKey) {
-                    // Allow Shift+Enter to create a new line (default behavior)
-                } else {
-                    // Submit form when Enter is pressed without Shift
-                    $event.preventDefault();
-                    $wire.sendMessage();
-                }
-            "
+
         ></textarea>
         <div class="message-actions d-flex align-items-center">
             <label for="attach-doc" class="form-label mb-0 me-2" title="Upload File">

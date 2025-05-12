@@ -20,6 +20,9 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
+                    <button class="btn p-0 me-3 chat-history-refresh" type="button" title="Refresh Messages">
+                        <i class="ti ti-refresh"></i>
+                    </button>
                     <div class="dropdown d-flex align-self-center">
                         <button class="btn p-0" type="button" id="chat-header-actions" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="ti ti-dots-vertical"></i>
@@ -35,7 +38,7 @@
         </div>
 
         {{-- Chat Messages --}}
-        <div class="chat-history-body bg-body" wire:keep-alive>
+        <div class="chat-history-body bg-body" wire:poll.5s wire:keep-alive>
             <ul class="list-unstyled chat-history">
                 @php
                     $currentDate = null;

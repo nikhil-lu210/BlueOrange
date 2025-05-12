@@ -20,41 +20,45 @@
     }
 </script>
 
-<script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.3/dist/echo.iife.js"></script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize Pusher
-        window.Pusher = Pusher;
+        // Set up a polling mechanism for chat updates
+        const refreshInterval = setInterval(() => {
+            Livewire.dispatch('refresh');
+        }, 5000);
 
-        @if(env('PUSHER_HOST'))
-        window.Echo = new Echo({
-            broadcaster: 'pusher',
-            key: '{{ env('PUSHER_APP_KEY') }}',
-            wsHost: '{{ env('PUSHER_HOST') }}',
-            wsPort: {{ env('PUSHER_PORT') }},
-            wssPort: {{ env('PUSHER_PORT') }},
-            forceTLS: '{{ env('PUSHER_SCHEME') }}' === 'https',
-            disableStats: true,
-            enabledTransports: ['ws', 'wss']
-        });
-        @else
-        window.Echo = new Echo({
-            broadcaster: 'pusher',
-            key: '{{ env('PUSHER_APP_KEY') }}',
-            cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
-            forceTLS: true
-        });
-        @endif
+        // Function to refresh CSRF token
+        const refreshCsrfToken = function() {
+            fetch('{{ route("csrf.refresh") }}', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.token) {
+                    // Update all CSRF tokens on the page
+                    document.querySelectorAll('input[name="_token"]').forEach(input => {
+                        input.value = data.token;
+                    });
 
-        // Listen for private channel events
-        Echo.private(`chat.{{ auth()->id() }}.{{ $user->id }}`)
-            .listen('.message.sent', (e) => {
-                // Livewire will handle this through the echo:chat listener
-                console.log('New message received:', e);
-                Livewire.dispatch('messageSent');
+                    // Also update the meta tag if it exists
+                    const metaToken = document.querySelector('meta[name="csrf-token"]');
+                    if (metaToken) {
+                        metaToken.setAttribute('content', data.token);
+                    }
+
+                    console.log('CSRF token refreshed in parent window');
+                }
+            })
+            .catch(error => {
+                console.error('Error refreshing CSRF token:', error);
             });
+        };
+
+        // Refresh CSRF token periodically (every 10 minutes)
+        setInterval(refreshCsrfToken, 10 * 60 * 1000);
 
         // Scroll to bottom of chat
         const scrollToBottom = function() {
@@ -69,6 +73,21 @@
         // Scroll to bottom after Livewire updates
         Livewire.hook('message.processed', (message, component) => {
             scrollToBottom();
+        });
+
+        // Handle Livewire errors
+        document.addEventListener('livewire:error', function(event) {
+            const message = event.detail.message;
+            if (message && (message.includes('419') || message.includes('CSRF') || message.includes('token'))) {
+                console.error('CSRF token error detected in parent window, refreshing token...');
+                refreshCsrfToken();
+
+                // Notify the user
+                alert('Your session expired. We\'ve refreshed it for you. Please try again.');
+
+                // Prevent the default error behavior
+                event.preventDefault();
+            }
         });
     });
 </script>
