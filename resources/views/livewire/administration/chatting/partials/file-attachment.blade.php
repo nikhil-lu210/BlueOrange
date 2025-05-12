@@ -1,6 +1,6 @@
 {{-- Display files from the chat_file_media table --}}
 @if ($message->files->count() > 0)
-    <div class="d-flex flex-wrap gap-2 pt-1 mb-3 mt-3">
+    <div class="d-flex flex-wrap gap-2 pt-1 {{ $isCurrentUser ? 'justify-content-end' : 'justify-content-start' }}">
         @foreach ($message->files as $file)
             @if (in_array($file->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']))
                 <div class="task-image-container">

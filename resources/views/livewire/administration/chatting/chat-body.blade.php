@@ -84,9 +84,6 @@
 
                                 {{-- Message Actions --}}
                                 @include('livewire.administration.chatting.partials.message-actions')
-
-                                {{-- File Attachment --}}
-                                @include('livewire.administration.chatting.partials.file-attachment')
                             </div>
 
                             @if ($isCurrentUser)

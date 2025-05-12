@@ -19,6 +19,9 @@
         </small>
     @endif
 
+    {{-- File Attachment --}}
+    @include('livewire.administration.chatting.partials.file-attachment')
+
     <div class="chat-message-text position-relative {{ $isBeingRepliedTo ? 'border-2 border-dark' : '' }}">
         @isset($message->reply_to)
             <blockquote class="reply-quote {{ $isCurrentUser ? 'bg-primary-light' : 'bg-light' }}">
