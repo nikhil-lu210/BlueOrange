@@ -30,18 +30,18 @@
     @endphp
 
     @if ($isImage)
-        <div class="chat-message-image mt-1" style="width: 170px;">
-            <a href="{{ asset('storage/' . $message->file) }}" class="image-link" target="_blank">
-                <img src="{{ asset('storage/' . $message->file) }}" class="img-responsive img-thumbnail">
+        <div class="task-image-container">
+            <a href="{{ asset('storage/' . $message->file) }}" data-lightbox="task-images" data-title="{{ $fileName }}">
+                <img src="{{ asset('storage/' . $message->file) }}" alt="{{ $fileName}}" class="img-fluid img-thumbnail" style="width: 150px; height: 100px; object-fit: cover;">
             </a>
-            <small class="d-block text-muted mt-1">{{ $fileName }}</small>
         </div>
     @else
-        <a href="{{ asset('storage/' . $message->file) }}" class="chat-message-text card h-100" target="_blank">
-            <div class="card-body text-center">
-                <div class="badge rounded p-2 bg-label-dark mb-2"><i class="ti ti-file-download ti-lg"></i></div>
-                <p class="mb-0">{{ $fileName }}</p>
-            </div>
+        <a href="{{ asset('storage/' . $message->file) }}" target="_blank" class="file-thumbnail-container">
+            <i class="ti ti-file-download fs-2 mb-2 text-primary"></i>
+            <span class="file-name text-center small fw-medium" title="{{ $fileName }}">
+                {{ show_content($fileName, 15) }}
+            </span>
+            <small class="text-muted">{{ strtoupper(pathinfo($file->original_name, PATHINFO_EXTENSION)) }}</small>
         </a>
     @endif
 @endif
