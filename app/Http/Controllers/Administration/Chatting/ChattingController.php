@@ -61,7 +61,6 @@ class ChattingController extends Controller
                     })
                     ->with('chatting')
                     ->orderBy('created_at', 'desc')
-                    ->take(10)
                     ->get();
 
         // Cache key with user-specific key for uniqueness
