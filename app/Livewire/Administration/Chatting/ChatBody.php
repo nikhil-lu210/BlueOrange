@@ -72,9 +72,20 @@ class ChatBody extends Component
 
     public function sendMessage()
     {
+        // Check if there's a file or message content
+        if (empty($this->newMessage) && !$this->file) {
+            // Don't send empty messages
+            toast('You cannot send empty message.', 'warning');
+            return;
+        }
+
         // Convert newlines to <br> tags for proper display
         $formattedMessage = $this->newMessage;
-        if ($formattedMessage) {
+
+        // If message is empty but there's a file, set a default message
+        if (empty($formattedMessage) && $this->file) {
+            $formattedMessage = "Shared a file: " . $this->file->getClientOriginalName();
+        } else if ($formattedMessage) {
             // Replace newlines with <br> tags
             $formattedMessage = nl2br($formattedMessage);
         }
