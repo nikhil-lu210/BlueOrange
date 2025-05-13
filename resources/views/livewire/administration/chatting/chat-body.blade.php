@@ -38,7 +38,7 @@
         </div>
 
         {{-- Chat Messages --}}
-        <div class="chat-history-body bg-body" wire:poll.5s wire:keep-alive>
+        <div class="chat-history-body bg-body" wire:poll.10s wire:keep-alive>
             <ul class="list-unstyled chat-history">
                 @php
                     $currentDate = null;
