@@ -2,7 +2,7 @@
 
 namespace App\Models\Chatting;
 
-use App\Events\NewChatMessage;
+
 use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Chatting\Traits\Relations;
@@ -35,8 +35,6 @@ class Chatting extends Model
      */
     protected static function booted(): void
     {
-        static::created(function ($message) {
-            broadcast(new NewChatMessage($message))->toOthers();
-        });
+        // Removed WebSocket broadcasting
     }
 }
