@@ -3,11 +3,17 @@
 namespace App\Http\Controllers\Administration\Task;
 
 use Exception;
+use App\Models\User;
 use App\Models\Task\Task;
 use Illuminate\Http\Request;
 use App\Models\Task\TaskHistory;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Administration\Task\TaskStopMail;
+use App\Mail\Administration\Task\TaskStartMail;
+use App\Notifications\Administration\Task\TaskStopNotification;
+use App\Notifications\Administration\Task\TaskStartNotification;
 
 class TaskHistoryController extends Controller
 {
@@ -16,52 +22,76 @@ class TaskHistoryController extends Controller
      */
     public function start(Request $request, Task $task)
     {
-        // dd($request->all(), $task->id);        
+        // dd($request->all(), $task->id);
         try {
             DB::transaction(function () use ($task) {
                 // Create a new TaskHistory
-                TaskHistory::create([
+                $history = TaskHistory::create([
                     'task_id' => $task->id,
                 ]);
-    
+
                 // Check if this is the first TaskHistory for the task
                 $historyCount = $task->histories()->count();
                 if ($historyCount >= 1 && $task->status === 'Active') {
                     // Update task status to Running
                     $task->update(['status' => 'Running']);
                 }
+
+
+                // Retrieve the user IDs of the assigned users
+                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
+
+                // Add the task creator's ID to the list if it's not already included
+                if (!in_array($task->creator_id, $notifiableUserIds)) {
+                    $notifiableUserIds[] = $task->creator_id;
+                }
+
+                // Exclude the commenter's ID from the list of notifiable user IDs
+                $notifiableUserIds = array_diff($notifiableUserIds, [auth()->user()->id]);
+
+                $notifiableUsers = [];
+                // Retrieve the notifiable users based on the combined list of user IDs
+                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
+
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskStartNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    Mail::to($notifiableUser->employee->official_email)->queue(new TaskStartMail($task, $history, $notifiableUser, auth()->user()));
+                }
             });
-            
+
             toast('Task Started Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
             return redirect()->back()->with('error', 'An error occurred while starting the Task: ' . $e->getMessage());
         }
     }
-    
+
     /**
      * Update the specified resource in storage.
      */
     public function stop(Request $request, Task $task, TaskHistory $taskHistory)
     {
         // dd($request->all(), $task->id, $taskHistory->id);
-        try {      
+        try {
             DB::transaction(function () use ($request, $task, $taskHistory) {
                 $currentTime = now();
                 $endsAtTime = $currentTime->timestamp; // Use timestamp
                 $startedAtTime = $taskHistory->started_at->timestamp;
-    
+
                 // Calculate total time in seconds
                 $totalSeconds = $endsAtTime - $startedAtTime;
-    
+
                 // Convert total time to HH:MM:SS format
                 $hours = floor($totalSeconds / 3600);
                 $minutes = floor(($totalSeconds % 3600) / 60);
                 $seconds = $totalSeconds % 60;
-    
+
                 $formattedTotalTime = sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
                 // dd($formattedTotalTime);
-                
+
                 $taskHistory->update([
                     'ends_at' => now(),
                     'total_worked' => $formattedTotalTime,
@@ -79,6 +109,30 @@ class TaskHistoryController extends Controller
                         $directory = 'tasks/' . $task->taskid .'/task_history/' . auth()->user()->userid;
                         store_file_media($file, $taskHistory, $directory);
                     }
+                }
+
+
+                // Retrieve the user IDs of the assigned users
+                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
+
+                // Add the task creator's ID to the list if it's not already included
+                if (!in_array($task->creator_id, $notifiableUserIds)) {
+                    $notifiableUserIds[] = $task->creator_id;
+                }
+
+                // Exclude the commenter's ID from the list of notifiable user IDs
+                $notifiableUserIds = array_diff($notifiableUserIds, [auth()->user()->id]);
+
+                $notifiableUsers = [];
+                // Retrieve the notifiable users based on the combined list of user IDs
+                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
+
+                foreach ($notifiableUsers as $notifiableUser) {
+                    // Send Notification to System
+                    $notifiableUser->notify(new TaskStopNotification($task, auth()->user()));
+
+                    // Send Mail to the notifiableUser's email
+                    Mail::to($notifiableUser->employee->official_email)->queue(new TaskStopMail($task, $taskHistory, $notifiableUser, auth()->user()));
                 }
             });
 
