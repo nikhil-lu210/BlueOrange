@@ -37,29 +37,9 @@ class TaskHistoryController extends Controller
                     $task->update(['status' => 'Running']);
                 }
 
-
-                // Retrieve the user IDs of the assigned users
-                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
-
-                // Add the task creator's ID to the list if it's not already included
-                if (!in_array($task->creator_id, $notifiableUserIds)) {
-                    $notifiableUserIds[] = $task->creator_id;
-                }
-
-                // Exclude the commenter's ID from the list of notifiable user IDs
-                $notifiableUserIds = array_diff($notifiableUserIds, [auth()->user()->id]);
-
-                $notifiableUsers = [];
-                // Retrieve the notifiable users based on the combined list of user IDs
-                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-
-                foreach ($notifiableUsers as $notifiableUser) {
-                    // Send Notification to System
-                    $notifiableUser->notify(new TaskStartNotification($task, auth()->user()));
-
-                    // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->employee->official_email)->queue(new TaskStartMail($task, $history, $notifiableUser, auth()->user()));
-                }
+                $this->notifyTaskUsers($task, new TaskStartNotification($task, auth()->user()), function ($user) use ($task, $history) {
+                    Mail::to($user->employee->official_email)->queue(new TaskStartMail($task, $history, $user, auth()->user()));
+                });
             });
 
             toast('Task Started Successfully.', 'success');
@@ -112,28 +92,9 @@ class TaskHistoryController extends Controller
                 }
 
 
-                // Retrieve the user IDs of the assigned users
-                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
-
-                // Add the task creator's ID to the list if it's not already included
-                if (!in_array($task->creator_id, $notifiableUserIds)) {
-                    $notifiableUserIds[] = $task->creator_id;
-                }
-
-                // Exclude the commenter's ID from the list of notifiable user IDs
-                $notifiableUserIds = array_diff($notifiableUserIds, [auth()->user()->id]);
-
-                $notifiableUsers = [];
-                // Retrieve the notifiable users based on the combined list of user IDs
-                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-
-                foreach ($notifiableUsers as $notifiableUser) {
-                    // Send Notification to System
-                    $notifiableUser->notify(new TaskStopNotification($task, auth()->user()));
-
-                    // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->employee->official_email)->queue(new TaskStopMail($task, $taskHistory, $notifiableUser, auth()->user()));
-                }
+                $this->notifyTaskUsers($task, new TaskStopNotification($task, auth()->user()), function ($user) use ($task, $taskHistory) {
+                    Mail::to($user->employee->official_email)->queue(new TaskStopMail($task, $taskHistory, $user, auth()->user()));
+                });
             });
 
             toast('Task stopped successfully.', 'success');
@@ -151,5 +112,32 @@ class TaskHistoryController extends Controller
         $histories = TaskHistory::with(['task', 'user', 'files'])->whereTaskId($task->id)->orderBy('created_at', 'desc')->get();
         // dd($histories);
         return view('administration.task.history', compact(['task', 'histories']));
+    }
+
+
+    /**
+     * Notify assigned users and creator (excluding current user).
+     */
+    private function notifyTaskUsers(Task $task, $notification, callable $mailCallback): void
+    {
+        $assignedUserIds = $task->users()->pluck('users.id')->toArray();
+
+        if (!in_array($task->creator_id, $assignedUserIds)) {
+            $assignedUserIds[] = $task->creator_id;
+        }
+
+        $notifiableUserIds = array_diff($assignedUserIds, [auth()->id()]);
+
+        if (empty($notifiableUserIds)) return;
+
+        $notifiableUsers = User::with('employee')
+            ->select('id', 'name', 'email')
+            ->whereIn('id', $notifiableUserIds)
+            ->get();
+
+        foreach ($notifiableUsers as $user) {
+            $user->notify($notification);
+            $mailCallback($user);
+        }
     }
 }
