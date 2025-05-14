@@ -5,7 +5,7 @@
 
 /**
  * A helper file for Laravel, to provide autocomplete information to your IDE
- * Generated for Laravel 10.48.28.
+ * Generated for Laravel 10.48.29.
  *
  * This file should not be included in your code, only analyzed by your IDE!
  *
@@ -19169,6 +19169,15 @@ namespace Livewire {
          * 
          *
          * @static 
+         */        public static function findSynth($keyOrTarget, $component)
+        {
+                        /** @var \Livewire\LivewireManager $instance */
+                        return $instance->findSynth($keyOrTarget, $component);
+        }
+                    /**
+         * 
+         *
+         * @static 
          */        public static function update($snapshot, $diff, $calls)
         {
                         /** @var \Livewire\LivewireManager $instance */
@@ -23985,6 +23994,11 @@ namespace  {
     }
 
 
+namespace Facades\Livewire\Features\SupportFileUploads {
+    /**
+     * @mixin \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl     */
+    class GenerateSignedUploadUrl extends \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl {}
+}
 
 
 
