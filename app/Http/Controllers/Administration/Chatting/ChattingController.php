@@ -82,26 +82,58 @@ class ChattingController extends Controller
     /**
      * Fetch unread messages for browser notification
      */
-    public function fetchUnreadMessagesForBrowser()
+    public function fetchUnreadMessagesForBrowser(Request $request)
     {
         $userId = auth()->id();
+
+        // Get the current chat user ID from the request if available
+        $currentChatUserId = $request->input('current_chat_user_id', null);
+
+        // For debugging - check if we should bypass cache
+        $bypassCache = $request->input('bypass_cache', false);
 
         // Cache key with user-specific key for uniqueness
         $cacheKey = "unread_messages_for_user_{$userId}";
 
-        // Cache expiration time in seconds (e.g., 5 minutes)
-        $cacheExpiration = 300; // 5 minutes
+        // Clear cache if requested
+        if ($bypassCache) {
+            Cache::forget($cacheKey);
+        }
 
-        // Try fetching from the cache, or if not found, retrieve from the database and cache it
-        $unreadMessages = Cache::remember($cacheKey, $cacheExpiration, function () use ($userId) {
-            return Chatting::where('receiver_id', $userId)
-                ->whereNull('seen_at')
-                ->orderBy('created_at', 'desc')
-                ->with('sender.employee') // Eager load sender
-                ->get();
-        });
+        // Get unread messages directly from the database
+        $query = Chatting::where('receiver_id', $userId)
+            ->whereNull('seen_at')
+            ->orderBy('created_at', 'desc')
+            ->with('sender.employee'); // Eager load sender
 
-        return response()->json($unreadMessages);
+        // If we're on a specific chat page, exclude messages from that user
+        if ($currentChatUserId) {
+            $query->where('sender_id', '!=', $currentChatUserId);
+        }
+
+        $unreadMessages = $query->get();
+
+        // For debugging - add total count of all unread messages
+        $totalUnreadCount = Chatting::where('receiver_id', $userId)
+            ->whereNull('seen_at')
+            ->count();
+
+        // Store in cache for future use
+        Cache::put($cacheKey, $unreadMessages, now()->addMinutes(5));
+
+        // Add debug info to the response
+        $response = [
+            'messages' => $unreadMessages,
+            'debug' => [
+                'total_unread_count' => $totalUnreadCount,
+                'user_id' => $userId,
+                'current_chat_user_id' => $currentChatUserId,
+                'bypass_cache' => $bypassCache,
+                'timestamp' => now()->toDateTimeString()
+            ]
+        ];
+
+        return response()->json($response);
     }
 
 
@@ -111,9 +143,45 @@ class ChattingController extends Controller
      */
     public function readBrowserNotification($id, $userid)
     {
-        $user = User::whereId($id)->whereUserid($userid)->firstOrFail();
+        try {
+            // Find the user by ID and userid
+            $user = User::where('id', $id)
+                ->where('userid', $userid)
+                ->firstOrFail();
 
-        return redirect()->route('administration.chatting.show', ['user' => $user, 'userid' => $user->userid]);
+            // Log for debugging
+            \Log::info('Chat notification clicked', [
+                'user_id' => $id,
+                'userid' => $userid,
+                'found_user' => $user->toArray()
+            ]);
+
+            // Mark messages from this user as seen
+            Chatting::where('sender_id', $user->id)
+                ->where('receiver_id', auth()->id())
+                ->whereNull('seen_at')
+                ->update(['seen_at' => now()]);
+
+            // Clear the cache for unread messages
+            $cacheKey = "unread_messages_for_user_" . auth()->id();
+            Cache::forget($cacheKey);
+
+            // Redirect to the chat page with the correct user
+            return redirect()->route('administration.chatting.show', [
+                'user' => $user,
+                'userid' => $user->userid
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error in readBrowserNotification', [
+                'error' => $e->getMessage(),
+                'user_id' => $id,
+                'userid' => $userid
+            ]);
+
+            // Fallback to the chat index page if there's an error
+            return redirect()->route('administration.chatting.index')
+                ->with('error', 'Could not open the chat. Error: ' . $e->getMessage());
+        }
     }
 
 
@@ -164,5 +232,51 @@ class ChattingController extends Controller
         })->sortBy('name');
 
         return $chatContacts;
+    }
+
+    /**
+     * Send a test message to the current user for notification testing
+     */
+    public function sendTestMessage(Request $request)
+    {
+        try {
+            // Find a user to send a message from (first active user that's not the current user)
+            $sender = User::where('id', '!=', auth()->id())
+                ->where('status', 'Active')
+                ->first();
+
+            if (!$sender) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No other active users found to send a test message'
+                ], 400);
+            }
+
+            // Create a test message
+            $message = Chatting::create([
+                'sender_id' => $sender->id,
+                'receiver_id' => auth()->id(),
+                'message' => 'This is a test message for notification testing. Time: ' . now()->format('Y-m-d H:i:s'),
+                'seen_at' => null
+            ]);
+
+            // Load the sender relationship
+            $message->load('sender');
+
+            // Clear the cache for unread messages
+            $cacheKey = "unread_messages_for_user_" . auth()->id();
+            Cache::forget($cacheKey);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Test message sent successfully',
+                'data' => $message
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error sending test message: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }

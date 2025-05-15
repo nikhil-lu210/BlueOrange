@@ -18,4 +18,5 @@ Route::controller(ChattingController::class)->prefix('chatting')->name('chatting
 Route::controller(ChattingController::class)->prefix('chatting')->name('chatting.')->group(function () {
     Route::get('/one-to-one/browser-unread-messages', 'fetchUnreadMessagesForBrowser')->name('browser.fetch_unread');
     Route::get('/one-to-one/read-browser-notification-message/{id}/{userid}', 'readBrowserNotification')->name('browser.read.message');
+    Route::post('/one-to-one/send-test-message', 'sendTestMessage')->name('send_test_message');
 });
