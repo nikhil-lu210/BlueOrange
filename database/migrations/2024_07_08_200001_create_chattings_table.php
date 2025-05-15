@@ -24,7 +24,7 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->text('message')->nullable();
+            $table->text('message');
 
             $table->dateTime('seen_at')->nullable();
 
