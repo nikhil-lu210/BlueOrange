@@ -12,6 +12,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Chatting\ChattingGroup;
 use App\Models\Chatting\GroupChatting;
+use App\Models\Chatting\GroupChatFileMedia;
 
 class GroupChattingController extends Controller
 {
@@ -43,6 +44,14 @@ class GroupChattingController extends Controller
 
         $activeGroup = $group->id;
 
+        // Get shared files for the group
+        $sharedFiles = GroupChatFileMedia::whereHas('group_chatting', function($query) use ($group) {
+                        $query->where('chatting_group_id', $group->id);
+                    })
+                    ->with('group_chatting')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
         $addUsersRoles = Role::select(['id', 'name'])
                     ->with([
                         'users' => function ($user) use ($group) {
@@ -67,7 +76,7 @@ class GroupChattingController extends Controller
         $cacheKey = "unread_group_messages_for_user_{$userId}";
         Cache::forget($cacheKey);
 
-        return view('administration.chatting.group.show', compact(['group', 'roles', 'chatGroups', 'hasChat', 'activeGroup', 'addUsersRoles']));
+        return view('administration.chatting.group.show', compact(['group', 'roles', 'chatGroups', 'hasChat', 'activeGroup', 'addUsersRoles', 'sharedFiles']));
     }
 
 

@@ -12,11 +12,40 @@
     </div>
     <div class="sidebar-body px-4 pb-4" style="overflow-y: scroll;">
         <div class="my-4">
+            <small class="text-muted text-uppercase">Shared Media</small>
+            <div class="shared-media-container mt-3" style="max-height: 40vh; overflow-y: auto;">
+                @if($sharedFiles->count() > 0)
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach($sharedFiles as $file)
+                            @if($file->is_image)
+                                <div class="chat-message-image">
+                                    <a href="{{ asset('storage/' . $file->file_path) }}" data-lightbox="shared-group-images" data-title="{{ $file->original_name }}">
+                                        <img src="{{ asset('storage/' . $file->file_path) }}" alt="{{ $file->original_name }}" class="img-fluid img-thumbnail" style="width: 120px; height: 90px; object-fit: cover;">
+                                    </a>
+                                </div>
+                            @else
+                                <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="file-thumbnail-container" style="width: 120px; height: 90px; object-fit: cover;">
+                                    <i class="ti ti-file-download fs-2 mb-2 text-primary"></i>
+                                    <span class="file-name text-center small fw-medium" title="{{ $file->original_name }}">
+                                        {{ show_content($file->original_name, 15) }}
+                                    </span>
+                                    <small class="text-muted">{{ strtoupper($file->file_extension) }}</small>
+                                </a>
+                            @endif
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-muted small">No shared files yet</p>
+                @endif
+            </div>
+        </div>
+
+        <div class="my-4">
             <div class="d-flex justify-content-between align-items-center">
                 <small class="text-muted text-uppercase">User List</small>
 
                 @canany(['Group Chatting Create', 'Group Chatting Delete'])
-                    @if ($group->creator_id == auth()->user()->id) 
+                    @if ($group->creator_id == auth()->user()->id)
                         <div class="d-inline-block">
                             @can ('Group Chatting Delete')
                                 <a href="{{ route('administration.chatting.group.destroy', ['group' => $group, 'groupid' => $group->groupid]) }}" class="btn btn-danger btn-sm btn-icon waves-effect waves-light confirm-danger" title="Delete Group?">
@@ -41,9 +70,9 @@
                             @foreach ($group->group_users as $user)
                                 <li class="list-group-item d-flex justify-content-between align-items-center" style="padding: 5px 10px;">
                                     <span class="text-truncate">{{ get_employee_name($user) }}</span>
-                                    @if ($group->creator_id != $user->id) 
-                                        @if ($group->creator_id == auth()->user()->id) 
-                                            @can ('Group Chatting Delete') 
+                                    @if ($group->creator_id != $user->id)
+                                        @if ($group->creator_id == auth()->user()->id)
+                                            @can ('Group Chatting Delete')
                                                 <a href="{{ route('administration.chatting.group.remove.user', ['group' => $group, 'groupid' => $group->groupid, 'user' => $user]) }}" class="text-bold text-danger confirm-danger" title="Remove {{ $user->name }}?">
                                                     <i class="ti ti-x"></i>
                                                 </a>
