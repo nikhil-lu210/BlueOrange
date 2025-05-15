@@ -18,8 +18,8 @@
                     <div class="d-flex flex-wrap gap-2">
                         @foreach($sharedFiles as $file)
                             @if($file->is_image)
-                                <div class="chat-message-image">
-                                    <a href="{{ asset('storage/' . $file->file_path) }}" data-lightbox="shared-group-images" data-title="{{ $file->original_name }}">
+                                <div class="task-image-container">
+                                    <a href="{{ asset('storage/' . $file->file_path) }}" data-lightbox="shared-images" data-title="{{ $file->original_name }}">
                                         <img src="{{ asset('storage/' . $file->file_path) }}" alt="{{ $file->original_name }}" class="img-fluid img-thumbnail" style="width: 120px; height: 90px; object-fit: cover;">
                                     </a>
                                 </div>
@@ -27,7 +27,7 @@
                                 <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="file-thumbnail-container" style="width: 120px; height: 90px; object-fit: cover;">
                                     <i class="ti ti-file-download fs-2 mb-2 text-primary"></i>
                                     <span class="file-name text-center small fw-medium" title="{{ $file->original_name }}">
-                                        {{ show_content($file->original_name, 15) }}
+                                        {{ show_content($file->original_name, 10) }}
                                     </span>
                                     <small class="text-muted">{{ strtoupper($file->file_extension) }}</small>
                                 </a>
@@ -35,7 +35,7 @@
                         @endforeach
                     </div>
                 @else
-                    <p class="text-muted small">No shared files yet</p>
+                    <p class="text-muted small">No shared media found</p>
                 @endif
             </div>
         </div>
