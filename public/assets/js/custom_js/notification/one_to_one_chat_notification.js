@@ -154,7 +154,7 @@ $(document).ready(function () {
                                     // Get the base URL for the chat page (without using the notification redirect)
                                     // This ensures we go directly to the chat page
                                     const baseUrl = window.location.origin;
-                                    const chatUrl = baseUrl + '/chatting/one-to-one/' + message.sender.id + '/' + message.sender.userid;
+                                    const chatUrl = baseUrl + '/chatting/one-to-one/read-browser-notification-message/' + message.sender.id + '/' + message.sender.userid;
 
                                     console.log("Notification clicked, opening direct chat URL:", chatUrl);
 
@@ -261,7 +261,7 @@ $(document).ready(function () {
                                 // Set up click handler
                                 notification.onclick = function() {
                                     const baseUrl = window.location.origin;
-                                    const chatUrl = baseUrl + '/chatting/one-to-one/' + senderId + '/' + senderUserid;
+                                    const chatUrl = baseUrl + '/chatting/one-to-one/read-browser-notification-message/' + senderId + '/' + senderUserid;
                                     console.log("Test notification clicked, opening URL:", chatUrl);
                                     window.open(chatUrl, "_blank");
                                 };
