@@ -25,7 +25,8 @@ class AnnouncementStoreRequest extends FormRequest
             'recipients' => ['nullable', 'array'],
             'recipients.*' => ['integer', 'exists:users,id'],
             'title' => ['required', 'string'],
-            'description' => ['required', 'string', 'min:20']
+            'description' => ['required', 'string', 'min:20'],
+            'files.*' => ['nullable', 'max:5000'] // 'mimes:jpeg,jpg,png,pdf,zip,csv,sql',
         ];
     }
 
@@ -42,7 +43,9 @@ class AnnouncementStoreRequest extends FormRequest
             'recipients.*.exists' => 'One or more recipients do not exist.',
             'title.required' => 'The title is required.',
             'description.required' => 'The description is required.',
-            'description.min' => 'The description must be at least 20 characters long.'
+            'description.min' => 'The description must be at least 20 characters long.',
+            // 'files.*.mimes' => 'Each file must be one of: jpeg, jpg, png, pdf, zip, csv, sql.',
+            'files.*.max' => 'Each file may not be greater than 5000 KB in size.'
         ];
     }
 }

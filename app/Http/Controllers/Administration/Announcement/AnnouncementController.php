@@ -99,6 +99,14 @@ class AnnouncementController extends Controller
                     'description' => $request->description,
                 ]);
 
+                // Store Task Files
+                if ($request->hasFile('files')) {
+                    foreach ($request->file('files') as $file) {
+                        $directory = 'announcements/' . $announcement->id;
+                        store_file_media($file, $announcement, $directory);
+                    }
+                }
+
                 $notifiableUsers = [];
                 if (is_null($announcement->recipients)) {
                     $notifiableUsers = User::select(['id', 'name', 'email'])->where('id', '!=', $announcement->announcer_id)->get();

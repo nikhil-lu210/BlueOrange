@@ -48,17 +48,17 @@
                             <h4 class="mb-0">{{ $announcement->title }}</h4>
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Announcer" data-bs-placement="bottom">
-                                    <i class="ti ti-crown"></i> 
+                                    <i class="ti ti-crown"></i>
                                     {{ $announcement->announcer->name }}
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Announcement Date & Time">
-                                    <i class="ti ti-calendar"></i> 
+                                    <i class="ti ti-calendar"></i>
                                     {{ show_date_time($announcement->created_at) }}
                                 </li>
                             </ul>
-                            @if (!is_null($announcement->recipients)) 
+                            @if (!is_null($announcement->recipients))
                                 <ul class="list-inline mb-0 mt-3 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-1">
-                                    @foreach ($announcement->recipients as $recipient) 
+                                    @foreach ($announcement->recipients as $recipient)
                                         <li class="list-inline-item d-flex gap-1 badge bg-black">
                                             {{ show_user_data($recipient, 'name') }}
                                         </li>
@@ -66,7 +66,7 @@
                                 </ul>
                             @endif
                         </div>
-                        @can ('Announcement Update') 
+                        @can ('Announcement Update')
                             <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-dark btn-icon rounded-pill" data-bs-toggle="tooltip" title="Edit Announcement">
                                 <i class="ti ti-pencil"></i>
                             </a>
@@ -82,7 +82,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Announcement Details</h5>
-    
+
                 <div class="card-header-elements ms-auto">
                     <button type="button" class="btn btn-primary btn-sm btn-icon rounded-pill" title="Seen & Read By" data-bs-toggle="modal" data-bs-target="#showAnnouncementReadersModal">
                         <span class="ti ti-eye"></span>
@@ -101,7 +101,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Announcement Comments</h5>
-    
+
                 <div class="card-header-elements ms-auto">
                     <button type="button" class="btn btn-sm btn-primary" title="Create Comment" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
                         <span class="tf-icon ti ti-message-circle ti-xs me-1"></span>
@@ -134,12 +134,12 @@
                         </form>
                     </div>
                 </div>
-                
+
                 <div class="row">
                     <div class="col-md-12 comments">
                         <table class="table">
                             <tbody>
-                                @foreach ($announcement->comments as $comment) 
+                                @foreach ($announcement->comments as $comment)
                                     <tr class="border-0 border-bottom-0">
                                         <td class="border-0 border-bottom-0">
                                             <div class="d-flex justify-content-between align-items-center user-name">
