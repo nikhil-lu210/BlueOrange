@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Chatting\ChattingGroup;
@@ -167,16 +168,9 @@ class GroupChattingController extends Controller
             $cacheKey = "unread_group_messages_for_user_{$userId}";
             Cache::forget($cacheKey);
 
-            // Log for debugging
-            \Log::info('Group chat notification clicked', [
-                'group_id' => $groupId,
-                'user_id' => $userId,
-                'messages_marked_read' => $unreadMessages->count()
-            ]);
-
             return redirect()->route('administration.chatting.group.show', ['group' => $group, 'groupid' => $group->groupid]);
-        } catch (\Exception $e) {
-            \Log::error('Error in group readBrowserNotification', [
+        } catch (Exception $e) {
+            Log::error('Error in group readBrowserNotification', [
                 'error' => $e->getMessage(),
                 'group_id' => $groupId
             ]);
