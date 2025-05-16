@@ -109,9 +109,9 @@ class AnnouncementController extends Controller
 
                 $notifiableUsers = [];
                 if (is_null($announcement->recipients)) {
-                    $notifiableUsers = User::select(['id', 'name', 'email'])->where('id', '!=', $announcement->announcer_id)->get();
+                    $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->where('id', '!=', $announcement->announcer_id)->get();
                 } else {
-                    $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $announcement->recipients)->get();
+                    $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $announcement->recipients)->get();
                 }
 
                 foreach ($notifiableUsers as $notifiableUser) {
