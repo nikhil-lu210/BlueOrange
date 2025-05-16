@@ -9,6 +9,7 @@ use App\Models\Chatting\Chatting;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
+use App\Models\Chatting\ChatFileMedia;
 
 class ChattingController extends Controller
 {
@@ -49,6 +50,19 @@ class ChattingController extends Controller
                     ->whereNull('seen_at')
                     ->update(['seen_at' => now()]);
 
+        $sharedFiles = ChatFileMedia::whereHas('chatting', function($query) use ($user) {
+                        $query->where(function($q) use ($user) {
+                            $q->where('sender_id', auth()->id())
+                              ->where('receiver_id', $user->id);
+                        })->orWhere(function($q) use ($user) {
+                            $q->where('sender_id', $user->id)
+                              ->where('receiver_id', auth()->id());
+                        });
+                    })
+                    ->with('chatting')
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+
         // Cache key with user-specific key for uniqueness
         $userID = auth()->id();
         $cacheKey = "unread_messages_for_user_{$userID}";
@@ -59,7 +73,8 @@ class ChattingController extends Controller
             'contacts',
             'hasChat',
             'user',
-            'activeUser'
+            'activeUser',
+            'sharedFiles'
         ]));
     }
 
@@ -67,26 +82,58 @@ class ChattingController extends Controller
     /**
      * Fetch unread messages for browser notification
      */
-    public function fetchUnreadMessagesForBrowser()
+    public function fetchUnreadMessagesForBrowser(Request $request)
     {
         $userId = auth()->id();
+
+        // Get the current chat user ID from the request if available
+        $currentChatUserId = $request->input('current_chat_user_id', null);
+
+        // For debugging - check if we should bypass cache
+        $bypassCache = $request->input('bypass_cache', false);
 
         // Cache key with user-specific key for uniqueness
         $cacheKey = "unread_messages_for_user_{$userId}";
 
-        // Cache expiration time in seconds (e.g., 5 minutes)
-        $cacheExpiration = 300; // 5 minutes
+        // Clear cache if requested
+        if ($bypassCache) {
+            Cache::forget($cacheKey);
+        }
 
-        // Try fetching from the cache, or if not found, retrieve from the database and cache it
-        $unreadMessages = Cache::remember($cacheKey, $cacheExpiration, function () use ($userId) {
-            return Chatting::where('receiver_id', $userId)
-                ->whereNull('seen_at')
-                ->orderBy('created_at', 'desc')
-                ->with('sender.employee') // Eager load sender
-                ->get();
-        });
+        // Get unread messages directly from the database
+        $query = Chatting::where('receiver_id', $userId)
+            ->whereNull('seen_at')
+            ->orderBy('created_at', 'desc')
+            ->with('sender.employee'); // Eager load sender
 
-        return response()->json($unreadMessages);
+        // If we're on a specific chat page, exclude messages from that user
+        if ($currentChatUserId) {
+            $query->where('sender_id', '!=', $currentChatUserId);
+        }
+
+        $unreadMessages = $query->get();
+
+        // For debugging - add total count of all unread messages
+        $totalUnreadCount = Chatting::where('receiver_id', $userId)
+            ->whereNull('seen_at')
+            ->count();
+
+        // Store in cache for future use
+        Cache::put($cacheKey, $unreadMessages, now()->addMinutes(5));
+
+        // Add debug info to the response
+        $response = [
+            'messages' => $unreadMessages,
+            'debug' => [
+                'total_unread_count' => $totalUnreadCount,
+                'user_id' => $userId,
+                'current_chat_user_id' => $currentChatUserId,
+                'bypass_cache' => $bypassCache,
+                'timestamp' => now()->toDateTimeString()
+            ]
+        ];
+
+        return response()->json($response);
     }
 
 
@@ -96,9 +143,45 @@ class ChattingController extends Controller
      */
     public function readBrowserNotification($id, $userid)
     {
-        $user = User::whereId($id)->whereUserid($userid)->firstOrFail();
+        try {
+            // Find the user by ID and userid
+            $user = User::where('id', $id)
+                ->where('userid', $userid)
+                ->firstOrFail();
 
-        return redirect()->route('administration.chatting.show', ['user' => $user, 'userid' => $user->userid]);
+            // Log for debugging
+            \Log::info('Chat notification clicked', [
+                'user_id' => $id,
+                'userid' => $userid,
+                'found_user' => $user->toArray()
+            ]);
+
+            // Mark messages from this user as seen
+            Chatting::where('sender_id', $user->id)
+                ->where('receiver_id', auth()->id())
+                ->whereNull('seen_at')
+                ->update(['seen_at' => now()]);
+
+            // Clear the cache for unread messages
+            $cacheKey = "unread_messages_for_user_" . auth()->id();
+            Cache::forget($cacheKey);
+
+            // Redirect to the chat page with the correct user
+            return redirect()->route('administration.chatting.show', [
+                'user' => $user,
+                'userid' => $user->userid
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error in readBrowserNotification', [
+                'error' => $e->getMessage(),
+                'user_id' => $id,
+                'userid' => $userid
+            ]);
+
+            // Fallback to the chat index page if there's an error
+            return redirect()->route('administration.chatting.index')
+                ->with('error', 'Could not open the chat. Error: ' . $e->getMessage());
+        }
     }
 
 

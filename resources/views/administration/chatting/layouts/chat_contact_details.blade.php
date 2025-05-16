@@ -15,25 +15,32 @@
     </div>
     <div class="sidebar-body px-4 pb-4">
         <div class="my-4">
-            <small class="text-muted text-uppercase">Personal Information</small>
-            <ul class="list-unstyled d-grid gap-2 mt-3">
-                <li class="d-flex align-items-center">
-                    <i class="ti ti-mail ti-sm"></i>
-                    <span class="align-middle ms-2">{{ optional($user->employee)->official_email }}</span>
-                </li>
-                <li class="d-flex align-items-center">
-                    <i class="ti ti-phone-call ti-sm"></i>
-                    <span class="align-middle ms-2">+1(123) 456 - 7890</span>
-                </li>
-                <li class="d-flex align-items-center">
-                    <i class="ti ti-clock ti-sm"></i>
-                    <span class="align-middle ms-2">
-                        {{ show_time(optional($user->current_shift)->start_time) }}
-                        <small>to</small>
-                        {{ show_time(optional($user->current_shift)->end_time) }}
-                    </span>
-                </li>
-            </ul>
+            <small class="text-muted text-uppercase">Shared Media</small>
+            <div class="shared-media-container mt-3" style="max-height: 40vh; overflow-y: auto;">
+                @if($sharedFiles->count() > 0)
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach($sharedFiles as $file)
+                            @if($file->is_image)
+                                <div class="task-image-container">
+                                    <a href="{{ asset('storage/' . $file->file_path) }}" data-lightbox="shared-images" data-title="{{ $file->original_name }}">
+                                        <img src="{{ asset('storage/' . $file->file_path) }}" alt="{{ $file->original_name }}" class="img-fluid img-thumbnail" style="width: 120px; height: 90px; object-fit: cover;">
+                                    </a>
+                                </div>
+                            @else
+                                <a href="{{ asset('storage/' . $file->file_path) }}" target="_blank" class="file-thumbnail-container" style="width: 120px; height: 90px; object-fit: cover;">
+                                    <i class="ti ti-file-download fs-2 mb-2 text-primary"></i>
+                                    <span class="file-name text-center small fw-medium" title="{{ $file->original_name }}">
+                                        {{ show_content($file->original_name, 10) }}
+                                    </span>
+                                    <small class="text-muted">{{ strtoupper($file->file_extension) }}</small>
+                                </a>
+                            @endif
+                        @endforeach
+                    </div>
+                @else
+                    <p class="text-muted small">No shared media found</p>
+                @endif
+            </div>
         </div>
     </div>
 </div>

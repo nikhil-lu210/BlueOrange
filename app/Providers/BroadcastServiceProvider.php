@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use Illuminate\Support\Facades\Broadcast;
+// Removed Broadcast facade
 use Illuminate\Support\ServiceProvider;
 
 class BroadcastServiceProvider extends ServiceProvider
@@ -12,7 +12,7 @@ class BroadcastServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Broadcast::routes();
+        // Broadcasting routes removed
 
         require base_path('routes/channels.php');
     }

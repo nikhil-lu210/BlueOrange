@@ -12,7 +12,10 @@
     {{-- <!-- Page CSS --> --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/app-chat.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/chat-custom.css') }}" />
 
+    {{-- Lightbox CSS --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" integrity="sha512-ZKX+BvQihRJPA8CROKBhDNvoc2aDMOdAlcm7TUQY+35XYtrd3yh95QOOhsPDQY9QnKE0Wqag9y38OIgEvb88cA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     @livewireStyles
 @endsection
 
@@ -47,6 +50,36 @@
         overflow: auto;
         display: flex;
         flex-direction: column-reverse;
+    }
+    .img-thumbnail {
+        padding: 3px;
+        border: 3px solid var(--bs-border-color);
+        border-radius: 5px;
+    }
+    .file-thumbnail-container {
+        width: 150px;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+    .file-thumbnail-container .file-name {
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .chat-history-footer {
+        position: relative;
+    }
+    .selected-file.file-thumbnail-container {
+        position: absolute;
+        top: -105px;
+        left: 0;
     }
     </style>
 @endsection
@@ -99,54 +132,12 @@
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 
+    {{-- Lightbox JS --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js" integrity="sha512-Ixzuzfxv1EqafeQlTCufWfaC6ful6WFqIz4G+dWvK0beHw0NVJwvCKSgafpy5gwNqKmgUfIBraVwkKI+Cz0SEQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     @livewireScripts
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
-    {{-- <script>
-        $(document).ready(function () {
-            function fetchNewGroupMessages() {
-                $.get("{{ route('administration.chatting.group.browser.fetch_unread') }}", function (data) {
-                    if (data && data.length > 0) {
-                        let newGroupMessageNotifications = JSON.parse(localStorage.getItem("newGroupMessageNotifications")) || [];
-
-                        data.forEach(message => {
-                            if (!newGroupMessageNotifications.includes(message.id)) {
-                                if (Notification.permission === "granted") {
-                                    let notif = new Notification("New Group Message in " + message.group_name, {
-                                        body: message.sender_name + ": " + message.message,
-                                        icon: "https://cdn-icons-png.flaticon.com/512/1827/1827301.png"
-                                    });
-
-                                    notif.onclick = function () {
-                                        let groupChatUrl = "{{ route('administration.chatting.group.show', ['group' => '__GROUP__', 'groupid' => '__GROUPID__']) }}";
-                                        groupChatUrl = groupChatUrl.replace("__GROUP__", message.group.id).replace("__GROUPID__", message.group.groupid);
-
-                                        window.open(groupChatUrl, "_blank");
-                                    };
-
-                                    // Mark this message as notified
-                                    newGroupMessageNotifications.push(message.id);
-                                    localStorage.setItem("newGroupMessageNotifications", JSON.stringify(newGroupMessageNotifications));
-                                } else {
-                                    Notification.requestPermission();
-                                }
-                            }
-                        });
-                    }
-                }).fail(function (err) {
-                    console.error("Error fetching new group messages:", err);
-                });
-            }
-
-            // Request notification permission when the page loads
-            if (Notification.permission !== "granted") {
-                Notification.requestPermission();
-            }
-
-            // Check for new messages every 30 seconds
-            setInterval(fetchNewGroupMessages, 30000);
-        });
-    </script> --}}
+    {{-- Group chat notifications are now handled in group_chat_notification.js --}}
 @endsection
