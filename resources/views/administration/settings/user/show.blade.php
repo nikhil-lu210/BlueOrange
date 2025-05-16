@@ -109,9 +109,15 @@
                                     <i class="ti ti-crown"></i>
                                     {{ $user->role->name }}
                                 </li>
-                                <li class="list-inline-item d-flex gap-1" title="Joining Date">
-                                    <i class="ti ti-calendar"></i>
-                                    {{ show_date($user->employee->joining_date) }}
+                                <li class="list-inline-item d-flex gap-1" title="Team Leader">
+                                    <a href="{{ route('administration.settings.user.user_interaction.index', ['user' => $user]) }}" class="mb-0">
+                                        <i class="ti ti-user-shield"></i>
+                                        @isset ($user->active_team_leader)
+                                            {{ $user->active_team_leader->employee->alias_name }}
+                                        @else
+                                            {{ __('Not Assigned') }}
+                                        @endisset
+                                    </a>
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" title="Click to Update Shift">
                                     <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#updateShift" class="text-primary">

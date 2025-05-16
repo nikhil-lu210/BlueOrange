@@ -15,7 +15,6 @@ class UserInteractionController extends Controller
      */
     public function index(User $user)
     {
-        // dd($user->user_interactions->pluck('id'));
         $activeTeamLeader = $user->active_team_leader;
 
         $teamLeaders = User::select(['id', 'name'])
@@ -46,11 +45,11 @@ class UserInteractionController extends Controller
             'employee_team_leaders' => function ($query) {
                 $query->orderByDesc('employee_team_leader.created_at');
             }
-        ])->findOrFail($user->id);        
-            
+        ])->findOrFail($user->id);
+
         return view('administration.settings.user.includes.user_interaction', compact(['teamLeaders', 'users', 'user']));
     }
-    
+
 
     /**
      * Update the specified resource in storage.
@@ -61,13 +60,11 @@ class UserInteractionController extends Controller
             DB::transaction(function() use ($request, &$user) {
                 if ($user->employee_team_leaders->count() > 0) {
                     // Deactivate the current active team leader
-                    $user->employee_team_leaders()
-                    ->updateExistingPivot($user->active_team_leader->id, ['is_active' => false]);
+                    $user->employee_team_leaders()->updateExistingPivot($user->active_team_leader->id, ['is_active' => false]);
                 }
 
                 // Assign the new team leader and set them as active
-                $user->employee_team_leaders()
-                     ->attach($request->input('team_leader_id'), ['is_active' => true]);
+                $user->employee_team_leaders()->attach($request->input('team_leader_id'), ['is_active' => true]);
             }, 5);
 
             toast('Team Leader Updated For '.$user->name.'.','success');
@@ -80,7 +77,7 @@ class UserInteractionController extends Controller
 
         return redirect()->back();
     }
-    
+
 
     /**
      * Update the specified resource in storage.
@@ -95,7 +92,7 @@ class UserInteractionController extends Controller
                 function ($attribute, $value, $fail) use ($user) {
                     // Check if the selected user is already in the interacted_users or interacting_users relation
                     if (
-                        $user->interacted_users()->where('interacted_user_id', $value)->exists() || 
+                        $user->interacted_users()->where('interacted_user_id', $value)->exists() ||
                         $user->interacting_users()->where('user_id', $value)->exists()
                     ) {
                         // Fail the validation if the user is already interacting
@@ -114,7 +111,7 @@ class UserInteractionController extends Controller
                     $user->interacted_users()->attach($interactedUserId);
                 }
             }, 5);
-            
+
             toast('Users added for interactions with ' . $user->name . '.', 'success');
             return redirect()->back();
         } catch (Exception $e) {

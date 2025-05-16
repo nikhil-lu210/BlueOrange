@@ -61,12 +61,16 @@
                             </p>
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Employee Role" data-bs-placement="bottom">
-                                    <i class="ti ti-crown"></i> 
+                                    <i class="ti ti-crown"></i>
                                     {{ $user->role->name }}
                                 </li>
-                                <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Joining Date">
-                                    <i class="ti ti-calendar"></i> 
-                                    {{ show_date($user->employee->joining_date) }}
+                                <li class="list-inline-item d-flex gap-1" title="Team Leader">
+                                    <i class="ti ti-user-shield"></i>
+                                    @isset ($user->active_team_leader)
+                                        {{ $user->active_team_leader->employee->alias_name }}
+                                    @else
+                                        {{ __('Not Assigned') }}
+                                    @endisset
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Working Shift">
                                     <i class="ti ti-clock"></i>
@@ -76,7 +80,7 @@
                                 </li>
                             </ul>
                         </div>
-                        @can ('User Update') 
+                        @can ('User Update')
                             <a href="{{ route('administration.my.profile.edit') }}" class="btn btn-dark btn-icon rounded-pill confirm-danger" data-bs-toggle="tooltip" title="Edit Profile">
                                 <i class="ti ti-pencil"></i>
                             </a>
@@ -95,14 +99,14 @@
         <ul class="nav nav-pills flex-column flex-sm-row mb-4">
             <li class="nav-item">
                 <a class="nav-link {{ request()->is('my/profile*') ? 'active' : '' }}" href="{{ route('administration.my.profile') }}">
-                    <i class="ti-xs ti ti-user-check me-1"></i> 
+                    <i class="ti-xs ti ti-user-check me-1"></i>
                     Profile
                 </a>
             </li>
-            @can ('Salary Read') 
+            @can ('Salary Read')
                 <li class="nav-item">
                     <a class="nav-link {{ request()->is('my/salary*') ? 'active' : '' }}" href="{{ route('administration.my.salary.monthly.history') }}">
-                        <i class="ti-xs ti ti-currency-taka me-1"></i> 
+                        <i class="ti-xs ti ti-currency-taka me-1"></i>
                         Salaries
                     </a>
                 </li>
@@ -122,7 +126,7 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <!-- Datatable js -->    
+    <!-- Datatable js -->
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
@@ -133,7 +137,7 @@
     {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function () {
-            // 
+            //
         });
-    </script>    
+    </script>
 @endsection
