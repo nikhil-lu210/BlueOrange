@@ -17,25 +17,25 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
 
     /*
-    |-------------------------------------------------------------------------- 
-    | Application Logo 
-    |-------------------------------------------------------------------------- 
-    | 
-    | This value is the URL or path of your application's logo. This can be 
-    | used throughout the application to dynamically display the logo 
-    | wherever needed. 
-    | 
+    |--------------------------------------------------------------------------
+    | Application Logo
+    |--------------------------------------------------------------------------
+    |
+    | This value is the URL or path of your application's logo. This can be
+    | used throughout the application to dynamically display the logo
+    | wherever needed.
+    |
     */
     'logo' => env('APP_LOGO', 'Logo/logo_black_01.png'),
 
     /*
-    |-------------------------------------------------------------------------- 
-    | Application Favicon 
-    |-------------------------------------------------------------------------- 
-    | 
-    | This value is the URL or path of your application's favicon. This can be 
-    | used in the `<head>` section of your layout for dynamic favicon usage. 
-    | 
+    |--------------------------------------------------------------------------
+    | Application Favicon
+    |--------------------------------------------------------------------------
+    |
+    | This value is the URL or path of your application's favicon. This can be
+    | used in the `<head>` section of your layout for dynamic favicon usage.
+    |
     */
     'favicon' => env('APP_FAVICON', 'Logo/logo_white_01.png'),
 
@@ -182,7 +182,7 @@ return [
          * Laravel Framework Service Providers...
          */
         Illuminate\Auth\AuthServiceProvider::class,
-        Illuminate\Broadcasting\BroadcastServiceProvider::class,
+        // Illuminate\Broadcasting\BroadcastServiceProvider::class, // Removed WebSocket/Pusher service provider
         Illuminate\Bus\BusServiceProvider::class,
         Illuminate\Cache\CacheServiceProvider::class,
         Illuminate\Foundation\Providers\ConsoleSupportServiceProvider::class,
@@ -227,7 +227,7 @@ return [
          */
         App\Providers\AppServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
+        // App\Providers\BroadcastServiceProvider::class, // Removed WebSocket/Pusher service provider
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
     ],

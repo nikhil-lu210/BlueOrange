@@ -1,0 +1,54 @@
+/* Chat message styles */
+.reply-quote {
+    border-left: 2px solid #ddd;
+    margin-left: 0;
+    font-style: italic;
+    padding: 5px;
+    padding-left: 10px;
+}
+
+.bg-primary-light {
+    background-color: #887dff;
+}
+
+.chat-message-image {
+    width: 170px;
+}
+
+.reply-to-message {
+    position: absolute;
+    bottom: 70px;
+    left: 23px;
+    width: auto;
+    border-radius: 5px;
+    background-color: #ffffff;
+    border: 1px solid #d9d9d9;
+    padding: 0.5rem;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.reply-close-btn {
+    position: absolute;
+    right: -5px;
+    top: -5px;
+}
+
+.reply-message-preview {
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Ensure proper spacing for action buttons */
+.action-btn-right-margin {
+    margin-right: 10px;
+}
+
+.message-input {
+    min-height: 38px;
+    max-height: 150px;
+    overflow-y: auto;
+    resize: none;
+}

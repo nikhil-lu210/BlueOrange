@@ -7,6 +7,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Administration\User\TeamLeaderUpdateMail;
+use App\Notifications\Administration\User\TeamLeaderUpdateNotification;
 
 class UserInteractionController extends Controller
 {
@@ -15,7 +18,6 @@ class UserInteractionController extends Controller
      */
     public function index(User $user)
     {
-        // dd($user->user_interactions->pluck('id'));
         $activeTeamLeader = $user->active_team_leader;
 
         $teamLeaders = User::select(['id', 'name'])
@@ -46,11 +48,11 @@ class UserInteractionController extends Controller
             'employee_team_leaders' => function ($query) {
                 $query->orderByDesc('employee_team_leader.created_at');
             }
-        ])->findOrFail($user->id);        
-            
+        ])->findOrFail($user->id);
+
         return view('administration.settings.user.includes.user_interaction', compact(['teamLeaders', 'users', 'user']));
     }
-    
+
 
     /**
      * Update the specified resource in storage.
@@ -58,29 +60,60 @@ class UserInteractionController extends Controller
     public function updateTeamLeader(Request $request, User $user)
     {
         try {
-            DB::transaction(function() use ($request, &$user) {
+            $oldTeamLeader = null;
+            $newTeamLeader = null;
+
+            DB::transaction(function() use ($request, &$user, &$oldTeamLeader, &$newTeamLeader) {
+                // Get the current team leader before deactivating
                 if ($user->employee_team_leaders->count() > 0) {
+                    $oldTeamLeader = $user->active_team_leader;
+
                     // Deactivate the current active team leader
-                    $user->employee_team_leaders()
-                    ->updateExistingPivot($user->active_team_leader->id, ['is_active' => false]);
+                    $user->employee_team_leaders()->updateExistingPivot($oldTeamLeader->id, ['is_active' => false]);
                 }
 
+                // Get the new team leader
+                $newTeamLeader = User::with('employee')->findOrFail($request->input('team_leader_id'));
+
                 // Assign the new team leader and set them as active
-                $user->employee_team_leaders()
-                     ->attach($request->input('team_leader_id'), ['is_active' => true]);
+                $user->employee_team_leaders()->attach($newTeamLeader->id, ['is_active' => true]);
+
+                // Reload the user with fresh relationships
+                $user = User::with(['employee', 'employee_team_leaders'])->findOrFail($user->id);
+
+                // Send notifications and emails
+                $authUser = auth()->user();
+
+                // 1. Notify the employee
+                $user->notify(new TeamLeaderUpdateNotification($user, $oldTeamLeader, $newTeamLeader, $authUser));
+                Mail::to($user->employee->official_email)
+                    ->queue(new TeamLeaderUpdateMail($user, $oldTeamLeader, $newTeamLeader, $user, $authUser));
+
+                // 2. Notify the old team leader (if exists)
+                if ($oldTeamLeader) {
+                    $oldTeamLeader->notify(new TeamLeaderUpdateNotification($user, $oldTeamLeader, $newTeamLeader, $authUser));
+                    Mail::to($oldTeamLeader->employee->official_email)
+                        ->queue(new TeamLeaderUpdateMail($user, $oldTeamLeader, $newTeamLeader, $oldTeamLeader, $authUser));
+                }
+
+                // 3. Notify the new team leader
+                $newTeamLeader->notify(new TeamLeaderUpdateNotification($user, $oldTeamLeader, $newTeamLeader, $authUser));
+                Mail::to($newTeamLeader->employee->official_email)
+                    ->queue(new TeamLeaderUpdateMail($user, $oldTeamLeader, $newTeamLeader, $newTeamLeader, $authUser));
             }, 5);
 
             toast('Team Leader Updated For '.$user->name.'.','success');
             return redirect()->back();
         } catch (Exception $e) {
-            dd($e);
-            alert('Opps! Error.', $e->getMessage(), 'error');
+            // Remove dd() for production
+            // dd($e);
+            alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back()->withInput();
         }
 
         return redirect()->back();
     }
-    
+
 
     /**
      * Update the specified resource in storage.
@@ -95,7 +128,7 @@ class UserInteractionController extends Controller
                 function ($attribute, $value, $fail) use ($user) {
                     // Check if the selected user is already in the interacted_users or interacting_users relation
                     if (
-                        $user->interacted_users()->where('interacted_user_id', $value)->exists() || 
+                        $user->interacted_users()->where('interacted_user_id', $value)->exists() ||
                         $user->interacting_users()->where('user_id', $value)->exists()
                     ) {
                         // Fail the validation if the user is already interacting
@@ -114,7 +147,7 @@ class UserInteractionController extends Controller
                     $user->interacted_users()->attach($interactedUserId);
                 }
             }, 5);
-            
+
             toast('Users added for interactions with ' . $user->name . '.', 'success');
             return redirect()->back();
         } catch (Exception $e) {

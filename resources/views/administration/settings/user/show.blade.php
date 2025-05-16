@@ -109,9 +109,15 @@
                                     <i class="ti ti-crown"></i>
                                     {{ $user->role->name }}
                                 </li>
-                                <li class="list-inline-item d-flex gap-1" title="Joining Date">
-                                    <i class="ti ti-calendar"></i>
-                                    {{ show_date($user->employee->joining_date) }}
+                                <li class="list-inline-item d-flex gap-1" title="Team Leader">
+                                    <a href="{{ route('administration.settings.user.user_interaction.index', ['user' => $user]) }}" class="mb-0">
+                                        <i class="ti ti-user-shield"></i>
+                                        @isset ($user->active_team_leader)
+                                            {{ $user->active_team_leader->employee->alias_name }}
+                                        @else
+                                            {{ __('Not Assigned') }}
+                                        @endisset
+                                    </a>
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" title="Click to Update Shift">
                                     <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#updateShift" class="text-primary">
@@ -131,20 +137,20 @@
                         </div>
                         <div class="actions">
                             @canany (['User Everything', 'User Update'])
-                                <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="btn btn-primary waves-effect waves-light">
+                                <a href="{{ route('administration.settings.user.edit', ['user' => $user]) }}" class="btn btn-primary btn-sm waves-effect waves-light">
                                     <i class="ti ti-pencil me-1"></i>
                                     Edit User
                                 </a>
 
                                 @if ($user->role->name !== 'Developer')
-                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#updatePasswordModal" class="btn btn-warning waves-effect waves-light">
+                                    <a href="javascript:void(0);" data-bs-toggle="modal" data-bs-target="#updatePasswordModal" class="btn btn-warning btn-sm waves-effect waves-light">
                                         <i class="ti ti-lock-cog me-1"></i>
                                         Update Password
                                     </a>
                                 @endif
                             @endcanany
                             @hasanyrole(['Developer', 'Super Admin'])
-                                <a href="{{ route('custom_auth.impersonate.login', ['user' => $user]) }}" class="btn btn-dark waves-effect waves-light confirm-warning">
+                                <a href="{{ route('custom_auth.impersonate.login', ['user' => $user]) }}" class="btn btn-dark btn-sm waves-effect waves-light confirm-warning">
                                     <i class="ti ti-lock me-1"></i>
                                     Login As {{ $user->alias_name }}
                                 </a>

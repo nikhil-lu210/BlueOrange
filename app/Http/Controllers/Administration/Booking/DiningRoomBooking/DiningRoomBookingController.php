@@ -27,7 +27,7 @@ class DiningRoomBookingController extends Controller
         // Get the authenticated user's booking for today (if any)
         $userBooking = $this->getUserBookingForToday($today);
 
-        // Get all bookings for today, eager loading 'user' relationship for efficiency
+        // Get all bookings for today, eager loading 'user' and 'user.employee' relationships for efficiency
         $bookings = $this->getBookingsForToday($today);
 
         // Get the available time slots for the authenticated user
@@ -98,8 +98,7 @@ class DiningRoomBookingController extends Controller
      */
     protected function getBookingsForToday(string $today)
     {
-        return DiningRoomBooking::whereDate('booking_date', $today)
-            ->with('user')  // Eager load the 'user' relationship to prevent N+1 query issue
+        return DiningRoomBooking::with(['user.employee'])->whereDate('booking_date', $today)
             ->orderBy('booking_time', 'desc')
             ->get();
     }

@@ -21,6 +21,8 @@ use App\Mail\Administration\User\UserCredentialsMail;
 use App\Mail\Administration\User\UserStatusUpdateNotifyMail;
 use App\Models\Religion\Religion;
 use App\Notifications\Administration\NewUserRegistrationNotification;
+use App\Notifications\Administration\User\ShiftUpdateNotification;
+use App\Mail\Administration\User\ShiftUpdateMail;
 
 class UserService
 {
@@ -225,7 +227,8 @@ class UserService
 
     public function updateShift(EmployeeShift $shift, User $user, array $data) {
         return DB::transaction(function() use ($data, $shift, $user) {
-            EmployeeShift::create([
+            // Create the new shift
+            $newShift = EmployeeShift::create([
                 'user_id' => $user->id,
                 'start_time' => $data['start_time'],
                 'end_time' => $data['end_time'],
@@ -233,10 +236,56 @@ class UserService
                 'implemented_from' => date('Y-m-d')
             ]);
 
+            // Update the old shift
             $shift->update([
                 'implemented_to' => date('Y-m-d'),
                 'status' => 'Inactive'
             ]);
+
+            // Reload the user with fresh relationships
+            $user = User::with(['employee', 'employee_team_leaders'])->findOrFail($user->id);
+
+            // Get the active team leader separately since it's an accessor, not a relationship
+            $activeTeamLeader = $user->active_team_leader;
+
+            // Get the authenticated user
+            $authUser = Auth::user();
+
+            // 1. Notify the employee
+            $user->notify(new ShiftUpdateNotification($user, $shift, $newShift, $authUser));
+            Mail::to($user->employee->official_email)
+                ->queue(new ShiftUpdateMail($user, $shift, $newShift, $user, $authUser));
+
+            // 2. Notify the active team leader (if exists)
+            if ($activeTeamLeader) {
+                $activeTeamLeader->notify(new ShiftUpdateNotification($user, $shift, $newShift, $authUser));
+
+                Mail::to($activeTeamLeader->employee->official_email)
+                    ->queue(new ShiftUpdateMail($user, $shift, $newShift, $activeTeamLeader, $authUser));
+            }
+
+            // 3. Notify users with "User Create" or "User Update" permissions
+            $activeTeamLeaderId = $activeTeamLeader ? $activeTeamLeader->id : null;
+
+            $notifiableUsers = User::whereStatus('Active')
+                ->with('employee')
+                ->get()
+                ->filter(function ($notifiableUser) use ($user, $activeTeamLeaderId) {
+                    // Skip the employee and team leader as they've already been notified
+                    if ($notifiableUser->id === $user->id ||
+                        ($activeTeamLeaderId && $notifiableUser->id === $activeTeamLeaderId)) {
+                        return false;
+                    }
+
+                    // Include users with the specified permissions
+                    return $notifiableUser->hasAnyPermission(['User Create', 'User Update']);
+                });
+
+            foreach ($notifiableUsers as $notifiableUser) {
+                $notifiableUser->notify(new ShiftUpdateNotification($user, $shift, $newShift, $authUser));
+                Mail::to($notifiableUser->employee->official_email)
+                    ->queue(new ShiftUpdateMail($user, $shift, $newShift, $notifiableUser, $authUser));
+            }
         }, 5);
     }
 

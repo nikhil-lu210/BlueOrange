@@ -25,6 +25,9 @@ Auth::routes();
 ==============================================================*/
 Route::middleware(['web'])->group(function () {
     include_once 'application/application.php';
+
+    // CSRF token refresh route
+    Route::get('/csrf-refresh', [\App\Http\Controllers\CsrfController::class, 'refresh'])->name('csrf.refresh');
 });
 
 

@@ -23,9 +23,8 @@ return new class extends Migration
                 ->constrained('users')
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
-            
-            $table->text('message')->nullable();
-            $table->string('file')->nullable();
+
+            $table->text('message');
 
             $table->dateTime('seen_at')->nullable();
 
