@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Administration\Chatting;
 
 use Auth;
+use Exception;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Chatting\Chatting;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Cache;
 use App\Models\Chatting\ChatFileMedia;
@@ -149,13 +151,6 @@ class ChattingController extends Controller
                 ->where('userid', $userid)
                 ->firstOrFail();
 
-            // Log for debugging
-            \Log::info('Chat notification clicked', [
-                'user_id' => $id,
-                'userid' => $userid,
-                'found_user' => $user->toArray()
-            ]);
-
             // Mark messages from this user as seen
             Chatting::where('sender_id', $user->id)
                 ->where('receiver_id', auth()->id())
@@ -171,8 +166,8 @@ class ChattingController extends Controller
                 'user' => $user,
                 'userid' => $user->userid
             ]);
-        } catch (\Exception $e) {
-            \Log::error('Error in readBrowserNotification', [
+        } catch (Exception $e) {
+            Log::error('Error in readBrowserNotification', [
                 'error' => $e->getMessage(),
                 'user_id' => $id,
                 'userid' => $userid
