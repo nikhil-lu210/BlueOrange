@@ -1,3 +1,8 @@
+/**
+ * Browser Notifications
+ * Handles general system notifications
+ */
+
 $(document).ready(function () {
     if (Notification.permission !== "granted") {
         Notification.requestPermission();
@@ -53,73 +58,17 @@ $(document).ready(function () {
         localStorage.setItem("shownNotifications", JSON.stringify(updatedNotifications));
     }
 
-    // setInterval(fetchNotifications, 60000);
-// });
 
 
+    // Chat notifications are now handled in separate files
 
+    // Check for new notifications every 5 minutes
+    setInterval(fetchNotifications, 300000);
 
-
-    /**
-     * Chatting Notification for Browser
-     */
-    function fetchNewMessages() {
-        $.get(unreadOneToOneMessagesNotificationUrl, function (data) {
-            // console.log(unreadOneToOneMessagesNotificationUrl);
-
-            if (data && data.length > 0) {
-                let newMessageNotification = JSON.parse(localStorage.getItem("newMessageNotification")) || [];
-
-                data.forEach(message => {
-
-                    if (!newMessageNotification.includes(message.id)) {
-                        // Check if browser notifications are allowed
-                        if (Notification.permission === "granted") {
-                            let notif = new Notification("New Message from " + message.sender.name, {
-                                body: message.message,
-                                icon: "https://cdn-icons-png.flaticon.com/512/1827/1827301.png"
-                            });
-
-                            notif.onclick = function () {
-                                chatUrl = markOneToOneMessageReadUrl +'/'+ message.sender.id +'/'+ message.sender.userid;
-                                window.open(chatUrl, "_blank");
-                            };
-
-                            // Mark this message as notified
-                            newMessageNotification.push(message.id);
-                            localStorage.setItem("newMessageNotification", JSON.stringify(newMessageNotification));
-                        } else if (Notification.permission !== "denied") {
-                            Notification.requestPermission();
-                        }
-                    }
-                });
-            }
-        }).fail(function (err) {
-            console.error("Error fetching new messages:", err);
-        });
-    }
-
-    // Request notification permission when the page loads (only if not denied)
-    if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-        Notification.requestPermission();
-    }
-
-    // Check for new messages every 30 seconds
-    // setInterval(fetchNewMessages, 30000);
-
-
-
-    // Group chat notifications are now handled in group_chat_notification.js
-
-    // Optional: start intervals but less frequent
-    setInterval(fetchNotifications, 300000); // every 5 minutes
-    // setInterval(fetchNewMessages, 60000);    // every 1 minute
-
-    // Add visibility change listener here:
+    // Check when tab becomes visible
     document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "visible") {
             fetchNotifications();
-            // fetchNewMessages();
         }
     });
 });
