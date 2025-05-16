@@ -99,11 +99,19 @@ class AnnouncementController extends Controller
                     'description' => $request->description,
                 ]);
 
+                // Store Announcement Files
+                if ($request->hasFile('files')) {
+                    foreach ($request->file('files') as $file) {
+                        $directory = 'announcements/' . $announcement->id;
+                        store_file_media($file, $announcement, $directory);
+                    }
+                }
+
                 $notifiableUsers = [];
                 if (is_null($announcement->recipients)) {
-                    $notifiableUsers = User::select(['id', 'name', 'email'])->where('id', '!=', $announcement->announcer_id)->get();
+                    $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->where('id', '!=', $announcement->announcer_id)->get();
                 } else {
-                    $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $announcement->recipients)->get();
+                    $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $announcement->recipients)->get();
                 }
 
                 foreach ($notifiableUsers as $notifiableUser) {
@@ -112,7 +120,7 @@ class AnnouncementController extends Controller
 
                     // Mail::to($notifiableUser->email)->send(new NewAnnouncementMail($announcement, $notifiableUser));
                     // Send Mail to the notifiableUser's email & Dispatch the email to the queue
-                    Mail::to($notifiableUser->email)->queue(new NewAnnouncementMail($announcement, $notifiableUser));
+                    Mail::to($notifiableUser->employee->official_email)->queue(new NewAnnouncementMail($announcement, $notifiableUser));
                 }
             });
 
@@ -154,7 +162,21 @@ class AnnouncementController extends Controller
             $announcement->update(['read_by_at' => json_encode($readBy)]);
         }
 
-        // dd($announcement->isAuthorized());
+        $announcement = Announcement::with([
+                'announcer.employee',
+                'announcer.media',
+                'files',
+                'comments' => function ($comment) {
+                    $comment->with([
+                        'commenter.roles',
+                        'commenter.employee',
+                        'commenter.media',
+                    ])->orderByDesc('created_at')->get();
+                }
+            ])
+            ->whereId($announcement->id)
+            ->firstOrFail();
+
         return view('administration.announcement.show', compact('announcement'));
     }
 

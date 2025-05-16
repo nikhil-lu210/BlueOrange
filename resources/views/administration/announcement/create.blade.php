@@ -38,7 +38,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Create New Announcement</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.announcement.index') }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-circle ti-xs me-1"></span>
@@ -49,7 +49,7 @@
             <!-- Account -->
             <div class="card-body">
                 <form id="announcementForm" action="{{ route('administration.announcement.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
-                    @csrf                    
+                    @csrf
                     <div class="row">
                         <div class="mb-3 col-md-12">
                             <label for="title" class="form-label">{{ __('Title') }} <strong class="text-danger">*</strong></label>
@@ -64,6 +64,13 @@
                             <textarea class="d-none" name="description" id="description-input">{{ old('description') }}</textarea>
                             @error('description')
                                 <b class="text-danger">{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-12">
+                            <label for="files[]" class="form-label">{{ __('File(s)') }}</label>
+                            <input type="file" id="files[]" name="files[]" value="{{ old('files[]') }}" placeholder="{{ __('File(s)') }}" class="form-control @error('files[]') is-invalid @enderror" multiple/>
+                            @error('files[]')
+                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-12">
@@ -94,7 +101,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
