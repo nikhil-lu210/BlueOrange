@@ -99,7 +99,7 @@ class AnnouncementController extends Controller
                     'description' => $request->description,
                 ]);
 
-                // Store Task Files
+                // Store Announcement Files
                 if ($request->hasFile('files')) {
                     foreach ($request->file('files') as $file) {
                         $directory = 'announcements/' . $announcement->id;
@@ -162,7 +162,21 @@ class AnnouncementController extends Controller
             $announcement->update(['read_by_at' => json_encode($readBy)]);
         }
 
-        // dd($announcement->isAuthorized());
+        $announcement = Announcement::with([
+                'announcer.employee',
+                'announcer.media',
+                'files',
+                'comments' => function ($comment) {
+                    $comment->with([
+                        'commenter.roles',
+                        'commenter.employee',
+                        'commenter.media',
+                    ])->orderByDesc('created_at')->get();
+                }
+            ])
+            ->whereId($announcement->id)
+            ->firstOrFail();
+
         return view('administration.announcement.show', compact('announcement'));
     }
 
