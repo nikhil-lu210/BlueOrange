@@ -109,61 +109,17 @@ $(document).ready(function () {
 
 
 
-    /**
-     * Group Chatting Notification For Browser
-     */
-    function fetchNewGroupMessages() {
-        $.get(unreadGroupMessagesNotificationUrl, function (data) {
-            // console.log(unreadGroupMessagesNotificationUrl);
-            if (data && data.length > 0) {
-                let newGroupMessageNotifications = JSON.parse(localStorage.getItem("newGroupMessageNotifications")) || [];
-
-                data.forEach(message => {
-                    if (!newGroupMessageNotifications.includes(message.id)) {
-                        if (Notification.permission === "granted") {
-                            let notif = new Notification("New Group Message in " + message.group_name, {
-                                body: message.sender_name + ": " + message.message,
-                                icon: "https://cdn-icons-png.flaticon.com/512/1827/1827301.png"
-                            });
-
-                            notif.onclick = function () {
-                                groupChatUrl = markGroupMessageReadUrl +'/'+ message.chatting_group_id;
-                                window.open(groupChatUrl, "_blank");
-                            };
-
-                            // Mark this message as notified
-                            newGroupMessageNotifications.push(message.id);
-                            localStorage.setItem("newGroupMessageNotifications", JSON.stringify(newGroupMessageNotifications));
-                        } else {
-                            Notification.requestPermission();
-                        }
-                    }
-                });
-            }
-        }).fail(function (err) {
-            console.error("Error fetching new group messages:", err);
-        });
-    }
-
-    // Request notification permission when the page loads
-    if (Notification.permission !== "granted") {
-        Notification.requestPermission();
-    }
-
-    // Check for new messages every 30 seconds
-    // setInterval(fetchNewGroupMessages, 30000);
+    // Group chat notifications are now handled in group_chat_notification.js
 
     // Optional: start intervals but less frequent
     setInterval(fetchNotifications, 300000); // every 5 minutes
     // setInterval(fetchNewMessages, 60000);    // every 1 minute
-    // setInterval(fetchNewGroupMessages, 60000); // every 1 minute
 
     // Add visibility change listener here:
     document.addEventListener("visibilitychange", function () {
         if (document.visibilityState === "visible") {
             fetchNotifications();
             // fetchNewMessages();
-            // fetchNewGroupMessages();
         }
     });
 });

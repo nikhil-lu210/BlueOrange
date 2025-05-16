@@ -30,6 +30,7 @@
 </script>
 <script src="{{ asset('assets/js/custom_js/notification/browser_notification.js') }}"></script>
 <script src="{{ asset('assets/js/custom_js/notification/one_to_one_chat_notification.js') }}"></script>
+<script src="{{ asset('assets/js/custom_js/notification/group_chat_notification.js') }}"></script>
 
 <!-- Main JS -->
 <script src="{{ asset('assets/js/main.js') }}"></script>

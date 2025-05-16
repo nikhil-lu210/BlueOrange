@@ -83,26 +83,48 @@ class GroupChattingController extends Controller
     /**
      * Fetch Unread group messages for browser notification
      */
-    public function fetchUnreadMessagesForBrowser()
+    public function fetchUnreadMessagesForBrowser(Request $request)
     {
         $userId = auth()->id();
+
+        // Get the current group ID from the request if available
+        $currentGroupId = $request->input('current_group_id', null);
+
+        // For debugging - check if we should bypass cache
+        $bypassCache = $request->input('bypass_cache', false);
 
         // Cache key with user-specific key for uniqueness
         $cacheKey = "unread_group_messages_for_user_{$userId}";
 
-        // Cache expiration time in seconds (e.g., 5 minutes)
-        $cacheExpiration = 300; // 5 minutes
+        // Clear cache if requested
+        if ($bypassCache) {
+            Cache::forget($cacheKey);
+        }
 
-        // Try fetching from the cache, or if not found, retrieve from the database and cache it
-        $unreadMessages = Cache::remember($cacheKey, $cacheExpiration, function () use ($userId) {
-            return GroupChatting::whereDoesntHave('readByUsers', function ($query) use ($userId) {
-                    $query->where('user_id', $userId);
-                })
-                ->with('sender', 'group')
-                ->latest()
-                ->limit(5)
-                ->get();
-        });
+        // Get unread messages directly from the database
+        $query = GroupChatting::whereDoesntHave('readByUsers', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->whereHas('group', function ($query) use ($userId) {
+                // Only include messages from groups the user is a member of
+                $query->whereHas('group_users', function ($q) use ($userId) {
+                    $q->where('user_id', $userId);
+                });
+            })
+            ->where('sender_id', '!=', $userId) // Don't show notifications for own messages
+            ->with('sender', 'group')
+            ->latest()
+            ->limit(5);
+
+        // If we're on a specific group chat page, exclude messages from that group
+        if ($currentGroupId) {
+            $query->where('chatting_group_id', '!=', $currentGroupId);
+        }
+
+        $unreadMessages = $query->get();
+
+        // Store in cache for future use
+        Cache::put($cacheKey, $unreadMessages, now()->addMinutes(5));
 
         return response()->json($unreadMessages->map(function ($message) {
             return [
@@ -119,12 +141,50 @@ class GroupChattingController extends Controller
 
     /**
      * Read Browser Notification
+     * Marks messages as read and redirects to the group chat
      */
     public function readBrowserNotification($groupId)
     {
-        $group = ChattingGroup::whereId($groupId)->firstOrFail();
+        try {
+            // Find the group
+            $group = ChattingGroup::whereId($groupId)->firstOrFail();
 
-        return redirect()->route('administration.chatting.group.show', ['group' => $group, 'groupid' => $group->groupid]);
+            // Get the authenticated user
+            $userId = auth()->id();
+
+            // Mark all unread messages in this group as read for the current user
+            $unreadMessages = GroupChatting::where('chatting_group_id', $groupId)
+                ->whereDoesntHave('readByUsers', function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })
+                ->get();
+
+            foreach ($unreadMessages as $message) {
+                $message->readByUsers()->attach($userId, ['read_at' => now()]);
+            }
+
+            // Clear the cache for unread messages
+            $cacheKey = "unread_group_messages_for_user_{$userId}";
+            Cache::forget($cacheKey);
+
+            // Log for debugging
+            \Log::info('Group chat notification clicked', [
+                'group_id' => $groupId,
+                'user_id' => $userId,
+                'messages_marked_read' => $unreadMessages->count()
+            ]);
+
+            return redirect()->route('administration.chatting.group.show', ['group' => $group, 'groupid' => $group->groupid]);
+        } catch (\Exception $e) {
+            \Log::error('Error in group readBrowserNotification', [
+                'error' => $e->getMessage(),
+                'group_id' => $groupId
+            ]);
+
+            // Fallback to the group chat index page if there's an error
+            return redirect()->route('administration.chatting.group.index')
+                ->with('error', 'Could not open the group chat. Error: ' . $e->getMessage());
+        }
     }
 
 
