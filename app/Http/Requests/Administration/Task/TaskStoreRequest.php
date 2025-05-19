@@ -23,6 +23,7 @@ class TaskStoreRequest extends FormRequest
     {
         return [
             'chatting_id' => ['nullable', 'integer', 'exists:chattings,id'],
+            'parent_task_id' => ['nullable', 'integer', 'exists:tasks,id'],
             'users' => ['nullable', 'array'],
             'users.*' => ['integer', 'exists:users,id'],
             'title' => ['required', 'string'],
