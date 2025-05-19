@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -42,7 +42,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Create New Task</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.task.index') }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-circle ti-xs me-1"></span>
@@ -53,20 +53,40 @@
             <!-- Account -->
             <div class="card-body">
                 <form id="taskForm" action="{{ route('administration.task.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
-                    @csrf                    
+                    @csrf
                     <div class="row">
                         <div class="mb-3 col-md-8">
-                            <label for="title" class="form-label">{{ __('Title') }} <strong class="text-danger">*</strong></label>
-                            <input type="text" id="title" name="title" value="{{ old('title') }}" placeholder="{{ __('Title') }}" class="form-control @error('title') is-invalid @enderror" required/>
-                            @error('title')
-                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
+                            <label for="parent_task_id" class="form-label">{{ __('Select Parent Task') }}</label>
+                            <select name="parent_task_id" id="parent_task_id" class="select2 form-select @error('parent_task_id') is-invalid @enderror" data-allow-clear="true">
+                                <option value="" {{ is_null(request()->parent_task_id) ? 'selected' : '' }}>Select Parent Task</option>
+                                @foreach ($tasks as $task)
+                                    <option value="{{ $task->id }}" {{ $task->id == request()->parent_task_id ? 'selected' : '' }}>
+                                        {{ $task->title }} - ({{ $task->taskid }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">
+                                <span class="text-dark text-bold">Note:</span> If you select a parent task, the task will be created as a sub-task of the selected parent task.
+                            </small>
+                            @error('parent_task_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="form-label">Deadline</label>
                             <input type="text" name="deadline" value="{{ old('deadline') }}" class="form-control  date-picker" placeholder="YYYY-MM-DD" tabindex="-1"/>
+                            <small class="text-muted">
+                                <span class="text-dark text-bold">Note:</span> Leave it blank if you want to create an ongoing task.
+                            </small>
                             @error('deadline')
                                 <span class="text-danger">{{ $message }}</span>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-12">
+                            <label for="title" class="form-label">{{ __('Title') }} <strong class="text-danger">*</strong></label>
+                            <input type="text" id="title" name="title" value="{{ old('title') }}" placeholder="{{ __('Title') }}" class="form-control @error('title') is-invalid @enderror" required/>
+                            @error('title')
+                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-12">
@@ -130,7 +150,7 @@
                                         </label>
                                     </div>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                         <div class="mb-3 col-md-12">
                             <label class="form-label">Task Description <strong class="text-danger">*</strong></label>
@@ -155,7 +175,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -169,7 +189,7 @@
     <!-- Vendors JS -->
     <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
 @endsection

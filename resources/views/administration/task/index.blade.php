@@ -164,7 +164,18 @@
                                     <td>
                                         <b title="{{ $task->title }}">{{ show_content($task->title, 30) }}</b>
                                         <br>
-                                        <small>Priority: <span class="text-muted">{{ $task->priority }}</span></small>
+                                        <div class="li-wrapper d-flex justify-content-start align-items-center li-task-status-priority">
+                                            <div class="list-content text-center">
+                                                <small class="badge bg-{{ getColor($task->priority) }} task-priority" title="Task Priority">{{ $task->priority }}</small>
+                                                @if ($task->parent_task)
+                                                    <small class="badge bg-dark mb-1">{{ __('Sub Task') }}</small>
+                                                @else
+                                                    @if ($task->sub_tasks->count() > 0)
+                                                        <small class="badge bg-dark mb-1" title="Total Sub-Tasks">{{ $task->sub_tasks->count() }}</small>
+                                                    @endif
+                                                @endif
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
                                         <b class="text-dark">{{ $task->creator->alias_name }}</b>

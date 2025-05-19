@@ -134,7 +134,7 @@ class TaskController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $roles = Role::with([
             'users' => function ($query) {
@@ -144,7 +144,15 @@ class TaskController extends Controller
             }
         ])->get();
 
-        return view('administration.task.create', compact(['roles']));
+        $tasks = Task::with([
+            'creator:id,userid',
+            'creator.employee',
+            'users',
+            'users.media',
+            'users.employee'
+        ])->orderByDesc('created_at')->get();
+
+        return view('administration.task.create', compact(['roles', 'tasks']));
     }
 
     /**
@@ -175,6 +183,7 @@ class TaskController extends Controller
             DB::transaction(function () use ($request, &$task, &$taskID) {
                 $task = Task::create([
                     'chatting_id' => $request->chatting_id ?? NULL,
+                    'parent_task_id' => $request->parent_task_id ?? NULL,
                     'title' => $request->title,
                     'description' => $request->description,
                     'deadline' => $request->deadline ?? null,
@@ -236,6 +245,10 @@ class TaskController extends Controller
         $task = Task::with([
                 'creator.employee',
                 'creator.media',
+                'parent_task',
+                'sub_tasks' => function ($subTask) {
+                    $subTask->orderByDesc('created_at');
+                },
                 'users.employee',
                 'users.media',
                 'files',
