@@ -2,15 +2,16 @@
 
 namespace App\Models\Task\Traits;
 
-use App\Models\Chatting\Chatting;
 use App\Models\User;
+use App\Models\Task\Task;
 use App\Models\Task\TaskComment;
 use App\Models\Task\TaskHistory;
+use App\Models\Chatting\Chatting;
 use App\Models\FileMedia\FileMedia;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait TaskRelations
 {
@@ -63,5 +64,22 @@ trait TaskRelations
     public function chatting(): BelongsTo
     {
         return $this->belongsTo(Chatting::class);
+    }
+
+
+    /**
+     * Get the sub_tasks associated with the task.
+     */
+    public function sub_tasks(): HasMany
+    {
+        return $this->hasMany(Task::class, 'parent_task_id', 'id');
+    }
+
+    /**
+     * Get the parent_task that owns the task.
+     */
+    public function parent_task(): BelongsTo
+    {
+        return $this->belongsTo(Task::class, 'parent_task_id', 'id');
     }
 }

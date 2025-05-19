@@ -207,32 +207,7 @@
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <div class="demo-inline-spacing mt-1">
-                            @php
-                                function getColor($status) {
-                                    switch ($status) {
-                                        case 'Active':
-                                        case 'Low':
-                                            return 'info';
 
-                                        case 'Running':
-                                        case 'Medium':
-                                            return 'primary';
-
-                                        case 'Completed':
-                                            return 'success';
-
-                                        case 'Average':
-                                            return 'warning';
-
-                                        case 'Cancelled':
-                                        case 'High':
-                                            return 'danger';
-
-                                        default:
-                                            return 'dark';
-                                    }
-                                }
-                            @endphp
                             <div id="taskContainer" class="list-group list-view"> {{-- grid-view --}}
                                 @forelse ($tasks as $key => $task)
                                     <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="list-group-item d-flex justify-content-between btn-outline-{{ getColor($task->status) }} bg-label-{{ getColor($task->status) }} mb-3" style="border-radius: 5px;">
@@ -242,12 +217,19 @@
                                                 <small class="text-muted">Task ID: <b>{{ $task->taskid }}</b></small>
                                             </div>
                                         </div>
-                                        <div class="li-wrapper d-flex justify-content-start align-items-center" title="Task Deadline">
+                                        <div class="li-wrapper d-flex justify-content-start align-items-center">
                                             <div class="list-content">
                                                 @if (!is_null($task->deadline))
-                                                    <b class="text-dark">{{ show_date($task->deadline) }}</b>
+                                                    <b class="text-dark" title="Task Deadline">{{ show_date($task->deadline) }}</b>
                                                 @else
-                                                    <span class="badge bg-success">Ongoing Task</span>
+                                                    <span class="badge bg-success" title="Task Deadline">Ongoing Task</span>
+                                                @endif
+                                                @if ($task->parent_task)
+                                                    <small class="badge bg-dark mb-1">{{ __('Sub Task') }}</small>
+                                                @else
+                                                    @if ($task->sub_tasks->count() > 0)
+                                                        <small class="badge bg-dark mb-1" title="Total Sub-Tasks">{{ $task->sub_tasks->count() }}</small>
+                                                    @endif
                                                 @endif
                                                 <br>
                                                 <small class="text-dark">Created: <span class="text-muted">{{ show_date($task->created_at) }}</span></small>

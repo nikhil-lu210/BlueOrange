@@ -15,7 +15,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class Task extends Model implements HasMedia
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, InteractsWithMedia, TaskRelations, HasCustomRouteId;
-    
+
     protected $cascadeDeletes = ['histories', 'comments', 'files'];
 
     protected $casts = [
@@ -26,6 +26,7 @@ class Task extends Model implements HasMedia
     protected $fillable = [
         'taskid',
         'chatting_id',
+        'parent_task_id',
         'creator_id',
         'title',
         'description',
