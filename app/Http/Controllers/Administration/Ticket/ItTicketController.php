@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Administration\Ticket\StoreItTicketRequest;
 use App\Http\Requests\Administration\Ticket\UpdateItTicketRequest;
 use App\Http\Requests\Administration\Ticket\UpdateItTicketStatusRequest;
+use App\Http\Requests\Comment\CommentStoreRequest;
 use App\Models\Ticket\ItTicket;
 use App\Repositories\Administration\Ticket\ItTicketRepository;
 use App\Services\Administration\Ticket\ItTicketService;
@@ -94,9 +95,13 @@ class ItTicketController extends Controller
                 'creator.employee', 
                 'solver.roles', 
                 'solver.employee', 
-                'comments.commenter.roles', 
-                'comments.commenter.employee'
-            ])->whereId($itTicket->id)->first();
+                'comments' => function ($comment) {
+                    $comment->with([
+                        'commenter.roles',
+                        'commenter.employee',
+                    ])->orderByDesc('created_at');
+                }
+            ])->whereId($itTicket->id)->firstOrFail();
 
         $this->service->updateSeenBy($itTicket, auth()->user());
         return view('administration.ticket.it_ticket.show', compact('itTicket'));
@@ -159,12 +164,8 @@ class ItTicketController extends Controller
     /**
      * Store IT-Ticket Comment
      */
-    public function storeComment(Request $request, ItTicket $itTicket)
+    public function storeComment(CommentStoreRequest $request, ItTicket $itTicket)
     {
-        $request->validate([
-            'comment' => ['required','string','min:10'],
-        ]);
-
         try {
             $itTicket->comments()->create([
                 'comment' => $request->comment
