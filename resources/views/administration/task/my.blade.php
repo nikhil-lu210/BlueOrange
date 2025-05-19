@@ -217,12 +217,19 @@
                                                 <small class="text-muted">Task ID: <b>{{ $task->taskid }}</b></small>
                                             </div>
                                         </div>
-                                        <div class="li-wrapper d-flex justify-content-start align-items-center" title="Task Deadline">
+                                        <div class="li-wrapper d-flex justify-content-start align-items-center">
                                             <div class="list-content">
                                                 @if (!is_null($task->deadline))
-                                                    <b class="text-dark">{{ show_date($task->deadline) }}</b>
+                                                    <b class="text-dark" title="Task Deadline">{{ show_date($task->deadline) }}</b>
                                                 @else
-                                                    <span class="badge bg-success">Ongoing Task</span>
+                                                    <span class="badge bg-success" title="Task Deadline">Ongoing Task</span>
+                                                @endif
+                                                @if ($task->parent_task)
+                                                    <small class="badge bg-dark mb-1">{{ __('Sub Task') }}</small>
+                                                @else
+                                                    @if ($task->sub_tasks->count() > 0)
+                                                        <small class="badge bg-dark mb-1" title="Total Sub-Tasks">{{ $task->sub_tasks->count() }}</small>
+                                                    @endif
                                                 @endif
                                                 <br>
                                                 <small class="text-dark">Created: <span class="text-muted">{{ show_date($task->created_at) }}</span></small>
