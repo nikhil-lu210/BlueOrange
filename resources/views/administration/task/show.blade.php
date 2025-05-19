@@ -350,9 +350,9 @@
             // Function to update button text/icon based on the view mode
             function updateButtonText(mode) {
                 if (mode === 'grid-view') {
-                    $button.html('<span class="tf-icon ti ti-list ti-xs me-1" title="Switch to List View"></span>');
+                    $button.html('<span class="tf-icon ti ti-list ti-xs" title="Switch to List View"></span>');
                 } else {
-                    $button.html('<span class="tf-icon ti ti-layout-2 ti-xs me-1" title="Switch to Grid View"></span>');
+                    $button.html('<span class="tf-icon ti ti-layout-2 ti-xs" title="Switch to Grid View"></span>');
                 }
             }
         });

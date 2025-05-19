@@ -134,7 +134,7 @@ class TaskController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Request $request)
     {
         $roles = Role::with([
             'users' => function ($query) {
@@ -246,6 +246,9 @@ class TaskController extends Controller
                 'creator.employee',
                 'creator.media',
                 'parent_task',
+                'sub_tasks' => function ($subTask) {
+                    $subTask->orderByDesc('created_at');
+                },
                 'users.employee',
                 'users.media',
                 'files',

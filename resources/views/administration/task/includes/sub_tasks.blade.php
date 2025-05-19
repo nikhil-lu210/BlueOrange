@@ -2,7 +2,13 @@
     <div class="card-header header-elements pt-3 pb-3">
         <h5 class="mb-0">{{ __('Sub Tasks') }}</h5>
         <div class="card-header-elements ms-auto">
-            <button id="toggleView" class="btn btn-icon btn-outline-dark" title="Switch View">
+            @if (auth()->user()->id == $task->creator->id)
+                <a href="{{ route('administration.task.create', ['parent_task_id' => $task->id]) }}" target="_blank" class="btn btn-xs btn-dark">
+                    <span class="tf-icon ti ti-plus ti-xs me-1"></span>
+                    {{ __('Create Sub-Task') }}
+                </a>
+            @endif
+            <button id="toggleView" class="btn btn-xs btn-outline-dark" title="Switch View" style="padding: 3px;">
                 <span class="tf-icon ti ti-layout-2"></span>
             </button>
         </div>
@@ -21,12 +27,12 @@
                                         <small class="text-muted">Task ID: <b>{{ $task->taskid }}</b></small>
                                     </div>
                                 </div>
-                                <div class="li-wrapper d-flex justify-content-start align-items-center" title="Task Deadline">
+                                <div class="li-wrapper d-flex justify-content-start align-items-center">
                                     <div class="list-content">
                                         @if (!is_null($task->deadline))
-                                            <b class="text-dark">{{ show_date($task->deadline) }}</b>
+                                            <b class="text-dark" title="Task Deadline">{{ show_date($task->deadline) }}</b>
                                         @else
-                                            <span class="badge bg-success">Ongoing Task</span>
+                                            <span class="badge bg-success" title="Task Deadline">Ongoing Task</span>
                                         @endif
                                         <br>
                                         <small class="text-dark">Created: <span class="text-muted">{{ show_date($task->created_at) }}</span></small>
