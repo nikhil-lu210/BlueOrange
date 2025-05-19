@@ -16,13 +16,13 @@ class ItTicket extends Model
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
 
-    // Relations 
+    // Relations
     use ItTicketRelations;
 
     // Accessors & Mutators
     use ItTicketAccessors, ItTicketMutators;
-    
-    protected $cascadeDeletes = [];
+
+    protected $cascadeDeletes = ['comments'];
 
     protected $casts = [
         'description' => PurifyHtmlOnGet::class,

@@ -88,6 +88,16 @@ class ItTicketController extends Controller
      */
     public function show(ItTicket $itTicket)
     {
+        // Load itTicket with its relations
+        $itTicket = ItTicket::with([
+                'creator.roles', 
+                'creator.employee', 
+                'solver.roles', 
+                'solver.employee', 
+                'comments.commenter.roles', 
+                'comments.commenter.employee'
+            ])->whereId($itTicket->id)->first();
+
         $this->service->updateSeenBy($itTicket, auth()->user());
         return view('administration.ticket.it_ticket.show', compact('itTicket'));
     }
@@ -145,6 +155,29 @@ class ItTicketController extends Controller
             return $this->handleException($e);
         }
     }
+
+    /**
+     * Store IT-Ticket Comment
+     */
+    public function storeComment(Request $request, ItTicket $itTicket)
+    {
+        $request->validate([
+            'comment' => ['required','string','min:10'],
+        ]);
+
+        try {
+            $itTicket->comments()->create([
+                'comment' => $request->comment
+            ]);
+
+            toast('Comment Submitted Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return $this->handleException($e);
+        }
+    }
+
+
 
     /**
      * Remove the specified resource from storage.
