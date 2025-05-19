@@ -207,32 +207,7 @@
                 <div class="row mb-3">
                     <div class="col-md-12">
                         <div class="demo-inline-spacing mt-1">
-                            @php
-                                function getColor($status) {
-                                    switch ($status) {
-                                        case 'Active':
-                                        case 'Low':
-                                            return 'info';
 
-                                        case 'Running':
-                                        case 'Medium':
-                                            return 'primary';
-
-                                        case 'Completed':
-                                            return 'success';
-
-                                        case 'Average':
-                                            return 'warning';
-
-                                        case 'Cancelled':
-                                        case 'High':
-                                            return 'danger';
-
-                                        default:
-                                            return 'dark';
-                                    }
-                                }
-                            @endphp
                             <div id="taskContainer" class="list-group list-view"> {{-- grid-view --}}
                                 @forelse ($tasks as $key => $task)
                                     <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="list-group-item d-flex justify-content-between btn-outline-{{ getColor($task->status) }} bg-label-{{ getColor($task->status) }} mb-3" style="border-radius: 5px;">

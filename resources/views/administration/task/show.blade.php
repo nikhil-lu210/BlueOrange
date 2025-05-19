@@ -53,6 +53,62 @@
         white-space: nowrap;
     }
     </style>
+    <style>
+        /* Custom CSS Here */
+        .more-user-avatar {
+            background-color: #dddddd;
+            border-radius: 50px;
+            text-align: center;
+            padding-top: 5px;
+            border: 1px solid #ffffff;
+        }
+        .more-user-avatar small {
+            font-size: 12px;
+            color: #333333;
+            font-weight: bold;
+        }
+        .list-group-item + .list-group-item {
+            border-top-width: 1px;
+        }
+
+        .grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive Grid */
+            gap: 20px; /* Spacing between items */
+        }
+        .grid-view .list-group-item {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 15px;
+            border-radius: 10px;
+            transition: transform 0.2s ease-in-out;
+        }
+        .grid-view .list-group-item:hover {
+            transform: translateY(-5px); /* Subtle hover effect */
+        }
+        .grid-view .list-content {
+            width: 100%;
+        }
+        .grid-view .li-wrapper.li-task-status-priority {
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        .grid-view .task-status {
+            position: absolute;
+            right: 10px;
+            top: 40px;
+        }
+        .grid-view .task-priority {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+        }
+        .grid-view .li-wrapper {
+            margin-bottom: 15px;
+        }
+    </style>
 @endsection
 
 
@@ -81,32 +137,6 @@
 
 <!-- Start row -->
 <div class="row justify-content-center">
-    @php
-        function getColor($status) {
-            switch ($status) {
-                case 'Active':
-                case 'Low':
-                    return 'info';
-
-                case 'Running':
-                case 'Medium':
-                    return 'primary';
-
-                case 'Completed':
-                    return 'success';
-
-                case 'Average':
-                    return 'warning';
-
-                case 'Cancelled':
-                case 'High':
-                    return 'danger';
-
-                default:
-                    return 'dark';
-            }
-        }
-    @endphp
     <div class="col-md-12">
         <div class="card border-bottom-{{ getColor($task->priority) }} mb-4">
             <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
@@ -186,6 +216,10 @@
         {{-- <!-- Task Files --> --}}
         @include('administration.task.includes.task_files')
 
+        {{-- <!-- Sub Tasks --> --}}
+        @if ($task->sub_tasks->count() > 0)
+            @include('administration.task.includes.sub_tasks')
+        @endif
 
         {{-- Task Comments --}}
         @include('administration.task.includes.task_comments')
@@ -281,6 +315,46 @@
                 'wrapAround': true,
                 'albumLabel': "Image %1 of %2"
             });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+            var $container = $('#taskContainer');
+            var $button = $('#toggleView');
+
+            // Check localStorage for stored view preference, or default to 'list-view'
+            var viewMode = localStorage.getItem('taskViewMode');
+            if (!viewMode) {
+                viewMode = 'list-view'; // Default to list-view if nothing is stored
+            }
+
+            // Apply the view mode from localStorage or default
+            $container.removeClass('grid-view list-view').addClass(viewMode);
+            updateButtonText(viewMode);
+
+            // Toggle View on Button Click
+            $button.on('click', function () {
+                var newViewMode = $container.hasClass('grid-view') ? 'list-view' : 'grid-view';
+
+                // Update the class for task container
+                $container.removeClass('grid-view list-view').addClass(newViewMode);
+
+                // Store the updated view mode in localStorage
+                localStorage.setItem('taskViewMode', newViewMode);
+
+                // Update button text/icon based on the new view mode
+                updateButtonText(newViewMode);
+            });
+
+            // Function to update button text/icon based on the view mode
+            function updateButtonText(mode) {
+                if (mode === 'grid-view') {
+                    $button.html('<span class="tf-icon ti ti-list ti-xs me-1" title="Switch to List View"></span>');
+                } else {
+                    $button.html('<span class="tf-icon ti ti-layout-2 ti-xs me-1" title="Switch to Grid View"></span>');
+                }
+            }
         });
     </script>
 @endsection
