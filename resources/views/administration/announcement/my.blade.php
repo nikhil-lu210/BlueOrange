@@ -41,9 +41,9 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">All Announcements</h5>
-        
+
                 <div class="card-header-elements ms-auto">
-                    @can ('Announcement Create') 
+                    @can ('Announcement Create')
                         <a href="{{ route('administration.announcement.create') }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-plus ti-xs me-1"></span>
                             Create Announcement
@@ -64,7 +64,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($announcements as $key => $announcement) 
+                            @foreach ($announcements as $key => $announcement)
                                 <tr>
                                     <th>#{{ serial($announcements, $key) }}</th>
                                     <td>{{ show_date($announcement->created_at) }}</td>
@@ -84,19 +84,21 @@
                                             <small class="text-muted">All Recipients</small>
                                         @endif
                                     </td>
-                                    <td>{{ $announcement->announcer->name }}</td>
+                                    <td>
+                                        {!! show_user_name_and_avatar($announcement->announcer, role: null) !!}
+                                    </td>
                                     <td class="text-center">
-                                        @can ('Announcement Delete') 
+                                        @can ('Announcement Delete')
                                             <a href="{{ route('administration.announcement.destroy', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Announcement?">
                                                 <i class="text-white ti ti-trash"></i>
                                             </a>
                                         @endcan
-                                        @can ('Announcement Update') 
+                                        @can ('Announcement Update')
                                             <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Announcement?">
                                                 <i class="text-white ti ti-pencil"></i>
                                             </a>
                                         @endcan
-                                        @can ('Announcement Read') 
+                                        @can ('Announcement Read')
                                             <a href="{{ route('administration.announcement.show', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                                 <i class="text-white ti ti-info-hexagon"></i>
                                             </a>
@@ -108,7 +110,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->

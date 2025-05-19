@@ -12,11 +12,11 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    
+
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -68,18 +68,18 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        
+
                         <div class="mb-3 col-md-5">
                             <label class="form-label">Announcements Of</label>
                             <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                             @error('created_month_year')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
-                        </div>                        
+                        </div>
                     </div>
-                    
+
                     <div class="col-md-12 text-end">
-                        @if (request()->announcer_id || request()->created_month_year) 
+                        @if (request()->announcer_id || request()->created_month_year)
                             <a href="{{ route('administration.announcement.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 Reset Filters
@@ -92,7 +92,7 @@
                     </div>
                 </div>
             </div>
-        </form>        
+        </form>
     </div>
 </div>
 
@@ -101,9 +101,9 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">All Announcements</h5>
-        
+
                 <div class="card-header-elements ms-auto">
-                    @can ('Announcement Create') 
+                    @can ('Announcement Create')
                         <a href="{{ route('administration.announcement.create') }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-plus ti-xs me-1"></span>
                             Create Announcement
@@ -124,7 +124,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($announcements as $key => $announcement) 
+                            @foreach ($announcements as $key => $announcement)
                                 <tr>
                                     <th>#{{ serial($announcements, $key) }}</th>
                                     <td>
@@ -152,24 +152,20 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <a href="{{ route('administration.settings.user.show.profile', ['user' => $announcement->announcer]) }}" target="_blank" class="text-bold text-primary">
-                                            {{ $announcement->announcer->name }}
-                                        </a>
-                                        <br>
-                                        <small class="text-muted">{{ $announcement->announcer->role->name }}</small>
+                                        {!! show_user_name_and_avatar($announcement->announcer, role: null) !!}
                                     </td>
                                     <td class="text-center">
-                                        @can ('Announcement Delete') 
+                                        @can ('Announcement Delete')
                                             <a href="{{ route('administration.announcement.destroy', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Announcement?">
                                                 <i class="text-white ti ti-trash"></i>
                                             </a>
                                         @endcan
-                                        @can ('Announcement Update') 
+                                        @can ('Announcement Update')
                                             <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Announcement?">
                                                 <i class="text-white ti ti-pencil"></i>
                                             </a>
                                         @endcan
-                                        @can ('Announcement Read') 
+                                        @can ('Announcement Read')
                                             <a href="{{ route('administration.announcement.show', ['announcement' => $announcement]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                                 <i class="text-white ti ti-info-hexagon"></i>
                                             </a>
@@ -181,7 +177,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -200,7 +196,7 @@
 
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
 @endsection
