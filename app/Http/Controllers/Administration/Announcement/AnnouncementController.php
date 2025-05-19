@@ -39,7 +39,11 @@ class AnnouncementController extends Controller
                         ->distinct()
                         ->get();
 
-        $query = Announcement::orderByDesc('created_at');
+        $query = Announcement::with([
+            'announcer.employee',
+            'announcer.media',
+            'announcer.roles'
+        ])->orderByDesc('created_at');
 
         if ($request->has('announcer_id') && !is_null($request->announcer_id)) {
             $query->where('announcer_id', $request->announcer_id);
@@ -61,7 +65,11 @@ class AnnouncementController extends Controller
      */
     public function my()
     {
-        $announcements = Announcement::all()->filter(function ($announcement) {
+        $announcements = Announcement::with([
+            'announcer.employee',
+            'announcer.media',
+            'announcer.roles'
+        ])->get()->filter(function ($announcement) {
             return $announcement->isAuthorized();
         });
         // dd($announcements);
