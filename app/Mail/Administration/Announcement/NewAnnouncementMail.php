@@ -33,7 +33,7 @@ class NewAnnouncementMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'New Announcement By '. $this->data->announcer->name,
+            subject: 'New Announcement By '. $this->data->announcer->alias_name,
         );
     }
 
