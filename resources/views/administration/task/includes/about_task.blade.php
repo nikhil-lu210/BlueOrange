@@ -1,11 +1,23 @@
 <div class="card mb-4">
     <div class="card-body">
-        <small class="card-text text-uppercase">About Task</small>
+        <small class="card-text text-uppercase d-flex justify-content-between align-items-center">
+            <span>{{ __('About Task') }}</span>
+            @if ($task->parent_task)
+                <span class="badge bg-label-dark">{{ __('Sub Task') }}</span>
+            @endif
+        </small>
         <ul class="list-unstyled mb-0 mt-3">
+            @if ($task->parent_task)
+                <li class="d-flex align-items-center mb-3">
+                    <i class="ti ti-brand-stackshare text-heading"></i>
+                    <span class="fw-medium mx-2 text-heading">{{ __('Parent Task-ID') }}:</span>
+                    <a href="{{ route('administration.task.show', ['task' => $task->parent_task, 'taskid' => $task->parent_task->taskid]) }}" target="_blank" class="text-bold text-primary" title="{{ $task->parent_task->title }}">{{ $task->parent_task->taskid }}</a>
+                </li>
+            @endif
             <li class="d-flex align-items-center mb-3">
                 <i class="ti ti-hash text-heading"></i>
-                <span class="fw-medium mx-2 text-heading">Task-ID:</span>
-                <span class="text-bold text-primary">{{ $task->taskid }}</span>
+                <span class="fw-medium mx-2 text-heading">{{ $task->parent_task ? 'Sub-Task ID:' : 'Task-ID:' }}</span>
+                <span class="text-bold text-dark">{{ $task->taskid }}</span>
             </li>
             <li class="d-flex align-items-center mb-3">
                 <i class="ti ti-user-edit text-heading"></i>
