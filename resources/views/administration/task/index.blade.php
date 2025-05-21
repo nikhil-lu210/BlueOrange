@@ -162,7 +162,7 @@
                                 <tr>
                                     <th>#{{ serial($tasks, $key) }}</th>
                                     <td>
-                                        <b title="{{ $task->title }}">{{ show_content($task->title, 30) }}</b>
+                                        <b class="text-dark text-capitalize" title="{{ $task->title }}">{{ show_content($task->title, 30) }}</b>
                                         <br>
                                         <div class="li-wrapper d-flex justify-content-start align-items-center li-task-status-priority">
                                             <div class="list-content text-center">
