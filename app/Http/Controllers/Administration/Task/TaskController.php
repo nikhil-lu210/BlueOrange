@@ -3,78 +3,34 @@
 namespace App\Http\Controllers\Administration\Task;
 
 use Exception;
-use App\Models\User;
 use App\Models\Task\Task;
+use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
-use App\Mail\Administration\Task\NewTaskMail;
-use App\Mail\Administration\Task\UpdateTaskMail;
-use App\Mail\Administration\Task\AddUsersTaskMail;
-use App\Mail\Administration\Task\FileUploadForTaskMail;
+use App\Models\Chatting\Chatting;
 use App\Http\Requests\Administration\Task\TaskStoreRequest;
 use App\Http\Requests\Administration\Task\TaskUpdateRequest;
-use App\Mail\Administration\Task\StatusUpdateTaskMail;
-use App\Models\Chatting\Chatting;
-use App\Notifications\Administration\Task\TaskCreateNotification;
-use App\Notifications\Administration\Task\TaskUpdateNotification;
-use App\Notifications\Administration\Task\TaskAddUsersNotification;
-use App\Notifications\Administration\Task\TaskFileUploadNotification;
-use App\Notifications\Administration\Task\TaskStatusUpdateNotification;
+use App\Repositories\Administration\Task\TaskRepository;
+use App\Services\Administration\Task\TaskService;
 
 class TaskController extends Controller
 {
+    protected $taskService;
+    protected $taskRepository;
+
+    public function __construct(TaskService $taskService, TaskRepository $taskRepository)
+    {
+        $this->taskService = $taskService;
+        $this->taskRepository = $taskRepository;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
-        $roles = Role::select(['id', 'name'])
-                        ->with([
-                            'users' => function ($user) {
-                                $user->with(['employee'])->permission('Task Create')
-                                    ->select(['id', 'name'])
-                                    ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                                    ->whereStatus('Active');
-                            }
-                        ])
-                        ->whereHas('users', function ($user) {
-                            $user->permission('Task Create');
-                        })
-                        ->distinct()
-                        ->get();
-
-        $assignees = User::with(['employee'])->permission('Task Read')
-                        ->select(['id', 'name'])
-                        ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->get();
-
-        $query = Task::with([
-            'creator:id,userid',
-            'creator.employee',
-            'users',
-            'users.media',
-            'users.employee'
-        ])->orderByDesc('created_at');
-
-        if ($request->has('creator_id') && !is_null($request->creator_id)) {
-            $query->where('creator_id', $request->creator_id);
-        }
-
-        if ($request->has('user_id') && !is_null($request->user_id)) {
-            $query->whereHas('users', function ($q) use ($request) {
-                $q->where('users.id', $request->user_id);
-            });
-        }
-
-        if ($request->has('status') && !is_null($request->status)) {
-            $query->where('status', $request->status);
-        }
-
-        $tasks = $query->get();
+        $roles = $this->taskRepository->getRolesWithTaskCreators();
+        $assignees = $this->taskRepository->getAssignableUsers();
+        $tasks = $this->taskRepository->getTasksQuery($request)->get();
 
         return view('administration.task.index', compact(['tasks', 'roles', 'assignees']));
     }
@@ -86,38 +42,15 @@ class TaskController extends Controller
     {
         $creators = User::with(['employee'])->permission('Task Create')->select(['id', 'name'])->get();
 
-        $query = Task::with([
-                    'creator:id,userid',
-                    'creator.employee',
-                    'users',
-                    'users.media',
-                    'users.employee'
-                ])
-                ->where(function ($taskQuery) {
-                    $taskQuery->whereHas('users', function ($userQuery) {
-                        $userQuery->where('user_id', auth()->id());
-                    })->orWhere('creator_id', auth()->id());
-                })
-                ->orderByDesc('created_at');
-
-        if ($request->has('creator_id') && !is_null($request->creator_id)) {
-            $query->where('creator_id', $request->creator_id);
-        }
-
-        if ($request->has('status') && !is_null($request->status)) {
-            $query->where('status', $request->status);
-        }
-
-        // Temporarily use get() instead of paginate for debugging
+        // Get all tasks for the current user
+        $query = $this->taskRepository->getMyTasksQuery($request);
         $allTasks = $query->get();
 
-        // Count tasks by status for all tasks (no pagination)
+        // Count tasks by status
         $statusCounts = $allTasks->groupBy('status')->map->count();
 
-        // Get the paginated tasks
+        // Get paginated tasks
         $tasks = $query->paginate(20);
-
-        // Calculate total task count from pagination
         $totalTasks = $tasks->total();
 
         // Calculate percentages
@@ -136,21 +69,8 @@ class TaskController extends Controller
      */
     public function create(Request $request)
     {
-        $roles = Role::with([
-            'users' => function ($query) {
-                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->orderBy('name', 'asc');
-            }
-        ])->get();
-
-        $tasks = Task::with([
-            'creator:id,userid',
-            'creator.employee',
-            'users',
-            'users.media',
-            'users.employee'
-        ])->orderByDesc('created_at')->get();
+        $roles = $this->taskRepository->getRolesWithUsers();
+        $tasks = $this->taskRepository->getTasksQuery(new Request())->get();
 
         return view('administration.task.create', compact(['roles', 'tasks']));
     }
@@ -160,14 +80,7 @@ class TaskController extends Controller
      */
     public function createChatTask(Chatting $message)
     {
-        // dd($message->toArray());
-        $roles = Role::with([
-            'users' => function ($query) {
-                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->orderBy('name', 'asc');
-            }
-        ])->get();
+        $roles = $this->taskRepository->getRolesWithUsers();
 
         return view('administration.task.create_chat_task', compact(['roles', 'message']));
     }
@@ -178,48 +91,11 @@ class TaskController extends Controller
     public function store(TaskStoreRequest $request)
     {
         try {
-            $task = null;
-            $taskID = null;
-            DB::transaction(function () use ($request, &$task, &$taskID) {
-                $task = Task::create([
-                    'chatting_id' => $request->chatting_id ?? NULL,
-                    'parent_task_id' => $request->parent_task_id ?? NULL,
-                    'title' => $request->title,
-                    'description' => $request->description,
-                    'deadline' => $request->deadline ?? null,
-                    'priority' => $request->priority
-                ]);
-                $taskID = $task->taskid;
-
-                // Assign users to the task if necessary
-                if ($request->has('users')) {
-                    $task->users()->attach($request->users);
-                }
-
-                // Store Task Files
-                if ($request->hasFile('files')) {
-                    foreach ($request->file('files') as $file) {
-                        $directory = 'tasks/' . $task->taskid;
-                        store_file_media($file, $task, $directory);
-                    }
-                }
-
-                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
-
-                $notifiableUsers = [];
-                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-
-                foreach ($notifiableUsers as $notifiableUser) {
-                    // Send Notification to System
-                    $notifiableUser->notify(new TaskCreateNotification($task, auth()->user()));
-
-                    // Send Mail to the notifiableUser's email & Dispatch the email to the queue
-                    Mail::to($notifiableUser->employee->official_email)->queue(new NewTaskMail($task, $notifiableUser));
-                }
-            });
+            // Create task using service
+            $task = $this->taskService->createTask($request->validated());
 
             toast('Task assigned successfully.', 'success');
-            return redirect()->route('administration.task.show', ['task' => $task, 'taskid' => $taskID]);
+            return redirect()->route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]);
         } catch (Exception $e) {
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
@@ -241,55 +117,25 @@ class TaskController extends Controller
             'You are not authorized to view this task as you are not the assigner, assignee, Developer, or Superadmin.'
         );
 
+        // Get detailed task with all relationships
+        $task = $this->taskRepository->getDetailedTask($task, $taskid);
 
-        $task = Task::with([
-                'creator.employee',
-                'creator.media',
-                'parent_task',
-                'sub_tasks' => function ($subTask) {
-                    $subTask->orderByDesc('created_at');
-                },
-                'users.employee',
-                'users.media',
-                'files',
-                'comments' => function ($comment) {
-                    $comment->with([
-                        'files',
-                        'commenter.roles',
-                        'commenter.employee',
-                        'commenter.media',
-                    ])->orderByDesc('created_at')->get();
-                },
-                'histories' => function ($history) {
-                    $history->whereStatus('Completed')->orderByDesc('ends_at')->get();
-                }
-            ])
-            ->whereId($task->id)
-            ->whereTaskid($taskid)
-            ->firstOrFail();
-
+        // Check if user is currently working on this task
         $isWorking = $task->histories()
                         ->whereUserId(auth()->id())
                         ->whereNull('ends_at')
                         ->whereStatus('Working')
                         ->exists();
 
+        // Get last active task history
         $lastActiveTaskHistory = $task->histories()
                         ->whereUserId(auth()->id())
                         ->where('status', 'Working')
                         ->orderByDesc('started_at')
                         ->first();
 
-        $roles = Role::with([
-            'users' => function($query) use ($task) {
-                $query->whereDoesntHave('tasks', function($taskQuery) use ($task) {
-                    $taskQuery->where('task_id', $task->id);
-                })
-                ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                ->whereStatus('Active');
-            }
-        ])->get();
-
+        // Get roles with users not assigned to this task
+        $roles = $this->taskRepository->getRolesWithUnassignedUsers($task);
 
         return view('administration.task.show', compact(['task', 'isWorking', 'lastActiveTaskHistory', 'roles']));
     }
@@ -308,13 +154,7 @@ class TaskController extends Controller
             'You are not authorized to view this task as you are not the assigner, assignee, Developer, or Superadmin.'
         );
 
-        $roles = Role::with([
-            'users' => function ($query) {
-                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->orderBy('name', 'asc');
-            }
-        ])->get();
+        $roles = $this->taskRepository->getRolesWithUsers();
 
         return view('administration.task.edit', compact(['roles', 'task']));
     }
@@ -325,27 +165,8 @@ class TaskController extends Controller
     public function update(TaskUpdateRequest $request, Task $task)
     {
         try {
-            DB::transaction(function () use ($request, $task) {
-                $task->update([
-                    'title' => $request->title,
-                    'description' => $request->description,
-                    'deadline' => $request->deadline ?? null,
-                    'priority' => $request->priority
-                ]);
-
-                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
-
-                $notifiableUsers = [];
-                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-
-                foreach ($notifiableUsers as $notifiableUser) {
-                    // Send Notification to System
-                    $notifiableUser->notify(new TaskUpdateNotification($task, auth()->user()));
-
-                    // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->employee->official_email)->queue(new UpdateTaskMail($task, $notifiableUser));
-                }
-            });
+            // Update task using service
+            $task = $this->taskService->updateTask($task, $request->validated());
 
             toast('Task Updated successfully.', 'success');
             return redirect()->route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]);
@@ -359,11 +180,10 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        // dd($task);
         try {
             $task->delete();
 
-            toast('Task Has Been Delete Successfully.', 'success');
+            toast('Task Has Been Deleted Successfully.', 'success');
             return redirect()->route('administration.task.index');
         } catch (Exception $e) {
             return redirect()->back()->withErrors('An error occurred: ' . $e->getMessage());
@@ -380,7 +200,7 @@ class TaskController extends Controller
             'users.*' => [
                 'integer',
                 'exists:users,id',
-                function ($attribute, $value, $fail) use ($task) {
+                function (/** @noinspection PhpUnusedParameterInspection */ $_, $value, $fail) use ($task) {
                     if ($task->users()->where('user_id', $value)->exists()) {
                         $fail('The user is already assigned to this task.');
                     }
@@ -389,22 +209,8 @@ class TaskController extends Controller
         ]);
 
         try {
-            DB::transaction(function() use ($request, $task) {
-                if ($request->has('users')) {
-                    $task->users()->attach($request->users);
-                }
-
-                $notifiableUsers = [];
-                $notifiableUsers = User::with(['employee'])->select(['id', 'name', 'email'])->whereIn('id', $request->users)->get();
-
-                foreach ($notifiableUsers as $notifiableUser) {
-                    // Send Notification to System
-                    $notifiableUser->notify(new TaskAddUsersNotification($task, auth()->user()));
-
-                    // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->employee->official_email)->queue(new AddUsersTaskMail($task, $notifiableUser));
-                }
-            });
+            // Add users to task using service
+            $this->taskService->addUsersToTask($task, $request->users);
 
             toast('Assignees Added Successfully.', 'success');
             return redirect()->back();
@@ -423,19 +229,17 @@ class TaskController extends Controller
                 'required',
                 'integer',
                 'exists:users,id',
-                function ($attribute, $value, $fail) use ($task) {
+                function (/** @noinspection PhpUnusedParameterInspection */ $_, $value, $fail) use ($task) {
                     if (!$task->users()->where('user_id', $value)->exists()) {
                         $fail('The selected user is not assigned to this task.');
                     }
                 },
             ],
         ]);
-        // dd($request->all(), $task);
 
         try {
-            if ($request->has('user')) {
-                $task->users()->detach($request->user);
-            }
+            // Remove user from task using service
+            $this->taskService->removeUserFromTask($task, $request->user);
 
             toast('Assignee Removed Successfully.', 'success');
             return redirect()->back();
@@ -454,27 +258,8 @@ class TaskController extends Controller
         ]);
 
         try {
-            DB::transaction(function() use ($request, $task) {
-                if ($request->hasFile('files')) {
-                    foreach ($request->file('files') as $file) {
-                        $directory = 'tasks/' . $task->taskid;
-                        store_file_media($file, $task, $directory);
-                    }
-                }
-
-                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
-
-                $notifiableUsers = [];
-                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-
-                foreach ($notifiableUsers as $notifiableUser) {
-                    // Send Notification to System
-                    $notifiableUser->notify(new TaskFileUploadNotification($task, auth()->user()));
-
-                    // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->queue(new FileUploadForTaskMail($task, $notifiableUser));
-                }
-            });
+            // Upload files to task using service
+            $this->taskService->uploadTaskFiles($task, $request->file('files'));
 
             toast('Task Files Added Successfully.', 'success');
             return redirect()->back();
@@ -495,24 +280,8 @@ class TaskController extends Controller
         ]);
 
         try {
-            DB::transaction(function() use ($request, $task) {
-                $task->update([
-                    'status' => $request->status
-                ]);
-
-                $notifiableUserIds = $task->users()->pluck('users.id')->toArray();
-
-                $notifiableUsers = [];
-                $notifiableUsers = User::select(['id', 'name', 'email'])->whereIn('id', $notifiableUserIds)->get();
-
-                foreach ($notifiableUsers as $notifiableUser) {
-                    // Send Notification to System
-                    $notifiableUser->notify(new TaskStatusUpdateNotification($task, auth()->user()));
-
-                    // Send Mail to the notifiableUser's email
-                    Mail::to($notifiableUser->email)->queue(new StatusUpdateTaskMail($task, $notifiableUser));
-                }
-            });
+            // Update task status using service
+            $this->taskService->updateTaskStatus($task, $request->status);
 
             toast('Task Status Updated to '. $request->status, 'success');
             return redirect()->back();
