@@ -7,7 +7,7 @@ use App\Models\Task\Task;
 use App\Models\Vault\Vault;
 use App\Models\Salary\Salary;
 use App\Models\Ticket\ItTicket;
-use App\Models\Task\TaskComment;
+use App\Models\Comment\Comment;
 use App\Models\Religion\Religion;
 use App\Models\Shortcut\Shortcut;
 use App\Models\User\LoginHistory;
@@ -244,11 +244,11 @@ trait UserRelations
     }
 
     /**
-     * Get the task_comments associated with the user.
+     * Get the comments associated with the user.
      */
-    public function task_comments(): HasMany
+    public function comments(): HasMany
     {
-        return $this->hasMany(TaskComment::class, 'user_id');
+        return $this->hasMany(Comment::class, 'user_id');
     }
 
     /**

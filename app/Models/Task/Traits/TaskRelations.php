@@ -4,7 +4,7 @@ namespace App\Models\Task\Traits;
 
 use App\Models\User;
 use App\Models\Task\Task;
-use App\Models\Task\TaskComment;
+use App\Models\Comment\Comment;
 use App\Models\Task\TaskHistory;
 use App\Models\Chatting\Chatting;
 use App\Models\FileMedia\FileMedia;
@@ -45,9 +45,9 @@ trait TaskRelations
     /**
      * Get the comments associated with the task.
      */
-    public function comments(): HasMany
+    public function comments(): MorphMany
     {
-        return $this->hasMany(TaskComment::class);
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     /**
