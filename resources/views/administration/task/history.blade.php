@@ -85,7 +85,7 @@
     <div class="col-md-12">
         <div class="card">
             <div class="card-header header-elements">
-                <h5 class="mb-0">{{ $task->title }}</h5>
+                <h5 class="mb-0 text-capitalize">{{ $task->title }}</h5>
 
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="btn btn-sm btn-dark">

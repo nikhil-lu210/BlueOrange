@@ -213,7 +213,7 @@
                                     <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="list-group-item d-flex justify-content-between btn-outline-{{ getColor($task->status) }} bg-label-{{ getColor($task->status) }} mb-3" style="border-radius: 5px;">
                                         <div class="li-wrapper d-flex justify-content-start align-items-center" title="{{ $task->title }}">
                                             <div class="list-content">
-                                                <h6 class="mb-1 text-dark text-bold">{{ show_content($task->title, 30) }}</h6>
+                                                <h6 class="mb-1 text-dark text-bold text-capitalize">{{ show_content($task->title, 30) }}</h6>
                                                 <small class="text-muted">Task ID: <b>{{ $task->taskid }}</b></small>
                                             </div>
                                         </div>

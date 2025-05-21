@@ -1,6 +1,6 @@
 <div class="card card-action mb-4">
     <div class="card-header align-items-center pb-3 pt-3">
-        <h5 class="card-action-title mb-0">{{ $task->title }}</h5>
+        <h5 class="card-action-title text-capitalize mb-0">{{ $task->title }}</h5>
         <div class="card-action-element">
             <div class="dropdown">
                 <button type="button" class="btn dropdown-toggle hide-arrow p-0" data-bs-toggle="dropdown" aria-expanded="false">

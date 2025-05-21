@@ -46,7 +46,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Edit & Update Announcement</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.announcement.show', ['announcement' => $announcement]) }}" class="btn btn-sm btn-dark">
                         <span class="tf-icon ti ti-arrow-left ti-xs me-1"></span>
@@ -104,7 +104,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -128,7 +128,7 @@
                 [{ font: [] }, { size: [] }],
                 ["bold", "italic", "underline", "strike"],
                 [{ color: [] }, { background: [] }],
-                [{ script: "super" }, { script: "sub" }],
+                ["link"],
                 [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
                 [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
             ];

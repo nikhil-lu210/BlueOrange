@@ -38,7 +38,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Create New Credential</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.vault.index') }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-circle ti-xs me-1"></span>
@@ -49,7 +49,7 @@
             <!-- Account -->
             <div class="card-body">
                 <form id="vaultForm" action="{{ route('administration.vault.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
-                    @csrf                    
+                    @csrf
                     <div class="row">
                         <div class="mb-3 col-md-12">
                             <label for="name" class="form-label">{{ __('Name') }} <strong class="text-danger">*</strong></label>
@@ -105,7 +105,7 @@
                                 @endforeach
                             </select>
                             <small>
-                                <b class="text-primary">Note:</b> 
+                                <b class="text-primary">Note:</b>
                                 If you want to share this credential with any other users, then select them.
                             </small>
                             <br>
@@ -121,7 +121,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -145,7 +145,7 @@
                 [{ font: [] }, { size: [] }],
                 ["bold", "italic", "underline", "strike"],
                 [{ color: [] }, { background: [] }],
-                [{ script: "super" }, { script: "sub" }],
+                ["link"],
                 [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
                 [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
             ];

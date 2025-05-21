@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -42,7 +42,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Create New Task From Chatting</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.task.index') }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-circle ti-xs me-1"></span>
@@ -85,8 +85,8 @@
                                 @foreach ($roles as $role)
                                     <optgroup label="{{ $role->name }}">
                                         @foreach ($role->users as $user)
-                                            <option 
-                                                value="{{ $user->id }}" 
+                                            <option
+                                                value="{{ $user->id }}"
                                                 {{ in_array($user->id, old('users', [$chatTaskUserId])) ? 'selected' : '' }}>
                                                 {{ get_employee_name($user) }}
                                             </option>
@@ -97,7 +97,7 @@
                             @error('users')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
-                        </div>                        
+                        </div>
                         <div class="mb-3 col-md-12">
                             <label for="priority" class="form-label">Select Priority <strong class="text-danger">*</strong></label>
                             <div class="row">
@@ -141,7 +141,7 @@
                                         </label>
                                     </div>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                         <div class="mb-3 col-md-12">
                             <label class="form-label">Task Description <strong class="text-danger">*</strong></label>
@@ -166,7 +166,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -180,7 +180,7 @@
     <!-- Vendors JS -->
     <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
 @endsection
@@ -205,7 +205,7 @@
                 [{ font: [] }, { size: [] }],
                 ["bold", "italic", "underline", "strike"],
                 [{ color: [] }, { background: [] }],
-                [{ script: "super" }, { script: "sub" }],
+                ["link"],
                 [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
                 [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
             ];

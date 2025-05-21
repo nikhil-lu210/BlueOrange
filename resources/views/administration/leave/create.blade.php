@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -80,15 +80,15 @@
                         </div>
                     </div>
                 </div>
-            </div>        
+            </div>
         </div>
     @endif
-    
+
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Apply For Leave</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     @can ('Leave History Update')
                         <a href="{{ route('administration.leave.history.index') }}" class="btn btn-sm btn-primary">
@@ -99,14 +99,14 @@
                         <a href="{{ route('administration.leave.history.my') }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-circle ti-xs me-1"></span>
                             All Leaves
-                        </a>                    
+                        </a>
                     @endcan
                 </div>
             </div>
             <!-- Account -->
             <div class="card-body">
                 <form id="postForm" action="{{ route('administration.leave.history.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
-                    @csrf                    
+                    @csrf
                     <div class="row">
                         <div class="mb-3 col-md-12">
                             <label for="type" class="form-label">{{ __('Expected Leave Type') }} <strong class="text-danger">*</strong></label>
@@ -114,7 +114,7 @@
                                 <div class="col-md mb-md-0 mb-2">
                                     <div class="form-check custom-option custom-option-basic">
                                         <label class="form-check-label custom-option-content" for="typeEarned">
-                                            <input name="type" class="form-check-input" type="radio" value="Earned" id="typeEarned" required 
+                                            <input name="type" class="form-check-input" type="radio" value="Earned" id="typeEarned" required
                                                 {{ old('type') === 'Earned' ? 'checked' : '' }} />
                                             <span class="custom-option-header pb-0">
                                                 <span class="h6 mb-0">Earned</span>
@@ -128,7 +128,7 @@
                                 <div class="col-md">
                                     <div class="form-check custom-option custom-option-basic">
                                         <label class="form-check-label custom-option-content" for="typeSick">
-                                            <input name="type" class="form-check-input" type="radio" value="Sick" id="typeSick" required 
+                                            <input name="type" class="form-check-input" type="radio" value="Sick" id="typeSick" required
                                                 {{ old('type') === 'Sick' ? 'checked' : '' }} />
                                             <span class="custom-option-header pb-0">
                                                 <span class="h6 mb-0">Sick</span>
@@ -139,7 +139,7 @@
                                 <div class="col-md">
                                     <div class="form-check custom-option custom-option-basic">
                                         <label class="form-check-label custom-option-content" for="typeCasual">
-                                            <input name="type" class="form-check-input" type="radio" value="Casual" id="typeCasual" required 
+                                            <input name="type" class="form-check-input" type="radio" value="Casual" id="typeCasual" required
                                                 {{ old('type') === 'Casual' ? 'checked' : '' }} />
                                             <span class="custom-option-header pb-0">
                                                 <span class="h6 mb-0">Casual</span>
@@ -147,7 +147,7 @@
                                         </label>
                                     </div>
                                 </div>
-                            </div>                            
+                            </div>
                         </div>
                         <div class="mb-3 col-md-12" id="fileInputContainer">
                             <label for="files[]" class="form-label">{{ __('Prescription/Proof Files') }}</label>
@@ -180,7 +180,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -194,7 +194,7 @@
     <!-- Vendors JS -->
     <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
 @endsection
@@ -219,7 +219,7 @@
                 [{ font: [] }, { size: [] }],
                 ["bold", "italic", "underline", "strike"],
                 [{ color: [] }, { background: [] }],
-                [{ script: "super" }, { script: "sub" }],
+                ["link"],
                 [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
                 [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
             ];
@@ -244,7 +244,7 @@
             });
         });
     </script>
-    
+
     <script>
     $(document).ready(function () {
         // Initially hide the file input
@@ -264,7 +264,7 @@
         });
     });
     </script>
-    
+
     <script>
         $(document).ready(function () {
             // Counter for dynamic rows

@@ -8,10 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance\Attendance;
+use App\Models\Leave\LeaveHistory;
+
 use App\Services\Administration\Attendance\AttendanceService;
 
 class DashboardController extends Controller
-{    
+{
     /**
      * Display a listing of the resource.
      */
@@ -24,13 +26,13 @@ class DashboardController extends Controller
 
         // Create an instance of AttendanceService
         $attendanceService = new AttendanceService();
-        
+
         // Get total worked days
         $totalWorkedDays = $attendanceService->calculateTotalWorkedDays($user);
-        
+
         // Get total Regular worked days
         $totalRegularWork = $attendanceService->calculateTotalWork($user, 'Regular');
-        
+
         // Get total Overtime worked days
         $totalOvertimeWork = $attendanceService->calculateTotalWork($user, 'Overtime');
 
@@ -54,17 +56,86 @@ class DashboardController extends Controller
                                     ->orderByDesc('clock_in_date')
                                     ->orderByDesc('created_at')
                                     ->get();
-        
+
+        // Get users who are currently working (clocked in but not clocked out)
+        $currentlyWorkingUsers = User::with(['employee', 'media'])
+                                    ->where('status', 'Active')
+                                    ->whereHas('attendances', function($query) {
+                                        $query->whereDate('clock_in_date', Carbon::today())
+                                              ->whereNull('clock_out');
+                                    })
+                                    ->get();
+
+        // Get users who are on leave today (pending or approved)
+        $onLeaveUsers = User::with(['employee', 'media'])
+                            ->where('status', 'Active')
+                            ->whereHas('leave_histories', function($query) {
+                                $query->whereDate('date', Carbon::today())
+                                      ->whereIn('status', ['Pending', 'Approved']);
+                            })
+                            ->get();
+
+        // Get users who are absent today (shift started/running/passed but no attendance)
+        $today = Carbon::today();
+        $currentTime = Carbon::now();
+
+        // First, get all users with active shifts
+        $usersWithActiveShifts = User::with(['employee', 'media', 'employee_shifts'])
+                                    ->where('status', 'Active')
+                                    ->whereHas('employee_shifts', function($query) {
+                                        $query->where('status', 'Active');
+                                    })
+                                    ->get();
+
+        // Filter users whose shift has started but have no attendance today
+        $absentUsers = $usersWithActiveShifts->filter(function($user) use ($today, $currentTime) {
+            // Get the active shift for this user
+            $activeShift = $user->employee_shifts()
+                ->where('status', 'Active')
+                ->latest('created_at')
+                ->first();
+
+            // Check if user has an active shift
+            if (!$activeShift) {
+                return false;
+            }
+
+            // Get shift start time for today
+            $shiftStartTime = Carbon::parse($today->format('Y-m-d') . ' ' . $activeShift->start_time);
+
+            // Check if shift has started
+            if ($currentTime->lt($shiftStartTime)) {
+                return false;
+            }
+
+            // Check if user has attendance record for today
+            $hasAttendance = Attendance::where('user_id', $user->id)
+                                      ->whereDate('clock_in_date', $today)
+                                      ->exists();
+
+            // Check if user is on leave today
+            $isOnLeave = LeaveHistory::where('user_id', $user->id)
+                                    ->whereDate('date', $today)
+                                    ->whereIn('status', ['Pending', 'Approved'])
+                                    ->exists();
+
+            // User is absent if shift has started, but no attendance and not on leave
+            return !$hasAttendance && !$isOnLeave;
+        });
+
         return view('administration.dashboard.index', compact([
-            'user', 
-            'wish', 
-            'totalWorkedDays', 
+            'user',
+            'wish',
+            'totalWorkedDays',
             'totalRegularWork',
             'totalRegularWorkingHour',
             'totalOvertimeWorkingHour',
             'totalOvertimeWork',
             'activeAttendance',
             'attendances',
+            'currentlyWorkingUsers',
+            'onLeaveUsers',
+            'absentUsers',
         ]));
     }
 
