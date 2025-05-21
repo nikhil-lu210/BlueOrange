@@ -17,7 +17,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
-    
+
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
@@ -27,12 +27,12 @@
     {{--  External CSS  --}}
     <style>
         /* Custom CSS Here */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
             -webkit-appearance: none;
             -moz-appearance: none;
             appearance: none;
-            margin: 0; 
+            margin: 0;
         }
     </style>
 @endsection
@@ -54,7 +54,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">{{ __('Submit Daily Work Update') }}</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.daily_work_update.my') }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-circle ti-xs me-1"></span>
@@ -65,7 +65,7 @@
             <!-- Account -->
             <div class="card-body">
                 <form id="workUpdateForm" action="{{ route('administration.daily_work_update.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
-                    @csrf                    
+                    @csrf
                     <div class="row justify-content-center">
                         <div class="mb-3 col-md-3">
                             <label class="form-label">Work Update Date <strong class="text-danger">*</strong></label>
@@ -117,7 +117,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -155,7 +155,7 @@
                 [{ font: [] }, { size: [] }],
                 ["bold", "italic", "underline", "strike"],
                 [{ color: [] }, { background: [] }],
-                [{ script: "super" }, { script: "sub" }],
+                ["link"],
                 [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
                 [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
             ];

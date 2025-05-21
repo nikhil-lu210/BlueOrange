@@ -28,9 +28,9 @@
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('IT Ticket') }}</li>
     <li class="breadcrumb-item">
-        @canany (['IT Ticket Update', 'IT Ticket Delete']) 
+        @canany (['IT Ticket Update', 'IT Ticket Delete'])
             <a href="{{ route('administration.ticket.it_ticket.index') }}">{{ __('All Tickets') }}</a>
-        @elsecanany (['IT Ticket Read', 'IT Ticket Create']) 
+        @elsecanany (['IT Ticket Read', 'IT Ticket Create'])
             <a href="{{ route('administration.ticket.it_ticket.my') }}">{{ __('My Tickets') }}</a>
         @endcanany
     </li>
@@ -50,7 +50,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Edit IT Ticket</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.ticket.it_ticket.show', ['it_ticket' => $itTicket]) }}" class="btn btn-sm btn-dark">
                         <span class="tf-icon ti ti-arrow-left ti-xs me-1"></span>
@@ -87,7 +87,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -111,7 +111,7 @@
                 [{ font: [] }, { size: [] }],
                 ["bold", "italic", "underline", "strike"],
                 [{ color: [] }, { background: [] }],
-                [{ script: "super" }, { script: "sub" }],
+                ["link"],
                 [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
                 [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
             ];

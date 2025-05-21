@@ -11,7 +11,7 @@
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
-    
+
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
@@ -53,26 +53,26 @@
                     <div class="d-flex align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
                         <div class="user-profile-info">
                             <h4 class="mb-0">
-                                Work Update of 
+                                Work Update of
                                 <span class="text-bold text-primary">{{ $dailyWorkUpdate->user->name }}</span>
                             </h4>
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
                                 <li class="list-inline-item d-flex gap-1 text-bold text-primary" data-bs-toggle="tooltip" title="Team Leader" data-bs-placement="bottom">
-                                    <i class="ti ti-crown"></i> 
+                                    <i class="ti ti-crown"></i>
                                     {{ $dailyWorkUpdate->team_leader->name }}
                                 </li>
                                 <li class="list-inline-item d-flex gap-1 text-bold" data-bs-toggle="tooltip" title="Work Update Date" data-bs-placement="bottom">
-                                    <i class="ti ti-calendar"></i> 
+                                    <i class="ti ti-calendar"></i>
                                     {{ show_date($dailyWorkUpdate->date) }}
                                 </li>
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Work Update Submitted At">
-                                    <i class="ti ti-clock"></i> 
+                                    <i class="ti ti-clock"></i>
                                     {{ show_date_time($dailyWorkUpdate->created_at) }}
                                 </li>
                             </ul>
                         </div>
                         @can ('Daily Work Update Update')
-                            @if (!$dailyWorkUpdate->rating && $dailyWorkUpdate->team_leader_id == auth()->user()->id) 
+                            @if (!$dailyWorkUpdate->rating && $dailyWorkUpdate->team_leader_id == auth()->user()->id)
                                 <button type="button" class="btn btn-success btn-icon" title="Rate This Work Update?" data-bs-toggle="modal" data-bs-target="#markAsReadModal">
                                     <span class="ti ti-check"></span>
                                 </button>
@@ -89,7 +89,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Daily Work Update Details</h5>
-    
+
                 @if ($dailyWorkUpdate->rating)
                     @php
                         switch ($dailyWorkUpdate->rating) {
@@ -104,7 +104,7 @@
                                 break;
                             case '4':
                                 $color = 'primary';
-                                break;                                                    
+                                break;
                             default:
                                 $color = 'success';
                                 break;
@@ -119,7 +119,7 @@
                     </div>
                 @endif
             </div>
-            
+
             <div class="card-body">
                 <div class="work-update-description mb-3">
                     {!! $dailyWorkUpdate->work_update !!}
@@ -163,7 +163,7 @@
                     </div>
                 </div>
             </div>
-            
+
             @if ($dailyWorkUpdate->comment)
                 <div class="col-md-12">
                     <div class="card mb-4">
@@ -184,7 +184,7 @@
 
 {{-- Mark As Read Modal --}}
 @can ('Daily Work Update Update')
-    @if (!$dailyWorkUpdate->rating && $dailyWorkUpdate->team_leader_id == auth()->user()->id) 
+    @if (!$dailyWorkUpdate->rating && $dailyWorkUpdate->team_leader_id == auth()->user()->id)
         <div class="modal fade" data-bs-backdrop="static" id="markAsReadModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-md modal-dialog-centered">
                 <div class="modal-content p-3">
@@ -212,7 +212,7 @@
                                         <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                                     @enderror
                                 </div>
-                                
+
                                 <div class="col-md-12 mb-3">
                                     <label class="form-label">Comment</label>
                                     <div name="comment" id="commentEditor">{!! old('comment') !!}</div>
@@ -271,7 +271,7 @@
                 [{ font: [] }, { size: [] }],
                 ["bold", "italic", "underline", "strike"],
                 [{ color: [] }, { background: [] }],
-                [{ script: "super" }, { script: "sub" }],
+                ["link"],
                 [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
                 [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
             ];

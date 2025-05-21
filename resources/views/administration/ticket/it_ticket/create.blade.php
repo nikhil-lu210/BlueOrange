@@ -38,7 +38,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Arise New IT Ticket</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.ticket.it_ticket.my') }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-circle ti-xs me-1"></span>
@@ -49,7 +49,7 @@
             <!-- Account -->
             <div class="card-body">
                 <form id="itTicketForm" action="{{ route('administration.ticket.it_ticket.store') }}" method="post" enctype="multipart/form-data" autocomplete="off">
-                    @csrf                    
+                    @csrf
                     <div class="row">
                         <div class="mb-3 col-md-12">
                             <label for="title" class="form-label">{{ __('Title') }} <strong class="text-danger">*</strong></label>
@@ -74,7 +74,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -98,7 +98,7 @@
                 [{ font: [] }, { size: [] }],
                 ["bold", "italic", "underline", "strike"],
                 [{ color: [] }, { background: [] }],
-                [{ script: "super" }, { script: "sub" }],
+                ["link"],
                 [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
                 [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
             ];

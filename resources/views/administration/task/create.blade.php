@@ -214,7 +214,7 @@
                 [{ font: [] }, { size: [] }],
                 ["bold", "italic", "underline", "strike"],
                 [{ color: [] }, { background: [] }],
-                [{ script: "super" }, { script: "sub" }],
+                ["link"],
                 [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
                 [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
             ];
