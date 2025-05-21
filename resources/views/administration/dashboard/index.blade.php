@@ -124,9 +124,9 @@
 <div class="row mb-4">
     @include('administration.dashboard.partials._currently_working')
 
-    @include('administration.dashboard.partials._on_leave_today')
-
     @include('administration.dashboard.partials._absent_today')
+
+    @include('administration.dashboard.partials._on_leave_today')
 </div>
 
 

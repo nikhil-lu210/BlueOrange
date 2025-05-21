@@ -1,5 +1,5 @@
 <div class="col-md-4">
-    <div class="card card-action mb-1">
+    <div class="card card-action card-border-shadow-success mb-1">
         <div class="card-header">
             <div class="card-action-title">{{ __('Currently Working') }}</div>
             <div class="card-action-element">
@@ -15,9 +15,19 @@
         <div class="collapse show">
             <div class="card-body pt-0">
                 <div class="d-flex align-items-center flex-wrap">
-                    <div class="avatar me-2 mb-2 avatar-online" title="Employee Alias Name Here">
-                        <img src="../../assets/img/avatars/8.png" alt="Avatar" class="rounded-circle" />
-                    </div>
+                    @forelse($currentlyWorkingUsers as $workingUser)
+                        <div class="avatar me-2 mb-2 avatar-online" title="{{ $workingUser->employee->alias_name ?? $workingUser->name }}">
+                            @if($workingUser->getFirstMediaUrl('avatar'))
+                                <img src="{{ $workingUser->getFirstMediaUrl('avatar') }}" alt="{{ $workingUser->name }}" class="rounded-circle" />
+                            @else
+                                <span class="avatar-initial rounded-circle bg-label-primary">{{ substr($workingUser->name, 0, 1) }}</span>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="text-center w-100 py-3">
+                            <p class="mb-0 text-muted">No users currently working</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>

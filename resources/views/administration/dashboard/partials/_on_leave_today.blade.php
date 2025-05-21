@@ -1,5 +1,5 @@
 <div class="col-md-4">
-    <div class="card card-action mb-1">
+    <div class="card card-action card-border-shadow-warning mb-1">
         <div class="card-header">
             <div class="card-action-title">{{ __('On Leave Today') }}</div>
             <div class="card-action-element">
@@ -15,9 +15,19 @@
         <div class="collapse show">
             <div class="card-body pt-0">
                 <div class="d-flex align-items-center flex-wrap">
-                    <div class="avatar me-2 mb-2 avatar-away" title="Employee Alias Name Here">
-                        <img src="../../assets/img/avatars/4.png" alt="Avatar" class="rounded-circle" />
-                    </div>
+                    @forelse($onLeaveUsers as $leaveUser)
+                        <div class="avatar me-2 mb-2 avatar-away" title="{{ $leaveUser->employee->alias_name ?? $leaveUser->name }}">
+                            @if($leaveUser->getFirstMediaUrl('avatar'))
+                                <img src="{{ $leaveUser->getFirstMediaUrl('avatar') }}" alt="{{ $leaveUser->name }}" class="rounded-circle" />
+                            @else
+                                <span class="avatar-initial rounded-circle bg-label-warning">{{ substr($leaveUser->name, 0, 1) }}</span>
+                            @endif
+                        </div>
+                    @empty
+                        <div class="text-center w-100 py-3">
+                            <p class="mb-0 text-muted">No users on leave today</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
