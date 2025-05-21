@@ -10,11 +10,6 @@
  */
 
 $(document).ready(function () {
-    // Initialize notification audio
-    // public/assets/audio/message_notification.mp3
-    const notificationSound = new Audio('/assets/audio/message_notification.mp3');
-    notificationSound.volume = 0.7; // Set volume to 70%
-
     /**
      * Check if user is currently on a specific group chat page
      * @returns {boolean} True if on a specific group chat page
@@ -37,10 +32,6 @@ $(document).ready(function () {
                 new Notification("Notifications Enabled", {
                     body: "You will now receive notifications for new chat messages",
                     icon: "https://cdn-icons-png.flaticon.com/512/1827/1827301.png"
-                });
-
-                notificationSound.play().catch(() => {
-                    // Silent fail - user may not have interacted with page yet
                 });
             }
             return permission;
@@ -154,13 +145,6 @@ $(document).ready(function () {
                             }
                         }
                     });
-
-                    // Play sound if there are new messages
-                    if (hasNewMessages) {
-                        notificationSound.play().catch(() => {
-                            // Silent fail - user may not have interacted with page yet
-                        });
-                    }
                 }
             },
             error: function(_, status, error) {

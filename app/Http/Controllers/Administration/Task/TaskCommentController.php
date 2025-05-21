@@ -6,7 +6,7 @@ use Exception;
 use App\Models\User;
 use App\Models\Task\Task;
 use Illuminate\Http\Request;
-use App\Models\Task\TaskComment;
+use App\Models\Comment\Comment;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
@@ -28,8 +28,7 @@ class TaskCommentController extends Controller
 
         try {
             DB::transaction(function () use ($request, $task) {
-                $comment = TaskComment::create([
-                    'task_id' => $task->id,
+                $comment = $task->comments()->create([
                     'comment' => $request->comment
                 ]);
 
