@@ -18,7 +18,7 @@
                     @forelse($onLeaveUsers as $leaveUser)
                         <div class="avatar me-2 mb-2 avatar-away" title="{{ $leaveUser->employee->alias_name ?? $leaveUser->name }}">
                             @if($leaveUser->getFirstMediaUrl('avatar'))
-                                <img src="{{ $leaveUser->getFirstMediaUrl('avatar') }}" alt="{{ $leaveUser->name }}" class="rounded-circle" />
+                                <img src="{{ $leaveUser->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $leaveUser->name }}" class="rounded-circle" />
                             @else
                                 <span class="avatar-initial rounded-circle bg-label-warning">{{ substr($leaveUser->name, 0, 1) }}</span>
                             @endif

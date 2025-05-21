@@ -29,6 +29,62 @@
         .table-borderless th, .table-bordered th {
             font-weight: bold;
         }
+
+        /* Fix for horizontal scrollbar */
+        .table-responsive {
+            overflow-x: auto;
+            max-width: 100%;
+        }
+
+        /* Ensure content doesn't overflow container */
+        .card-body {
+            overflow-x: hidden;
+            word-wrap: break-word;
+        }
+
+        /* Fix for excessive vertical scrolling */
+        .content-wrapper {
+            min-height: calc(100vh - 150px);
+            max-height: 100%;
+            overflow-y: auto;
+        }
+
+        /* Fix for confetti animation */
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f0f0f0;
+            animation: confetti 5s ease-in-out infinite;
+            z-index: 10;
+            top: 0;
+            max-height: 100%;
+        }
+
+        /* Prevent overflow on mobile */
+        @media (max-width: 768px) {
+            .d-flex.justify-content-between.flex-wrap {
+                flex-direction: column;
+            }
+
+            /* Adjust table for mobile */
+            .table-responsive table {
+                min-width: 600px;
+            }
+        }
+
+        /* Fix for any potential overflow issues */
+        .row {
+            margin-right: 0;
+            margin-left: 0;
+            width: 100%;
+        }
+
+        .container-xxl {
+            max-width: 100%;
+            padding-right: 15px;
+            padding-left: 15px;
+        }
     </style>
 
     <style>
@@ -47,7 +103,7 @@
 
         @keyframes confetti {
             0% { transform: translateY(0) rotate(0deg); }
-            100% { transform: translateY(100vh) rotate(360deg); }
+            100% { transform: translateY(500px) rotate(360deg); }
         }
         .birthday-card {
             /* background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); */
@@ -88,13 +144,7 @@
             margin-bottom: 1rem;
         }
 
-        .confetti {
-            position: absolute;
-            width: 10px;
-            height: 10px;
-            background-color: #f0f0f0;
-            animation: confetti 5s ease-in-out infinite;
-        }
+
     </style>
 @endsection
 
@@ -124,9 +174,9 @@
 <div class="row mb-4">
     @include('administration.dashboard.partials._currently_working')
 
-    @include('administration.dashboard.partials._absent_today')
-
     @include('administration.dashboard.partials._on_leave_today')
+
+    @include('administration.dashboard.partials._absent_today')
 </div>
 
 
@@ -244,13 +294,17 @@
             confetti.style.opacity = Math.random();
             confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
 
-            document.body.appendChild(confetti);
+            // Limit confetti to the content area instead of body
+            document.querySelector('.content-wrapper').appendChild(confetti);
 
             setTimeout(() => {
                 confetti.remove();
             }, 5000);
         }
 
-        setInterval(createConfetti, 200);
+        // Only create confetti if it's a birthday
+        if (document.querySelector('.birthday-wish-container')) {
+            setInterval(createConfetti, 200);
+        }
     </script>
 @endsection

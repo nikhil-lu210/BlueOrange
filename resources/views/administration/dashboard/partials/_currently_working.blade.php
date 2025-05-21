@@ -18,7 +18,7 @@
                     @forelse($currentlyWorkingUsers as $workingUser)
                         <div class="avatar me-2 mb-2 avatar-online" title="{{ $workingUser->employee->alias_name ?? $workingUser->name }}">
                             @if($workingUser->getFirstMediaUrl('avatar'))
-                                <img src="{{ $workingUser->getFirstMediaUrl('avatar') }}" alt="{{ $workingUser->name }}" class="rounded-circle" />
+                                <img src="{{ $workingUser->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $workingUser->name }}" class="rounded-circle" />
                             @else
                                 <span class="avatar-initial rounded-circle bg-label-primary">{{ substr($workingUser->name, 0, 1) }}</span>
                             @endif

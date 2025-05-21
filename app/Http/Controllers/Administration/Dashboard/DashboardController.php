@@ -2,9 +2,7 @@
 
 namespace App\Http\Controllers\Administration\Dashboard;
 
-use Auth;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance\Attendance;
@@ -60,6 +58,7 @@ class DashboardController extends Controller
         // Get users who are currently working (clocked in but not clocked out)
         $currentlyWorkingUsers = User::with(['employee', 'media'])
                                     ->where('status', 'Active')
+                                    ->whereNotIn('id', [1, 2]) // Exclude Developer and Controller users
                                     ->whereHas('attendances', function($query) {
                                         $query->whereDate('clock_in_date', Carbon::today())
                                               ->whereNull('clock_out');
@@ -69,6 +68,7 @@ class DashboardController extends Controller
         // Get users who are on leave today (pending or approved)
         $onLeaveUsers = User::with(['employee', 'media'])
                             ->where('status', 'Active')
+                            ->whereNotIn('id', [1, 2]) // Exclude Developer and Controller users
                             ->whereHas('leave_histories', function($query) {
                                 $query->whereDate('date', Carbon::today())
                                       ->whereIn('status', ['Pending', 'Approved']);
@@ -82,6 +82,7 @@ class DashboardController extends Controller
         // First, get all users with active shifts
         $usersWithActiveShifts = User::with(['employee', 'media', 'employee_shifts'])
                                     ->where('status', 'Active')
+                                    ->whereNotIn('id', [1, 2]) // Exclude Developer and Controller users
                                     ->whereHas('employee_shifts', function($query) {
                                         $query->where('status', 'Active');
                                     })
