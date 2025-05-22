@@ -3,7 +3,7 @@ git pull origin develop
 git checkout -b release-v1.6.1
 git push origin release-v1.6.1
 git add .
-git commit -m "Dashboard Avatar loading issue and other issues solved in release v1.6.1"
+git commit -m "Dashboard attendance issue fixed in release v1.6.1"
 git push origin release-v1.6.1
 git checkout master
 git pull origin master
