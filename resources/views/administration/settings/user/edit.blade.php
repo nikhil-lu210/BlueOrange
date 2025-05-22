@@ -229,49 +229,25 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="blood_group" class="form-label">{{ __('Blood Group') }} <strong class="text-danger">*</strong></label>
+                            <label for="blood_group" class="form-label">
+                                {{ __('Blood Group') }} <strong class="text-danger">*</strong>
+                            </label>
                             <select name="blood_group" class="form-select select2" required>
                                 <option value="" @selected($user->employee->blood_group == '')>Select Blood Group</option>
 
-                                <!-- Standard -->
-                                <optgroup label="Standard (ABO + Rh)">
-                                    <option value="A Positive (A+)" @selected($user->employee->blood_group == 'A Positive (A+)')>A Positive (A+)</option>
-                                    <option value="A Negative (A-)" @selected($user->employee->blood_group == 'A Negative (A-)')>A Negative (A-)</option>
-                                    <option value="B Positive (B+)" @selected($user->employee->blood_group == 'B Positive (B+)')>B Positive (B+)</option>
-                                    <option value="B Negative (B-)" @selected($user->employee->blood_group == 'B Negative (B-)')>B Negative (B-)</option>
-                                    <option value="AB Positive (AB+)" @selected($user->employee->blood_group == 'AB Positive (AB+)')>AB Positive (AB+)</option>
-                                    <option value="AB Negative (AB-)" @selected($user->employee->blood_group == 'AB Negative (AB-)')>AB Negative (AB-)</option>
-                                    <option value="O Positive (O+)" @selected($user->employee->blood_group == 'O Positive (O+)')>O Positive (O+)</option>
-                                    <option value="O Negative (O-)" @selected($user->employee->blood_group == 'O Negative (O-)')>O Negative (O-)</option>
-                                </optgroup>
+                                @foreach ($groupedBloodGroups as $groupLabel => $groupOptions)
+                                    <optgroup label="{{ $groupLabel }}">
+                                        @foreach ($groupOptions as $bloodOption)
+                                            <option value="{{ $bloodOption->value }}" @selected($user->employee->blood_group === $bloodOption->value)>
+                                                {{ $bloodOption->value }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
 
-                                <!-- Rare Types -->
-                                <optgroup label="Rare Types">
-                                    <option value="Rh-null (Golden Blood)" @selected($user->employee->blood_group == 'Rh-null (Golden Blood)')>Rh-null (Golden Blood)</option>
-                                    <option value="Bombay (Oh)" @selected($user->employee->blood_group == 'Bombay (Oh)')>Bombay (Oh)</option>
-                                </optgroup>
-
-                                <!-- Advanced Antigens -->
-                                <optgroup label="Other Systems">
-                                    <option value="Kell (K+)" @selected($user->employee->blood_group == 'Kell (K+)')>Kell (K+)</option>
-                                    <option value="Kell (k+)" @selected($user->employee->blood_group == 'Kell (k+)')>Kell (k+)</option>
-                                    <option value="Duffy (Fy a+)" @selected($user->employee->blood_group == 'Duffy (Fy a+)')>Duffy (Fy a+)</option>
-                                    <option value="Duffy (Fy b+)" @selected($user->employee->blood_group == 'Duffy (Fy b+)')>Duffy (Fy b+)</option>
-                                    <option value="Kidd (Jk a+)" @selected($user->employee->blood_group == 'Kidd (Jk a+)')>Kidd (Jk a+)</option>
-                                    <option value="Kidd (Jk b+)" @selected($user->employee->blood_group == 'Kidd (Jk b+)')>Kidd (Jk b+)</option>
-                                    <option value="MNS (M+, N+)" @selected($user->employee->blood_group == 'MNS (M+, N+)')>MNS (M+, N+)</option>
-                                    <option value="MNS (S+, s+)" @selected($user->employee->blood_group == 'MNS (S+, s+)')>MNS (S+, s+)</option>
-                                    <option value="Lutheran (Lu a+)" @selected($user->employee->blood_group == 'Lutheran (Lu a+)')>Lutheran (Lu a+)</option>
-                                    <option value="Lutheran (Lu b+)" @selected($user->employee->blood_group == 'Lutheran (Lu b+)')>Lutheran (Lu b+)</option>
-                                    <option value="Diego (Di a+)" @selected($user->employee->blood_group == 'Diego (Di a+)')>Diego (Di a+)</option>
-                                    <option value="Diego (Di b+)" @selected($user->employee->blood_group == 'Diego (Di b+)')>Diego (Di b+)</option>
-                                    <option value="Lewis (Le a+)" @selected($user->employee->blood_group == 'Lewis (Le a+)')>Lewis (Le a+)</option>
-                                    <option value="Lewis (Le b+)" @selected($user->employee->blood_group == 'Lewis (Le b+)')>Lewis (Le b+)</option>
-                                    <option value="P (P1)" @selected($user->employee->blood_group == 'P (P1)')>P (P1)</option>
-                                    <option value="P (p)" @selected($user->employee->blood_group == 'P (p)')>P (p)</option>
-                                </optgroup>
-
-                                <option value="N/A" @selected($user->employee->blood_group == 'N/A')>N/A</option>
+                                <option value="N/A" @selected($user->employee->blood_group === 'N/A')>
+                                    N/A
+                                </option>
                             </select>
 
                             @error('blood_group')
