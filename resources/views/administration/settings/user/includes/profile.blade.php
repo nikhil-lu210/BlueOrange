@@ -130,6 +130,17 @@
                         <span>{{ $user->name }}</span>
                     </dd>
                 </dl>
+                @isset ($user->employee->blood_group)
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 fw-medium text-nowrap">
+                            <i class="ti ti-drop-circle text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">Blood Group:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span>{{ optional($user->employee)->blood_group }}</span>
+                        </dd>
+                    </dl>
+                @endisset
                 @isset ($user->employee->gender)
                     <dl class="row mb-1">
                         <dt class="col-sm-4 fw-medium text-nowrap">
