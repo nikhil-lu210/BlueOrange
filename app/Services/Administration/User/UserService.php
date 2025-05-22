@@ -213,6 +213,7 @@ class UserService
                     'official_contact_no' => $data['official_contact_no'],
                     'religion_id' => $data['religion_id'],
                     'gender' => $data['gender'],
+                    'blood_group' => $data['blood_group'],
                 ]);
             }
 

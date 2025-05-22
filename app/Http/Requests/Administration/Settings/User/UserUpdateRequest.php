@@ -57,6 +57,7 @@ class UserUpdateRequest extends FormRequest
 
             'religion_id' => ['sometimes', 'integer', 'exists:religions,id'],
             'gender' => ['nullable', 'string', 'in:Male,Female,Other'],
+            'blood_group' => ['nullable', 'string'],
         ];
     }
 

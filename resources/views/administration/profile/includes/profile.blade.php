@@ -18,7 +18,7 @@
                         <span class="fw-medium mx-2 text-heading">User ID:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ $user->userid }}</span>  
+                        <span>{{ $user->userid }}</span>
                     </dd>
                 </dl>
                 <dl class="row mb-1">
@@ -27,7 +27,7 @@
                         <span class="fw-medium mx-2 text-heading">Alias Name:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ optional($user->employee)->alias_name }}</span>  
+                        <span>{{ optional($user->employee)->alias_name }}</span>
                     </dd>
                 </dl>
                 <dl class="row mb-1">
@@ -39,7 +39,7 @@
                         <a href="mailto:{{ $user->email }}" class="text-primary">{{ $user->email }}</a>
                     </dd>
                 </dl>
-                @if ($user->employee->official_email) 
+                @if ($user->employee->official_email)
                     <dl class="row mb-1">
                         <dt class="col-sm-4 fw-medium text-nowrap">
                             <i class="ti ti-mail-star text-heading"></i>
@@ -50,7 +50,7 @@
                         </dd>
                     </dl>
                 @endif
-                @if ($user->employee->official_contact_no) 
+                @if ($user->employee->official_contact_no)
                     <dl class="row mb-1">
                         <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                             <i class="ti ti-phone-call text-heading"></i>
@@ -97,12 +97,12 @@
                     <dd class="col-sm-8">
                         @if ($user->hasMedia('barcode'))
                             <img src="{{ $user->getFirstMediaUrl('barcode') }}" alt="{{ $user->name }} BAR-CODE" class="d-block h-auto" width="300px">
-                            
+
                             <a href="{{ spatie_media_download($user->getFirstMedia('barcode')) }}" target="_blank" class="text-bold text-muted" title="Download Barcode">
                                 {{ $user->userid }}
                             </a>
                         @else
-                            @canany (['User Everything', 'User Create']) 
+                            @canany (['User Everything', 'User Create'])
                                 <a href="{{ route('administration.settings.user.generate.bar.code', ['user' => $user]) }}" class="btn btn-outline-primary btn-sm confirm-success">Generate Barcode</a>
                             @endcanany
                         @endif
@@ -122,9 +122,42 @@
                         <span class="fw-medium mx-2 text-heading">Full Name:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ $user->name }}</span>  
+                        <span>{{ $user->name }}</span>
                     </dd>
                 </dl>
+                @isset ($user->employee->blood_group)
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 fw-medium text-nowrap">
+                            <i class="ti ti-drop-circle text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">Blood Group:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span>{{ optional($user->employee)->blood_group }}</span>
+                        </dd>
+                    </dl>
+                @endisset
+                @isset ($user->employee->gender)
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 fw-medium text-nowrap">
+                            <i class="ti ti-{{ $user->employee->gender === 'Male' ? 'man' : 'woman' }} text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">Gender:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span>{{ optional($user->employee)->gender }}</span>
+                        </dd>
+                    </dl>
+                @endisset
+                @isset ($user->employee->religion)
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 fw-medium text-nowrap">
+                            <i class="ti ti-pray text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">Religion:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span>{{ optional($user->employee)->religion->name }}</span>
+                        </dd>
+                    </dl>
+                @endisset
                 <dl class="row mb-1">
                     <dt class="col-sm-4 fw-medium text-nowrap">
                         <i class="ti ti-mail text-heading"></i>
@@ -149,7 +182,7 @@
                         <span class="fw-medium mx-2 text-heading">Father Name:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ optional($user->employee)->father_name }}</span>  
+                        <span>{{ optional($user->employee)->father_name }}</span>
                     </dd>
                 </dl>
                 <dl class="row mb-1">
@@ -158,7 +191,7 @@
                         <span class="fw-medium mx-2 text-heading">Mother Name:</span>
                     </dt>
                     <dd class="col-sm-8">
-                        <span>{{ optional($user->employee)->mother_name }}</span>  
+                        <span>{{ optional($user->employee)->mother_name }}</span>
                     </dd>
                 </dl>
                 <dl class="row mb-1">
@@ -169,7 +202,7 @@
                     <dd class="col-sm-8">
                         <span>{{ show_date(optional($user->employee)->birth_date) }}</span>
                         <br>
-                        @if (is_today_birthday(optional($user->employee)->birth_date)) 
+                        @if (is_today_birthday(optional($user->employee)->birth_date))
                             <small class="mt-1 badge bg-success">
                                 <span class="text-bold text-capitalize">Happy Birthday {{ get_employee_name($user) }}</span>
                             </small>

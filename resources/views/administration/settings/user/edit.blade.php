@@ -204,7 +204,7 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="religion_id" class="form-label">{{ __('Select Religion') }} <strong class="text-danger">*</strong></label>
                             <select name="religion_id" id="religion_id" class="form-select bootstrap-select w-100 @error('religion_id') is-invalid @enderror"  data-style="btn-default" required>
                                 <option value="">{{ __('Select Religion') }}</option>
@@ -216,7 +216,7 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-6">
+                        <div class="mb-3 col-md-4">
                             <label for="gender" class="form-label">{{ __('Select Gender') }} <strong class="text-danger">*</strong></label>
                             <select name="gender" id="gender" class="form-select bootstrap-select w-100 @error('gender') is-invalid @enderror"  data-style="btn-default" required>
                                 <option value="">{{ __('Select Gender') }}</option>
@@ -225,6 +225,32 @@
                                 <option value="Other" @selected($user->employee->gender === 'Other')>Other</option>
                             </select>
                             @error('gender')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="blood_group" class="form-label">
+                                {{ __('Blood Group') }}
+                            </label>
+                            <select name="blood_group" class="form-select select2">
+                                <option value="" @selected($user->employee->blood_group == '')>Select Blood Group</option>
+
+                                @foreach ($groupedBloodGroups as $groupLabel => $groupOptions)
+                                    <optgroup label="{{ $groupLabel }}">
+                                        @foreach ($groupOptions as $bloodOption)
+                                            <option value="{{ $bloodOption->value }}" @selected($user->employee->blood_group === $bloodOption->value)>
+                                                {{ $bloodOption->value }}
+                                            </option>
+                                        @endforeach
+                                    </optgroup>
+                                @endforeach
+
+                                <option value="N/A" @selected($user->employee->blood_group === 'N/A')>
+                                    N/A
+                                </option>
+                            </select>
+
+                            @error('blood_group')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>

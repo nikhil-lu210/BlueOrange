@@ -28,5 +28,6 @@ class Employee extends Model
         'official_contact_no',
         'religion_id',
         'gender',
+        'blood_group',
     ];
 }
