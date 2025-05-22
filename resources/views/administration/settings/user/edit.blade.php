@@ -230,9 +230,9 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label for="blood_group" class="form-label">
-                                {{ __('Blood Group') }} <strong class="text-danger">*</strong>
+                                {{ __('Blood Group') }}
                             </label>
-                            <select name="blood_group" class="form-select select2" required>
+                            <select name="blood_group" class="form-select select2">
                                 <option value="" @selected($user->employee->blood_group == '')>Select Blood Group</option>
 
                                 @foreach ($groupedBloodGroups as $groupLabel => $groupOptions)

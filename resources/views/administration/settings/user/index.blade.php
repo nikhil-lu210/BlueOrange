@@ -160,7 +160,7 @@
                                 <th>Employee ID</th>
                                 <th>Name</th>
                                 <th>Email & Shift</th>
-                                <th class="text-center">Religion & Gender</th>
+                                <th class="text-center">Religion, Gender & Blood Group</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
@@ -196,7 +196,9 @@
                                     <td class="text-center">
                                         <b class="text-bold text-dark">{{ optional(optional($user->employee)->religion)->name }}</b>
                                         <br>
-                                        <span class="text-bold text-muted">{{ optional($user->employee)->gender }}</sp>
+                                        <small class="text-muted">{{ optional($user->employee)->gender }}</small>
+                                        <br>
+                                        <small class="text-muted">{{ optional($user->employee)->blood_group }}</small>
                                     </td>
                                     <td class="text-center">
                                         @canany (['User Update', 'User Delete'])
