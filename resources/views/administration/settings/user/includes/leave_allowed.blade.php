@@ -1,5 +1,10 @@
 @extends('administration.settings.user.show')
 
+@section('css_links_user_show')
+    {{--  External CSS  --}}
+
+@endsection
+
 @section('profile_content')
 
 <!-- User Profile Content -->
@@ -9,10 +14,10 @@
             <div class="card-header header-elements">
                 <div class="title-and-info">
                     <h5 class="mb-0">Remaining Available Leave</h5>
-                    @isset ($user->allowed_leave) 
+                    @isset ($user->allowed_leave)
                         <small>
-                            <b class="text-dark">{{ date('F d, Y') }}</b> 
-                            to 
+                            <b class="text-dark">{{ date('F d, Y') }}</b>
+                            to
                             <b class="text-dark">{{ $user->allowed_leave->implemented_to->format('F d'). ', ' . date('Y') }}</b>
                         </small>
                     @endisset
@@ -26,7 +31,7 @@
                             <th class="text-bold">Available Leave</th>
                         </tr>
                     </thead>
-                    @if ($user->available_leaves()) 
+                    @if ($user->available_leaves())
                         <tbody>
                             <tr>
                                 <th>Earned Leave</th>
@@ -44,7 +49,7 @@
                     @endif
                 </table>
             </div>
-        </div>        
+        </div>
     </div>
 
 
@@ -53,18 +58,18 @@
             <div class="card-header header-elements">
                 <div class="title-and-info">
                     <h5 class="mb-0">Allowed Leave</h5>
-                    @isset ($user->allowed_leave) 
+                    @isset ($user->allowed_leave)
                         <small>
-                            <b class="text-dark">{{ $user->allowed_leave->implemented_from->format('F d') }}</b> 
-                            to 
+                            <b class="text-dark">{{ $user->allowed_leave->implemented_from->format('F d') }}</b>
+                            to
                             <b class="text-dark">{{ $user->allowed_leave->implemented_to->format('F d') }}</b>
                         </small>
                     @endisset
                 </div>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="javascript:void(0);" class="btn btn-sm btn-primary waves-effect" data-bs-toggle="modal" data-bs-target="#upgradeLeaveModal" title="Add User(s)">
-                        <i class="ti ti-calendar-plus me-1"></i> 
+                        <i class="ti ti-calendar-plus me-1"></i>
                         Upgrade Leave
                     </a>
                 </div>
@@ -77,7 +82,7 @@
                             <th class="text-bold">Allowed Leave</th>
                         </tr>
                     </thead>
-                    @isset ($user->allowed_leave) 
+                    @isset ($user->allowed_leave)
                         <tbody>
                             <tr>
                                 <th>Earned Leave</th>
@@ -95,7 +100,7 @@
                     @endisset
                 </table>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!--/ User Profile Content -->
@@ -106,4 +111,35 @@
 @include('administration.settings.user.includes.modals.upgrade_leave')
 
 
+@endsection
+
+
+@section('script_links_user_show')
+    {{--  External Javascript Links --}}
+
+@endsection
+
+@section('custom_script_user_show')
+    {{--  External Custom Javascript  --}}
+    <script>
+        $(document).ready(function() {
+            // Handle Edit Minute & Seconds click
+            let editEnabled = false;
+            $('#editMinutesSeconds').on('click', function(e) {
+                e.preventDefault();
+
+                if (!editEnabled) {
+                    // Enable editing
+                    $('.time-min, .time-sec').prop('readonly', false);
+                    $(this).text('Lock Minute & Seconds').addClass('text-danger').removeClass('text-primary');
+                    editEnabled = true;
+                } else {
+                    // Disable editing
+                    $('.time-min, .time-sec').prop('readonly', true);
+                    $(this).text('Edit Minute & Seconds').addClass('text-primary').removeClass('text-danger');
+                    editEnabled = false;
+                }
+            });
+        });
+    </script>
 @endsection

@@ -56,12 +56,24 @@ class DashboardController extends Controller
                                     ->get();
 
         // Get users who are currently working (clocked in but not clocked out)
+        // This includes both today's attendances and overnight shifts from yesterday
+        $today = Carbon::today();
+        $yesterday = Carbon::yesterday();
+
         $currentlyWorkingUsers = User::with(['employee', 'media'])
                                     ->where('status', 'Active')
                                     ->whereNotIn('id', [1, 2]) // Exclude Developer and Controller users
-                                    ->whereHas('attendances', function($query) {
-                                        $query->whereDate('clock_in_date', Carbon::today())
-                                              ->whereNull('clock_out');
+                                    ->where(function($query) use ($today, $yesterday) {
+                                        $query->whereHas('attendances', function($subQuery) use ($today) {
+                                            // Today's active attendances
+                                            $subQuery->whereDate('clock_in_date', $today)
+                                                    ->whereNull('clock_out');
+                                        })
+                                        ->orWhereHas('attendances', function($subQuery) use ($yesterday) {
+                                            // Yesterday's overnight active attendances
+                                            $subQuery->whereDate('clock_in_date', $yesterday)
+                                                    ->whereNull('clock_out');
+                                        });
                                     })
                                     ->get();
 
@@ -69,14 +81,13 @@ class DashboardController extends Controller
         $onLeaveUsers = User::with(['employee', 'media'])
                             ->where('status', 'Active')
                             ->whereNotIn('id', [1, 2]) // Exclude Developer and Controller users
-                            ->whereHas('leave_histories', function($query) {
-                                $query->whereDate('date', Carbon::today())
+                            ->whereHas('leave_histories', function($query) use ($today) {
+                                $query->whereDate('date', $today)
                                       ->whereIn('status', ['Pending', 'Approved']);
                             })
                             ->get();
 
         // Get users who are absent today (shift started/running/passed but no attendance)
-        $today = Carbon::today();
         $currentTime = Carbon::now();
 
         // First, get all users with active shifts
@@ -101,18 +112,46 @@ class DashboardController extends Controller
                 return false;
             }
 
-            // Get shift start time for today
+            // Parse shift start and end times
             $shiftStartTime = Carbon::parse($today->format('Y-m-d') . ' ' . $activeShift->start_time);
+            $shiftEndTime = Carbon::parse($today->format('Y-m-d') . ' ' . $activeShift->end_time);
 
-            // Check if shift has started
-            if ($currentTime->lt($shiftStartTime)) {
+            // Handle overnight shifts (end time is earlier than start time, meaning it's the next day)
+            if ($shiftEndTime->lt($shiftStartTime)) {
+                $shiftEndTime->addDay();
+            }
+
+            // For overnight shifts that are currently active (after midnight)
+            $yesterdayDate = $today->copy()->subDay();
+            $yesterdayShiftStart = Carbon::parse($yesterdayDate->format('Y-m-d') . ' ' . $activeShift->start_time);
+            $yesterdayShiftEnd = Carbon::parse($yesterdayDate->format('Y-m-d') . ' ' . $activeShift->end_time);
+
+            if ($yesterdayShiftEnd->lt($yesterdayShiftStart)) {
+                $yesterdayShiftEnd->addDay(); // This would make it today
+            }
+
+            // Check if current time is within yesterday's overnight shift that extends to today
+            $isInOvernightShift = $currentTime->gte($yesterdayShiftStart) && $currentTime->lte($yesterdayShiftEnd);
+
+            // For regular shifts, check if the shift has started today
+            $hasShiftStartedToday = $currentTime->gte($shiftStartTime);
+
+            // If neither condition is met, the user shouldn't be considered absent
+            if (!$hasShiftStartedToday && !$isInOvernightShift) {
                 return false;
             }
 
-            // Check if user has attendance record for today
-            $hasAttendance = Attendance::where('user_id', $user->id)
+            // Check if user has attendance record for today or an active attendance from yesterday (for overnight shifts)
+            $hasAttendanceToday = Attendance::where('user_id', $user->id)
                                       ->whereDate('clock_in_date', $today)
                                       ->exists();
+
+            $hasActiveOvernightAttendance = Attendance::where('user_id', $user->id)
+                                      ->whereDate('clock_in_date', $yesterdayDate)
+                                      ->whereNull('clock_out')
+                                      ->exists();
+
+            $hasAttendance = $hasAttendanceToday || $hasActiveOvernightAttendance;
 
             // Check if user is on leave today
             $isOnLeave = LeaveHistory::where('user_id', $user->id)
@@ -120,7 +159,7 @@ class DashboardController extends Controller
                                     ->whereIn('status', ['Pending', 'Approved'])
                                     ->exists();
 
-            // User is absent if shift has started, but no attendance and not on leave
+            // User is absent if shift has started (or is in overnight shift), but no attendance and not on leave
             return !$hasAttendance && !$isOnLeave;
         });
 
