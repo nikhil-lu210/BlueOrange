@@ -186,9 +186,9 @@
 @include('administration.dashboard.partials._running_month_attendance')
 
 
-{{-- Blood Group Modal --}}
-@if ($showBloodGroupModal)
-    @include('administration.dashboard.modals.blood_group_modal')
+{{-- Employee Info Update Modal --}}
+@if ($showEmployeeInfoUpdateModal)
+    @include('administration.dashboard.modals.employee_info_update_modal')
 @endif
 
 {{-- <!-- End row --> --}}
@@ -318,16 +318,16 @@
         }
     </script>
 
-    @if ($showBloodGroupModal)
+    @if ($showEmployeeInfoUpdateModal)
         <script>
             $(document).ready(function () {
                 // Show the modal
-                $('#bloodGroupModal').modal('show');
+                $('#employeeInfoUpdateModal').modal('show');
 
                 // Wait for the modal to be shown, then initialize Select2
-                $('#bloodGroupModal').on('shown.bs.modal', function () {
+                $('#employeeInfoUpdateModal').on('shown.bs.modal', function () {
                     $('#blood_group').select2({
-                        dropdownParent: $('#bloodGroupModal'),
+                        dropdownParent: $('#employeeInfoUpdateModal'),
                         width: '100%' // Optional: ensures it fits the container
                     });
                 });

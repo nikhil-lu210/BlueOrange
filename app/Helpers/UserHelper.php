@@ -231,3 +231,31 @@ if (!function_exists('get_employee_name')) {
 }
 
 
+if (!function_exists('is_invalid_employee_value')) {
+
+    /**
+     * Determine if a given employee field value is considered invalid.
+     *
+     * This function checks whether the value is null, empty, or matches any
+     * common placeholders such as "N/A", "NA", "n/a", etc. It is useful for
+     * validating employee profile fields that must be completed.
+     *
+     * @param  mixed  $value  The field value to validate.
+     * @return bool  True if the value is invalid, false otherwise.
+     */
+    function is_invalid_employee_value($value): bool
+    {
+        $invalidValues = ['na', 'n/a', '""'];
+
+        if (is_null($value)) {
+            return true;
+        }
+
+        if (is_string($value)) {
+            $trimmed = strtolower(trim($value));
+            return empty($trimmed) || in_array($trimmed, $invalidValues, true);
+        }
+
+        return empty($value);
+    }
+}

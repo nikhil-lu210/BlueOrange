@@ -14,7 +14,7 @@ Route::controller(ProfileController::class)->prefix('my')->name('my.')->group(fu
 
     Route::get('/profile/edit', 'edit')->name('profile.edit')->can('User Update');
     Route::post('/profile/update', 'update')->name('profile.update')->can('User Update');
-    Route::post('/profile/update/blood-group', 'updateBloodGroup')->name('profile.update.blood.group');
+    Route::post('/profile/update/information', 'updateInformation')->name('profile.update.information');
 
     // salary
     include_once 'salary/salary.php';
