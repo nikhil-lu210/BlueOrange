@@ -9,6 +9,8 @@
 
 @section('css_links')
     {{--  External CSS  --}}
+    {{-- Select 2 --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -183,6 +185,12 @@
 {{-- Attendances for running month --}}
 @include('administration.dashboard.partials._running_month_attendance')
 
+
+{{-- Blood Group Modal --}}
+@if ($showBloodGroupModal)
+    @include('administration.dashboard.modals.blood_group_modal')
+@endif
+
 {{-- <!-- End row --> --}}
 @endsection
 
@@ -193,6 +201,8 @@
 
     <!-- Page JS -->
     <script src="{{ asset('assets/js/cards-actions.js') }}"></script>
+
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
 @endsection
 
 @section('custom_script')
@@ -307,4 +317,21 @@
             setInterval(createConfetti, 200);
         }
     </script>
+
+    @if ($showBloodGroupModal)
+        <script>
+            $(document).ready(function () {
+                // Show the modal
+                $('#bloodGroupModal').modal('show');
+
+                // Wait for the modal to be shown, then initialize Select2
+                $('#bloodGroupModal').on('shown.bs.modal', function () {
+                    $('#blood_group').select2({
+                        dropdownParent: $('#bloodGroupModal'),
+                        width: '100%' // Optional: ensures it fits the container
+                    });
+                });
+            });
+        </script>
+    @endif
 @endsection
