@@ -278,6 +278,10 @@
                 // Clear the input values in the cloned row
                 newRow.find('input[type="text"], input[type="number"]').val('');
 
+                // Set Min and Sec values to 0
+                newRow.find('input[name^="total_leave[min]"]').val('0');
+                newRow.find('input[name^="total_leave[sec]"]').val('0');
+
                 // Update names for dynamic indexing
                 newRow.find('input[name^="leave_days[date]"]').attr('name', `leave_days[date][${rowCount}]`);
                 newRow.find('input[name^="total_leave[hour]"]').attr('name', `total_leave[hour][${rowCount}]`);
