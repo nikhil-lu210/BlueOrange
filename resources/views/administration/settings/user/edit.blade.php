@@ -245,8 +245,8 @@
                                     </optgroup>
                                 @endforeach
 
-                                <option value="N/A" @selected($user->employee->blood_group === 'N/A')>
-                                    N/A
+                                <option value="Unknown" @selected($user->employee->blood_group === 'Unknown')>
+                                    Don't Know (Unknown)
                                 </option>
                             </select>
 

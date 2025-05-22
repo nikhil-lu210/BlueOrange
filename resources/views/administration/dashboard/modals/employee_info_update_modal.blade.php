@@ -25,7 +25,7 @@
                                         @endforeach
                                     </optgroup>
                                 @endforeach
-                                <option value="N/A">Don't Know (N/A)</option>
+                                <option value="Unknown">Don't Know (Unknown)</option>
                             </select>
                             @error('blood_group')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
