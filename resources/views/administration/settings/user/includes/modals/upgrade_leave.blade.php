@@ -15,8 +15,8 @@
                         <label for="earned_leave" class="form-label">Earned Leave <strong class="text-danger">*</strong></label>
                         <div class="input-group">
                             <input type="number" min="0" max="240" name="earned_leave_hour" value="{{ old('earned_leave_hour') }}" @error('earned_leave') is-invalid @enderror class="form-control" placeholder="HH" aria-label="HH" required>
-                            <input type="number" min="0" max="59" name="earned_leave_min" value="{{ old('earned_leave_min') }}" @error('earned_leave') is-invalid @enderror class="form-control" placeholder="MM" aria-label="MM" required>
-                            <input type="number" min="0" max="59" name="earned_leave_sec" value="{{ old('earned_leave_sec') }}" @error('earned_leave') is-invalid @enderror class="form-control" placeholder="SS" aria-label="SS" required>
+                            <input type="number" min="0" max="59" name="earned_leave_min" value="{{ old('earned_leave_min', 0) }}" @error('earned_leave') is-invalid @enderror class="form-control" placeholder="MM" aria-label="MM" required>
+                            <input type="number" min="0" max="59" name="earned_leave_sec" value="{{ old('earned_leave_sec', 0) }}" @error('earned_leave') is-invalid @enderror class="form-control" placeholder="SS" aria-label="SS" required>
                         </div>
                         @error('earned_leave')
                             <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -26,8 +26,8 @@
                         <label for="sick_leave" class="form-label">Sick Leave <strong class="text-danger">*</strong></label>
                         <div class="input-group">
                             <input type="number" min="0" max="240" name="sick_leave_hour" value="{{ old('sick_leave_hour') }}" @error('sick_leave') is-invalid @enderror class="form-control" placeholder="HH" aria-label="HH" required>
-                            <input type="number" min="0" max="59" name="sick_leave_min" value="{{ old('sick_leave_min') }}" @error('sick_leave') is-invalid @enderror class="form-control" placeholder="MM" aria-label="MM" required>
-                            <input type="number" min="0" max="59" name="sick_leave_sec" value="{{ old('sick_leave_sec') }}" @error('sick_leave') is-invalid @enderror class="form-control" placeholder="SS" aria-label="SS" required>
+                            <input type="number" min="0" max="59" name="sick_leave_min" value="{{ old('sick_leave_min', 0) }}" @error('sick_leave') is-invalid @enderror class="form-control" placeholder="MM" aria-label="MM" required>
+                            <input type="number" min="0" max="59" name="sick_leave_sec" value="{{ old('sick_leave_sec', 0) }}" @error('sick_leave') is-invalid @enderror class="form-control" placeholder="SS" aria-label="SS" required>
                         </div>
                         @error('sick_leave')
                             <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -37,8 +37,8 @@
                         <label for="casual_leave" class="form-label">Casual Leave <strong class="text-danger">*</strong></label>
                         <div class="input-group">
                             <input type="number" min="0" max="240" name="casual_leave_hour" value="{{ old('casual_leave_hour') }}" @error('casual_leave') is-invalid @enderror class="form-control" placeholder="HH" aria-label="HH" required>
-                            <input type="number" min="0" max="59" name="casual_leave_min" value="{{ old('casual_leave_min') }}" @error('casual_leave') is-invalid @enderror class="form-control" placeholder="MM" aria-label="MM" required>
-                            <input type="number" min="0" max="59" name="casual_leave_sec" value="{{ old('casual_leave_sec') }}" @error('casual_leave') is-invalid @enderror class="form-control" placeholder="SS" aria-label="SS" required>
+                            <input type="number" min="0" max="59" name="casual_leave_min" value="{{ old('casual_leave_min', 0) }}" @error('casual_leave') is-invalid @enderror class="form-control" placeholder="MM" aria-label="MM" required>
+                            <input type="number" min="0" max="59" name="casual_leave_sec" value="{{ old('casual_leave_sec', 0) }}" @error('casual_leave') is-invalid @enderror class="form-control" placeholder="SS" aria-label="SS" required>
                         </div>
                         @error('casual_leave')
                             <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -47,8 +47,8 @@
                     <div class="mb-3 col-md-6">
                         <label for="implemented_from" class="form-label">Implemented From <strong class="text-danger">*</strong></label>
                         <div class="input-group">
-                            <input type="number" min="1" max="12" maxlength="2" name="implemented_from_month" value="{{ old('implemented_from_month') }}" @error('implemented_from') is-invalid @enderror class="form-control" placeholder="MM" aria-label="MM" required>
-                            <input type="number" min="1" max="31" maxlength="2" name="implemented_from_date" value="{{ old('implemented_from_date') }}" @error('implemented_from') is-invalid @enderror class="form-control" placeholder="DD" aria-label="DD" required>
+                            <input type="number" min="1" max="12" maxlength="2" name="implemented_from_month" value="{{ old('implemented_from_month', 1) }}" @error('implemented_from') is-invalid @enderror class="form-control" placeholder="MM" aria-label="MM" required>
+                            <input type="number" min="1" max="31" maxlength="2" name="implemented_from_date" value="{{ old('implemented_from_date', 1) }}" @error('implemented_from') is-invalid @enderror class="form-control" placeholder="DD" aria-label="DD" required>
                         </div>
                         @error('implemented_from')
                             <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -57,8 +57,8 @@
                     <div class="mb-3 col-md-6">
                         <label for="implemented_to" class="form-label">Implemented To <strong class="text-danger">*</strong></label>
                         <div class="input-group">
-                            <input type="number" min="1" max="12" maxlength="2" name="implemented_to_month" value="{{ old('implemented_to_month') }}" @error('implemented_to') is-invalid @enderror class="form-control" placeholder="MM" aria-label="MM" required>
-                            <input type="number" min="1" max="31" maxlength="2" name="implemented_to_date" value="{{ old('implemented_to_date') }}" @error('implemented_to') is-invalid @enderror class="form-control" placeholder="DD" aria-label="DD" required>
+                            <input type="number" min="1" max="12" maxlength="2" name="implemented_to_month" value="{{ old('implemented_to_month', 12) }}" @error('implemented_to') is-invalid @enderror class="form-control" placeholder="MM" aria-label="MM" required>
+                            <input type="number" min="1" max="31" maxlength="2" name="implemented_to_date" value="{{ old('implemented_to_date', 31) }}" @error('implemented_to') is-invalid @enderror class="form-control" placeholder="DD" aria-label="DD" required>
                         </div>
                         @error('implemented_to')
                             <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
