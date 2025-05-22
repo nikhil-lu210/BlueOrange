@@ -109,23 +109,35 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update the user's blood group.
+     * Update the user's information.
      */
-    public function updateBloodGroup(Request $request) {
+    public function updateInformation(Request $request)
+    {
         $user = Auth::user();
 
         try {
-            // Validate the request
-            $request->validate([
-                'blood_group' => 'required|string',
-            ]);
+            // Dynamically build validation rules for only the fields present in the request
+            $rules = [];
 
-            // Update the blood group
-            $user->employee()->update([
-                'blood_group' => $request->blood_group,
-            ]);
+            if ($request->has('blood_group')) {
+                $rules['blood_group'] = 'required|string';
+            }
 
-            toast('Your blood group has been updated.', 'success');
+            if ($request->has('father_name')) {
+                $rules['father_name'] = 'required|string';
+            }
+
+            if ($request->has('mother_name')) {
+                $rules['mother_name'] = 'required|string';
+            }
+
+            // Validate the request based on dynamic rules
+            $validated = $request->validate($rules);
+
+            // Only update the fields that are present in the request
+            $user->employee()->update($validated);
+
+            toast('Your information has been updated.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');

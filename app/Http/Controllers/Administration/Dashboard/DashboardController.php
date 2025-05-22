@@ -45,8 +45,8 @@ class DashboardController extends Controller
         $onLeaveUsers = $this->dashboardService->getUsersOnLeaveToday();
         $absentUsers = $this->dashboardService->getAbsentUsers();
 
-        // Check if the blood group modal should be shown
-        $showBloodGroupModal = $this->dashboardService->shouldShowBloodGroupModal($user);
+        // Check if the employee info update modal should be shown
+        $showEmployeeInfoUpdateModal = $this->dashboardService->shouldShowEmployeeInfoUpdateModal($user);
 
         // Get grouped blood groups for the dropdown
         $groupedBloodGroups = $this->dashboardService->getGroupedBloodGroups();
@@ -64,7 +64,7 @@ class DashboardController extends Controller
             'currentlyWorkingUsers',
             'onLeaveUsers',
             'absentUsers',
-            'showBloodGroupModal',
+            'showEmployeeInfoUpdateModal',
             'groupedBloodGroups',
         ]));
     }

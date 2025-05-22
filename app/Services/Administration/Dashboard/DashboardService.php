@@ -197,12 +197,20 @@ class DashboardService
     }
 
     /**
-     * Check if the blood group modal should be shown.
+     * Check if the employee info update modal should be shown.
      */
-    public function shouldShowBloodGroupModal(User $user): bool
+    public function shouldShowEmployeeInfoUpdateModal(User $user): bool
     {
-        $bloodGroup = $user->employee->blood_group;
-        return empty($bloodGroup) || is_null($bloodGroup) || $bloodGroup === '';
+        $employee = $user->employee;
+
+        return collect([
+            $employee->blood_group,
+            $employee->father_name,
+            $employee->mother_name,
+            // Add more fields as needed
+        ])->contains(function ($value) {
+            return is_null($value) || empty($value) || $value === '' || $value === 'N/A' || $value === 'NA' || $value === 'n/a' || $value === 'na' || $value === '""';
+        });
     }
 
     /**
