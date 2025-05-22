@@ -34,5 +34,5 @@ enum BloodGroup: string
     case P1 = 'P (P1)';
     case P_SMALL = 'P (p)';
 
-    case NA = 'N/A';
+    case NA = 'Unknown';
 }
