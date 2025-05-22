@@ -209,7 +209,7 @@ class DashboardService
             $employee->mother_name,
             // Add more fields as needed
         ])->contains(function ($value) {
-            return is_null($value) || empty($value) || $value === '' || $value === 'N/A' || $value === 'NA' || $value === 'n/a' || $value === 'na' || $value === '""';
+            return is_invalid_employee_value($value);
         });
     }
 

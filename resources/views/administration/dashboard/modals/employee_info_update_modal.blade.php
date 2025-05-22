@@ -11,7 +11,7 @@
                 <!-- Employee Info Update form -->
                 <form method="post" action="{{ route('administration.my.profile.update.information') }}" class="row g-3" autocomplete="off">
                     @csrf
-                    @if (is_null($user->employee->blood_group) || empty($user->employee->blood_group))
+                    @if (is_invalid_employee_value($user->employee->blood_group))
                         <div class="mb-3 col-md-12">
                             <label for="blood_group" class="form-label">Blood Group <strong class="text-danger">*</strong></label>
                             <select name="blood_group" id="blood_group" class="form-select select2 w-100 @error('blood_group') is-invalid @enderror" data-style="btn-default" required>
@@ -33,7 +33,7 @@
                         </div>
                     @endif
 
-                    @if (is_null($user->employee->father_name) || empty($user->employee->father_name))
+                    @if (is_invalid_employee_value($user->employee->father_name))
                         <div class="mb-3 col-md-12">
                             <label for="father_name" class="form-label">{{ __('Father Name') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="father_name" name="father_name" value="{{ old('father_name') }}" placeholder="{{ __('Father Name') }}" class="form-control @error('father_name') is-invalid @enderror" required/>
@@ -43,7 +43,7 @@
                         </div>
                     @endif
 
-                    @if (is_null($user->employee->mother_name) || empty($user->employee->mother_name))
+                    @if (is_invalid_employee_value($user->employee->mother_name))
                         <div class="mb-3 col-md-12">
                             <label for="mother_name" class="form-label">{{ __('Mother Name') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="mother_name" name="mother_name" value="{{ old('mother_name') }}" placeholder="{{ __('Mother Name') }}" class="form-control @error('mother_name') is-invalid @enderror" required/>
