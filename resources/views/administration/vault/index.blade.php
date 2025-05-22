@@ -41,9 +41,9 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">All Credentials</h5>
-        
+
                 <div class="card-header-elements ms-auto">
-                    @can ('Vault Create') 
+                    @can ('Vault Everything')
                         <a href="{{ route('administration.vault.export') }}" class="btn btn-sm btn-dark">
                             <span class="tf-icon ti ti-download ti-xs me-1"></span>
                             Download
@@ -64,12 +64,12 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($vaults as $key => $vault) 
+                            @foreach ($vaults as $key => $vault)
                                 <tr>
                                     <th>#{{ serial($vaults, $key) }}</th>
                                     <td>
                                         <b>{{ $vault->name }}</b>
-                                        @isset ($vault->url) 
+                                        @isset ($vault->url)
                                             <br>
                                             <small>
                                                 <a href="{{ $vault->url }}" target="_blank" class="text-bold text-primary">{{ $vault->url }}</a>
@@ -85,19 +85,19 @@
                                         <button type="button" class="btn btn-outline-dark btn-xs copy-btn" title="Click to Copy" data-copy="{{ $vault->password }}">
                                             <i class="ti ti-copy"></i> Copy Password
                                         </button>
-                                    </td>                                    
+                                    </td>
                                     <td class="text-center">
-                                        @can ('Vault Delete') 
+                                        @can ('Vault Delete')
                                             <a href="{{ route('administration.vault.destroy', ['vault' => $vault]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Vault?">
                                                 <i class="text-white ti ti-trash"></i>
                                             </a>
                                         @endcan
-                                        @can ('Vault Update') 
+                                        @can ('Vault Update')
                                             <a href="{{ route('administration.vault.edit', ['vault' => $vault]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Vault?">
                                                 <i class="text-white ti ti-pencil"></i>
                                             </a>
                                         @endcan
-                                        @can ('Vault Read') 
+                                        @can ('Vault Read')
                                             <a href="{{ route('administration.vault.show', ['vault' => $vault]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                                 <i class="text-white ti ti-info-hexagon"></i>
                                             </a>
@@ -109,7 +109,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
