@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Administration\Dashboard;
 
+use App\Enums\BloodGroup;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
@@ -163,6 +164,46 @@ class DashboardController extends Controller
             return !$hasAttendance && !$isOnLeave;
         });
 
+        // Check if the user has a blood group set
+        $bloodGroup = $user->employee->blood_group;
+        $showBloodGroupModal = empty($bloodGroup) || is_null($bloodGroup) || $bloodGroup === '';
+
+        // Group blood groups for the dropdown
+        $groupedBloodGroups = [
+            'Standard (ABO + Rh)' => [
+                BloodGroup::A_POSITIVE,
+                BloodGroup::A_NEGATIVE,
+                BloodGroup::B_POSITIVE,
+                BloodGroup::B_NEGATIVE,
+                BloodGroup::AB_POSITIVE,
+                BloodGroup::AB_NEGATIVE,
+                BloodGroup::O_POSITIVE,
+                BloodGroup::O_NEGATIVE,
+            ],
+            'Rare Types' => [
+                BloodGroup::RH_NULL,
+                BloodGroup::BOMBAY,
+            ],
+            'Other Systems' => [
+                BloodGroup::KELL_POS,
+                BloodGroup::KELL_NEG,
+                BloodGroup::DUFFY_A,
+                BloodGroup::DUFFY_B,
+                BloodGroup::KIDD_A,
+                BloodGroup::KIDD_B,
+                BloodGroup::MNS_MN,
+                BloodGroup::MNS_SS,
+                BloodGroup::LUTHERAN_A,
+                BloodGroup::LUTHERAN_B,
+                BloodGroup::DIEGO_A,
+                BloodGroup::DIEGO_B,
+                BloodGroup::LEWIS_A,
+                BloodGroup::LEWIS_B,
+                BloodGroup::P1,
+                BloodGroup::P_SMALL,
+            ],
+        ];
+
         return view('administration.dashboard.index', compact([
             'user',
             'wish',
@@ -176,6 +217,8 @@ class DashboardController extends Controller
             'currentlyWorkingUsers',
             'onLeaveUsers',
             'absentUsers',
+            'showBloodGroupModal',
+            'groupedBloodGroups',
         ]));
     }
 
