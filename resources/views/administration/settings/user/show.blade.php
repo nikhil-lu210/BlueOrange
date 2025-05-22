@@ -23,6 +23,8 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
     {{--  External CSS  --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+
+    @yield('css_links_user_show')
 @endsection
 
 @section('custom_css')
@@ -238,6 +240,8 @@
     {{--  External Javascript Links --}}
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
+
+    @yield('script_links_user_show')
 @endsection
 
 @section('custom_script')
@@ -250,4 +254,6 @@
             });
         });
     </script>
+
+    @yield('custom_script_user_show')
 @endsection
