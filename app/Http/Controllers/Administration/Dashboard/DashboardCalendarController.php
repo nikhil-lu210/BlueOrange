@@ -186,18 +186,44 @@ class DashboardCalendarController extends Controller
      */
     private function addLeaveEvents(&$events, $start, $end)
     {
-        $userId = Auth::id();
+        $user = Auth::user();
+        $userId = $user->id;
 
-        // Get approved leaves for the current user
-        $leaves = LeaveHistory::where('user_id', $userId)
-            ->where('status', 'Approved')
-            ->whereBetween('date', [$start, $end])
-            ->get();
+        // Check if user has any of the required permissions to see all leaves
+        $hasPermission = $user->hasAnyPermission([
+                                'Leave History Everything',
+                                'Leave History Update',
+                                'Leave History Delete'
+                            ]);
+
+        // Build the query based on permissions
+        $query = LeaveHistory::where('status', 'Approved')
+            ->whereBetween('date', [$start, $end]);
+
+        if (!$hasPermission) {
+            // If user doesn't have permission, only show their own leaves
+            $query->where('user_id', $userId);
+        }
+
+        // Eager load the user relationship to get the alias_name
+        $leaves = $query->with('user.employee')->get();
 
         foreach ($leaves as $leave) {
+            // Get the user's alias name for the title
+            $aliasName = '';
+            if ($leave->user && $leave->user->employee) {
+                $aliasName = $leave->user->employee->alias_name;
+            }
+
+            // Set the title based on whether it's the current user's leave or someone else's
+            $title = 'My Leave: ' . $leave->type;
+            if ($hasPermission && $leave->user_id != $userId) {
+                $title = $aliasName . '\'s Leave: ' . $leave->type;
+            }
+
             $events[] = [
                 'id' => 'leave_' . $leave->id,
-                'title' => 'Leave: ' . $leave->type,
+                'title' => $title,
                 'start' => $leave->date,
                 'allDay' => true,
                 'backgroundColor' => '#dc3545', // Danger color for leaves
@@ -205,7 +231,9 @@ class DashboardCalendarController extends Controller
                 'extendedProps' => [
                     'type' => 'leave',
                     'reason' => $leave->reason,
-                    'is_paid' => $leave->is_paid_leave
+                    'is_paid' => $leave->is_paid_leave,
+                    'user_id' => $leave->user_id,
+                    'user_name' => $aliasName
                 ]
             ];
         }

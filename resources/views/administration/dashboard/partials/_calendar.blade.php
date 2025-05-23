@@ -328,6 +328,15 @@
                 link.classList.add('d-none');
 
             } else if (eventType === 'leave') {
+                // Add user name if it's not the current user's leave
+                const userId = {{ Auth::id() }};
+                const eventUserId = event.extendedProps.user_id;
+                const userName = event.extendedProps.user_name;
+
+                if (eventUserId && eventUserId !== userId && userName) {
+                    detailsHtml += `<p><strong>Employee:</strong> ${userName}</p>`;
+                }
+
                 detailsHtml += `
                     <p><strong>Paid Leave:</strong> ${event.extendedProps.is_paid ? 'Yes' : 'No'}</p>
                     <div class="mt-3">
