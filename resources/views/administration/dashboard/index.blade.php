@@ -11,6 +11,8 @@
     {{--  External CSS  --}}
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+    {{-- FullCalendar --}}
+    <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
 
 @endsection
 
@@ -151,6 +153,24 @@
 
 
     </style>
+
+    <!-- Dashboard Calendar Styles -->
+    <style>
+        .fc-event{
+            cursor: pointer;
+        }
+        /* Make weekend events non-interactive but keep their appearance */
+        .fc-event.weekend-event {
+            pointer-events: none;
+            cursor: default;
+        }
+        /* Custom styles for weekend events */
+        .fc-event.weekend-event .fc-event-title {
+            text-align: center !important;
+            width: 100% !important;
+            display: block !important;
+        }
+    </style>
 @endsection
 
 
@@ -209,6 +229,23 @@
 
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
 
+    <!-- Calendar Dependencies -->
+    <script src='https://cdn.jsdelivr.net/npm/moment@2.29.4/min/moment.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+
+    <!-- Dashboard Calendar Configuration -->
+    <script>
+        // Configuration object for the dashboard calendar
+        const dashboardCalendarConfig = {
+            eventsUrl: '{{ route("administration.dashboard.calendar.events") }}',
+            weekendsUrl: '{{ route("administration.dashboard.calendar.weekends") }}',
+            taskUrl: '{{ route("administration.task.index") }}',
+            currentUserId: {{ Auth::id() }}
+        };
+    </script>
+
+    <!-- Dashboard Calendar JS -->
+    <script src="{{ asset('assets/js/custom_js/calendar/dashboard_calendar.js') }}"></script>
 
 @endsection
 
