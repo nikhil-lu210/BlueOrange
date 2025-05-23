@@ -4,11 +4,11 @@
             <div class="card-header header-elements">
                 <div class="d-flex align-items-center">
                     <div class="btn-group me-3" role="group">
-                        <button type="button" id="calendarPrevBtn" class="btn btn-sm btn-outline-secondary">
+                        <button type="button" id="calendarPrevBtn" class="btn btn-sm btn-dark">
                             <i class="ti ti-chevron-left"></i>
                         </button>
-                        <button type="button" id="calendarTodayBtn" class="btn btn-sm btn-outline-secondary">today</button>
-                        <button type="button" id="calendarNextBtn" class="btn btn-sm btn-outline-secondary">
+                        <button type="button" id="calendarTodayBtn" class="btn btn-sm btn-dark text-uppercase">today</button>
+                        <button type="button" id="calendarNextBtn" class="btn btn-sm btn-dark">
                             <i class="ti ti-chevron-right"></i>
                         </button>
                     </div>
@@ -16,10 +16,10 @@
                 </div>
                 <div class="card-header-elements ms-auto">
                     <div class="btn-group" role="group">
-                        <button type="button" id="calendarMonthBtn" class="btn btn-sm btn-outline-secondary active">month</button>
-                        <button type="button" id="calendarWeekBtn" class="btn btn-sm btn-outline-secondary">week</button>
-                        <button type="button" id="calendarDayBtn" class="btn btn-sm btn-outline-secondary">day</button>
-                        <button type="button" id="calendarListBtn" class="btn btn-sm btn-outline-secondary">list</button>
+                        <button type="button" id="calendarMonthBtn" class="btn btn-sm btn-label-dark text-capitalize active">month</button>
+                        <button type="button" id="calendarWeekBtn" class="btn btn-sm btn-label-dark text-capitalize">week</button>
+                        <button type="button" id="calendarDayBtn" class="btn btn-sm btn-label-dark text-capitalize">day</button>
+                        <button type="button" id="calendarListBtn" class="btn btn-sm btn-label-dark text-capitalize">list</button>
                     </div>
                 </div>
             </div>
@@ -30,25 +30,25 @@
                             <div class="form-check">
                                 <input class="form-check-input calendar-filter" type="checkbox" id="filterTasks" value="task" checked>
                                 <label class="form-check-label" for="filterTasks">
-                                    <span class="badge bg-danger">Tasks</span>
+                                    <span class="badge bg-warning">Tasks</span>
                                 </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input calendar-filter" type="checkbox" id="filterHolidays" value="holiday" checked>
                                 <label class="form-check-label" for="filterHolidays">
-                                    <span class="badge bg-info">Holidays</span>
+                                    <span class="badge bg-primary">Holidays</span>
                                 </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input calendar-filter" type="checkbox" id="filterLeaves" value="leave" checked>
                                 <label class="form-check-label" for="filterLeaves">
-                                    <span class="badge bg-warning">Leaves</span>
+                                    <span class="badge bg-danger">Leaves</span>
                                 </label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input calendar-filter" type="checkbox" id="filterWeekends" value="weekend" checked>
                                 <label class="form-check-label" for="filterWeekends">
-                                    <span class="badge bg-secondary">Weekends</span>
+                                    <span class="badge bg-dark">Weekends</span>
                                 </label>
                             </div>
                         </div>
@@ -61,7 +61,7 @@
 </div>
 
 <!-- Event Details Modal -->
-<div class="modal fade" id="eventDetailsModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" data-bs-backdrop="static" id="eventDetailsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -74,7 +74,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
                 <a href="#" id="eventDetailsLink" class="btn btn-primary d-none">View Details</a>
             </div>
         </div>
