@@ -16,6 +16,24 @@ use Illuminate\Support\Facades\Auth;
 class DashboardCalendarController extends Controller
 {
     /**
+     * Get active weekend days for the calendar
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getWeekendDays()
+    {
+        try {
+            // Get active weekend days from the Weekend model
+            $activeWeekendDays = Weekend::getActiveWeekendDays();
+
+            return response()->json($activeWeekendDays);
+        } catch (Exception $e) {
+            Log::error('Error fetching weekend days: ' . $e->getMessage());
+            return response()->json([], 500);
+        }
+    }
+
+    /**
      * Get calendar events for the dashboard
      *
      * @param Request $request

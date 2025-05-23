@@ -15,4 +15,5 @@ Route::controller(DashboardController::class)->prefix('dashboard')->name('dashbo
 // Calendar API Routes
 Route::controller(DashboardCalendarController::class)->prefix('dashboard/calendar')->name('dashboard.calendar.')->group(function () {
     Route::get('/events', 'getEvents')->name('events');
+    Route::get('/weekends', 'getWeekendDays')->name('weekends');
 });

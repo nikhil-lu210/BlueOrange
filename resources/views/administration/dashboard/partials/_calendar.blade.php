@@ -92,6 +92,29 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (!calendarEl) return;
 
+    // Function to convert day names to day numbers (0=Sunday, 1=Monday, etc.)
+    function dayNameToNumber(dayName) {
+        const days = {
+            'Sunday': 0,
+            'Monday': 1,
+            'Tuesday': 2,
+            'Wednesday': 3,
+            'Thursday': 4,
+            'Friday': 5,
+            'Saturday': 6
+        };
+        return days[dayName];
+    }
+
+    // Function to get business days (non-weekend days)
+    function getBusinessDays(weekendDays) {
+        // Create an array of all days [0,1,2,3,4,5,6]
+        const allDays = [0, 1, 2, 3, 4, 5, 6];
+        // Filter out weekend days to get business days
+        return allDays.filter(day => !weekendDays.includes(day));
+    }
+
+    // Initialize calendar with default settings
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         headerToolbar: false, // We'll use our custom header
@@ -103,7 +126,7 @@ document.addEventListener('DOMContentLoaded', function() {
         slotMinTime: '06:00:00', // Start time grid at 6 AM
         slotMaxTime: '22:00:00', // End time grid at 10 PM
         businessHours: {
-            daysOfWeek: [1, 2, 3, 4, 5], // Monday - Friday
+            daysOfWeek: [1, 2, 3, 4, 5], // Default Monday - Friday (will be updated after fetching weekend days)
             startTime: '09:00',
             endTime: '18:00',
         },
@@ -147,6 +170,23 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     calendar.render();
+
+    // Fetch weekend days from the server and update the calendar
+    fetch('{{ route("administration.dashboard.calendar.weekends") }}')
+        .then(response => response.json())
+        .then(data => {
+            // Convert day names to day numbers
+            const weekendDays = data.map(day => dayNameToNumber(day));
+
+            // Update calendar business hours with non-weekend days
+            const businessDays = getBusinessDays(weekendDays);
+            calendar.setOption('businessHours', {
+                daysOfWeek: businessDays,
+                startTime: '09:00',
+                endTime: '18:00',
+            });
+        })
+        .catch(error => console.error('Error fetching weekend days:', error));
 
     // Function to update calendar title
     function updateCalendarTitle(info) {
