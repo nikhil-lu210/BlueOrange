@@ -1,0 +1,224 @@
+<?php
+
+namespace App\Http\Controllers\Administration\Dashboard;
+
+use App\Http\Controllers\Controller;
+use App\Models\Holiday\Holiday;
+use App\Models\Leave\LeaveHistory;
+use App\Models\Task\Task;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
+class DashboardCalendarController extends Controller
+{
+    /**
+     * Get calendar events for the dashboard
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getEvents(Request $request)
+    {
+        try {
+            $start = $request->input('start');
+            $end = $request->input('end');
+
+            // Validate date inputs
+            if (!$start || !$end) {
+                return response()->json(['error' => 'Start and end dates are required'], 400);
+            }
+
+            // Parse dates to ensure they're valid
+            try {
+                // Just validate the dates by parsing them
+                Carbon::parse($start);
+                Carbon::parse($end);
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Invalid date format'], 400);
+            }
+
+            $events = [];
+
+            // Get task deadlines (assigned by me or assigned to me)
+            $this->addTaskEvents($events, $start, $end);
+
+            // Get holidays
+            $this->addHolidayEvents($events, $start, $end);
+
+            // Get approved leaves
+            $this->addLeaveEvents($events, $start, $end);
+
+            // Add weekends
+            $this->addWeekendEvents($events, $start, $end);
+
+            return response()->json($events);
+        } catch (\Exception $e) {
+            // Log the error
+            \Log::error('Calendar events error: ' . $e->getMessage());
+
+            // Return a friendly error message
+            return response()->json(['error' => 'An error occurred while fetching calendar events'], 500);
+        }
+    }
+
+    /**
+     * Add task deadline events to the events array
+     *
+     * @param array $events
+     * @param string $start
+     * @param string $end
+     * @return void
+     */
+    private function addTaskEvents(&$events, $start, $end)
+    {
+        $userId = Auth::id();
+
+        // Tasks created by the current user
+        $createdTasks = Task::where('creator_id', $userId)
+            ->whereNotNull('deadline')
+            ->whereBetween('deadline', [$start, $end])
+            ->get();
+
+        foreach ($createdTasks as $task) {
+            $events[] = [
+                'id' => 'task_' . $task->id,
+                'title' => 'Task: ' . $task->title,
+                'start' => $task->deadline->format('Y-m-d'),
+                'allDay' => true,
+                'backgroundColor' => '#ff6b6b', // Red for tasks
+                'borderColor' => '#ff6b6b',
+                'extendedProps' => [
+                    'type' => 'task',
+                    'status' => $task->status,
+                    'description' => $task->description,
+                    'taskid' => $task->taskid
+                ]
+            ];
+        }
+
+        // Tasks assigned to the current user
+        $assignedTasks = Task::whereHas('users', function ($query) use ($userId) {
+                $query->where('user_id', $userId);
+            })
+            ->whereNotNull('deadline')
+            ->whereBetween('deadline', [$start, $end])
+            ->get();
+
+        foreach ($assignedTasks as $task) {
+            // Only add if not already added (to avoid duplicates if user created and is assigned to the same task)
+            if (!$createdTasks->contains($task->id)) {
+                $events[] = [
+                    'id' => 'task_' . $task->id,
+                    'title' => 'Task: ' . $task->title,
+                    'start' => $task->deadline->format('Y-m-d'),
+                    'allDay' => true,
+                    'backgroundColor' => '#ff6b6b', // Red for tasks
+                    'borderColor' => '#ff6b6b',
+                    'extendedProps' => [
+                        'type' => 'task',
+                        'status' => $task->status,
+                        'description' => $task->description,
+                        'taskid' => $task->taskid
+                    ]
+                ];
+            }
+        }
+    }
+
+    /**
+     * Add holiday events to the events array
+     *
+     * @param array $events
+     * @param string $start
+     * @param string $end
+     * @return void
+     */
+    private function addHolidayEvents(&$events, $start, $end)
+    {
+        $holidays = Holiday::where('is_active', true)
+            ->whereBetween('date', [$start, $end])
+            ->get();
+
+        foreach ($holidays as $holiday) {
+            $events[] = [
+                'id' => 'holiday_' . $holiday->id,
+                'title' => 'Holiday: ' . $holiday->name,
+                'start' => $holiday->date,
+                'allDay' => true,
+                'backgroundColor' => '#4ecdc4', // Teal for holidays
+                'borderColor' => '#4ecdc4',
+                'extendedProps' => [
+                    'type' => 'holiday',
+                    'description' => $holiday->description
+                ]
+            ];
+        }
+    }
+
+    /**
+     * Add approved leave events to the events array
+     *
+     * @param array $events
+     * @param string $start
+     * @param string $end
+     * @return void
+     */
+    private function addLeaveEvents(&$events, $start, $end)
+    {
+        $userId = Auth::id();
+
+        // Get approved leaves for the current user
+        $leaves = LeaveHistory::where('user_id', $userId)
+            ->where('status', 'Approved')
+            ->whereBetween('date', [$start, $end])
+            ->get();
+
+        foreach ($leaves as $leave) {
+            $events[] = [
+                'id' => 'leave_' . $leave->id,
+                'title' => 'Leave: ' . $leave->type,
+                'start' => $leave->date,
+                'allDay' => true,
+                'backgroundColor' => '#ffd166', // Yellow for leaves
+                'borderColor' => '#ffd166',
+                'extendedProps' => [
+                    'type' => 'leave',
+                    'reason' => $leave->reason,
+                    'is_paid' => $leave->is_paid_leave
+                ]
+            ];
+        }
+    }
+
+    /**
+     * Add weekend events to the events array
+     *
+     * @param array $events
+     * @param string $start
+     * @param string $end
+     * @return void
+     */
+    private function addWeekendEvents(&$events, $start, $end)
+    {
+        $startDate = Carbon::parse($start);
+        $endDate = Carbon::parse($end);
+
+        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
+            // Check if it's a weekend (Saturday or Sunday)
+            if ($date->isWeekend()) {
+                $events[] = [
+                    'id' => 'weekend_' . $date->format('Y-m-d'),
+                    'title' => 'Weekend',
+                    'start' => $date->format('Y-m-d'),
+                    'allDay' => true,
+                    'backgroundColor' => '#e9ecef', // Light gray for weekends
+                    'borderColor' => '#e9ecef',
+                    'extendedProps' => [
+                        'type' => 'weekend'
+                    ]
+                ];
+            }
+        }
+    }
+}

@@ -1,6 +1,6 @@
 <div class="col-md-4">
     <div class="card card-action card-border-shadow-success mb-1">
-        <div class="card-header">
+        <div class="card-header collapsed">
             <div class="card-action-title">{{ __('Currently Working') }}</div>
             <div class="card-action-element">
                 <ul class="list-inline mb-0">
@@ -12,7 +12,7 @@
                 </ul>
             </div>
         </div>
-        <div class="collapse show">
+        <div class="collapse">
             <div class="card-body pt-0">
                 <div class="d-flex align-items-center flex-wrap">
                     @forelse($currentlyWorkingUsers as $workingUser)

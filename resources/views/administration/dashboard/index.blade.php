@@ -11,6 +11,7 @@
     {{--  External CSS  --}}
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
+
 @endsection
 
 @section('custom_css')
@@ -87,6 +88,8 @@
             padding-right: 15px;
             padding-left: 15px;
         }
+
+
     </style>
 
     <style>
@@ -181,6 +184,8 @@
     @include('administration.dashboard.partials._absent_today')
 </div>
 
+{{-- Calendar --}}
+@include('administration.dashboard.partials._calendar')
 
 {{-- Attendances for running month --}}
 @include('administration.dashboard.partials._running_month_attendance')
@@ -203,6 +208,8 @@
     <script src="{{ asset('assets/js/cards-actions.js') }}"></script>
 
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+
+
 @endsection
 
 @section('custom_script')
@@ -317,6 +324,8 @@
             setInterval(createConfetti, 200);
         }
     </script>
+
+
 
     @if ($showEmployeeInfoUpdateModal)
         <script>
