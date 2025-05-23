@@ -86,8 +86,8 @@ class DashboardCalendarController extends Controller
                 'title' => 'Task: ' . $task->title,
                 'start' => $task->deadline->format('Y-m-d'),
                 'allDay' => true,
-                'backgroundColor' => '#ff6b6b', // Red for tasks
-                'borderColor' => '#ff6b6b',
+                'backgroundColor' => '#ffc107', // Warning color for tasks
+                'borderColor' => '#ffc107',
                 'extendedProps' => [
                     'type' => 'task',
                     'status' => $task->status,
@@ -113,8 +113,8 @@ class DashboardCalendarController extends Controller
                     'title' => 'Task: ' . $task->title,
                     'start' => $task->deadline->format('Y-m-d'),
                     'allDay' => true,
-                    'backgroundColor' => '#ff6b6b', // Red for tasks
-                    'borderColor' => '#ff6b6b',
+                    'backgroundColor' => '#ffc107', // Warning color for tasks
+                    'borderColor' => '#ffc107',
                     'extendedProps' => [
                         'type' => 'task',
                         'status' => $task->status,
@@ -146,8 +146,8 @@ class DashboardCalendarController extends Controller
                 'title' => 'Holiday: ' . $holiday->name,
                 'start' => $holiday->date,
                 'allDay' => true,
-                'backgroundColor' => '#4ecdc4', // Teal for holidays
-                'borderColor' => '#4ecdc4',
+                'backgroundColor' => '#0d6efd', // Primary color for holidays
+                'borderColor' => '#0d6efd',
                 'extendedProps' => [
                     'type' => 'holiday',
                     'description' => $holiday->description
@@ -180,8 +180,8 @@ class DashboardCalendarController extends Controller
                 'title' => 'Leave: ' . $leave->type,
                 'start' => $leave->date,
                 'allDay' => true,
-                'backgroundColor' => '#ffd166', // Yellow for leaves
-                'borderColor' => '#ffd166',
+                'backgroundColor' => '#dc3545', // Danger color for leaves
+                'borderColor' => '#dc3545',
                 'extendedProps' => [
                     'type' => 'leave',
                     'reason' => $leave->reason,
@@ -212,8 +212,8 @@ class DashboardCalendarController extends Controller
                     'title' => 'Weekend',
                     'start' => $date->format('Y-m-d'),
                     'allDay' => true,
-                    'backgroundColor' => '#e9ecef', // Light gray for weekends
-                    'borderColor' => '#e9ecef',
+                    'backgroundColor' => '#212529', // Dark color for weekends
+                    'borderColor' => '#212529',
                     'extendedProps' => [
                         'type' => 'weekend'
                     ]
