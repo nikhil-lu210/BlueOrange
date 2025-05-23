@@ -240,6 +240,8 @@ class DashboardCalendarController extends Controller
                         'allDay' => true,
                         'backgroundColor' => '#212529', // Dark color for weekends
                         'borderColor' => '#212529',
+                        'textColor' => '#ffffff', // White text for better visibility
+                        'className' => 'weekend-event', // Add custom class for styling and disabling interaction
                         'extendedProps' => [
                             'type' => 'weekend'
                         ]
