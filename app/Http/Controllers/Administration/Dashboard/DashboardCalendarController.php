@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Administration\Dashboard;
 
-use App\Http\Controllers\Controller;
-use App\Models\Holiday\Holiday;
-use App\Models\Leave\LeaveHistory;
-use App\Models\Task\Task;
+use Exception;
 use Carbon\Carbon;
+use App\Models\Task\Task;
 use Illuminate\Http\Request;
+use App\Models\Holiday\Holiday;
+use App\Models\Weekend\Weekend;
+use App\Models\Leave\LeaveHistory;
+use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardCalendarController extends Controller
@@ -34,7 +37,7 @@ class DashboardCalendarController extends Controller
                 // Just validate the dates by parsing them
                 Carbon::parse($start);
                 Carbon::parse($end);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return response()->json(['error' => 'Invalid date format'], 400);
             }
 
@@ -53,9 +56,8 @@ class DashboardCalendarController extends Controller
             $this->addWeekendEvents($events, $start, $end);
 
             return response()->json($events);
-        } catch (\Exception $e) {
-            // Log the error
-            \Log::error('Calendar events error: ' . $e->getMessage());
+        } catch (Exception $e) {
+            Log::error('Calendar events error: ' . $e->getMessage());
 
             // Return a friendly error message
             return response()->json(['error' => 'An error occurred while fetching calendar events'], 500);
@@ -201,24 +203,33 @@ class DashboardCalendarController extends Controller
      */
     private function addWeekendEvents(&$events, $start, $end)
     {
-        $startDate = Carbon::parse($start);
-        $endDate = Carbon::parse($end);
+        try {
+            // Get active weekend days from the Weekend model
+            $activeWeekendDays = Weekend::getActiveWeekendDays();
 
-        for ($date = $startDate; $date->lte($endDate); $date->addDay()) {
-            // Check if it's a weekend (Saturday or Sunday)
-            if ($date->isWeekend()) {
-                $events[] = [
-                    'id' => 'weekend_' . $date->format('Y-m-d'),
-                    'title' => 'Weekend',
-                    'start' => $date->format('Y-m-d'),
-                    'allDay' => true,
-                    'backgroundColor' => '#212529', // Dark color for weekends
-                    'borderColor' => '#212529',
-                    'extendedProps' => [
-                        'type' => 'weekend'
-                    ]
-                ];
+            $startDate = Carbon::parse($start);
+            $endDate = Carbon::parse($end);
+
+            for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+                // Check if the current day is in the active weekend days
+                $dayName = $date->format('l'); // Returns day name (Monday, Tuesday, etc.)
+
+                if (in_array($dayName, $activeWeekendDays)) {
+                    $events[] = [
+                        'id' => 'weekend_' . $date->format('Y-m-d'),
+                        'title' => 'Weekend',
+                        'start' => $date->format('Y-m-d'),
+                        'allDay' => true,
+                        'backgroundColor' => '#212529', // Dark color for weekends
+                        'borderColor' => '#212529',
+                        'extendedProps' => [
+                            'type' => 'weekend'
+                        ]
+                    ];
+                }
             }
+        } catch (Exception $e) {
+            Log::error('Error fetching weekends: ' . $e->getMessage());
         }
     }
 }
