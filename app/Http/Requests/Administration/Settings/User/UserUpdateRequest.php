@@ -58,6 +58,25 @@ class UserUpdateRequest extends FormRequest
             'religion_id' => ['sometimes', 'integer', 'exists:religions,id'],
             'gender' => ['nullable', 'string', 'in:Male,Female,Other'],
             'blood_group' => ['nullable', 'string'],
+
+            // Academic information (can be ID or new name)
+            'institute_id' => ['nullable', function ($attribute, $value, $fail) {
+                if ($value && !str_starts_with($value, 'new:') && !is_numeric($value)) {
+                    $fail('The institute must be a valid selection or new entry.');
+                }
+                if ($value && is_numeric($value) && !\App\Models\Education\Institute\Institute::where('id', $value)->exists()) {
+                    $fail('The selected institute is invalid.');
+                }
+            }],
+            'education_level_id' => ['nullable', function ($attribute, $value, $fail) {
+                if ($value && !str_starts_with($value, 'new:') && !is_numeric($value)) {
+                    $fail('The education level must be a valid selection or new entry.');
+                }
+                if ($value && is_numeric($value) && !\App\Models\Education\EducationLevel\EducationLevel::where('id', $value)->exists()) {
+                    $fail('The selected education level is invalid.');
+                }
+            }],
+            'passing_year' => ['nullable', 'integer', 'min:1950', 'max:' . (date('Y') + 10)],
         ];
     }
 

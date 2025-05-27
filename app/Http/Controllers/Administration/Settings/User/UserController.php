@@ -62,7 +62,11 @@ class UserController extends Controller
     public function create()
     {
         $roles = $this->userService->getAllRoles();
-        return view('administration.settings.user.create', compact('roles'));
+        $religions = $this->userService->getAllReligions();
+        $institutes = $this->userService->getAllInstitutes();
+        $educationLevels = $this->userService->getAllEducationLevels();
+
+        return view('administration.settings.user.create', compact(['roles', 'religions', 'institutes', 'educationLevels']));
     }
 
     /**
@@ -109,6 +113,8 @@ class UserController extends Controller
         $user = $this->userService->getUser($user);
         $roles = $this->userService->getAllRoles();
         $religions = $this->userService->getAllReligions();
+        $institutes = $this->userService->getAllInstitutes();
+        $educationLevels = $this->userService->getAllEducationLevels();
 
         $groupedBloodGroups = [
             'Standard (ABO + Rh)' => [
@@ -145,7 +151,7 @@ class UserController extends Controller
             ],
         ];
 
-        return view('administration.settings.user.edit', compact(['roles', 'religions', 'user', 'groupedBloodGroups']));
+        return view('administration.settings.user.edit', compact(['roles', 'religions', 'user', 'groupedBloodGroups', 'institutes', 'educationLevels']));
     }
 
     /**

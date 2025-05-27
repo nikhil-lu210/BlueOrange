@@ -372,9 +372,72 @@
 
                 // Wait for the modal to be shown, then initialize Select2
                 $('#employeeInfoUpdateModal').on('shown.bs.modal', function () {
+                    // Initialize blood group Select2
                     $('#blood_group').select2({
                         dropdownParent: $('#employeeInfoUpdateModal'),
                         width: '100%' // Optional: ensures it fits the container
+                    });
+
+                    // Initialize institute Select2 with tagging
+                    $('#institute_id').select2({
+                        dropdownParent: $('#employeeInfoUpdateModal'),
+                        tags: true,
+                        tokenSeparators: [], // Remove space and comma separators
+                        createTag: function (params) {
+                            var term = $.trim(params.term);
+                            if (term === '') {
+                                return null;
+                            }
+                            return {
+                                id: 'new:' + term,
+                                text: term + ' (New Institute)',
+                                newTag: true
+                            };
+                        },
+                        templateResult: function (data) {
+                            var $result = $('<span></span>');
+                            $result.text(data.text);
+                            if (data.newTag) {
+                                $result.append(' <em>(will be created)</em>');
+                            }
+                            return $result;
+                        },
+                        insertTag: function (data, tag) {
+                            // Only insert if user explicitly selects the tag
+                            data.push(tag);
+                        },
+                        width: '100%'
+                    });
+
+                    // Initialize education level Select2 with tagging
+                    $('#education_level_id').select2({
+                        dropdownParent: $('#employeeInfoUpdateModal'),
+                        tags: true,
+                        tokenSeparators: [], // Remove space and comma separators
+                        createTag: function (params) {
+                            var term = $.trim(params.term);
+                            if (term === '') {
+                                return null;
+                            }
+                            return {
+                                id: 'new:' + term,
+                                text: term + ' (New Education Level)',
+                                newTag: true
+                            };
+                        },
+                        templateResult: function (data) {
+                            var $result = $('<span></span>');
+                            $result.text(data.text);
+                            if (data.newTag) {
+                                $result.append(' <em>(will be created)</em>');
+                            }
+                            return $result;
+                        },
+                        insertTag: function (data, tag) {
+                            // Only insert if user explicitly selects the tag
+                            data.push(tag);
+                        },
+                        width: '100%'
                     });
                 });
             });

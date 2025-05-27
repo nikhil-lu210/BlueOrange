@@ -6,8 +6,8 @@ use App\Models\User;
 use App\Models\Task\Task;
 use App\Models\Vault\Vault;
 use App\Models\Salary\Salary;
-use App\Models\Ticket\ItTicket;
 use App\Models\Comment\Comment;
+use App\Models\Ticket\ItTicket;
 use App\Models\Religion\Religion;
 use App\Models\Shortcut\Shortcut;
 use App\Models\User\LoginHistory;
@@ -21,10 +21,12 @@ use App\Models\User\Employee\Employee;
 use App\Models\Announcement\Announcement;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Models\Salary\Monthly\MonthlySalary;
+use App\Models\Education\Institute\Institute;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\Education\EducationLevel\EducationLevel;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
@@ -42,6 +44,18 @@ trait UserRelations
     public function religion(): HasOneThrough
     {
         return $this->hasOneThrough(Religion::class, Employee::class, 'user_id', 'id', 'id', 'religion_id');
+    }
+
+    // Define the one-to-many relationship with institute through Employee
+    public function institute(): HasOneThrough
+    {
+        return $this->hasOneThrough(Institute::class, Employee::class, 'user_id', 'id', 'id', 'institute_id');
+    }
+
+    // Define the one-to-many relationship with education_level through Employee
+    public function education_level(): HasOneThrough
+    {
+        return $this->hasOneThrough(EducationLevel::class, Employee::class, 'user_id', 'id', 'id', 'education_level_id');
     }
 
 

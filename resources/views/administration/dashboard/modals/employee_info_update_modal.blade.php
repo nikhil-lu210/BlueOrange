@@ -53,6 +53,56 @@
                         </div>
                     @endif
 
+                    @if (is_invalid_employee_value($user->employee->institute_id))
+                        <div class="mb-3 col-md-12">
+                            <label for="institute_id" class="form-label">{{ __('Institute') }} <strong class="text-danger">*</strong></label>
+                            <select name="institute_id" id="institute_id" class="form-select select2-tags @error('institute_id') is-invalid @enderror" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new institute" required>
+                                <option value="">{{ __('Select Institute') }}</option>
+                                @if(isset($institutes))
+                                    @foreach ($institutes as $institute)
+                                        <option value="{{ $institute->id }}" {{ old('institute_id', $user->employee->institute_id) == $institute->id ? 'selected' : '' }}>
+                                            {{ $institute->name }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                            <small class="text-muted">You can type to add a new institute if not found in the list</small>
+                            @error('institute_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                    @endif
+
+                    @if (is_invalid_employee_value($user->employee->education_level_id))
+                        <div class="mb-3 col-md-12">
+                            <label for="education_level_id" class="form-label">{{ __('Education Level') }} <strong class="text-danger">*</strong></label>
+                            <select name="education_level_id" id="education_level_id" class="form-select select2-tags @error('education_level_id') is-invalid @enderror" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new education level" required>
+                                <option value="">{{ __('Select Education Level') }}</option>
+                                @if(isset($educationLevels))
+                                    @foreach ($educationLevels as $level)
+                                        <option value="{{ $level->id }}" {{ old('education_level_id', $user->employee->education_level_id) == $level->id ? 'selected' : '' }}>
+                                            {{ $level->title }}
+                                        </option>
+                                    @endforeach
+                                @endif
+                            </select>
+                            <small class="text-muted">You can type to add a new education level if not found in the list</small>
+                            @error('education_level_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                    @endif
+
+                    @if (is_invalid_employee_value($user->employee->passing_year))
+                        <div class="mb-3 col-md-12">
+                            <label for="passing_year" class="form-label">{{ __('Passing Year / Exp. Year') }} <strong class="text-danger">*</strong></label>
+                            <input type="number" id="passing_year" name="passing_year" value="{{ old('passing_year', $user->employee->passing_year) }}" placeholder="{{ __('e.g., 2020') }}" min="1950" max="{{ date('Y') + 10 }}" class="form-control @error('passing_year') is-invalid @enderror" required/>
+                            @error('passing_year')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                    @endif
+
                     <div class="col-12 text-center">
                         <button type="submit" class="btn btn-primary me-sm-3 me-1">Save Changes</button>
                         <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>

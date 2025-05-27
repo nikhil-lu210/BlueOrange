@@ -213,6 +213,23 @@
                         @endif
                     </dd>
                 </dl>
+                @if ($user->institute)
+                    <dl class="row mb-1">
+                        <dt class="col-sm-4 fw-medium text-nowrap">
+                            <i class="ti ti-building-community text-heading"></i>
+                            <span class="fw-medium mx-2 text-heading">Education:</span>
+                        </dt>
+                        <dd class="col-sm-8">
+                            <span>
+                                <b class="text-dark">{{ optional($user->education_level)->title }}</b>
+                                from
+                                <b class="text-dark">{{ optional($user->institute)->name }}</b>
+                                at year
+                                <b class="text-dark">{{ optional($user->employee)->passing_year }}</b>
+                            </span>
+                        </dd>
+                    </dl>
+                @endif
             </div>
         </div>
     </div>

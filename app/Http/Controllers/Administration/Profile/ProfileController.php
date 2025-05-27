@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
+use App\Services\Administration\Profile\SelfProfileUpdateService;
 use App\Notifications\Administration\ProfileUpdateNofication;
 use App\Http\Requests\Administration\Profile\ProfileUpdateRequest;
 use App\Http\Requests\Administration\Profile\Security\PasswordUpdateRequest;
@@ -17,9 +18,12 @@ use App\Http\Requests\Administration\Profile\Security\PasswordUpdateRequest;
 class ProfileController extends Controller
 {
     protected $user;
+    protected $selfProfileUpdateService;
 
-    public function __construct()
+    public function __construct(SelfProfileUpdateService $selfProfileUpdateService)
     {
+        $this->selfProfileUpdateService = $selfProfileUpdateService;
+
         $this->middleware(function ($request, $next) {
             $this->user = Auth::user();
             return $next($request);
@@ -116,26 +120,7 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         try {
-            // Dynamically build validation rules for only the fields present in the request
-            $rules = [];
-
-            if ($request->has('blood_group')) {
-                $rules['blood_group'] = 'required|string';
-            }
-
-            if ($request->has('father_name')) {
-                $rules['father_name'] = 'required|string';
-            }
-
-            if ($request->has('mother_name')) {
-                $rules['mother_name'] = 'required|string';
-            }
-
-            // Validate the request based on dynamic rules
-            $validated = $request->validate($rules);
-
-            // Only update the fields that are present in the request
-            $user->employee()->update($validated);
+            $this->selfProfileUpdateService->updateInformation($user, $request);
 
             toast('Your information has been updated.', 'success');
             return redirect()->back();

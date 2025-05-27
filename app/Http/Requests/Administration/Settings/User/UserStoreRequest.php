@@ -32,7 +32,7 @@ class UserStoreRequest extends FormRequest
 
             return $existingUserId === null;
         });
-        
+
         return [
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg', 'max:2048'],
             'userid' => [
@@ -51,7 +51,7 @@ class UserStoreRequest extends FormRequest
             'password' => ['required', 'string', 'min:8', 'confirmed'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i'],
-            
+
             // for employees table
             'joining_date' => ['required', 'date_format:Y-m-d'],
             'alias_name' => ['required', 'string'],
@@ -62,6 +62,25 @@ class UserStoreRequest extends FormRequest
             'official_email' => ['nullable', 'email'],
             'personal_contact_no' => ['required', 'string', 'unique:employees'],
             'official_contact_no' => ['nullable', 'string'],
+
+            // Academic information (can be ID or new name)
+            'institute_id' => ['nullable', function ($attribute, $value, $fail) {
+                if ($value && !str_starts_with($value, 'new:') && !is_numeric($value)) {
+                    $fail('The institute must be a valid selection or new entry.');
+                }
+                if ($value && is_numeric($value) && !\App\Models\Education\Institute\Institute::where('id', $value)->exists()) {
+                    $fail('The selected institute is invalid.');
+                }
+            }],
+            'education_level_id' => ['nullable', function ($attribute, $value, $fail) {
+                if ($value && !str_starts_with($value, 'new:') && !is_numeric($value)) {
+                    $fail('The education level must be a valid selection or new entry.');
+                }
+                if ($value && is_numeric($value) && !\App\Models\Education\EducationLevel\EducationLevel::where('id', $value)->exists()) {
+                    $fail('The selected education level is invalid.');
+                }
+            }],
+            'passing_year' => ['nullable', 'integer', 'min:1950', 'max:' . (date('Y') + 10)],
         ];
     }
 
