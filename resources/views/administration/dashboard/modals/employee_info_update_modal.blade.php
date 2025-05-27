@@ -55,7 +55,7 @@
 
                     @if (is_invalid_employee_value($user->employee->institute_id))
                         <div class="mb-3 col-md-12">
-                            <label for="institute_id" class="form-label">{{ __('Institute') }} <strong class="text-danger">*</strong></label>
+                            <label for="institute_id" class="form-label">{{ __('Last / Current Educational Institute') }} <strong class="text-danger">*</strong></label>
                             <select name="institute_id" id="institute_id" class="form-select select2-tags @error('institute_id') is-invalid @enderror" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new institute" required>
                                 <option value="">{{ __('Select Institute') }}</option>
                                 @if(isset($institutes))

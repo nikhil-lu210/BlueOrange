@@ -33,7 +33,8 @@ return new class extends Migration
      */
     private function seedEducationLevels(): void
     {
-        $filePath = public_path('assets/custom_data/bd-academic-data/eduLevels.json');
+        // $filePath = public_path('assets/custom_data/bd-academic-data/eduLevels.json');
+        $filePath = public_path('assets/custom_data/bd-academic-data/examTitles.json');
 
         if (file_exists($filePath)) {
             $educationLevels = json_decode(file_get_contents($filePath), true);
