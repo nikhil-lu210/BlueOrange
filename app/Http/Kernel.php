@@ -63,7 +63,7 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        
+
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
@@ -75,5 +75,6 @@ class Kernel extends HttpKernel
         'restrict.devices' => \App\Http\Middleware\RestrictDevices::class,
         'restrict.ip' => \App\Http\Middleware\RestrictIpRange::class,
         'unrestricted.users' => \App\Http\Middleware\UnrestrictedUser::class,
+        'check.employee.info' => \App\Http\Middleware\CheckEmployeeInformation::class,
     ];
 }
