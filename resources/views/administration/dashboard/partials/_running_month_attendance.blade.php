@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-12 mb-4">
-        <div class="card">
+        <div class="card card-border-shadow-primary">
             <div class="card-header header-elements">
                 <h5 class="mb-0">My Attendances Of <b class="text-bold text-primary">{{ date('F Y') }}</b></h5>
 

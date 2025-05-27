@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-md-12">
-        <div class="card mb-4 border-0">
+        <div class="card card-border-shadow-primary mb-4 border-0">
             <div class="card-body row">
                 <div class="col-md-8 card-separator">
                     <div class="d-flex justify-content-between flex-wrap gap-3 me-3">
