@@ -29,5 +29,8 @@ class Employee extends Model
         'religion_id',
         'gender',
         'blood_group',
+        'institute_id',
+        'education_level_id',
+        'passing_year',
     ];
 }

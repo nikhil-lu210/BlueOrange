@@ -53,7 +53,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">Create New User</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.settings.user.import.index') }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-upload ti-xs me-1"></span>
@@ -86,7 +86,7 @@
                     </div>
 
                     <hr class="my-3" />
-                    
+
                     <div class="row">
                         <div class="mb-3 col-md-6">
                             <label class="form-label d-block" for="userid">
@@ -135,7 +135,7 @@
                             @error('last_name')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
-                        </div>                        
+                        </div>
                         <div class="mb-3 col-md-4">
                             <label for="email" class="form-label">{{ __('Login Email') }} <strong class="text-danger">*</strong></label>
                             <div class="input-group input-group-merge">
@@ -240,6 +240,51 @@
                             @enderror
                         </div>
                     </div>
+
+                    {{-- Academic Information Section --}}
+                    <div class="row">
+                        <div class="col-12">
+                            <h6 class="text-muted fw-semibold">Academic Information</h6>
+                            <hr class="mt-0">
+                        </div>
+                        <div class="mb-3 col-md-6">
+                            <label for="institute_id" class="form-label">{{ __('Institute') }}</label>
+                            <select name="institute_id" id="institute_id" class="form-select select2-tags @error('institute_id') is-invalid @enderror" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new institute">
+                                <option value="">{{ __('Select Institute') }}</option>
+                                @foreach ($institutes as $institute)
+                                    <option value="{{ $institute->id }}" {{ old('institute_id') == $institute->id ? 'selected' : '' }}>
+                                        {{ $institute->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">You can type to add a new institute if not found in the list</small>
+                            @error('institute_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-4">
+                            <label for="education_level_id" class="form-label">{{ __('Education Level') }}</label>
+                            <select name="education_level_id" id="education_level_id" class="form-select select2-tags @error('education_level_id') is-invalid @enderror" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new education level">
+                                <option value="">{{ __('Select Education Level') }}</option>
+                                @foreach ($educationLevels as $level)
+                                    <option value="{{ $level->id }}" {{ old('education_level_id') == $level->id ? 'selected' : '' }}>
+                                        {{ $level->title }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <small class="text-muted">You can type to add a new education level if not found in the list</small>
+                            @error('education_level_id')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                        <div class="mb-3 col-md-2">
+                            <label for="passing_year" class="form-label">{{ __('Passing Year / Exp. Year') }}</label>
+                            <input type="number" id="passing_year" name="passing_year" value="{{ old('passing_year') }}" placeholder="{{ __('e.g., 2020') }}" min="1950" max="{{ date('Y') + 10 }}" class="form-control @error('passing_year') is-invalid @enderror"/>
+                            @error('passing_year')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+                    </div>
                     <div class="mt-2 float-end">
                         <button type="reset" onclick="return confirm('Sure Want To Reset?');" class="btn btn-outline-danger me-2">Reset Form</button>
                         <button type="submit" class="btn btn-primary confirm-form-success">Create User</button>
@@ -247,7 +292,7 @@
                 </form>
             </div>
             <!-- /Account -->
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -292,22 +337,22 @@
             }
         });
     </script>
-    
+
     <script>
         $(document).ready(function () {
             $("#editID").on("click", function () {
                 $(this).addClass("d-none");
                 $("#doneEditID").removeClass("d-none");
                 $("#editableInput").removeClass("editable-input");
-                
+
                 $("#userid").prop("readonly", false);
             });
-            
+
             $("#doneEditID").on("click", function () {
                 $(this).addClass("d-none");
                 $("#editID").removeClass("d-none");
                 $("#editableInput").addClass("editable-input");
-                
+
                 $("#userid").prop("readonly", true);
             });
         });
@@ -318,7 +363,7 @@
             $('.time-picker').flatpickr({
                 enableTime: true,
                 noCalendar: true
-            }); 
+            });
         });
     </script>
 
@@ -330,6 +375,69 @@
                 todayHighlight: true,
                 autoclose: true,
                 orientation: 'auto right'
+            });
+        });
+    </script>
+
+    <script>
+        // Select2 with tagging functionality for academic fields
+        $(document).ready(function() {
+            // Initialize Select2 with tagging for institutes
+            $('#institute_id').select2({
+                tags: true,
+                tokenSeparators: [], // Remove space and comma separators
+                createTag: function (params) {
+                    var term = $.trim(params.term);
+                    if (term === '') {
+                        return null;
+                    }
+                    return {
+                        id: 'new:' + term,
+                        text: term + ' (New Institute)',
+                        newTag: true
+                    };
+                },
+                templateResult: function (data) {
+                    var $result = $('<span></span>');
+                    $result.text(data.text);
+                    if (data.newTag) {
+                        $result.append(' <em>(will be created)</em>');
+                    }
+                    return $result;
+                },
+                insertTag: function (data, tag) {
+                    // Only insert if user explicitly selects the tag
+                    data.push(tag);
+                }
+            });
+
+            // Initialize Select2 with tagging for education levels
+            $('#education_level_id').select2({
+                tags: true,
+                tokenSeparators: [], // Remove space and comma separators
+                createTag: function (params) {
+                    var term = $.trim(params.term);
+                    if (term === '') {
+                        return null;
+                    }
+                    return {
+                        id: 'new:' + term,
+                        text: term + ' (New Education Level)',
+                        newTag: true
+                    };
+                },
+                templateResult: function (data) {
+                    var $result = $('<span></span>');
+                    $result.text(data.text);
+                    if (data.newTag) {
+                        $result.append(' <em>(will be created)</em>');
+                    }
+                    return $result;
+                },
+                insertTag: function (data, tag) {
+                    // Only insert if user explicitly selects the tag
+                    data.push(tag);
+                }
             });
         });
     </script>
