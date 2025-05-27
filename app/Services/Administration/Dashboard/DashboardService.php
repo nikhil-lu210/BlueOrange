@@ -6,6 +6,8 @@ use App\Enums\BloodGroup;
 use App\Models\User;
 use App\Models\Attendance\Attendance;
 use App\Models\Leave\LeaveHistory;
+use App\Models\Education\Institute\Institute;
+use App\Models\Education\EducationLevel\EducationLevel;
 use App\Services\Administration\Attendance\AttendanceService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
@@ -207,6 +209,9 @@ class DashboardService
             $employee->blood_group,
             $employee->father_name,
             $employee->mother_name,
+            $employee->institute_id,
+            $employee->education_level_id,
+            $employee->passing_year,
             // Add more fields as needed
         ])->contains(function ($value) {
             return is_invalid_employee_value($value);
@@ -278,5 +283,21 @@ class DashboardService
 
         // Return a random birthday wish
         return $birthdayWishes[array_rand($birthdayWishes)];
+    }
+
+    /**
+     * Get all institutes for dropdown.
+     */
+    public function getAllInstitutes(): Collection
+    {
+        return Institute::orderBy('name')->get();
+    }
+
+    /**
+     * Get all education levels for dropdown.
+     */
+    public function getAllEducationLevels(): Collection
+    {
+        return EducationLevel::orderBy('title')->get();
     }
 }

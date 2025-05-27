@@ -51,6 +51,10 @@ class DashboardController extends Controller
         // Get grouped blood groups for the dropdown
         $groupedBloodGroups = $this->dashboardService->getGroupedBloodGroups();
 
+        // Get institutes and education levels for the modal
+        $institutes = $this->dashboardService->getAllInstitutes();
+        $educationLevels = $this->dashboardService->getAllEducationLevels();
+
         return view('administration.dashboard.index', compact([
             'user',
             'wish',
@@ -66,6 +70,8 @@ class DashboardController extends Controller
             'absentUsers',
             'showEmployeeInfoUpdateModal',
             'groupedBloodGroups',
+            'institutes',
+            'educationLevels',
         ]));
     }
 }
