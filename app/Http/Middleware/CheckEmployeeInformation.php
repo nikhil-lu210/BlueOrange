@@ -50,30 +50,19 @@ class CheckEmployeeInformation
      */
     private function shouldSkipCheck(Request $request): bool
     {
+        // Since this middleware is applied to specific routes/controllers,
+        // we only need to skip essential routes that users need to access
+        // to complete their profile information
+
         $skipRoutes = [
-            // Dashboard routes
+            // Dashboard routes (where users complete their profile)
             'administration.dashboard.*',
 
-            // Profile update routes
+            // Profile update routes (where users update their information)
             'administration.my.profile.*',
-
-            // API routes that might be called from dashboard
-            'administration.dashboard.calendar.*',
 
             // Logout route
             'logout',
-
-            // File/media routes
-            'administration.file_media.*',
-
-            // Notification routes
-            'administration.notification.*',
-
-            // Localization routes
-            'administration.localization.*',
-
-            // Security routes
-            'administration.my.profile.security.*',
         ];
 
         foreach ($skipRoutes as $pattern) {
@@ -82,7 +71,7 @@ class CheckEmployeeInformation
             }
         }
 
-        // Also skip for AJAX requests to avoid breaking modal functionality
+        // Skip for AJAX requests to avoid breaking modal functionality
         if ($request->ajax()) {
             return true;
         }
