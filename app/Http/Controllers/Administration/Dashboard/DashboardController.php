@@ -24,8 +24,6 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $this->runTempMethod();
-
         // Get the current authenticated user
         $user = $this->dashboardService->getCurrentUser();
 
@@ -77,38 +75,5 @@ class DashboardController extends Controller
             'institutes',
             'educationLevels',
         ]));
-    }
-
-
-
-    // Temp Method
-    public function runTempMethod()
-    {
-        $filePath = public_path('assets/custom_data/bd-academic-data/examTitles.json');
-
-        if (file_exists($filePath)) {
-            $educationLevels = json_decode(file_get_contents($filePath), true);
-
-            if (is_array($educationLevels)) {
-                $data = [];
-
-                foreach ($educationLevels as $level) {
-                    $title = trim($level);
-                    if (!empty($title)) {
-                        $data[] = [
-                            'title' => $title,
-                            'slug' => Str::slug($title),
-                            'description' => null,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ];
-                    }
-                }
-
-                if (!empty($data)) {
-                    DB::table('education_levels')->insert($data);
-                }
-            }
-        }
     }
 }
