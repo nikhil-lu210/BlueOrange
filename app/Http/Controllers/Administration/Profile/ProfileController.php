@@ -10,8 +10,7 @@ use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
-use App\Models\Education\Institute\Institute;
-use App\Models\Education\EducationLevel\EducationLevel;
+use App\Services\Administration\Profile\SelfProfileUpdateService;
 use App\Notifications\Administration\ProfileUpdateNofication;
 use App\Http\Requests\Administration\Profile\ProfileUpdateRequest;
 use App\Http\Requests\Administration\Profile\Security\PasswordUpdateRequest;
@@ -19,9 +18,12 @@ use App\Http\Requests\Administration\Profile\Security\PasswordUpdateRequest;
 class ProfileController extends Controller
 {
     protected $user;
+    protected $selfProfileUpdateService;
 
-    public function __construct()
+    public function __construct(SelfProfileUpdateService $selfProfileUpdateService)
     {
+        $this->selfProfileUpdateService = $selfProfileUpdateService;
+
         $this->middleware(function ($request, $next) {
             $this->user = Auth::user();
             return $next($request);
@@ -118,70 +120,7 @@ class ProfileController extends Controller
         $user = Auth::user();
 
         try {
-            // Dynamically build validation rules for only the fields present in the request
-            $rules = [];
-
-            if ($request->has('blood_group')) {
-                $rules['blood_group'] = 'required|string';
-            }
-
-            if ($request->has('father_name')) {
-                $rules['father_name'] = 'required|string';
-            }
-
-            if ($request->has('mother_name')) {
-                $rules['mother_name'] = 'required|string';
-            }
-
-            // Educational fields validation
-            if ($request->has('institute_id')) {
-                $rules['institute_id'] = ['nullable', function ($attribute, $value, $fail) {
-                    if ($value && !str_starts_with($value, 'new:') && !is_numeric($value)) {
-                        $fail('The institute must be a valid selection or new entry.');
-                    }
-                    if ($value && is_numeric($value) && !Institute::where('id', $value)->exists()) {
-                        $fail('The selected institute is invalid.');
-                    }
-                }];
-            }
-
-            if ($request->has('education_level_id')) {
-                $rules['education_level_id'] = ['nullable', function ($attribute, $value, $fail) {
-                    if ($value && !str_starts_with($value, 'new:') && !is_numeric($value)) {
-                        $fail('The education level must be a valid selection or new entry.');
-                    }
-                    if ($value && is_numeric($value) && !EducationLevel::where('id', $value)->exists()) {
-                        $fail('The selected education level is invalid.');
-                    }
-                }];
-            }
-
-            if ($request->has('passing_year')) {
-                $rules['passing_year'] = ['nullable', 'integer', 'min:1950', 'max:' . (date('Y') + 10)];
-            }
-
-            // Validate the request based on dynamic rules
-            $validated = $request->validate($rules);
-
-            // Process educational fields (handle new entries)
-            $updateData = $validated;
-
-            // Handle new institute creation
-            if (isset($validated['institute_id']) && str_starts_with($validated['institute_id'], 'new:')) {
-                $instituteName = substr($validated['institute_id'], 4);
-                $institute = Institute::create(['name' => $instituteName]);
-                $updateData['institute_id'] = $institute->id;
-            }
-
-            // Handle new education level creation
-            if (isset($validated['education_level_id']) && str_starts_with($validated['education_level_id'], 'new:')) {
-                $levelTitle = substr($validated['education_level_id'], 4);
-                $educationLevel = EducationLevel::create(['title' => $levelTitle]);
-                $updateData['education_level_id'] = $educationLevel->id;
-            }
-
-            // Only update the fields that are present in the request
-            $user->employee()->update($updateData);
+            $this->selfProfileUpdateService->updateInformation($user, $request);
 
             toast('Your information has been updated.', 'success');
             return redirect()->back();
