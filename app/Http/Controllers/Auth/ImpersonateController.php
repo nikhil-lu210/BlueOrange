@@ -16,7 +16,7 @@ class ImpersonateController extends Controller
             Auth::logout();
             Auth::login($user);
 
-            toast('You are now logged in as ' . $user->name, 'success');
+            toast('You are now logged in as ' . $user->alias_name, 'success');
             return redirect()->route('administration.dashboard.index');
         }
 
@@ -34,7 +34,7 @@ class ImpersonateController extends Controller
             Auth::logout();
             Auth::login($originalUser);
 
-            toast('You are back as ' . $originalUser->name, 'success');
+            toast('You are back as ' . $originalUser->alias_name, 'success');
             return redirect()->route('administration.dashboard.index');
         }
 

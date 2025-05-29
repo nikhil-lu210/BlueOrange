@@ -12,10 +12,10 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    
+
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
 @endsection
@@ -42,7 +42,7 @@
 @section('content')
 
 <!-- Start row -->
-@if (auth()->user()->tl_employees_daily_work_updates->count() > 0) 
+@if (auth()->user()->tl_employees_daily_work_updates->count() > 0)
     <div class="row justify-content-center">
         <div class="col-md-8">
             <form action="{{ route('administration.daily_work_update.my') }}" method="get" autocomplete="off">
@@ -67,18 +67,18 @@
                                     <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                                 @enderror
                             </div>
-                            
+
                             <div class="mb-3 col-md-5">
                                 <label class="form-label">Work Updates Of</label>
                                 <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                                 @error('created_month_year')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
-                            </div>                        
+                            </div>
                         </div>
-                        
+
                         <div class="col-md-12 text-end">
-                            @if (request()->user_id || request()->created_month_year) 
+                            @if (request()->user_id || request()->created_month_year)
                                 <a href="{{ route('administration.daily_work_update.my') }}" class="btn btn-danger confirm-warning">
                                     <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                     Reset Filters
@@ -91,7 +91,7 @@
                         </div>
                     </div>
                 </div>
-            </form>        
+            </form>
         </div>
     </div>
 @endif
@@ -102,13 +102,13 @@
             <div class="card-header header-elements">
                 <h5 class="mb-0">
                     <span>My or My Employees Work Updates</span>
-                    @if (request()->created_month_year) 
+                    @if (request()->created_month_year)
                         <sup>(<b>Month: </b> {{ request()->created_month_year }})</sup>
                     @endif
                 </h5>
-        
+
                 <div class="card-header-elements ms-auto">
-                    @can ('Daily Work Update Create') 
+                    @can ('Daily Work Update Create')
                         <a href="{{ route('administration.daily_work_update.create') }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-plus ti-xs me-1"></span>
                             Submit Work Update
@@ -123,14 +123,13 @@
                             <tr>
                                 <th>Sl.</th>
                                 <th>Date</th>
-                                <th>Employee</th>
                                 <th>Team Leader</th>
                                 <th>Submitted At</th>
                                 <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($dailyWorkUpdates as $key => $dailyUpdate) 
+                            @foreach ($dailyWorkUpdates as $key => $dailyUpdate)
                                 <tr class="@if (is_null($dailyUpdate->rating)) bg-label-danger @endif">
                                     <th>#{{ serial($dailyWorkUpdates, $key) }}</th>
                                     <td>
@@ -150,7 +149,7 @@
                                                         break;
                                                     case '4':
                                                         $color = 'primary';
-                                                        break;                                                    
+                                                        break;
                                                     default:
                                                         $color = 'success';
                                                         break;
@@ -169,27 +168,6 @@
                                         <div class="d-flex justify-content-start align-items-center user-name">
                                             <div class="avatar-wrapper">
                                                 <div class="avatar me-2">
-                                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->user]) }}">
-                                                        @if ($dailyUpdate->user->hasMedia('avatar'))
-                                                            <img src="{{ $dailyUpdate->user->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->user->name }} Avatar" class="rounded-circle">
-                                                        @else
-                                                            <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
-                                                                {{ profile_name_pic($dailyUpdate->user) }}
-                                                            </span>
-                                                        @endif
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex flex-column">
-                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->user]) }}" target="_blank" class="emp_name text-truncate">{{ $dailyUpdate->user->name }}</a>
-                                                <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->user->role->name }}</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="d-flex justify-content-start align-items-center user-name">
-                                            <div class="avatar-wrapper">
-                                                <div class="avatar me-2">
                                                     <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}">
                                                         @if ($dailyUpdate->team_leader->hasMedia('avatar'))
                                                             <img src="{{ $dailyUpdate->team_leader->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->team_leader->name }} Avatar" class="rounded-circle">
@@ -202,7 +180,7 @@
                                                 </div>
                                             </div>
                                             <div class="d-flex flex-column">
-                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}" target="_blank" class="emp_name text-truncate">{{ $dailyUpdate->team_leader->name }}</a>
+                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}" target="_blank" class="emp_name text-truncate">{{ $dailyUpdate->team_leader->alias_name }}</a>
                                                 <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->team_leader->role->name }}</small>
                                             </div>
                                         </div>
@@ -216,12 +194,12 @@
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        @can ('Daily Work Update Delete') 
+                                        @can ('Daily Work Update Delete')
                                             <a href="{{ route('administration.daily_work_update.destroy', ['daily_work_update' => $dailyUpdate]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Daily Work Update?">
                                                 <i class="text-white ti ti-trash"></i>
                                             </a>
                                         @endcan
-                                        @can ('Daily Work Update Read') 
+                                        @can ('Daily Work Update Read')
                                             <a href="{{ route('administration.daily_work_update.show', ['daily_work_update' => $dailyUpdate]) }}" target="_blank" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                                 <i class="text-white ti ti-info-hexagon"></i>
                                             </a>
@@ -233,7 +211,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -251,7 +229,7 @@
     <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
 @endsection
 

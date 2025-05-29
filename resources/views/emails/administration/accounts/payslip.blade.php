@@ -9,7 +9,7 @@
 @section('content')
 <!-- Start Content -->
 <div>
-    Hello {{ $user->name }},
+    Hello {{ $user->employee->alias_name }},
     <br>
     The payslip of <b>{{ show_month($data->for_month) }}</b> has been attatched below.
     <br>

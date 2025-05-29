@@ -7,7 +7,7 @@
                 <div class="text-center mb-4">
                     <h3 class="role-title mb-2">{{ __('Update Status') }}</h3>
                     <p class="text-muted">
-                        Update Status Of <b class="text-dark">{{ $user->name }} ({{ $user->employee->alias_name }})</b>
+                        Update Status Of <b class="text-dark">{{ $user->employee->alias_name }} ({{ $user->name }})</b>
                     </p>
                 </div>
                 <!-- Status form -->
@@ -65,7 +65,7 @@
                                     </label>
                                 </div>
                             </div>
-                        </div>                            
+                        </div>
                     </div>
                     <div class="col-12 text-center mt-4">
                         <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>

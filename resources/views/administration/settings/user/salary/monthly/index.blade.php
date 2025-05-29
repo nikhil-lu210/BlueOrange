@@ -34,7 +34,7 @@
         <a href="{{ route('administration.settings.user.index') }}">{{ __('All Users') }}</a>
     </li>
     <li class="breadcrumb-item">
-        <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">{{ $user->name }}</a>
+        <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">{{ $user->employee->alias_name }}</a>
     </li>
     <li class="breadcrumb-item active">{{ __('Monthly Salary History') }}</li>
 @endsection
@@ -62,12 +62,12 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($monthly_salaries as $key => $monthlySalary) 
+                        @foreach ($monthly_salaries as $key => $monthlySalary)
                             <tr>
                                 <th>#{{ serial($monthly_salaries, $key) }}</th>
                                 <td>
                                     <span class="text-bold">{{ show_month($monthlySalary->for_month) }}</span>
-                                    @isset ($monthlySalary->paid_at) 
+                                    @isset ($monthlySalary->paid_at)
                                         <br>
                                         <span title="Paid At">
                                             <span class="text-muted">{{ show_date($monthlySalary->paid_at) }}</span>
@@ -101,7 +101,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->

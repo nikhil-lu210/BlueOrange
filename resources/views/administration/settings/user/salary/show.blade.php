@@ -49,7 +49,7 @@
     </li>
     <li class="breadcrumb-item">
         <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">
-            {{ $user->name }}
+            {{ $user->employee->alias_name }}
         </a>
     </li>
     <li class="breadcrumb-item">
@@ -68,9 +68,9 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0"><strong>{{ $user->name }}</strong>'s Salary History Details</h5>
-        
-                @if ($salary->status === 'Active' && $salary->monthly_salaries->count() == 0) 
+                <h5 class="mb-0"><strong>{{ $user->employee->alias_name }}</strong>'s Salary History Details</h5>
+
+                @if ($salary->status === 'Active' && $salary->monthly_salaries->count() == 0)
                     @canany(['Salary Update'])
                         <div class="card-header-elements ms-auto">
                             <button type="button" data-bs-toggle="modal" data-bs-target="#editSalaryHistory" class="btn btn-sm btn-primary">
@@ -184,7 +184,7 @@
                                         <span><i class="ti ti-currency-taka"></i>{{ format_number($salary->medical_allowance) }}</span>
                                     </dd>
                                 </dl>
-                                @if ($salary->night_shift_allowance) 
+                                @if ($salary->night_shift_allowance)
                                     <dl class="row mt-3 mb-1">
                                         <dt class="col-5 mb-2 fw-medium text-nowrap">
                                             <i class="ti ti-coin"></i>
@@ -195,7 +195,7 @@
                                         </dd>
                                     </dl>
                                 @endif
-                                @if ($salary->other_allowance) 
+                                @if ($salary->other_allowance)
                                     <dl class="row mt-3 mb-1">
                                         <dt class="col-5 mb-2 fw-medium text-nowrap">
                                             <i class="ti ti-coin"></i>
@@ -220,18 +220,18 @@
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 
 {{-- Monthly Salaries under this salary --}}
-@if ($salary->monthly_salaries->count() > 0) 
+@if ($salary->monthly_salaries->count() > 0)
     <div class="row justify-content-center">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-header header-elements">
                     <h5 class="mb-0">
-                        <strong>{{ $user->name }}</strong>'s Monthly Salaries for 
+                        <strong>{{ $user->employee->alias_name }}</strong>'s Monthly Salaries for
                         <span class="text-bold">{{ format_number($salary->total) }}<sup>TK</sup></span>
                     </h5>
                 </div>
@@ -247,7 +247,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($salary->monthly_salaries as $key => $monthlySalary) 
+                            @foreach ($salary->monthly_salaries as $key => $monthlySalary)
                                 <tr>
                                     <th>#{{ serial($salary->monthly_salaries, $key) }}</th>
                                     <th><code class="text-bold">{{ $monthlySalary->payslip_id }}</code></th>
@@ -284,7 +284,7 @@
 <!-- End row -->
 
 {{-- Modal for Salary Upgrade --}}
-@if ($salary->status === 'Active' && $salary->monthly_salaries->count() == 0) 
+@if ($salary->status === 'Active' && $salary->monthly_salaries->count() == 0)
     @canany(['Salary Create', 'Salary Update'])
         <div class="modal fade" id="editSalaryHistory" tabindex="-1" aria-hidden="true"  data-bs-backdrop="static" data-bs-keyboard="false">
             <div class="modal-dialog" role="document">
@@ -391,7 +391,7 @@
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
-    
+
     <!-- Datatable js -->
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
@@ -405,7 +405,7 @@
             $('.date-time-picker').flatpickr({
                 enableTime: true,
                 dateFormat: 'Y-m-d H:i'
-            }); 
+            });
         });
-    </script>    
+    </script>
 @endsection

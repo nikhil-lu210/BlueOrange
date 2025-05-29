@@ -102,7 +102,7 @@ class UserInteractionController extends Controller
                     ->queue(new TeamLeaderUpdateMail($user, $oldTeamLeader, $newTeamLeader, $newTeamLeader, $authUser));
             }, 5);
 
-            toast('Team Leader Updated For '.$user->name.'.','success');
+            toast('Team Leader Updated For '.$user->alias_name.'.','success');
             return redirect()->back();
         } catch (Exception $e) {
             // Remove dd() for production
@@ -132,7 +132,7 @@ class UserInteractionController extends Controller
                         $user->interacting_users()->where('user_id', $value)->exists()
                     ) {
                         // Fail the validation if the user is already interacting
-                        $fail('The user is already interacting with ' . $user->name);
+                        $fail('The user is already interacting with ' . $user->alias_name);
                     }
                 },
             ],
@@ -148,7 +148,7 @@ class UserInteractionController extends Controller
                 }
             }, 5);
 
-            toast('Users added for interactions with ' . $user->name . '.', 'success');
+            toast('Users added for interactions with ' . $user->alias_name . '.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
             // Handle errors
@@ -176,7 +176,7 @@ class UserInteractionController extends Controller
                     $isInteracting = $user->interacting_users()->where('user_id', $value)->exists();
 
                     if (!$isInteracted && !$isInteracting) {
-                        $fail('The selected user is not interacting with ' . $user->name);
+                        $fail('The selected user is not interacting with ' . $user->alias_name);
                     }
                 },
             ],
@@ -190,7 +190,7 @@ class UserInteractionController extends Controller
             });
 
             // Success message
-            toast('User has been removed from interactions with ' . $user->name . '.', 'success');
+            toast('User has been removed from interactions with ' . $user->alias_name . '.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
             // Error handling
