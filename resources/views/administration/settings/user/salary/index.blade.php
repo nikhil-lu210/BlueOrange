@@ -34,7 +34,7 @@
         <a href="{{ route('administration.settings.user.index') }}">{{ __('All Users') }}</a>
     </li>
     <li class="breadcrumb-item">
-        <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">{{ $user->name }}</a>
+        <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">{{ $user->employee->alias_name }}</a>
     </li>
     <li class="breadcrumb-item active">{{ __('Salary History') }}</li>
 @endsection
@@ -47,8 +47,8 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Salary History of {{ $user->name }}</h5>
-        
+                <h5 class="mb-0">Salary History of {{ $user->employee->alias_name }}</h5>
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.settings.user.salary.create', ['user' => $user]) }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-plus ti-xs me-1"></span>
@@ -69,7 +69,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($salaries as $key => $salary) 
+                        @foreach ($salaries as $key => $salary)
                             <tr>
                                 <th>#{{ serial($salaries, $key) }}</th>
                                 <td>
@@ -80,7 +80,7 @@
                                 </td>
                                 <td>{{ show_date($salary->implemented_from) }}</td>
                                 <td>
-                                    @if ($salary->implemented_to) 
+                                    @if ($salary->implemented_to)
                                         {{ show_date($salary->implemented_to) }}
                                     @else
                                         <span class="badge bg-label-success">Running Salary</span>
@@ -99,7 +99,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->

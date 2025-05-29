@@ -11,7 +11,7 @@
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
-    
+
     {{-- <!-- Vendors CSS --> --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
@@ -35,7 +35,7 @@
         dl > dd > span > i {
             margin-top: -4px;
         }
-        
+
         th > i, td > i {
             margin-top: -4px;
         }
@@ -68,8 +68,8 @@
         <div class="card invoice-preview-card">
             <div class="card-header d-flex justify-content-between border-bottom header-elements">
                 <h5 class="card-action-title mb-0">
-                    <span class="text-dark text-bold">{{ $monthly_salary->user->name }}'s</span> 
-                    <span class="text-muted">Monthly Salary Details of</span> 
+                    <span class="text-dark text-bold">{{ $monthly_salary->user->alias_name }}'s</span>
+                    <span class="text-muted">Monthly Salary Details of</span>
                     <span class="text-dark text-bold">{{ show_month($monthly_salary->for_month) }}</span>
                 </h5>
                 <div class="card-action-element">
@@ -103,7 +103,7 @@
                                     </li>
                                 @endcanany
                             @else
-                                @isset ($payslip) 
+                                @isset ($payslip)
                                     <li>
                                         <a class="dropdown-item text-dark" href="{{ file_media_download($payslip) }}" target="_blank">
                                             <i class="ti ti-download me-1 fs-5" style="margin-top: -5px;"></i>
@@ -111,7 +111,7 @@
                                         </a>
                                     </li>
                                 @endisset
-                                @canany (['Salary Create', 'Salary Update']) 
+                                @canany (['Salary Create', 'Salary Update'])
                                     <li>
                                         <hr class="dropdown-divider" />
                                     </li>
@@ -178,7 +178,7 @@
                                 <span class="text-bold text-dark">Payment For:</span>
                                 <span class="fw-medium">{{ show_month($monthly_salary->for_month) }}</span>
                             </div>
-                            @isset ($monthly_salary->paid_at) 
+                            @isset ($monthly_salary->paid_at)
                                 <div class="mb-2 pt-1">
                                     <span class="text-bold text-dark">Paid At:</span>
                                     <span class="fw-medium">{{ show_date_time($monthly_salary->paid_at) }}</span>
@@ -187,7 +187,7 @@
                             <div class="pt-1">
                                 <span class="text-bold text-dark">Pay To:</span>
                                 <span class="fw-bold">
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $monthly_salary->user]) }}" target="_blank">{{ $monthly_salary->user->name }}</a>
+                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $monthly_salary->user]) }}" target="_blank">{{ $monthly_salary->user->alias_name }}</a>
                                 </span>
                             </div>
                         </div>
@@ -229,7 +229,7 @@
                                         {{ format_number($monthly_salary->salary->medical_allowance) }}
                                     </td>
                                 </tr>
-                                @isset ($monthly_salary->salary->night_shift_allowance) 
+                                @isset ($monthly_salary->salary->night_shift_allowance)
                                     <tr>
                                         <td class="pe-4 border-0">Night-Shift Allowance:</td>
                                         <td class="border-0">
@@ -238,7 +238,7 @@
                                         </td>
                                     </tr>
                                 @endisset
-                                @isset ($monthly_salary->salary->other_allowance) 
+                                @isset ($monthly_salary->salary->other_allowance)
                                     <tr>
                                         <td class="pe-4 border-0">Other Allowance:</td>
                                         <td class="border-0">
@@ -262,7 +262,7 @@
                                     <td class="pe-4 border-0">Total Weekends:</td>
                                     <td class="border-0">{{ format_number($monthly_salary->total_weekends) }} Days</td>
                                 </tr>
-                                @if ($monthly_salary->total_holidays > 0) 
+                                @if ($monthly_salary->total_holidays > 0)
                                     <tr>
                                         <td class="pe-4 border-0">Total Holiday(s):</td>
                                         <td class="border-0">{{ format_number($monthly_salary->total_holidays) }} Day(s)</td>
@@ -300,7 +300,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach ($salary['earnings'] as $earning) 
+                                    @foreach ($salary['earnings'] as $earning)
                                         <tr>
                                             <th class="text-nowrap">{{ $earning->reason }}</th>
                                             <td class="text-end">
@@ -333,7 +333,7 @@
                                                 <sup class="text-bold">TK</sup>
                                             </td>
                                         </tr>
-                                    @empty 
+                                    @empty
                                         <tr>
                                             <th class="text-nowrap text-center text-muted" colspan="2">NO DEDUCTION</th>
                                         </tr>
@@ -351,7 +351,7 @@
                         <b class="border-top pt-2 px-2">Accountant Digital Signature</b>
                         <br>
                         <br>
-                        @isset ($monthly_salary->payer) 
+                        @isset ($monthly_salary->payer)
                             <b class="px-2"><span class="text-muted">Paid By:</span> {{ $monthly_salary->payer->name }}</b>
                         @else
                             <span class="badge bg-primary">PENDING</span>
@@ -405,7 +405,7 @@
                     <u class="fw-medium">Note:</u>
                     <span class="text-capitalize">This is a Electronic Generated Payslip, thus no signature or stamp required. Thank You!</span>
                 </div>
-                @if ($monthly_salary->status !== 'Paid') 
+                @if ($monthly_salary->status !== 'Paid')
                     <div class="footer-action">
                         <a href="javascrip:void(0);" class="btn btn-primary"  data-bs-toggle="modal" data-bs-target="#markAsPaidModal">
                             <i class="ti ti-check me-2"></i>
@@ -435,7 +435,7 @@
 
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
-    
+
     {{-- <!-- Vendors JS --> --}}
     <script src="{{ asset('assets/vendor/libs/moment/moment.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/flatpickr/flatpickr.js') }}"></script>
@@ -456,13 +456,13 @@
                 }
             });
         });
-        
+
         $(document).ready(function () {
             $('.date-time-picker').flatpickr({
                 enableTime: true,
                 dateFormat: 'Y-m-d H:i:s',
                 defaultDate: new Date()
-            }); 
+            });
         });
     </script>
 @endsection

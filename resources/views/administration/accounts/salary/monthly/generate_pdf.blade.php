@@ -5,7 +5,7 @@
         {{-- Meta Starts --}}
         @include('layouts.administration.partials.metas')
         {{-- Meta Ends --}}
-        
+
         <title>{{ config('app.name') }} || Monthly Salary Details</title>
         <!-- Favicon -->
         <link rel="icon" type="image/x-icon" href="{{ asset(config('app.favicon')) }}" />
@@ -78,7 +78,7 @@
                                             <span class="text-bold text-dark">Payment For:</span>
                                             <span class="fw-medium">{{ show_month($monthly_salary->for_month) }}</span>
                                         </div>
-                                        @isset ($monthly_salary->paid_at) 
+                                        @isset ($monthly_salary->paid_at)
                                             <div class="mb-2 pt-1">
                                                 <span class="text-bold text-dark">Paid At:</span>
                                                 <span class="fw-medium">{{ show_date_time($monthly_salary->paid_at) }}</span>
@@ -87,15 +87,15 @@
                                         <div class="pt-1">
                                             <span class="text-bold text-dark">Pay To:</span>
                                             <span class="fw-bold">
-                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $monthly_salary->user]) }}" target="_blank">{{ $monthly_salary->user->name }}</a>
+                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $monthly_salary->user]) }}" target="_blank">{{ $monthly_salary->user->alias_name }}</a>
                                             </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-            
+
                             <hr class="my-4"/>
-            
+
                             <div class="row">
                                 <div class="col-md-6 mb-xl-0 mb-md-4 mb-sm-0 mb-4">
                                     <h6 class="mb-3 text-bold">Base Salary Breakdown</h6>
@@ -129,7 +129,7 @@
                                                     {{ format_number($monthly_salary->salary->medical_allowance) }}
                                                 </td>
                                             </tr>
-                                            @isset ($monthly_salary->salary->night_shift_allowance) 
+                                            @isset ($monthly_salary->salary->night_shift_allowance)
                                                 <tr>
                                                     <td class="pe-4 border-0">Night-Shift Allowance:</td>
                                                     <td class="border-0">
@@ -138,7 +138,7 @@
                                                     </td>
                                                 </tr>
                                             @endisset
-                                            @isset ($monthly_salary->salary->other_allowance) 
+                                            @isset ($monthly_salary->salary->other_allowance)
                                                 <tr>
                                                     <td class="pe-4 border-0">Other Allowance:</td>
                                                     <td class="border-0">
@@ -162,7 +162,7 @@
                                                 <td class="pe-4 border-0">Total Weekends:</td>
                                                 <td class="border-0">{{ format_number($monthly_salary->total_weekends) }} Days</td>
                                             </tr>
-                                            @if ($monthly_salary->total_holidays > 0) 
+                                            @if ($monthly_salary->total_holidays > 0)
                                                 <tr>
                                                     <td class="pe-4 border-0">Total Holiday(s):</td>
                                                     <td class="border-0">{{ format_number($monthly_salary->total_holidays) }} Day(s)</td>
@@ -184,9 +184,9 @@
                                     </table>
                                 </div>
                             </div>
-            
+
                             <hr class="my-4"/>
-            
+
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="table-responsive table-bordered">
@@ -200,7 +200,7 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach ($salary['earnings'] as $earning) 
+                                                @foreach ($salary['earnings'] as $earning)
                                                     <tr>
                                                         <th class="text-nowrap">{{ $earning->reason }}</th>
                                                         <td class="text-end">
@@ -233,7 +233,7 @@
                                                             <sup class="text-bold">TK</sup>
                                                         </td>
                                                     </tr>
-                                                @empty 
+                                                @empty
                                                     <tr>
                                                         <th class="text-nowrap text-center text-muted" colspan="2">NO DEDUCTION</th>
                                                     </tr>
@@ -243,15 +243,15 @@
                                     </div>
                                 </div>
                             </div>
-            
+
                             <hr class="my-4"/>
-            
+
                             <div class="row">
                                 <div class="col-md-8 align-self-end">
                                     <b class="border-top pt-2 px-2">Accountant Digital Signature</b>
                                     <br>
                                     <br>
-                                    @isset ($monthly_salary->paid_by) 
+                                    @isset ($monthly_salary->paid_by)
                                         <b class="px-2"><span class="text-muted">Paid By:</span> {{ $monthly_salary->payer->name }}</b>
                                     @endisset
                                 </div>
@@ -297,7 +297,7 @@
                                 </div>
                             </div>
                         </div>
-            
+
                         <div class="card-footer border-top d-flex justify-content-between pt-4">
                             <div class="payslip-note pt-2">
                                 <u class="fw-medium">Note:</u>

@@ -41,7 +41,7 @@ class MonthlySalaryController extends Controller
     /**
      * manuallyGenerateSalary
      */
-    public function manuallyGenerateSalary() 
+    public function manuallyGenerateSalary()
     {
         $users = User::select('id')->whereStatus('Active')->get();
         $salaryService = new SalaryService();
@@ -51,8 +51,8 @@ class MonthlySalaryController extends Controller
                 foreach ($users as $user) {
                     $salaryService->calculateMonthlySalary($user);
                 }
-            });                
-            
+            });
+
             toast('Monthly salaries has been generated.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
@@ -70,7 +70,7 @@ class MonthlySalaryController extends Controller
         $salary = $salaryService->getSalaryDetails($monthly_salary);
 
         $payslip = $monthly_salary->files()->first();
-        
+
         return view('administration.accounts.salary.monthly.show', compact(['monthly_salary', 'salary', 'payslip']));
     }
 
@@ -84,7 +84,7 @@ class MonthlySalaryController extends Controller
             return redirect()->back();
         }
         $salaryService = new SalaryService();
-        
+
         $salaryService->calculateMonthlySalary($monthly_salary->user, $monthly_salary->for_month);
 
         $updatedMonthlySalary = MonthlySalary::whereUserId($monthly_salary->user_id)
@@ -92,8 +92,8 @@ class MonthlySalaryController extends Controller
                                         ->whereForMonth($monthly_salary->for_month)
                                         ->latest()
                                         ->firstOrFail();
-                                        
-        toast('Salary of '.$updatedMonthlySalary->user->name.' Has Been Re-Generated Successfully.', 'success');
+
+        toast('Salary of '.$updatedMonthlySalary->user->alias_name.' Has Been Re-Generated Successfully.', 'success');
         return redirect()->route('administration.accounts.salary.monthly.show', ['monthly_salary' => $updatedMonthlySalary]);
     }
 
@@ -148,8 +148,8 @@ class MonthlySalaryController extends Controller
                 // Send Mail to the user's email
                 Mail::to($monthly_salary->user->email)->queue(new PayslipMail($monthly_salary, $monthly_salary->user));
             });
-            
-            toast($monthly_salary->user->name . '\'s monthly salary has been paid.', 'success');
+
+            toast($monthly_salary->user->alias_name . '\'s monthly salary has been paid.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
@@ -165,11 +165,11 @@ class MonthlySalaryController extends Controller
         // Send Mail to the user's email
         Mail::to($monthly_salary->user->email)->queue(new PayslipMail($monthly_salary, $monthly_salary->user));
 
-        toast('Payslip Mail Has Been Sent To ' . $monthly_salary->user->name, 'success');
+        toast('Payslip Mail Has Been Sent To ' . $monthly_salary->user->alias_name, 'success');
         return redirect()->back();
     }
 
-    
+
 
     /**
      * Update monthly salary by adding earning or deduction.
@@ -203,7 +203,7 @@ class MonthlySalaryController extends Controller
             });
 
             // Set success message based on operation
-            $message = ucfirst($operation) . ' added for ' . $monthly_salary->user->name . '\'s monthly salary.';
+            $message = ucfirst($operation) . ' added for ' . $monthly_salary->user->alias_name . '\'s monthly salary.';
             toast($message, 'success');
             return redirect()->back();
         } catch (Exception $e) {

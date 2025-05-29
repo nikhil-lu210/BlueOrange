@@ -35,7 +35,7 @@ class UserStatusUpdateNotifyMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: $this->user->name. '\'s Status Marked As '. $this->user->status .' By '. $this->authUser->employee->alias_name,
+            subject: $this->user->alias_name. '\'s Status Marked As '. $this->user->status .' By '. $this->authUser->employee->alias_name,
         );
     }
 

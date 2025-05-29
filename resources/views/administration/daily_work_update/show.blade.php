@@ -54,12 +54,12 @@
                         <div class="user-profile-info">
                             <h4 class="mb-0">
                                 Work Update of
-                                <span class="text-bold text-primary">{{ $dailyWorkUpdate->user->name }}</span>
+                                <span class="text-bold text-primary">{{ $dailyWorkUpdate->user->alias_name }}</span>
                             </h4>
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
                                 <li class="list-inline-item d-flex gap-1 text-bold text-primary" data-bs-toggle="tooltip" title="Team Leader" data-bs-placement="bottom">
                                     <i class="ti ti-crown"></i>
-                                    {{ $dailyWorkUpdate->team_leader->name }}
+                                    {{ $dailyWorkUpdate->team_leader->alias_name }}
                                 </li>
                                 <li class="list-inline-item d-flex gap-1 text-bold" data-bs-toggle="tooltip" title="Work Update Date" data-bs-placement="bottom">
                                     <i class="ti ti-calendar"></i>

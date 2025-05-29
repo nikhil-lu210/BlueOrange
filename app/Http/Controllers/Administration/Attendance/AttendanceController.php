@@ -204,7 +204,7 @@ class AttendanceController extends Controller
             });
 
             // Final attendance entry processing can go here if needed
-            toast('Clocked In and Out Successfully for ' . $user->name . ' on ' . $request->clock_in_date . '.', 'success');
+            toast('Clocked In and Out Successfully for ' . $user->alias_name . ' on ' . $request->clock_in_date . '.', 'success');
             return redirect()->back();
 
         } catch (Exception $e) {

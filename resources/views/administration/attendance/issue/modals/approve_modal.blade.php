@@ -5,7 +5,7 @@
             <div class="modal-body">
                 <div class="text-center mb-4">
                     <h3 class="role-title mb-2">Reject Attendance Issue</h3>
-                    <p class="text-muted">Reject the Attendance Issue of <b class="text-primary">{{ $issue->user->name }}</b></p>
+                    <p class="text-muted">Reject the Attendance Issue of <b class="text-primary">{{ $issue->user->alias_name }}</b></p>
                 </div>
                 {{-- {{ dd(get_date_only($issue->clock_in_date)) }} --}}
                 <!-- Status form -->

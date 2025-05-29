@@ -6,7 +6,7 @@
             <div class="modal-body">
                 <div class="text-center mb-4">
                     <h3 class="role-title mb-2">Add Earning</h3>
-                    <p class="text-muted">Add Earning for {{ $monthly_salary->user->name }}</p>
+                    <p class="text-muted">Add Earning for {{ $monthly_salary->user->alias_name }}</p>
                 </div>
                 <!-- Holiday Create form -->
                 <form method="post" action="{{ route('administration.accounts.salary.monthly.add.earning', ['monthly_salary' => $monthly_salary]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">

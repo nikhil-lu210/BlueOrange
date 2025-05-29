@@ -6,7 +6,7 @@
             <div class="modal-body">
                 <div class="text-center mb-4">
                     <h3 class="role-title mb-2">Remove Interacted User</h3>
-                    <p class="text-muted">Remove Interacted User With {{ $user->name }}</p>
+                    <p class="text-muted">Remove Interacted User With {{ $user->alias_name }}</p>
                 </div>
                 <!-- form -->
                 <form method="post" action="{{ route('administration.settings.user.user_interaction.remove_user', ['user' => $user]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">
@@ -16,7 +16,7 @@
                         <select name="user" id="user" class="select2 form-select @error('user') is-invalid @enderror" data-allow-clear="true" required>
                             <option value="" selected>Select User</option>
                             @foreach ($user->user_interactions as $userData)
-                                @if ($userData->id != $user->id) 
+                                @if ($userData->id != $user->id)
                                     <option value="{{ $userData->id }}" {{ $userData->id == old('userData') ? 'selected' : '' }}>
                                         {{ $userData->employee->alias_name }} ({{ $userData->name }})
                                     </option>

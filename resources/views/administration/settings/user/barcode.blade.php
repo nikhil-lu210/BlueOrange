@@ -12,7 +12,7 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    
+
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
@@ -47,7 +47,7 @@
                 <h5 class="mb-0">
                     <span>All Barcodes</span>
                 </h5>
-        
+
                 @can ('User Create')
                     <div class="card-header-elements ms-auto">
                         <a href="{{ route('administration.settings.user.barcode.all.download') }}" target="_blank" class="btn btn-sm btn-dark">
@@ -63,33 +63,33 @@
                         <tr>
                             <th>Sl.</th>
                             <th>Employee ID</th>
-                            <th>Name</th>
+                            <th>Employee</th>
                             <th class="text-center">Barcode</th>
                             <th class="text-center">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($users as $key => $user) 
+                        @foreach ($users as $key => $user)
                             <tr>
                                 <th>#{{ serial($users, $key) }}</th>
                                 <th><b class="text-primary">{{ $user->userid }}</b></th>
                                 <td>
-                                    {!! show_user_name_and_avatar($user, alias:null) !!}
+                                    {!! show_user_name_and_avatar($user) !!}
                                 </td>
                                 <td class="text-center">
                                     @if ($user->hasMedia('barcode'))
-                                        <img src="{{ $user->getFirstMediaUrl('barcode') }}" alt="{{ $user->name }} BAR-CODE" class="d-block h-auto m-auto" width="300px">
+                                        <img src="{{ $user->getFirstMediaUrl('barcode') }}" alt="{{ $user->employee->alias_name }} BAR-CODE" class="d-block h-auto m-auto" width="300px">
                                     @else
                                         <span class="text-muted">No Barcode Found</span>
                                     @endif
                                 </td>
                                 <td class="text-center">
                                     @if ($user->hasMedia('barcode'))
-                                        <a href="{{ spatie_media_download($user->getFirstMedia('barcode')) }}" class="btn btn-sm btn-icon btn-dark" data-bs-toggle="tooltip" title="Download {{ $user->name }}'s Barcode">
+                                        <a href="{{ spatie_media_download($user->getFirstMedia('barcode')) }}" class="btn btn-sm btn-icon btn-dark" data-bs-toggle="tooltip" title="Download {{ $user->employee->alias_name }}'s Barcode">
                                             <i class="ti ti-download"></i>
                                         </a>
                                     @else
-                                        <a href="{{ route('administration.settings.user.generate.bar.code', ['user' => $user]) }}" class="btn btn-sm btn-icon btn-primary confirm-success" data-bs-toggle="tooltip" title="Generate {{ $user->name }}'s Barcode">
+                                        <a href="{{ route('administration.settings.user.generate.bar.code', ['user' => $user]) }}" class="btn btn-sm btn-icon btn-primary confirm-success" data-bs-toggle="tooltip" title="Generate {{ $user->employee->alias_name }}'s Barcode">
                                             <i class="ti ti-capture"></i>
                                         </a>
                                     @endif
@@ -98,7 +98,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->

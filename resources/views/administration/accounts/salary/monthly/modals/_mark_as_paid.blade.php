@@ -6,7 +6,7 @@
             <div class="modal-body">
                 <div class="text-center mb-4">
                     <h3 class="role-title mb-2">Mark As Paid</h3>
-                    <p class="text-muted">Salary Mark As Paid for {{ $monthly_salary->user->name }}</p>
+                    <p class="text-muted">Salary Mark As Paid for {{ $monthly_salary->user->alias_name }}</p>
                 </div>
                 <!-- form -->
                 <form method="post" action="{{ route('administration.accounts.salary.monthly.mark.paid', ['monthly_salary' => $monthly_salary]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">
@@ -21,7 +21,7 @@
                         <label for="paid_through" class="form-label">{{ __('Select Payment Medium') }} <strong class="text-danger">*</strong></label>
                         <select name="paid_through" id="paid_through" class="form-select bootstrap-select w-100 @error('paid_through') is-invalid @enderror"  data-style="btn-default" required>
                             <option value="" selected>{{ __('Select Medium') }}</option>
-                            @foreach ($paymentMediums as $medium) 
+                            @foreach ($paymentMediums as $medium)
                                 <option value="{{ $medium }}">{{ $medium }}</option>
                             @endforeach
                         </select>

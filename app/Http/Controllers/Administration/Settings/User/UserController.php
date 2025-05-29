@@ -35,7 +35,8 @@ class UserController extends Controller
      */
     public function allBarcodes(Request $request)
     {
-        $users = User::with(['media'])->whereStatus('Active')->get();
+        $users = User::with(['employee', 'media', 'roles'])->whereStatus('Active')->get();
+        // dd($users->first());
 
         // foreach ($users as $key => $user) {
         //     $this->generateBarCode($user);
@@ -201,7 +202,7 @@ class UserController extends Controller
         try {
             $this->userService->updateStatus($user, $validatedStatus);
 
-            toast($user->name. '\'s Status Has Been Updated to '. $request->status,'success');
+            toast($user->alias_name. '\'s Status Has Been Updated to '. $request->status,'success');
             return redirect()->back();
         } catch (Exception $e) {
             return back()->withError($e->getMessage())->withInput();

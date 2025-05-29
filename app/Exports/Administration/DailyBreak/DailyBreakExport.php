@@ -13,7 +13,7 @@ class DailyBreakExport extends BaseExportSettings implements FromCollection
     {
         $this->breaks = $breaks;
     }
-    
+
     /**
     * @return \Illuminate\Support\Collection
     */
@@ -21,7 +21,7 @@ class DailyBreakExport extends BaseExportSettings implements FromCollection
     {
         return $this->breaks->map(function ($break) {
             return [
-                'name' => $break->user->name,
+                'name' => $break->user->alias_name.' ('.$break->user->name.')',
                 'date' => show_date($break->date),
                 'break_in_at' => show_time($break->break_in_at),
                 'break_out_at' => $break->break_out_at ? show_time($break->break_out_at) : NULL,

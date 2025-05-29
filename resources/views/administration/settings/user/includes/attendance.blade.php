@@ -8,13 +8,13 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">All Attendances</h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     @if ($attendances->count() > 0)
                         <a href="{{ route('administration.attendance.export', [
-                            'user_id' => $user->id, 
+                            'user_id' => $user->id,
                             'created_month_year' => date('F Y', strtotime('last month'))
-                        ]) }}" target="_blank" class="btn btn-sm btn-dark me-3" title="Download {{ $user->name }}'s Last Month's ({{ date('F Y', strtotime('last month')) }}) Attendances.">
+                        ]) }}" target="_blank" class="btn btn-sm btn-dark me-3" title="Download {{ $user->alias_name }}'s Last Month's ({{ date('F Y', strtotime('last month')) }}) Attendances.">
                             <span class="tf-icon ti ti-download me-1"></span>
                             Download
                         </a>
@@ -36,7 +36,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($attendances as $key => $attendance) 
+                            @foreach ($attendances as $key => $attendance)
                                 <tr>
                                     <th>#{{ serial($attendances, $key) }}</th>
                                     <td>
@@ -75,7 +75,7 @@
                                         </div>
                                     </td>
                                     <td class="text-center {{ $attendance->type == 'Overtime' ? 'not-allowed' : '' }}">
-                                        @if ($attendance->type == 'Regular') 
+                                        @if ($attendance->type == 'Regular')
                                             <div class="d-grid">
                                                 <b class="text-truncate">
                                                     <span class="text-warning" title="Total Break Time">
@@ -92,13 +92,13 @@
                                                     Breaks Taken: {{ $attendance->total_breaks_taken }}
                                                 </small>
                                             </div>
-                                        @else 
+                                        @else
                                             <b class="text-muted">No Break</b>
                                         @endif
                                     </td>
                                     <td>
                                         <div class="d-grid">
-                                            @if ($attendance->type == 'Regular') 
+                                            @if ($attendance->type == 'Regular')
                                                 @isset($attendance->total_adjusted_time)
                                                     @php
                                                         $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
@@ -110,7 +110,7 @@
                                                     <b class="text-success text-uppercase">Running</b>
                                                 @endisset
                                                 <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Total Working Time">{{ $attendance->total_time }}</small>
-                                            @else 
+                                            @else
                                                 <b class="text-warning">
                                                     {{ total_time($attendance->total_time) }}
                                                 </b>
@@ -128,7 +128,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!--/ User Profile Content -->

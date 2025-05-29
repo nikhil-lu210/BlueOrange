@@ -6,7 +6,7 @@
             <div class="modal-body">
                 <div class="text-center mb-4">
                     <h3 class="role-title mb-2">Upgrade Leave</h3>
-                    <p class="text-muted">Upgrade allowed leave for <b class="text-primary">{{ $user->name }}</b></p>
+                    <p class="text-muted">Upgrade allowed leave for <b class="text-primary">{{ $user->alias_name }}</b></p>
                 </div>
                 <!-- Holiday Create form -->
                 <form method="post" action="{{ route('administration.settings.user.leave_allowed.store', ['user' => $user]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">

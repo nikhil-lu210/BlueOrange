@@ -13,7 +13,7 @@ class LeaveExport extends BaseExportSettings implements FromCollection
     {
         $this->leaves = $leaves;
     }
-    
+
     /**
     * @return \Illuminate\Support\Collection
     */
@@ -21,7 +21,7 @@ class LeaveExport extends BaseExportSettings implements FromCollection
     {
         return $this->leaves->map(function ($leave) {
             return [
-                'name' => $leave->user->name,
+                'name' => $leave->user->alias_name.' ('.$leave->user->name.')',
                 'date' => show_date($leave->date),
                 'type' => $leave->type,
                 'total_leave' => $leave->total_leave,

@@ -37,7 +37,7 @@
         <a href="{{ route('administration.settings.user.index') }}">{{ __('All Users') }}</a>
     </li>
     <li class="breadcrumb-item">
-        <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">{{ $user->name }}</a>
+        <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}">{{ $user->employee->alias_name }}</a>
     </li>
     <li class="breadcrumb-item active">{{ __('Upgrade Salary') }}</li>
 @endsection
@@ -53,10 +53,10 @@
                 <h5 class="mb-0">
                     {{ __('Upgrade Salary of') }}
                     <a href="{{ route('administration.settings.user.show.profile', ['user' => $user]) }}" target="_blank">
-                        {{ $user->name }}
+                        {{ $user->employee->alias_name }}
                     </a>
                 </h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.settings.user.salary.index', ['user' => $user]) }}" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-circle ti-xs me-1"></span>
@@ -150,7 +150,7 @@
                     </div>
                 </div>
             </form>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -192,5 +192,5 @@
             // Initial calculation on page load
             calculateTotalSalary();
         });
-    </script>    
+    </script>
 @endsection
