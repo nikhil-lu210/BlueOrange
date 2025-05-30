@@ -36,13 +36,16 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All Users') }}</b>
+    <b class="text-uppercase">{{ __('Users Advance Filter') }}</b>
 @endsection
 
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('User Management') }}</li>
-    <li class="breadcrumb-item active">{{ __('All Users') }}</li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('administration.settings.user.index') }}">{{ __('All Users') }}</a>
+    </li>
+    <li class="breadcrumb-item active">{{ __('Users Advance Filter') }}</li>
 @endsection
 
 
@@ -51,7 +54,7 @@
 <!-- Start row -->
 <div class="row">
     <div class="col-md-12">
-        <form action="{{ route('administration.settings.user.index') }}" method="get">
+        <form action="{{ route('administration.settings.user.advance_filter.index') }}" method="get">
             @csrf
             <div class="card mb-4">
                 <div class="card-body">
@@ -115,19 +118,15 @@
                     </div>
 
                     <div class="col-md-12 text-end">
-                        <a href="{{ route('administration.settings.user.advance_filter.index') }}" class="text-bold text-primary me-2">
-                            <span class="tf-icon ti ti-filter ti-xs"></span>
-                            {{ __('Advance Filter') }}
-                        </a>
                         @if (request()->role_id || request()->status)
                             <a href="{{ route('administration.settings.user.index') }}" class="btn btn-danger confirm-warning">
-                                <span class="tf-icon ti ti-refresh ti-xs"></span>
-                                {{ __('Reset Filters') }}
+                                <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
+                                Reset Filters
                             </a>
                         @endif
                         <button type="submit" class="btn btn-primary">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                            {{ __('Filter Users') }}
+                            Filter Users
                         </button>
                     </div>
                 </div>

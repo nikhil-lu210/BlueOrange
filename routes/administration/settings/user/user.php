@@ -39,6 +39,9 @@ Route::prefix('user')->name('user.')->group(function () {
         Route::post('/upload', 'upload')->name('upload')->can('User Create');
     });
 
+    // advance_filter
+    include_once 'advance_filter/advance_filter.php';
+
     // user_interaction
     include_once 'user_interaction/user_interaction.php';
 
