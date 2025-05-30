@@ -58,6 +58,14 @@ trait UserRelations
         return $this->hasOneThrough(EducationLevel::class, Employee::class, 'user_id', 'id', 'id', 'education_level_id');
     }
 
+    /**
+     * Get the employee_shifts associated with the user.
+     */
+    public function employee_shifts(): HasMany
+    {
+        return $this->hasMany(EmployeeShift::class);
+    }
+
 
     /**
      * Get the login_logout_histories associated with the user.
@@ -82,15 +90,6 @@ trait UserRelations
     {
         return $this->hasMany(Shortcut::class);
     }
-
-    /**
-     * Get the employee_shifts associated with the user.
-     */
-    public function employee_shifts(): HasMany
-    {
-        return $this->hasMany(EmployeeShift::class);
-    }
-
 
     /**
      * Get the leave_alloweds associated with the user.
