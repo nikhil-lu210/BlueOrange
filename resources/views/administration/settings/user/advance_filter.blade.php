@@ -32,7 +32,7 @@
     <style>
     /* Custom CSS Here */
     .filter-section {
-        border-left: 3px solid #007bff;
+        border-left: 3px solid #7367f0;
         padding-left: 15px;
         margin-bottom: 20px;
     }
@@ -62,6 +62,19 @@
     .display-4 {
         font-size: 3rem;
     }
+
+    .btn-link {
+        color: inherit !important;
+        text-decoration: none !important;
+    }
+
+    .btn-link:hover {
+        color: #007bff !important;
+    }
+
+    .btn-link:focus {
+        box-shadow: none;
+    }
     </style>
 @endsection
 
@@ -87,14 +100,29 @@
     <div class="col-md-12">
         <form action="{{ route('administration.settings.user.advance_filter.index') }}" method="get">
             @csrf
+            @php
+                $hasFilters = collect(request()->all())->filter(function($value, $key) {
+                    return !empty($value) && $key !== '_token';
+                })->isNotEmpty();
+            @endphp
+
             <div class="card mb-4">
-                <div class="card-header">
+                <div class="card-header header-elements">
                     <h5 class="mb-0">
-                        <span class="tf-icon ti ti-filter ti-xs me-1"></span>
+                        <span class="tf-icon ti ti-filter ti-xs mb-1"></span>
                         Advanced User Filters
+                        @if ($hasFilters)
+                            <sup class="badge bg-primary ms-2">{{ collect(request()->all())->filter(function($value, $key) { return !empty($value) && $key !== '_token'; })->count() }} filters applied</sup>
+                        @endif
                     </h5>
+                    <div class="card-header-elements ms-auto">
+                        <a href="javascript:void(0);" class="text-bold card-collapsible" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="{{ $hasFilters ? 'false' : 'true' }}" aria-controls="filterCollapse">
+                            <i class="tf-icons ti ti-chevron-right scaleX-n1-rtl ti-sm"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="card-body">
+                <div class="collapse {{ $hasFilters ? '' : 'show' }}" id="filterCollapse">
+                    <div class="card-body">
                     <!-- Basic User Information -->
                     <div class="row mb-3 filter-section">
                         <div class="col-12">
@@ -448,6 +476,7 @@
                             </button>
                         </div>
                     </div>
+                    </div> <!-- End collapse -->
                 </div>
             </div>
         </form>
@@ -473,7 +502,7 @@
 
                 <div class="card-header-elements ms-auto">
                     @if ($hasFilters)
-                        <span class="badge bg-primary ms-2">{{ $users->count() }} {{ $users->count() === 1 ? 'User' : 'Users' }} Found</span>
+                        <span class="badge bg-primary me-2">{{ $users->count() }} {{ $users->count() === 1 ? 'User' : 'Users' }} Found</span>
                     @endif
                 </div>
             </div>
@@ -652,6 +681,15 @@
                 if (!$(this).data('bs.select')) { // Check if it's already initialized
                     $(this).selectpicker();
                 }
+            });
+
+            // Handle collapse icon rotation
+            $('#filterCollapse').on('show.bs.collapse', function () {
+                $('[data-bs-target="#filterCollapse"] i').removeClass('ti-chevron-down').addClass('ti-chevron-up');
+            });
+
+            $('#filterCollapse').on('hide.bs.collapse', function () {
+                $('[data-bs-target="#filterCollapse"] i').removeClass('ti-chevron-up').addClass('ti-chevron-down');
             });
         });
     </script>
