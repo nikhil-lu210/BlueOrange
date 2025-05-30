@@ -98,7 +98,7 @@
 <!-- Start row -->
 <div class="row">
     <div class="col-md-12">
-        <form action="{{ route('administration.settings.user.advance_filter.index') }}" method="get">
+        <form action="{{ route('administration.settings.user.advance_filter.index') }}" method="GET" autocomplete="off">
             @csrf
             @php
                 $hasFilters = collect(request()->all())->filter(function($value, $key) {
@@ -275,28 +275,28 @@
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="joining_date_from" class="form-label">Joining Date From</label>
-                            <input type="date" id="joining_date_from" name="joining_date_from" value="{{ old('joining_date_from', request()->joining_date_from) }}" class="form-control @error('joining_date_from') is-invalid @enderror" />
+                            <input type="text" id="joining_date_from" name="joining_date_from" value="{{ old('joining_date_from', request()->joining_date_from) }}" class="form-control date-picker @error('joining_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('joining_date_from')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="joining_date_to" class="form-label">Joining Date To</label>
-                            <input type="date" id="joining_date_to" name="joining_date_to" value="{{ old('joining_date_to', request()->joining_date_to) }}" class="form-control @error('joining_date_to') is-invalid @enderror" />
+                            <input type="text" id="joining_date_to" name="joining_date_to" value="{{ old('joining_date_to', request()->joining_date_to) }}" class="form-control date-picker @error('joining_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('joining_date_to')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="birth_date_from" class="form-label">Birth Date From</label>
-                            <input type="date" id="birth_date_from" name="birth_date_from" value="{{ old('birth_date_from', request()->birth_date_from) }}" class="form-control @error('birth_date_from') is-invalid @enderror" />
+                            <input type="text" id="birth_date_from" name="birth_date_from" value="{{ old('birth_date_from', request()->birth_date_from) }}" class="form-control date-picker @error('birth_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('birth_date_from')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="birth_date_to" class="form-label">Birth Date To</label>
-                            <input type="date" id="birth_date_to" name="birth_date_to" value="{{ old('birth_date_to', request()->birth_date_to) }}" class="form-control @error('birth_date_to') is-invalid @enderror" />
+                            <input type="text" id="birth_date_to" name="birth_date_to" value="{{ old('birth_date_to', request()->birth_date_to) }}" class="form-control date-picker @error('birth_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('birth_date_to')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
@@ -427,28 +427,28 @@
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="created_from" class="form-label">Created From</label>
-                            <input type="date" id="created_from" name="created_from" value="{{ old('created_from', request()->created_from) }}" class="form-control @error('created_from') is-invalid @enderror" />
+                            <input type="text" id="created_from" name="created_from" value="{{ old('created_from', request()->created_from) }}" class="form-control date-picker @error('created_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('created_from')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="created_to" class="form-label">Created To</label>
-                            <input type="date" id="created_to" name="created_to" value="{{ old('created_to', request()->created_to) }}" class="form-control @error('created_to') is-invalid @enderror" />
+                            <input type="text" id="created_to" name="created_to" value="{{ old('created_to', request()->created_to) }}" class="form-control date-picker @error('created_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('created_to')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="updated_from" class="form-label">Updated From</label>
-                            <input type="date" id="updated_from" name="updated_from" value="{{ old('updated_from', request()->updated_from) }}" class="form-control @error('updated_from') is-invalid @enderror" />
+                            <input type="text" id="updated_from" name="updated_from" value="{{ old('updated_from', request()->updated_from) }}" class="form-control date-picker @error('updated_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('updated_from')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="updated_to" class="form-label">Updated To</label>
-                            <input type="date" id="updated_to" name="updated_to" value="{{ old('updated_to', request()->updated_to) }}" class="form-control @error('updated_to') is-invalid @enderror" />
+                            <input type="text" id="updated_to" name="updated_to" value="{{ old('updated_to', request()->updated_to) }}" class="form-control date-picker @error('updated_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('updated_to')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
@@ -515,8 +515,8 @@
                                     <th>Sl.</th>
                                     <th>Employee ID</th>
                                     <th>Name</th>
-                                    <th>Contact Information</th>
-                                    <th>Other Info</th>
+                                    <th>Official Information</th>
+                                    <th>Other Information</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -553,8 +553,9 @@
                                             </div>
                                             @if ($user->current_shift)
                                                 <div class="mt-1">
+                                                    <strong>Shift:</strong>
                                                     <small class="text-muted">
-                                                        Shift: {{ show_time($user->current_shift->start_time) }} - {{ show_time($user->current_shift->end_time) }}
+                                                        {{ show_time($user->current_shift->start_time) }} to {{ show_time($user->current_shift->end_time) }}
                                                     </small>
                                                 </div>
                                             @endif
@@ -674,6 +675,19 @@
             });
         });
     </script>
+
+    <script>
+        // Custom Script Here
+        $(document).ready(function() {
+            $('.date-picker').datepicker({
+                format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                autoclose: true,
+                orientation: 'auto right'
+            });
+        });
+    </script>
+
     <script>
         // Custom Script Here
         $(document).ready(function() {
