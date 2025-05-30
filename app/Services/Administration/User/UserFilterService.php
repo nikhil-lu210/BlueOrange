@@ -3,6 +3,7 @@
 namespace App\Services\Administration\User;
 
 use App\Models\User;
+use App\Enums\BloodGroup;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -14,20 +15,30 @@ class UserFilterService
     public function getAdvancedFilterData(Request $request): array
     {
         $userService = new UserService();
-        
+
         // Get all filter options
         $teamLeaders = $this->getTeamLeaders();
         $roles = $userService->getAllRoles();
         $religions = $userService->getAllReligions();
         $institutes = $userService->getAllInstitutes();
         $educationLevels = $userService->getAllEducationLevels();
-        
+
         // Get blood group options (ENUM values)
-        $bloodGroups = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'];
-        
+        $bloodGroups = [
+            BloodGroup::A_POSITIVE,
+            BloodGroup::A_NEGATIVE,
+            BloodGroup::B_POSITIVE,
+            BloodGroup::B_NEGATIVE,
+            BloodGroup::AB_POSITIVE,
+            BloodGroup::AB_NEGATIVE,
+            BloodGroup::O_POSITIVE,
+            BloodGroup::O_NEGATIVE,
+            'Unknown'
+        ];
+
         // Get gender options
         $genders = ['Male', 'Female', 'Other'];
-        
+
         // Get status options
         $statuses = ['Active', 'Inactive', 'Fired', 'Resigned'];
 
@@ -35,7 +46,7 @@ class UserFilterService
         $users = $this->getFilteredUsers($request);
 
         return compact(
-            'request', 'users', 'teamLeaders', 'roles', 'religions', 
+            'request', 'users', 'teamLeaders', 'roles', 'religions',
             'institutes', 'educationLevels', 'bloodGroups', 'genders', 'statuses'
         );
     }

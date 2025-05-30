@@ -239,9 +239,12 @@
                             <label for="blood_group" class="form-label">Blood Group</label>
                             <select name="blood_group" id="blood_group" class="form-select bootstrap-select w-100 @error('blood_group') is-invalid @enderror" data-style="btn-default">
                                 <option value="">Select Blood Group</option>
-                                @foreach ($bloodGroups as $bloodGroupOption)
-                                    <option value="{{ $bloodGroupOption }}" {{ request()->blood_group == $bloodGroupOption ? 'selected' : '' }}>
-                                        {{ $bloodGroupOption }}
+                                @foreach ($bloodGroups as $bloodGroup)
+                                    @php
+                                        $value = is_object($bloodGroup) ? $bloodGroup->value : $bloodGroup;
+                                    @endphp
+                                    <option value="{{ $value }}" {{ request()->blood_group === $value ? 'selected' : '' }}>
+                                        {{ $value }}
                                     </option>
                                 @endforeach
                             </select>
