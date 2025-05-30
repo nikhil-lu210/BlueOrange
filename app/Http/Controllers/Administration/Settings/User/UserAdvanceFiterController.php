@@ -4,15 +4,15 @@ namespace App\Http\Controllers\Administration\Settings\User;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Services\Administration\User\UserService;
+use App\Services\Administration\User\UserFilterService;
 
 class UserAdvanceFiterController extends Controller
 {
-    protected $userService;
+    protected $userFilterService;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserFilterService $userFilterService)
     {
-        $this->userService = $userService;
+        $this->userFilterService = $userFilterService;
     }
 
     /**
@@ -21,7 +21,7 @@ class UserAdvanceFiterController extends Controller
     public function index(Request $request)
     {
         // Get filter data and users based on filters
-        $data = $this->userService->getAdvancedFilterData($request);
+        $data = $this->userFilterService->getAdvancedFilterData($request);
 
         return view('administration.settings.user.advance_filter', $data);
     }

@@ -206,7 +206,7 @@
                         </div>
                         <div class="mb-3 col-md-2">
                             <label class="form-label">Birthdate <strong class="text-danger">*</strong></label>
-                            <input type="text" name="birth_date" value="{{ old('birth_date') }}" class="form-control  date-picker" placeholder="YYYY-MM-DD" required/>
+                            <input type="text" name="birth_date" value="{{ old('birth_date') }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
                             @error('birth_date')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror

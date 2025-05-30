@@ -32,7 +32,7 @@
     <style>
     /* Custom CSS Here */
     .filter-section {
-        border-left: 3px solid #007bff;
+        border-left: 3px solid #7367f0;
         padding-left: 15px;
         margin-bottom: 20px;
     }
@@ -62,6 +62,19 @@
     .display-4 {
         font-size: 3rem;
     }
+
+    .btn-link {
+        color: inherit !important;
+        text-decoration: none !important;
+    }
+
+    .btn-link:hover {
+        color: #007bff !important;
+    }
+
+    .btn-link:focus {
+        box-shadow: none;
+    }
     </style>
 @endsection
 
@@ -85,16 +98,31 @@
 <!-- Start row -->
 <div class="row">
     <div class="col-md-12">
-        <form action="{{ route('administration.settings.user.advance_filter.index') }}" method="get">
+        <form action="{{ route('administration.settings.user.advance_filter.index') }}" method="GET" autocomplete="off">
             @csrf
+            @php
+                $hasFilters = collect(request()->all())->filter(function($value, $key) {
+                    return !empty($value) && $key !== '_token';
+                })->isNotEmpty();
+            @endphp
+
             <div class="card mb-4">
-                <div class="card-header">
+                <div class="card-header header-elements">
                     <h5 class="mb-0">
-                        <span class="tf-icon ti ti-filter ti-xs me-1"></span>
+                        <span class="tf-icon ti ti-filter ti-xs mb-1"></span>
                         Advanced User Filters
+                        @if ($hasFilters)
+                            <sup class="badge bg-primary ms-2">{{ collect(request()->all())->filter(function($value, $key) { return !empty($value) && $key !== '_token'; })->count() }} filters applied</sup>
+                        @endif
                     </h5>
+                    <div class="card-header-elements ms-auto">
+                        <a href="javascript:void(0);" class="text-bold card-collapsible" data-bs-toggle="collapse" data-bs-target="#filterCollapse" aria-expanded="{{ $hasFilters ? 'false' : 'true' }}" aria-controls="filterCollapse">
+                            <i class="tf-icons ti ti-chevron-right scaleX-n1-rtl ti-sm"></i>
+                        </a>
+                    </div>
                 </div>
-                <div class="card-body">
+                <div class="collapse {{ $hasFilters ? '' : 'show' }}" id="filterCollapse">
+                    <div class="card-body">
                     <!-- Basic User Information -->
                     <div class="row mb-3 filter-section">
                         <div class="col-12">
@@ -211,9 +239,12 @@
                             <label for="blood_group" class="form-label">Blood Group</label>
                             <select name="blood_group" id="blood_group" class="form-select bootstrap-select w-100 @error('blood_group') is-invalid @enderror" data-style="btn-default">
                                 <option value="">Select Blood Group</option>
-                                @foreach ($bloodGroups as $bloodGroupOption)
-                                    <option value="{{ $bloodGroupOption }}" {{ request()->blood_group == $bloodGroupOption ? 'selected' : '' }}>
-                                        {{ $bloodGroupOption }}
+                                @foreach ($bloodGroups as $bloodGroup)
+                                    @php
+                                        $value = is_object($bloodGroup) ? $bloodGroup->value : $bloodGroup;
+                                    @endphp
+                                    <option value="{{ $value }}" {{ request()->blood_group === $value ? 'selected' : '' }}>
+                                        {{ $value }}
                                     </option>
                                 @endforeach
                             </select>
@@ -247,28 +278,28 @@
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="joining_date_from" class="form-label">Joining Date From</label>
-                            <input type="date" id="joining_date_from" name="joining_date_from" value="{{ old('joining_date_from', request()->joining_date_from) }}" class="form-control @error('joining_date_from') is-invalid @enderror" />
+                            <input type="text" id="joining_date_from" name="joining_date_from" value="{{ old('joining_date_from', request()->joining_date_from) }}" class="form-control date-picker @error('joining_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('joining_date_from')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="joining_date_to" class="form-label">Joining Date To</label>
-                            <input type="date" id="joining_date_to" name="joining_date_to" value="{{ old('joining_date_to', request()->joining_date_to) }}" class="form-control @error('joining_date_to') is-invalid @enderror" />
+                            <input type="text" id="joining_date_to" name="joining_date_to" value="{{ old('joining_date_to', request()->joining_date_to) }}" class="form-control date-picker @error('joining_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('joining_date_to')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="birth_date_from" class="form-label">Birth Date From</label>
-                            <input type="date" id="birth_date_from" name="birth_date_from" value="{{ old('birth_date_from', request()->birth_date_from) }}" class="form-control @error('birth_date_from') is-invalid @enderror" />
+                            <input type="text" id="birth_date_from" name="birth_date_from" value="{{ old('birth_date_from', request()->birth_date_from) }}" class="form-control date-picker @error('birth_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('birth_date_from')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="birth_date_to" class="form-label">Birth Date To</label>
-                            <input type="date" id="birth_date_to" name="birth_date_to" value="{{ old('birth_date_to', request()->birth_date_to) }}" class="form-control @error('birth_date_to') is-invalid @enderror" />
+                            <input type="text" id="birth_date_to" name="birth_date_to" value="{{ old('birth_date_to', request()->birth_date_to) }}" class="form-control date-picker @error('birth_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('birth_date_to')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
@@ -399,28 +430,28 @@
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="created_from" class="form-label">Created From</label>
-                            <input type="date" id="created_from" name="created_from" value="{{ old('created_from', request()->created_from) }}" class="form-control @error('created_from') is-invalid @enderror" />
+                            <input type="text" id="created_from" name="created_from" value="{{ old('created_from', request()->created_from) }}" class="form-control date-picker @error('created_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('created_from')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="created_to" class="form-label">Created To</label>
-                            <input type="date" id="created_to" name="created_to" value="{{ old('created_to', request()->created_to) }}" class="form-control @error('created_to') is-invalid @enderror" />
+                            <input type="text" id="created_to" name="created_to" value="{{ old('created_to', request()->created_to) }}" class="form-control date-picker @error('created_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('created_to')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="updated_from" class="form-label">Updated From</label>
-                            <input type="date" id="updated_from" name="updated_from" value="{{ old('updated_from', request()->updated_from) }}" class="form-control @error('updated_from') is-invalid @enderror" />
+                            <input type="text" id="updated_from" name="updated_from" value="{{ old('updated_from', request()->updated_from) }}" class="form-control date-picker @error('updated_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('updated_from')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-3">
                             <label for="updated_to" class="form-label">Updated To</label>
-                            <input type="date" id="updated_to" name="updated_to" value="{{ old('updated_to', request()->updated_to) }}" class="form-control @error('updated_to') is-invalid @enderror" />
+                            <input type="text" id="updated_to" name="updated_to" value="{{ old('updated_to', request()->updated_to) }}" class="form-control date-picker @error('updated_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                             @error('updated_to')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
@@ -448,6 +479,7 @@
                             </button>
                         </div>
                     </div>
+                    </div> <!-- End collapse -->
                 </div>
             </div>
         </form>
@@ -473,7 +505,7 @@
 
                 <div class="card-header-elements ms-auto">
                     @if ($hasFilters)
-                        <span class="badge bg-primary ms-2">{{ $users->count() }} {{ $users->count() === 1 ? 'User' : 'Users' }} Found</span>
+                        <span class="badge bg-primary me-2">{{ $users->count() }} {{ $users->count() === 1 ? 'User' : 'Users' }} Found</span>
                     @endif
                 </div>
             </div>
@@ -486,8 +518,8 @@
                                     <th>Sl.</th>
                                     <th>Employee ID</th>
                                     <th>Name</th>
-                                    <th>Contact Information</th>
-                                    <th>Other Info</th>
+                                    <th>Official Information</th>
+                                    <th>Other Information</th>
                                     <th class="text-center">Action</th>
                                 </tr>
                             </thead>
@@ -524,8 +556,9 @@
                                             </div>
                                             @if ($user->current_shift)
                                                 <div class="mt-1">
+                                                    <strong>Shift:</strong>
                                                     <small class="text-muted">
-                                                        Shift: {{ show_time($user->current_shift->start_time) }} - {{ show_time($user->current_shift->end_time) }}
+                                                        {{ show_time($user->current_shift->start_time) }} to {{ show_time($user->current_shift->end_time) }}
                                                     </small>
                                                 </div>
                                             @endif
@@ -645,6 +678,19 @@
             });
         });
     </script>
+
+    <script>
+        // Custom Script Here
+        $(document).ready(function() {
+            $('.date-picker').datepicker({
+                format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                autoclose: true,
+                orientation: 'auto right'
+            });
+        });
+    </script>
+
     <script>
         // Custom Script Here
         $(document).ready(function() {
@@ -652,6 +698,15 @@
                 if (!$(this).data('bs.select')) { // Check if it's already initialized
                     $(this).selectpicker();
                 }
+            });
+
+            // Handle collapse icon rotation
+            $('#filterCollapse').on('show.bs.collapse', function () {
+                $('[data-bs-target="#filterCollapse"] i').removeClass('ti-chevron-down').addClass('ti-chevron-up');
+            });
+
+            $('#filterCollapse').on('hide.bs.collapse', function () {
+                $('[data-bs-target="#filterCollapse"] i').removeClass('ti-chevron-up').addClass('ti-chevron-down');
             });
         });
     </script>
