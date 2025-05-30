@@ -115,15 +115,19 @@
                     </div>
 
                     <div class="col-md-12 text-end">
+                        <a href="{{ route('administration.settings.user.advance_filter.index') }}" class="text-bold text-primary me-2">
+                            <span class="tf-icon ti ti-filter ti-xs"></span>
+                            {{ __('Advance Filter') }}
+                        </a>
                         @if (request()->role_id || request()->status)
                             <a href="{{ route('administration.settings.user.index') }}" class="btn btn-danger confirm-warning">
-                                <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
-                                Reset Filters
+                                <span class="tf-icon ti ti-refresh ti-xs"></span>
+                                {{ __('Reset Filters') }}
                             </a>
                         @endif
                         <button type="submit" class="btn btn-primary">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                            Filter Users
+                            {{ __('Filter Users') }}
                         </button>
                     </div>
                 </div>
