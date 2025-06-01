@@ -47,7 +47,8 @@
                                 <small>{{ date('jS M, Y (l)') }}</small>
                             </div>
                         </div>
-                        @if (auth()->user()->hasAllPermissions(['Attendance Everything', 'Attendance Update']))
+                        {{-- @if (auth()->user()->hasAllPermissions(['Attendance Everything', 'Attendance Update'])) --}}
+                        @if (auth()->user()->hasAllPermissions(['Attendance Create', 'Attendance Read']))
                             @isset($activeAttendance->clock_in)
                                 <div class="d-flex align-items-center">
                                     <form action="{{ route('administration.attendance.clockout') }}" method="post" class="confirm-form-danger">
