@@ -21,7 +21,7 @@
         -moz-user-select: none; /* Firefox */
         -ms-user-select: none; /* IE10+ */
         }
-        
+
         .custom-option-content {
             position: relative;
         }
@@ -55,10 +55,10 @@
                 <div class="card-header header-elements">
                     <h5 class="mb-0 text-bold">Running Break</h5>
                     @isset($activeBreak->break_in_at)
-                        <small class="badge bg-dark fs-6 ms-auto" 
-                            id="runningBreakTime" 
-                            data-break-in-at="{{ $activeBreak->break_in_at->timestamp }}" 
-                            title="Running Break" 
+                        <small class="badge bg-dark fs-6 ms-auto"
+                            id="runningBreakTime"
+                            data-break-in-at="{{ $activeBreak->break_in_at->timestamp }}"
+                            title="Running Break"
                             style="margin-top: -5px;">
                         </small>
                     @endisset
@@ -96,7 +96,7 @@
                         </dd>
                     </dl>
                 </div>
-    
+
                 <div class="card-footer">
                     <div class="text-end">
                         <form action="{{ route('administration.daily_break.stop') }}" method="post" class="confirm-form-danger">
@@ -157,17 +157,17 @@
                             </div>
                         </div>
                     </div>
-    
+
                     <div class="card-footer">
                         <div class="text-end">
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary btn-break-start" onclick="this.disabled=true; this.form.submit();">
                                 <span class="tf-icon ti ti-check ti-xs me-1"></span>
                                 Start Break
                             </button>
                         </div>
                     </div>
                 </div>
-            </form>        
+            </form>
         </div>
     @endisset
 
@@ -176,14 +176,14 @@
             <div class="card">
                 <div class="card-header header-elements">
                     <h5 class="mb-0">Start Daily Break</h5>
-                    @isset ($attendance) 
+                    @isset ($attendance)
                         <div class="ms-auto" style="margin-top: -5px;">
-                            @isset ($attendance->total_break_time) 
+                            @isset ($attendance->total_break_time)
                                 <small class="badge bg-dark" title="Total Break Taken">
                                     {{ total_time($attendance->total_break_time) }}
                                 </small>
                             @endisset
-                            @isset ($attendance->total_over_break) 
+                            @isset ($attendance->total_over_break)
                                 <small class="badge bg-danger" title="Total Over Break">
                                     {{ total_time($attendance->total_over_break) }}
                                 </small>
@@ -193,7 +193,7 @@
                 </div>
                 <div class="card-body">
                     <ul class="timeline mb-0 pb-1">
-                        @forelse ($breaks as $key => $break) 
+                        @forelse ($breaks as $key => $break)
                             <li class="timeline-item ps-4 {{ $loop->last ? 'border-transparent' : 'border-left-dashed pb-1' }}">
                                 <span class="timeline-indicator-advanced timeline-indicator-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">
                                     <i class="ti ti-{{ $break->break_out_at ? 'clock-stop' : 'clock-play' }}"></i>
@@ -206,7 +206,7 @@
                                     </div>
                                     <small class="text-muted mb-0">
                                         {{ show_time($break->break_in_at) }}
-                                        @if (!is_null($break->break_out_at)) 
+                                        @if (!is_null($break->break_out_at))
                                             <span>to</span>
                                             <span>{{ show_time($break->break_out_at) }}</span>
                                         @else
@@ -226,7 +226,7 @@
                                     </h6>
                                 </div>
                             </li>
-                        @empty 
+                        @empty
                             <div class="text-center text-bold text-muted fs-2">No Breaks</div>
                         @endforelse
                     </ul>
@@ -250,29 +250,29 @@
     <script>
         $(document).ready(function() {
             const runningBreakTimeElement = $('#runningBreakTime');
-            
+
             if (runningBreakTimeElement.length) {
                 const breakInAt = parseInt(runningBreakTimeElement.data('break-in-at')) * 1000; // Convert to milliseconds
-                
+
                 // Function to calculate and display the elapsed time
                 function updateRunningBreakTime() {
                     const now = new Date().getTime();
                     const elapsed = now - breakInAt;
-    
+
                     // Calculate hours, minutes, and seconds
                     const hours = Math.floor(elapsed / (1000 * 60 * 60));
                     const minutes = Math.floor((elapsed % (1000 * 60 * 60)) / (1000 * 60));
                     const seconds = Math.floor((elapsed % (1000 * 60)) / 1000);
-    
+
                     // Format the time as hh:mm:ss
-                    const formattedTime = 
+                    const formattedTime =
                         String(hours).padStart(2, '0') + ':' +
                         String(minutes).padStart(2, '0') + ':' +
                         String(seconds).padStart(2, '0');
-                    
+
                     runningBreakTimeElement.text(formattedTime);
                 }
-    
+
                 // Update the time every second
                 updateRunningBreakTime(); // Initial call
                 setInterval(updateRunningBreakTime, 1000); // Update every second

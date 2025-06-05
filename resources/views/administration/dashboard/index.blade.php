@@ -30,6 +30,13 @@
             font-size: 24px;
         }
 
+        button[disabled],
+        button:disabled,
+        button[disabled]:hover {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
         /* Table */
         .table-borderless th, .table-bordered th {
             font-weight: bold;
@@ -322,20 +329,22 @@
     </script>
 
     <script>
-        $(document).ready(function() {
-            // $('form').on('submit', function(e) {
-            //     e.preventDefault(); // Prevent default submission
-            // });
+        $(document).ready(function () {
+            let submitting = false;
 
-            $('.submit-regular').click(function() {
-                $('#attendanceType').val('Regular');
-                $(this).closest('form').submit();
-            });
+            function handleSubmit(buttonClass, attendanceType) {
+                $(buttonClass).click(function () {
+                    if (submitting) return; // Prevent double click
+                    submitting = true;
 
-            $('.submit-overtime').click(function() {
-                $('#attendanceType').val('Overtime');
-                $(this).closest('form').submit();
-            });
+                    $('#attendanceType').val(attendanceType);
+                    $(this).prop('disabled', true); // Disable button
+                    $(this).closest('form').submit();
+                });
+            }
+
+            handleSubmit('.submit-regular', 'Regular');
+            handleSubmit('.submit-overtime', 'Overtime');
         });
     </script>
 
