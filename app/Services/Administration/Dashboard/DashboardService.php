@@ -78,44 +78,52 @@ class DashboardService
      */
     public function getCurrentlyWorkingUsers(): Collection
     {
-        $today = Carbon::today();
-        $yesterday = Carbon::yesterday();
-
-        return User::with([
-                'employee',
-                'media',
-                'attendances' => function($query) use ($today, $yesterday) {
-                    $query->where(function($subQuery) use ($today, $yesterday) {
-                        $subQuery->where(function($todayQuery) use ($today) {
-                            // Today's active attendances
-                            $todayQuery->whereDate('clock_in_date', $today)
-                                      ->whereNull('clock_out');
-                        })
-                        ->orWhere(function($yesterdayQuery) use ($yesterday) {
-                            // Yesterday's overnight active attendances
-                            $yesterdayQuery->whereDate('clock_in_date', $yesterday)
-                                          ->whereNull('clock_out');
-                        });
-                    })
-                    ->orderBy('clock_in', 'desc')
-                    ->limit(1); // Get only the most recent active attendance
-                }
-            ])
+        // First, get all users who have active attendances
+        $usersWithActiveAttendances = User::with(['employee', 'media'])
             ->where('status', 'Active')
             ->whereNotIn('id', [1, 2]) // Exclude Developer and Controller users
-            ->where(function($query) use ($today, $yesterday) {
-                $query->whereHas('attendances', function($subQuery) use ($today) {
-                    // Today's active attendances
-                    $subQuery->whereDate('clock_in_date', $today)
-                            ->whereNull('clock_out');
-                })
-                ->orWhereHas('attendances', function($subQuery) use ($yesterday) {
-                    // Yesterday's overnight active attendances
-                    $subQuery->whereDate('clock_in_date', $yesterday)
-                            ->whereNull('clock_out');
-                });
+            ->whereHas('attendances', function($subQuery) {
+                // Users who are currently working (clocked in but not clocked out)
+                $subQuery->whereNull('clock_out')
+                        ->whereNotNull('clock_in');
             })
             ->get();
+
+        // Then, for each user, load their current attendance
+        $usersWithActiveAttendances->each(function($user) {
+            $currentAttendance = Attendance::where('user_id', $user->id)
+                ->whereNull('clock_out')
+                ->whereNotNull('clock_in')
+                ->orderBy('clock_in', 'desc')
+                ->first();
+
+            // Set the attendance as a collection to maintain consistency with the original approach
+            $user->setRelation('attendances', collect($currentAttendance ? [$currentAttendance] : []));
+        });
+
+        // Filter out users who don't have any current attendance (safety check)
+        return $usersWithActiveAttendances->filter(function($user) {
+            return $user->attendances->isNotEmpty();
+        });
+    }
+
+    /**
+     * Get the current active attendance for a user.
+     * This is a helper method to safely get the current attendance.
+     */
+    public function getCurrentAttendanceForUser(User $user)
+    {
+        // If attendances are already loaded, use them
+        if ($user->relationLoaded('attendances') && $user->attendances->isNotEmpty()) {
+            return $user->attendances->first();
+        }
+
+        // Otherwise, query for the current attendance
+        return Attendance::where('user_id', $user->id)
+            ->whereNull('clock_out')
+            ->whereNotNull('clock_in')
+            ->orderBy('clock_in', 'desc')
+            ->first();
     }
 
     /**
