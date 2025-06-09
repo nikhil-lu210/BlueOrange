@@ -17,6 +17,7 @@
                 <div class="d-flex align-items-center flex-wrap">
                     @forelse($currentlyWorkingUsers as $workingUser)
                         @php
+                            // Get the current attendance (should always exist due to our service filtering)
                             $currentAttendance = $workingUser->attendances->first();
                             $clockInTime = $currentAttendance ? show_time($currentAttendance->clock_in) : '';
                             $tooltipText = ($workingUser->employee->alias_name ?? $workingUser->name) . ($clockInTime ? ' (' . $clockInTime . ')' : '');
