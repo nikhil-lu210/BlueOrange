@@ -16,7 +16,12 @@
             <div class="card-body pt-0">
                 <div class="d-flex align-items-center flex-wrap">
                     @forelse($currentlyWorkingUsers as $workingUser)
-                        <div class="avatar me-2 mb-2 avatar-online" title="{{ $workingUser->employee->alias_name ?? $workingUser->name }}">
+                        @php
+                            $currentAttendance = $workingUser->attendances->first();
+                            $clockInTime = $currentAttendance ? show_time($currentAttendance->clock_in) : '';
+                            $tooltipText = ($workingUser->employee->alias_name ?? $workingUser->name) . ($clockInTime ? ' (' . $clockInTime . ')' : '');
+                        @endphp
+                        <div class="avatar me-2 mb-2 avatar-online" title="{{ $tooltipText }}">
                             @if($workingUser->getFirstMediaUrl('avatar'))
                                 <img src="{{ $workingUser->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $workingUser->name }}" class="rounded-circle" />
                             @else

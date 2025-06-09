@@ -81,7 +81,26 @@ class DashboardService
         $today = Carbon::today();
         $yesterday = Carbon::yesterday();
 
-        return User::with(['employee', 'media'])
+        return User::with([
+                'employee',
+                'media',
+                'attendances' => function($query) use ($today, $yesterday) {
+                    $query->where(function($subQuery) use ($today, $yesterday) {
+                        $subQuery->where(function($todayQuery) use ($today) {
+                            // Today's active attendances
+                            $todayQuery->whereDate('clock_in_date', $today)
+                                      ->whereNull('clock_out');
+                        })
+                        ->orWhere(function($yesterdayQuery) use ($yesterday) {
+                            // Yesterday's overnight active attendances
+                            $yesterdayQuery->whereDate('clock_in_date', $yesterday)
+                                          ->whereNull('clock_out');
+                        });
+                    })
+                    ->orderBy('clock_in', 'desc')
+                    ->limit(1); // Get only the most recent active attendance
+                }
+            ])
             ->where('status', 'Active')
             ->whereNotIn('id', [1, 2]) // Exclude Developer and Controller users
             ->where(function($query) use ($today, $yesterday) {
