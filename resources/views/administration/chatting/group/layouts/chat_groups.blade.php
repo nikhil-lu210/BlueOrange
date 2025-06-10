@@ -20,7 +20,7 @@
             <h5 class="text-primary mb-0 px-4 pt-3 pb-2">Chatting Groups</h5>
         </div>
         <ul class="list-unstyled chat-contact-list mb-0" id="contact-list">
-            @forelse ($chatGroups as $group) 
+            @forelse ($chatGroups as $group)
                 <li class="chat-contact-list-item {{ (isset($activeGroup) && $activeGroup === $group->id) ? 'active' : '' }}">
                     <a href="{{ route('administration.chatting.group.show', ['group' => $group, 'groupid' => $group->groupid]) }}" class="d-flex align-items-center">
                         <div class="flex-shrink-0 avatar">
@@ -34,11 +34,11 @@
                         </div>
                         <div class="chat-contact-info flex-grow-1 ms-2">
                             <h6 class="chat-contact-name text-truncate m-0">{{ $group->name }}</h6>
-                            <small class="chat-contact-status text-muted text-truncate mb-0"><b>Creator:</b> {{ $group->creator->name }}</small>
+                            <small class="chat-contact-status text-muted text-truncate mb-0"><b>Creator:</b> {{ $group->creator->alias_name }}</small>
                         </div>
                     </a>
                 </li>
-            @empty 
+            @empty
                 <li class="chat-contact-list-item contact-list-item-0 d-none">
                     <h6 class="text-muted mb-0">No Contacts Found</h6>
                 </li>
@@ -53,18 +53,18 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var searchInput = document.getElementById('chat-search-input');
-        
+
         searchInput.addEventListener('keyup', function() {
             var searchTerm = searchInput.value.toLowerCase();
             var searchTerms = searchTerm.split(' ');
             var contactItems = document.querySelectorAll('.chat-contact-list-item');
-            
+
             contactItems.forEach(function(item) {
                 var itemText = item.textContent.toLowerCase();
                 var isMatch = searchTerms.every(function(term) {
                     return itemText.indexOf(term) > -1;
                 });
-                
+
                 if (isMatch) {
                     item.style.display = '';
                 } else {

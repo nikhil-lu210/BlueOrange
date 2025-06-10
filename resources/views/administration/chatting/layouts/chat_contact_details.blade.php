@@ -5,11 +5,11 @@
                 <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle" width="40">
             @else
                 <span class="avatar-initial rounded-circle bg-dark border border-1">
-                    {{ substr($user->name, 0, 1) }}
+                    {{ substr($user->alias_name, 0, 1) }}
                 </span>
             @endif
         </div>
-        <h6 class="mt-2 mb-0">{{ get_employee_name($user) }}</h6>
+        <h6 class="mt-2 mb-0">{{ $user->alias_name }}</h6>
         <span>{{ $user->role->name }}</span>
         <i class="ti ti-x ti-sm cursor-pointer close-sidebar d-block" data-bs-toggle="sidebar" data-overlay data-target="#app-chat-sidebar-right"></i>
     </div>
