@@ -11,7 +11,7 @@
                     </div>
                     <div class="chat-contact-info flex-grow-1 ms-2">
                         <h6 class="m-0">{{ $chattingGroup->name }}</h6>
-                        <small class="user-status text-muted"><b class="text-dark">Creator:</b> {{ $chattingGroup->creator->name }}</small>
+                        <small class="user-status text-muted"><b class="text-dark">Creator:</b> {{ $chattingGroup->creator->alias_name }}</small>
                     </div>
                 </div>
 

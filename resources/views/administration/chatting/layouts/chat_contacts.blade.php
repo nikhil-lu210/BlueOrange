@@ -32,12 +32,12 @@
                                 <img src="{{ $user->getFirstMediaUrl('avatar', 'thumb') }}" alt="Avatar" class="rounded-circle cursor-pointer" width="40">
                             @else
                                 <span class="avatar-initial rounded-circle bg-dark">
-                                    {{ substr($user->name, 0, 1) }}
+                                    {{ substr($user->alias_name, 0, 1) }}
                                 </span>
                             @endif
                         </div>
                         <div class="chat-contact-info flex-grow-1 ms-2">
-                            <h6 class="chat-contact-name text-truncate m-0">{{ get_employee_name($user) }}</h6>
+                            <h6 class="chat-contact-name text-truncate m-0">{{ $user->alias_name }}</h6>
                             @if (get_receiver_last_message($user->id))
                                 <small class="text-muted mb-auto float-start">{{ show_content(get_receiver_last_message($user->id)->message, 15) }}</small>
                                 <small class="text-muted mb-auto float-end">{{ date_time_ago(get_receiver_last_message($user->id)->created_at) }}</small>
@@ -60,7 +60,7 @@
             <li class="chat-contact-list-item chat-contact-list-item-title">
                 <h5 class="text-primary mb-0">Contacts</h5>
             </li>
-            @forelse ($contacts as $contact) 
+            @forelse ($contacts as $contact)
                 <li class="chat-contact-list-item {{ (isset($activeUser) && $activeUser === $contact->id) ? 'active' : '' }}">
                     <a href="{{ route('administration.chatting.show', ['user' => $contact, 'userid' => $contact->userid]) }}" class="d-flex align-items-center">
                         <div class="flex-shrink-0 avatar avatar-offline" title="{{ get_employee_name($contact) }}">
@@ -73,12 +73,12 @@
                             @endif
                         </div>
                         <div class="chat-contact-info flex-grow-1 ms-2">
-                            <h6 class="chat-contact-name text-truncate m-0">{{ get_employee_name($contact) }}</h6>
+                            <h6 class="chat-contact-name text-truncate m-0">{{ $contact->alias_name }}</h6>
                             <p class="chat-contact-status text-muted text-truncate mb-0">{{ $contact->role->name }}</p>
                         </div>
                     </a>
                 </li>
-            @empty 
+            @empty
                 <li class="chat-contact-list-item contact-list-item-0 d-none">
                     <h6 class="text-muted mb-0">No Contacts Found</h6>
                 </li>
@@ -93,18 +93,18 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         var searchInput = document.getElementById('chat-search-input');
-        
+
         searchInput.addEventListener('keyup', function() {
             var searchTerm = searchInput.value.toLowerCase();
             var searchTerms = searchTerm.split(' ');
             var contactItems = document.querySelectorAll('.chat-contact-list-item');
-            
+
             contactItems.forEach(function(item) {
                 var itemText = item.textContent.toLowerCase();
                 var isMatch = searchTerms.every(function(term) {
                     return itemText.indexOf(term) > -1;
                 });
-                
+
                 if (isMatch) {
                     item.style.display = '';
                 } else {
