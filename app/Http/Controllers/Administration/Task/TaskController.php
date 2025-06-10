@@ -70,7 +70,7 @@ class TaskController extends Controller
     public function create(Request $request)
     {
         $roles = $this->taskRepository->getRolesWithUsers();
-        $tasks = $this->taskRepository->getTasksQuery(new Request())->get();
+        $tasks = $this->taskRepository->getMyTasksQuery(new Request())->get();
 
         return view('administration.task.create', compact(['roles', 'tasks']));
     }
