@@ -37,16 +37,16 @@
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">{{ __('All Penalties') }}</h5>
-        @can ('Penalty Create')
-            <a href="{{ route('administration.penalty.create') }}" class="btn btn-primary">
+        @canany(['Penalty Everything', 'Penalty Create'])
+            <a href="{{ route('administration.penalty.create') }}" class="btn btn-primary btn-sm">
                 <i class="ti ti-plus me-1"></i>{{ __('Add Penalty') }}
             </a>
-        @endcan
+        @endcanany
     </div>
 
     <div class="card-body">
-        <div class="table-responsive text-nowrap">
-            <table class="table table-bordered data-table" id="penaltiesTable">
+        <div class="table-responsive-md table-responsive-sm w-100">
+            <table class="table data-table table-bordered">
                 <thead>
                     <tr>
                         <th>{{ __('SL') }}</th>
@@ -76,14 +76,16 @@
                                 </a>
                             </td>
                             <td class="text-center">
-                                <a href="{{ route('administration.penalty.destroy', ['penalty' => $penalty]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Penalty?">
-                                    <i class="ti ti-trash"></i>
-                                </a>
-                                @can ('Penalty Read')
+                                @canany(['Penalty Everything', 'Penalty Delete'])
+                                    <a href="{{ route('administration.penalty.destroy', ['penalty' => $penalty]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Penalty?">
+                                        <i class="ti ti-trash"></i>
+                                    </a>
+                                @endcanany
+                                @canany(['Penalty Everything', 'Penalty Read'])
                                     <a href="{{ route('administration.penalty.show', $penalty) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="ti ti-info-hexagon"></i>
                                     </a>
-                                @endcan
+                                @endcanany
                             </td>
                         </tr>
                     @empty
@@ -100,7 +102,7 @@
 
 @endsection
 
-@section('vendor_js')
+@section('script_links')
     {{--  External JS  --}}
     <!-- Datatable js -->
     <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
@@ -108,7 +110,7 @@
     <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 @endsection
 
-@section('custom_js')
+@section('custom_script')
     {{--  External JS  --}}
     <script>
         $(document).ready(function() {
