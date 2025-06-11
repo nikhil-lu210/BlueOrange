@@ -42,7 +42,7 @@
 
 @section('breadcrumb')
     <li class="breadcrumb-item">
-        <a href="{{ route('administration.dashboard') }}">{{ __('Dashboard') }}</a>
+        <a href="{{ route('administration.dashboard.index') }}">{{ __('Dashboard') }}</a>
     </li>
     <li class="breadcrumb-item">
         <a href="{{ route('administration.penalty.index') }}">{{ __('All Penalties') }}</a>
@@ -68,9 +68,9 @@
                         <h6 class="text-primary mb-3">{{ __('Employee Information') }}</h6>
                         <div class="d-flex align-items-center mb-3">
                             @if($penalty->user->media->isNotEmpty())
-                                <img src="{{ $penalty->user->media->first()->getUrl('thumb_color') }}" 
-                                     alt="{{ $penalty->user->name }}" 
-                                     class="rounded-circle me-3" 
+                                <img src="{{ $penalty->user->media->first()->getUrl('thumb_color') }}"
+                                     alt="{{ $penalty->user->name }}"
+                                     class="rounded-circle me-3"
                                      width="60" height="60">
                             @else
                                 <div class="avatar avatar-lg me-3">
@@ -129,13 +129,13 @@
                                 <span class="info-label">{{ __('Clock In:') }}</span>
                             </div>
                             <div class="col-6 mb-2">
-                                <span class="info-value">{{ $penalty->attendance->clock_in ? $penalty->attendance->clock_in->format('H:i') : 'N/A' }}</span>
+                                <span class="info-value">{{ $penalty->attendance->clock_in ? show_time($penalty->attendance->clock_in) : 'N/A' }}</span>
                             </div>
                             <div class="col-6 mb-2">
                                 <span class="info-label">{{ __('Clock Out:') }}</span>
                             </div>
                             <div class="col-6 mb-2">
-                                <span class="info-value">{{ $penalty->attendance->clock_out ? $penalty->attendance->clock_out->format('H:i') : 'Ongoing' }}</span>
+                                <span class="info-value">{{ $penalty->attendance->clock_out ? show_time($penalty->attendance->clock_out) : 'Ongoing' }}</span>
                             </div>
                             <div class="col-6 mb-2">
                                 <span class="info-label">{{ __('Type:') }}</span>
@@ -151,9 +151,9 @@
                         <h6 class="text-primary mb-3">{{ __('Created By') }}</h6>
                         <div class="d-flex align-items-center">
                             @if($penalty->creator->media->isNotEmpty())
-                                <img src="{{ $penalty->creator->media->first()->getUrl('thumb_color') }}" 
-                                     alt="{{ $penalty->creator->name }}" 
-                                     class="rounded-circle me-3" 
+                                <img src="{{ $penalty->creator->media->first()->getUrl('thumb_color') }}"
+                                     alt="{{ $penalty->creator->name }}"
+                                     class="rounded-circle me-3"
                                      width="50" height="50">
                             @else
                                 <div class="avatar me-3">
@@ -173,8 +173,8 @@
                 <!-- Reason -->
                 <div class="mb-4">
                     <h6 class="text-primary mb-3">{{ __('Reason for Penalty') }}</h6>
-                    <div class="bg-light p-3 rounded">
-                        <p class="mb-0">{{ $penalty->reason }}</p>
+                    <div class="rounded">
+                        <p class="mb-0">{!! $penalty->reason !!}</p>
                     </div>
                 </div>
 
@@ -188,9 +188,9 @@
                                     <div class="file-item">
                                         @if(in_array($file->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp']))
                                             <a href="{{ asset('storage/' . $file->file_path) }}" data-lightbox="penalty-files" data-title="{{ $file->original_name }}">
-                                                <img src="{{ asset('storage/' . $file->file_path) }}" 
-                                                     alt="{{ $file->original_name }}" 
-                                                     class="img-fluid rounded mb-2" 
+                                                <img src="{{ asset('storage/' . $file->file_path) }}"
+                                                     alt="{{ $file->original_name }}"
+                                                     class="img-fluid rounded mb-2"
                                                      style="max-height: 150px; width: 100%; object-fit: cover;">
                                             </a>
                                         @else

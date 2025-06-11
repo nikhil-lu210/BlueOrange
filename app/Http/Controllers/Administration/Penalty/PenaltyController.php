@@ -128,17 +128,15 @@ class PenaltyController extends Controller
 
         $attendances = Attendance::where('user_id', $request->user_id)
             ->where('clock_in_date', $today)
-            ->with(['employee_shift'])
             ->get()
             ->map(function ($attendance) {
                 return [
                     'id' => $attendance->id,
-                    'text' => 'Clock In: ' . $attendance->clock_in->format('H:i') .
-                             ($attendance->clock_out ? ' - Clock Out: ' . $attendance->clock_out->format('H:i') : ' (Ongoing)') .
-                             ' (' . $attendance->type . ')'
+                    'text' => $attendance->type . ' Clock In: ' . show_time($attendance->clock_in) .
+                             ($attendance->clock_out ? ' - Clock Out: ' . show_time($attendance->clock_out) : ' (Ongoing)')
                 ];
             });
 
-        return response()->json($attendances);
+        return response()->json($attendances, 200);
     }
 }

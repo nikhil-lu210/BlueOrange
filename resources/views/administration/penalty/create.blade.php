@@ -61,7 +61,7 @@
                 <h5 class="mb-0">{{ __('Create New Penalty') }}</h5>
             </div>
             <div class="card-body penalty-form">
-                <form action="{{ route('administration.penalty.store') }}" method="POST" enctype="multipart/form-data" id="postForm">
+                <form action="{{ route('administration.penalty.store') }}" method="POST" enctype="multipart/form-data" id="penaltyForm">
                     @csrf
 
                     <div class="row">
@@ -168,6 +168,9 @@
     {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function() {
+            // Initialize Select2
+            $('.select2').select2();
+
             // Handle employee selection change
             $('#user_id').on('change', function() {
                 const userId = $(this).val();
@@ -179,17 +182,27 @@
                     attendanceSelect.html('<option value="">Loading...</option>');
 
                     // Fetch attendances for selected user
-                    $.get('{{ route('administration.penalty.attendances.get') }}', { user_id: userId })
-                        .done(function(data) {
+                    $.ajax({
+                        url: '{{ route('administration.penalty.attendances') }}',
+                        method: 'GET',
+                        data: { user_id: userId },
+                        success: function(data) {
+                            console.log('Attendance data received:', data);
                             let options = '<option value="">Choose Attendance...</option>';
-                            data.forEach(function(attendance) {
-                                options += `<option value="${attendance.id}">${attendance.text}</option>`;
-                            });
+                            if (data && data.length > 0) {
+                                data.forEach(function(attendance) {
+                                    options += `<option value="${attendance.id}">${attendance.text}</option>`;
+                                });
+                            } else {
+                                options += '<option value="">No attendance records found for today</option>';
+                            }
                             attendanceSelect.html(options);
-                        })
-                        .fail(function() {
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error:', xhr.responseText);
                             attendanceSelect.html('<option value="">Error loading attendances</option>');
-                        });
+                        }
+                    });
                 } else {
                     // Reset attendance dropdown
                     attendanceSelect.prop('disabled', true);
@@ -227,7 +240,7 @@
                 fullEditor.root.innerHTML = {!! json_encode(old('reason')) !!};
             @endif
 
-            $('#postForm').on('submit', function() {
+            $('#penaltyForm').on('submit', function() {
                 $('#reason-input').val(fullEditor.root.innerHTML);
             });
         });
