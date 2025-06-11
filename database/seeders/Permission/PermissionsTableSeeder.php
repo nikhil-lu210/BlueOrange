@@ -37,6 +37,7 @@ class PermissionsTableSeeder extends Seeder
             'Leave Allowed',
             'Leave History',
             'Dining Room Booking',
+            'Penalty',
         ];
 
         foreach ($modules as $module) {

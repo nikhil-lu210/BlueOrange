@@ -254,6 +254,12 @@ class RolesTableSeeder extends Seeder
                     'Dining Room Booking Read',
                     'Dining Room Booking Update',
                     'Dining Room Booking Delete',
+
+                    'Penalty Everything',
+                    'Penalty Create',
+                    'Penalty Read',
+                    'Penalty Update',
+                    'Penalty Delete',
                 ];
             } else {
                 $permissions = [
