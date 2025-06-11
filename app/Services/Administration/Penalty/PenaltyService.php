@@ -3,8 +3,12 @@
 namespace App\Services\Administration\Penalty;
 
 use Exception;
+use App\Models\User;
 use App\Models\Penalty\Penalty;
 use App\Models\Attendance\Attendance;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\Administration\Penalty\PenaltyCreatedMail;
+use App\Notifications\Administration\Penalty\PenaltyCreatedNotification;
 
 class PenaltyService
 {
@@ -31,6 +35,12 @@ class PenaltyService
             'reason' => $data['reason'],
             'creator_id' => auth()->id(),
         ]);
+
+        // Load necessary relationships for notifications
+        $penalty->load(['user.employee', 'attendance', 'creator.employee']);
+
+        // Send notifications
+        $this->sendPenaltyNotifications($penalty);
 
         return $penalty;
     }
@@ -62,5 +72,47 @@ class PenaltyService
         }
 
         return $query;
+    }
+
+    /**
+     * Send penalty notifications to employee and team leader
+     */
+    private function sendPenaltyNotifications(Penalty $penalty): void
+    {
+        $employee = $penalty->user;
+        $creator = auth()->user();
+
+        // 1. Notify the employee who received the penalty
+        if ($employee && $employee->employee && $employee->employee->official_email) {
+            // Send in-app notification
+            $employee->notify(new PenaltyCreatedNotification($penalty, $creator));
+
+            // Send email notification
+            Mail::to($employee->employee->official_email)
+                ->queue(new PenaltyCreatedMail($penalty, $employee));
+        }
+
+        // 2. Notify the employee's active team leader
+        $activeTeamLeader = $this->getActiveTeamLeader($employee);
+
+        if ($activeTeamLeader && $activeTeamLeader->employee && $activeTeamLeader->employee->official_email) {
+            // Send in-app notification (with team member context)
+            $activeTeamLeader->notify(new PenaltyCreatedNotification($penalty, $creator, true));
+
+            // Send email notification
+            Mail::to($activeTeamLeader->employee->official_email)
+                ->queue(new PenaltyCreatedMail($penalty, $activeTeamLeader));
+        }
+    }
+
+    /**
+     * Get the active team leader for an employee
+     */
+    private function getActiveTeamLeader(User $employee): ?User
+    {
+        return $employee->employee_team_leaders()
+            ->wherePivot('is_active', true)
+            ->with(['employee'])
+            ->first();
     }
 }
