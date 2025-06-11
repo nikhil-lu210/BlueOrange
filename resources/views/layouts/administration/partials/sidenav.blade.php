@@ -28,6 +28,8 @@
 
         @include('layouts.administration.partials.menus.leave')
 
+        @include('layouts.administration.partials.menus.penalty')
+
         @include('layouts.administration.partials.menus.announcement')
 
         @include('layouts.administration.partials.menus.task')
