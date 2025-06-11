@@ -8,15 +8,26 @@
 
 @section('css_links')
     {{--  External CSS  --}}
-    <!-- Select2 CSS -->
+    {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
-    <!-- Dropzone CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/dropzone/dropzone.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
 @endsection
 
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
         .penalty-form .form-label {
             font-weight: 600;
         }
@@ -50,7 +61,7 @@
                 <h5 class="mb-0">{{ __('Create New Penalty') }}</h5>
             </div>
             <div class="card-body penalty-form">
-                <form action="{{ route('administration.penalty.store') }}" method="POST" enctype="multipart/form-data" id="penaltyForm">
+                <form action="{{ route('administration.penalty.store') }}" method="POST" enctype="multipart/form-data" id="postForm">
                     @csrf
 
                     <div class="row">
@@ -84,7 +95,7 @@
 
                     <div class="row">
                         <!-- Penalty Type -->
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-5 mb-3">
                             <label for="type" class="form-label required">{{ __('Penalty Type') }}</label>
                             <select class="form-select select2" id="type" name="type" required>
                                 <option value="">{{ __('Choose Penalty Type...') }}</option>
@@ -100,49 +111,38 @@
                         </div>
 
                         <!-- Penalty Time -->
-                        <div class="col-md-6 mb-3">
+                        <div class="mb-3 col-md-3">
                             <label for="total_time" class="form-label required">{{ __('Penalty Time (Minutes)') }}</label>
-                            <input type="number" class="form-control" id="total_time" name="total_time"
-                                   value="{{ old('total_time') }}" min="1" max="1440" required>
-                            <div class="form-text">{{ __('Enter penalty time in minutes (1-1440)') }}</div>
+                            <input type="number" class="form-control" id="total_time" name="total_time" value="{{ old('total_time') }}" min="1" max="480" step="1" required>
+                            <div class="form-text">{{ __('Enter penalty time in minutes (1-480)') }}</div>
                             @error('total_time')
                                 <div class="text-danger">{{ $message }}</div>
+                            @enderror
+                        </div>
+
+                        <div class="mb-3 col-md-4" id="fileInputContainer">
+                            <label for="files[]" class="form-label">{{ __('Prescription/Proof Files') }}</label>
+                            <input type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" id="files[]" name="files[]" value="{{ old('files[]') }}" placeholder="{{ __('Prescription/Proof Files') }}" class="form-control @error('files[]') is-invalid @enderror" multiple/>
+                            @error('files[]')
+                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                     </div>
 
                     <!-- Reason -->
-                    <div class="mb-3">
-                        <label for="reason" class="form-label required">{{ __('Reason for Penalty') }}</label>
-                        <textarea class="form-control" id="reason" name="reason" rows="4"
-                                  placeholder="{{ __('Provide detailed reason for the penalty...') }}" required>{{ old('reason') }}</textarea>
+                    <div class="mb-3 col-md-12">
+                        <label class="form-label">{{ __('Penalty Reason') }} <strong class="text-danger">*</strong></label>
+                        <div name="reason" id="full-editor">{!! old('reason') !!}</div>
+                        <textarea class="d-none" name="reason" id="reason-input" placeholder="{{ __('Provide detailed reason for the penalty...') }}">{{ old('reason') }}</textarea>
                         @error('reason')
-                            <div class="text-danger">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <!-- File Upload -->
-                    <div class="mb-3">
-                        <label for="files" class="form-label">{{ __('Penalty Proof (Optional)') }}</label>
-                        <div class="dropzone" id="penalty-dropzone">
-                            <div class="dz-message">
-                                <i class="ti ti-upload display-4"></i>
-                                <h5>{{ __('Drop files here or click to upload') }}</h5>
-                                <span>{{ __('Upload penalty proof documents (Max 5MB per file)') }}</span>
-                            </div>
-                        </div>
-                        @error('files.*')
-                            <div class="text-danger">{{ $message }}</div>
+                            <b class="text-danger">{{ $message }}</b>
                         @enderror
                     </div>
 
                     <!-- Submit Buttons -->
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="{{ route('administration.penalty.index') }}" class="btn btn-outline-secondary">
-                            {{ __('Cancel') }}
-                        </a>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="ti ti-device-floppy me-1"></i>{{ __('Create Penalty') }}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="ti ti-device-floppy me-1"></i>{{ __('Submit Penalty') }}
                         </button>
                     </div>
                 </form>
@@ -153,21 +153,21 @@
 
 @endsection
 
-@section('vendor_js')
-    {{--  External JS  --}}
-    <!-- Select2 JS -->
+@section('script_links')
+    {{--  External Javascript Links --}}
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
+
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
-    <!-- Dropzone JS -->
-    <script src="{{ asset('assets/vendor/libs/dropzone/dropzone.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
+    <!-- Vendors JS -->
+    <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
 @endsection
 
-@section('custom_js')
-    {{--  External JS  --}}
+@section('custom_script')
+    {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function() {
-            // Initialize Select2
-            $('.select2').select2();
-
             // Handle employee selection change
             $('#user_id').on('change', function() {
                 const userId = $(this).val();
@@ -179,7 +179,7 @@
                     attendanceSelect.html('<option value="">Loading...</option>');
 
                     // Fetch attendances for selected user
-                    $.get('{{ route('administration.penalty.attendances') }}', { user_id: userId })
+                    $.get('{{ route('administration.penalty.attendances.get') }}', { user_id: userId })
                         .done(function(data) {
                             let options = '<option value="">Choose Attendance...</option>';
                             data.forEach(function(attendance) {
@@ -196,53 +196,39 @@
                     attendanceSelect.html('<option value="">First select an employee...</option>');
                 }
             });
+        });
+    </script>
 
-            // Initialize Dropzone
-            Dropzone.autoDiscover = false;
-            const penaltyDropzone = new Dropzone("#penalty-dropzone", {
-                url: "{{ route('administration.penalty.store') }}",
-                autoProcessQueue: false,
-                uploadMultiple: true,
-                parallelUploads: 10,
-                maxFiles: 5,
-                maxFilesize: 5,
-                acceptedFiles: ".jpg,.jpeg,.png,.pdf,.doc,.docx",
-                addRemoveLinks: true,
-                paramName: "files",
-                init: function() {
-                    const submitButton = document.querySelector("#penaltyForm button[type=submit]");
-                    const myDropzone = this;
 
-                    submitButton.addEventListener("click", function(e) {
-                        e.preventDefault();
-                        e.stopPropagation();
 
-                        if (myDropzone.getQueuedFiles().length > 0) {
-                            myDropzone.processQueue();
-                        } else {
-                            document.getElementById("penaltyForm").submit();
-                        }
-                    });
+    <script>
+        $(document).ready(function () {
+            var fullToolbar = [
+                [{ font: [] }, { size: [] }],
+                ["bold", "italic", "underline", "strike"],
+                [{ color: [] }, { background: [] }],
+                ["link"],
+                [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
+                [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+            ];
 
-                    this.on("sendingmultiple", function(files, xhr, formData) {
-                        // Add form data to the request
-                        const form = document.getElementById("penaltyForm");
-                        const formDataObj = new FormData(form);
-                        for (let [key, value] of formDataObj.entries()) {
-                            if (key !== 'files[]') {
-                                formData.append(key, value);
-                            }
-                        }
-                    });
+            var fullEditor = new Quill("#full-editor", {
+                bounds: "#full-editor",
+                placeholder: "Ex: The employee did not follow the dress code.",
+                modules: {
+                    formula: true,
+                    toolbar: fullToolbar,
+                },
+                theme: "snow",
+            });
 
-                    this.on("successmultiple", function(files, response) {
-                        window.location.href = "{{ route('administration.penalty.index') }}";
-                    });
+            // Set the editor content to the old reason if validation fails
+            @if(old('reason'))
+                fullEditor.root.innerHTML = {!! json_encode(old('reason')) !!};
+            @endif
 
-                    this.on("errormultiple", function(files, response) {
-                        console.error("Upload failed:", response);
-                    });
-                }
+            $('#postForm').on('submit', function() {
+                $('#reason-input').val(fullEditor.root.innerHTML);
             });
         });
     </script>
