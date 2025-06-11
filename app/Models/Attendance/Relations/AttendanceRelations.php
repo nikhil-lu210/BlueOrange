@@ -6,6 +6,7 @@ use App\Models\Attendance\Issue\AttendanceIssue;
 use App\Models\User;
 use App\Models\DailyBreak\DailyBreak;
 use App\Models\EmployeeShift\EmployeeShift;
+use App\Models\Penalty\Penalty;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,7 +20,7 @@ trait AttendanceRelations
     {
         return $this->belongsTo(User::class);
     }
-    
+
     /**
      * Get the clockin_scanner for the attendance.
      */
@@ -27,7 +28,7 @@ trait AttendanceRelations
     {
         return $this->belongsTo(User::class, 'clockin_scanner_id');
     }
-    
+
     /**
      * Get the clockout_scanner for the attendance.
      */
@@ -35,7 +36,7 @@ trait AttendanceRelations
     {
         return $this->belongsTo(User::class, 'clockout_scanner_id');
     }
-    
+
     /**
      * Get the employee_shift for the attendance.
      */
@@ -52,12 +53,21 @@ trait AttendanceRelations
         return $this->hasMany(DailyBreak::class);
     }
 
-    
+
     /**
      * Get the issues associated with the attendance.
      */
     public function issues(): HasMany
     {
         return $this->hasMany(AttendanceIssue::class);
+    }
+
+
+    /**
+     * Get the penalties associated with the attendance.
+     */
+    public function penalties(): HasMany
+    {
+        return $this->hasMany(Penalty::class);
     }
 }
