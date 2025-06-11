@@ -5,7 +5,7 @@
             <div class="ms-auto" style="margin-top: -5px;">
                 @if ($attendance->penalties->count() > 0 && $attendance->total_penalty_time_formatted)
                     <small class="badge bg-danger" title="Total Penalty Time">
-                        {{ $attendance->total_penalty_time_formatted }}
+                        {{ total_time($attendance->total_penalty_time_formatted) }}
                     </small>
                 @endif
             </div>
