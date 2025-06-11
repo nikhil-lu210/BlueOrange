@@ -41,9 +41,7 @@ class PenaltyController extends Controller
                 'user.employee',
                 'user.media',
                 'user.roles',
-                'attendance',
-                'creator.employee',
-                'files'
+                'attendance'
             ])
             ->whereIn('user_id', $userIds)
             ->orderByDesc('created_at')
@@ -114,6 +112,26 @@ class PenaltyController extends Controller
 
         return view('administration.penalty.show', compact(['penalty']));
     }
+
+
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Penalty $penalty)
+    {
+        try {
+            $penalty->delete();
+
+            toast('Penalty Deleted Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+
+
 
     /**
      * Get attendances for a specific user on today's date (AJAX endpoint)

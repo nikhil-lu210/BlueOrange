@@ -12,9 +12,11 @@ Route::prefix('penalty')
         Route::controller(PenaltyController::class)
             ->group(function () {
                 Route::get('/all', 'index')->name('index')->can('Penalty Everything');
+                Route::get('/my', 'my')->name('my')->can('Penalty Read');
                 Route::get('/create', 'create')->name('create')->can('Penalty Create');
                 Route::post('/store', 'store')->name('store')->can('Penalty Create');
                 Route::get('/show/{penalty}', 'show')->name('show')->can('Penalty Read');
+                Route::get('/destroy/{penalty}', 'destroy')->name('destroy')->can('Penalty Delete');
 
                 // AJAX endpoint for getting attendances
                 Route::get('/get-attendances', 'getAttendances')->name('attendances')->can('Penalty Create');

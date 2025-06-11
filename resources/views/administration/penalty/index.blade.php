@@ -54,9 +54,7 @@
                         <th>{{ __('Type') }}</th>
                         <th>{{ __('Penalty Time') }}</th>
                         <th>{{ __('Attendance Date') }}</th>
-                        <th>{{ __('Created By') }}</th>
-                        <th>{{ __('Created At') }}</th>
-                        <th>{{ __('Actions') }}</th>
+                        <th class="text-center">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,62 +62,33 @@
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>
-                                <div class="d-flex align-items-center">
-                                    @if($penalty->user->media->isNotEmpty())
-                                        <img src="{{ $penalty->user->media->first()->getUrl('thumb_color') }}"
-                                             alt="{{ $penalty->user->name }}"
-                                             class="rounded-circle me-2"
-                                             width="32" height="32">
-                                    @else
-                                        <div class="avatar avatar-sm me-2">
-                                            <span class="avatar-initial rounded-circle bg-label-primary">
-                                                {{ substr($penalty->user->name, 0, 1) }}
-                                            </span>
-                                        </div>
-                                    @endif
-                                    <div>
-                                        <span class="fw-medium">{{ $penalty->user->name }}</span>
-                                        <small class="text-muted d-block">{{ $penalty->user->employee->alias_name ?? 'N/A' }}</small>
-                                    </div>
-                                </div>
+                                {!! show_user_name_and_avatar($penalty->user, role: null) !!}
                             </td>
                             <td>
-                                <span class="badge bg-label-warning">{{ $penalty->type }}</span>
+                                <span class="text-bold text-danger">{{ $penalty->type }}</span>
                             </td>
                             <td>
                                 <span class="fw-medium">{{ $penalty->total_time_formatted }}</span>
                             </td>
-                            <td>{{ $penalty->attendance->clock_in_date ?? 'N/A' }}</td>
                             <td>
-                                <div class="d-flex align-items-center">
-                                    @if($penalty->creator->media->isNotEmpty())
-                                        <img src="{{ $penalty->creator->media->first()->getUrl('thumb_color') }}"
-                                             alt="{{ $penalty->creator->name }}"
-                                             class="rounded-circle me-2"
-                                             width="24" height="24">
-                                    @endif
-                                    <span>{{ $penalty->creator->name }}</span>
-                                </div>
+                                <a href="{{ route('administration.attendance.show', ['attendance' => $penalty->attendance]) }}" target="_blank">
+                                    {{ show_date($penalty->attendance->clock_in) }}
+                                </a>
                             </td>
-                            <td>{{ $penalty->created_at->format('M d, Y H:i') }}</td>
-                            <td>
-                                <div class="dropdown">
-                                    <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                        <i class="ti ti-dots-vertical"></i>
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        @can ('Penalty Read')
-                                            <a class="dropdown-item" href="{{ route('administration.penalty.show', $penalty) }}">
-                                                <i class="ti ti-eye me-1"></i> {{ __('View') }}
-                                            </a>
-                                        @endcan
-                                    </div>
-                                </div>
+                            <td class="text-center">
+                                <a href="{{ route('administration.penalty.destroy', ['penalty' => $penalty]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Penalty?">
+                                    <i class="ti ti-trash"></i>
+                                </a>
+                                @can ('Penalty Read')
+                                    <a href="{{ route('administration.penalty.show', $penalty) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                        <i class="ti ti-info-hexagon"></i>
+                                    </a>
+                                @endcan
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="text-center">{{ __('No penalties found') }}</td>
+                            <td colspan="6" class="text-center">{{ __('No penalties found') }}</td>
                         </tr>
                     @endforelse
                 </tbody>
