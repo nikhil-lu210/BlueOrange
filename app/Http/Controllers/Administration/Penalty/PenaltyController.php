@@ -69,7 +69,13 @@ class PenaltyController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        return view('administration.penalty.my', compact(['penalties']));
+        // Calculate total time
+        $totalMinutes = $penalties->sum('total_time');
+        $hours = intval($totalMinutes / 60);
+        $minutes = $totalMinutes % 60;
+        $total_penalty_time = sprintf('%02dh %02dm', $hours, $minutes);
+
+        return view('administration.penalty.my', compact(['penalties', 'total_penalty_time']));
     }
 
     /**
