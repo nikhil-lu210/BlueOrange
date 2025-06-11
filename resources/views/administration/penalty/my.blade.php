@@ -15,6 +15,7 @@
         .penalty-card {
             border: 1px solid #e7eaf3;
             border-radius: 12px;
+            box-shadow: 0 0.25rem 1.125rem rgba(75, 70, 92, 0.05);
             transition: all 0.3s ease;
             margin-bottom: 20px;
         }
