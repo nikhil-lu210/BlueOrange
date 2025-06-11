@@ -3,9 +3,9 @@
         <div class="d-flex">
             <small class="card-text text-uppercase">Penalties</small>
             <div class="ms-auto" style="margin-top: -5px;">
-                @if ($attendance->penalties->count() > 0)
+                @if ($attendance->penalties->count() > 0 && $attendance->total_penalty_time_formatted)
                     <small class="badge bg-danger" title="Total Penalty Time">
-                        1h 30m
+                        {{ $attendance->total_penalty_time_formatted }}
                     </small>
                 @endif
             </div>
