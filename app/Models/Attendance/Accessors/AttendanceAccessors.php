@@ -86,4 +86,30 @@ trait AttendanceAccessors
             ->selectRaw('SEC_TO_TIME(SUM(TIME_TO_SEC(over_break))) as total_over_break')
             ->value('total_over_break');
     }
+
+    /**
+     * Get the total penalty time for the attendance in hh:mm:ss format
+     * This accessor uses the preloaded penalties relationship when available
+     */
+    public function getTotalPenaltyTimeFormattedAttribute(): ?string
+    {
+        // If penalties is already loaded, calculate from the collection
+        if ($this->relationLoaded('penalties')) {
+            $totalMinutes = $this->penalties->sum('total_time');
+        } else {
+            // Otherwise, perform a query
+            $totalMinutes = $this->penalties()->sum('total_time');
+        }
+
+        if ($totalMinutes <= 0) {
+            return null;
+        }
+
+        // Convert total minutes to hh:mm:ss format
+        $hours = intval($totalMinutes / 60);
+        $minutes = $totalMinutes % 60;
+        $seconds = 0; // Penalties are stored in minutes, so seconds are always 0
+
+        return sprintf('%02d:%02d:%02d', $hours, $minutes, $seconds);
+    }
 }

@@ -24,6 +24,7 @@ use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Education\Institute\Institute;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
+use App\Models\Penalty\Penalty;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\Education\EducationLevel\EducationLevel;
@@ -318,5 +319,21 @@ trait UserRelations
     {
         return $this->belongsToMany(User::class, 'user_interactions', 'interacted_user_id', 'user_id')
             ->withTimestamps();
+    }
+
+    /**
+     * Get the penalties associated with the user (penalties received by this user).
+     */
+    public function penalties(): HasMany
+    {
+        return $this->hasMany(Penalty::class, 'user_id');
+    }
+
+    /**
+     * Get the created_penalties associated with the user (penalties created by this user).
+     */
+    public function created_penalties(): HasMany
+    {
+        return $this->hasMany(Penalty::class, 'creator_id');
     }
 }

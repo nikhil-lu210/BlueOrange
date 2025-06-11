@@ -34,6 +34,9 @@ Route::prefix('')
             // Leave
             include_once 'leave/leave.php';
 
+            // Penalty
+            include_once 'penalty/penalty.php';
+
             // Daily Break
             include_once 'daily_break/daily_break.php';
 
