@@ -51,6 +51,28 @@ class PenaltyController extends Controller
     }
 
     /**
+     * Display penalties for the authenticated user.
+     */
+    public function my(Request $request)
+    {
+        // Get penalties for the authenticated user only
+        $penalties = Penalty::with([
+                'user.employee',
+                'user.media',
+                'user.roles',
+                'attendance',
+                'creator.employee',
+                'creator.media',
+                'creator.roles',
+            ])
+            ->where('user_id', auth()->id())
+            ->orderByDesc('created_at')
+            ->get();
+
+        return view('administration.penalty.my', compact(['penalties']));
+    }
+
+    /**
      * Show the form for creating a new resource.
      */
     public function create()
@@ -107,6 +129,7 @@ class PenaltyController extends Controller
             'user.roles',
             'attendance',
             'creator.employee',
+            'creator.roles',
             'files'
         ]);
 
