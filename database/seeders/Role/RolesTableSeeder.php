@@ -19,7 +19,12 @@ class RolesTableSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-            Role::create(['name' => $role]);
+            // Use firstOrCreate to avoid duplicate roles
+            $roleInstance = Role::firstOrCreate([
+                'name' => $role,
+            ], [
+                'guard_name' => 'web', // Default guard name for Spatie roles
+            ]);
 
             // Assign permissions to roles based on the module
             if ($role === 'Developer') {
@@ -293,8 +298,8 @@ class RolesTableSeeder extends Seeder
                 ];
             }
 
-            $roleInstance = Role::findByName($role);
-            $roleInstance->givePermissionTo($permissions);
+            // Sync permissions to handle both new and existing roles properly
+            $roleInstance->syncPermissions($permissions);
         }
     }
 }

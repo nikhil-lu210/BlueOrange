@@ -1,13 +1,11 @@
 <?php
 
-use Exception;
-use App\Models\PermissionModule;
-use Spatie\Permission\Models\Role;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Schema;
-use Spatie\Permission\Models\Permission;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+use App\Models\PermissionModule;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 return new class extends Migration
 {
@@ -116,9 +114,9 @@ return new class extends Migration
                 }
             }
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Log the error but don't fail the migration
-            Log::warning('Failed to create penalty permissions during migration: ' . $e->getMessage());
+            \Log::warning('Failed to create penalty permissions during migration: ' . $e->getMessage());
         }
     }
 
@@ -139,9 +137,9 @@ return new class extends Migration
                 $penaltyModule->delete();
             }
 
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             // Log the error but don't fail the migration rollback
-            Log::warning('Failed to remove penalty permissions during migration rollback: ' . $e->getMessage());
+            \Log::warning('Failed to remove penalty permissions during migration rollback: ' . $e->getMessage());
         }
     }
 };

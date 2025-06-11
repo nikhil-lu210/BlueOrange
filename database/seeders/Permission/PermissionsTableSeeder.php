@@ -41,7 +41,8 @@ class PermissionsTableSeeder extends Seeder
         ];
 
         foreach ($modules as $module) {
-            $permissionModule = PermissionModule::create([
+            // Use firstOrCreate to avoid duplicate permission modules
+            $permissionModule = PermissionModule::firstOrCreate([
                 'name' => $module
             ]);
 
@@ -56,9 +57,12 @@ class PermissionsTableSeeder extends Seeder
             foreach ($permissions as $permission) {
                 $permissionName = "{$permissionModule->name} {$permission}";
 
-                Permission::create([
-                    'permission_module_id' => $permissionModule->id,
+                // Use firstOrCreate to avoid duplicate permissions
+                Permission::firstOrCreate([
                     'name' => $permissionName,
+                ], [
+                    'permission_module_id' => $permissionModule->id,
+                    'guard_name' => 'web', // Default guard name for Spatie permissions
                 ]);
             }
         }
