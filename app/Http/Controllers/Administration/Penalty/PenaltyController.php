@@ -94,7 +94,7 @@ class PenaltyController extends Controller
      */
     public function store(PenaltyStoreRequest $request)
     {
-        /** @var \App\Models\Penalty|null $penalty */
+        /** @var \App\Models\Penalty\Penalty|null $penalty */
         $penalty = null;
 
         try {
