@@ -21,12 +21,16 @@
                             $currentAttendance = $workingUser->attendances->first();
                             $clockInTime = $currentAttendance ? show_time($currentAttendance->clock_in) : '';
                             $tooltipText = ($workingUser->employee->alias_name ?? $workingUser->name) . ($clockInTime ? ' (' . $clockInTime . ')' : '');
+
+                            // Type
+                            $type = $currentAttendance->type ?? 'Regular';
+                            $typeColor = $type === 'Regular' ? 'primary' : 'warning';
                         @endphp
-                        <div class="avatar me-2 mb-2 avatar-online" title="{{ $tooltipText }}">
+                        <div class="avatar me-2 mb-2 border border-3 rounded border-{{ $typeColor }}" title="{{ $tooltipText }}">
                             @if($workingUser->getFirstMediaUrl('avatar'))
-                                <img src="{{ $workingUser->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $workingUser->name }}" class="rounded-circle" />
+                                <img src="{{ $workingUser->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $workingUser->name }}" class="rounded" />
                             @else
-                                <span class="avatar-initial rounded-circle bg-label-primary">{{ substr($workingUser->name, 0, 1) }}</span>
+                                <span class="avatar-initial rounded bg-label-primary">{{ substr($workingUser->name, 0, 1) }}</span>
                             @endif
                         </div>
                     @empty
