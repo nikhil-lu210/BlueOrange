@@ -160,7 +160,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        {!! show_user_name_and_avatar($announcement->announcer, role: null) !!}
+                                        {!! show_user_name_and_avatar($announcement->announcer, name: null) !!}
                                     </td>
                                     <td class="text-center">
                                         @can ('Announcement Delete')

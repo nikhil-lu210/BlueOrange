@@ -84,8 +84,8 @@
                             @if (!is_null($announcement->recipients))
                                 <ul class="list-inline mb-0 mt-3 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-1">
                                     @foreach ($announcement->recipients as $recipient)
-                                        <li class="list-inline-item d-flex gap-1 badge bg-black">
-                                            {{ show_user_data($recipient, 'name') }}
+                                        <li class="list-inline-item d-flex gap-1 badge bg-label-dark">
+                                            {{ show_employee_data($recipient, 'alias_name') }}
                                         </li>
                                     @endforeach
                                 </ul>
