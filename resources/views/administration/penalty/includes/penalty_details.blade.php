@@ -16,7 +16,9 @@
                 <span class="fw-medium mx-2 text-heading">Date:</span>
             </dt>
             <dd class="col-sm-8">
-                <span class="text-dark text-bold">{{ show_date($penalty->attendance->clock_in) }}</span>
+                <a href="{{ route('administration.attendance.show', ['attendance' => $penalty->attendance]) }}" target="_blank" class="text-primary text-bold" title="Click here to view attendance details">
+                    {{ show_date($penalty->attendance->clock_in) }}
+                </a>
             </dd>
         </dl>
         <dl class="row mb-1">
