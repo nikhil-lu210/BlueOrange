@@ -140,9 +140,17 @@
                                         <br>
                                         @if (!is_null($announcement->recipients))
                                             <small class="text-primary text-bold cursor-pointer text-left" title="
-                                                @foreach ($announcement->recipients as $recipient)
-                                                    <small>{{ show_user_data($recipient, 'name') }}</small>
-                                                    <br>
+                                                @foreach ($announcement->recipients as $index => $recipient)
+                                                    @if ($index < 9)
+                                                        <small>{{ show_employee_data($recipient, 'alias_name') }}</small>
+                                                        <br>
+                                                    @elseif ($index == 9)
+                                                        @php
+                                                            $remainingCount = count($announcement->recipients) - 9;
+                                                        @endphp
+                                                        {{ $remainingCount }} More
+                                                        @break
+                                                    @endif
                                                 @endforeach
                                             ">
                                                 {{ count($announcement->recipients) }} Recipients
@@ -152,7 +160,7 @@
                                         @endif
                                     </td>
                                     <td>
-                                        {!! show_user_name_and_avatar($announcement->announcer, role: null) !!}
+                                        {!! show_user_name_and_avatar($announcement->announcer, name: null) !!}
                                     </td>
                                     <td class="text-center">
                                         @can ('Announcement Delete')
