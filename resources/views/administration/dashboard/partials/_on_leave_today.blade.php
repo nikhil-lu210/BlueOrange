@@ -16,11 +16,11 @@
             <div class="card-body pt-0">
                 <div class="d-flex align-items-center flex-wrap">
                     @forelse($onLeaveUsers as $leaveUser)
-                        <div class="avatar me-2 mb-2 avatar-away" title="{{ $leaveUser->employee->alias_name ?? $leaveUser->name }}">
+                        <div class="avatar me-2 mb-2 border border-3 rounded border-warning" title="{{ $leaveUser->employee->alias_name ?? $leaveUser->name }}">
                             @if($leaveUser->getFirstMediaUrl('avatar'))
-                                <img src="{{ $leaveUser->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $leaveUser->name }}" class="rounded-circle" />
+                                <img src="{{ $leaveUser->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $leaveUser->name }}" class="rounded" />
                             @else
-                                <span class="avatar-initial rounded-circle bg-label-warning">{{ substr($leaveUser->name, 0, 1) }}</span>
+                                <span class="avatar-initial rounded bg-label-warning">{{ substr($leaveUser->name, 0, 1) }}</span>
                             @endif
                         </div>
                     @empty
