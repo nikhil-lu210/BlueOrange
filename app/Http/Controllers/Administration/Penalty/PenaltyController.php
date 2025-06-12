@@ -117,7 +117,7 @@ class PenaltyController extends Controller
             });
 
             toast('Penalty Created Successfully.', 'success');
-            return redirect()->route('administration.penalty.index');
+            return redirect()->back();
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back()->withInput();
