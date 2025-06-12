@@ -5,24 +5,27 @@ namespace App\Models\Penalty;
 use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Dyrynda\Database\Support\CascadeSoftDeletes;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\Penalty\Relations\PenaltyRelations;
-use App\Models\Penalty\Accessors\PenaltyAccessors;
 use App\Models\Penalty\Mutators\PenaltyMutators;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
+use App\Models\Penalty\Accessors\PenaltyAccessors;
+use App\Models\Penalty\Relations\PenaltyRelations;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use App\Observers\Administration\Penalty\PenaltyObserver;
 
+#[ObservedBy([PenaltyObserver::class])]
 class Penalty extends Model
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
 
-    // Relations 
+    // Relations
     use PenaltyRelations;
 
     // Accessors & Mutators
     use PenaltyAccessors, PenaltyMutators;
 
     protected $cascadeDeletes = [];
-    
+
     // Casting attributes
     protected $casts = [
         'reason' => 'string',

@@ -36,16 +36,7 @@ class PenaltyController extends Controller
             ->select(['id', 'name'])
             ->get();
 
-        // Get penalties with necessary relationships
-        $penalties = Penalty::with([
-                'user.employee',
-                'user.media',
-                'user.roles',
-                'attendance'
-            ])
-            ->whereIn('user_id', $userIds)
-            ->orderByDesc('created_at')
-            ->get();
+        $penalties = $this->penaltyService->getPenaltiesQuery($request)->get();
 
         return view('administration.penalty.index', compact(['users', 'penalties']));
     }
@@ -103,8 +94,11 @@ class PenaltyController extends Controller
      */
     public function store(PenaltyStoreRequest $request)
     {
+        /** @var \App\Models\Penalty\Penalty|null $penalty */
+        $penalty = null;
+
         try {
-            DB::transaction(function () use ($request) {
+            DB::transaction(function () use ($request, &$penalty) {
                 $penalty = $this->penaltyService->store($request->validated());
 
                 // Store penalty proof files if uploaded
@@ -116,8 +110,8 @@ class PenaltyController extends Controller
                 }
             });
 
-            toast('Penalty Created Successfully.', 'success');
-            return redirect()->back();
+            toast('Penalty For ' . $penalty->user->name . ' Created Successfully.', 'success');
+            return redirect()->route('administration.penalty.show', ['penalty' => $penalty]);
         } catch (Exception $e) {
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back()->withInput();
