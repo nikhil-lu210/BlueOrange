@@ -2,22 +2,26 @@
 
 namespace App\Models\Quiz\QuizAnswer;
 
+use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Dyrynda\Database\Support\CascadeSoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\Quiz\QuizAnswer\Mutators\QuizAnswerMutators;
 use App\Models\Quiz\QuizAnswer\Accessors\QuizAnswerAccessors;
 use App\Models\Quiz\QuizAnswer\Relations\QuizAnswerRelations;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class QuizAnswer extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
 
     // Relations
     use QuizAnswerRelations;
 
     // Accessors & Mutators
     use QuizAnswerAccessors, QuizAnswerMutators;
+
+    protected $cascadeDeletes = [];
 
     protected $casts = [];
 

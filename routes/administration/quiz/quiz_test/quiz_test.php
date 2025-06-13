@@ -15,5 +15,5 @@ Route::controller(QuizTestController::class)->prefix('test')->name('test.')->gro
     Route::get('/edit/{test}', 'edit')->name('edit')->can('Quiz Update');
     Route::put('/update/{test}', 'update')->name('update')->can('Quiz Update');
 
-    Route::delete('/destroy/{test}', 'destroy')->name('destroy')->can('Quiz Delete');
+    Route::get('/destroy/{test}', 'destroy')->name('destroy')->can('Quiz Delete');
 });

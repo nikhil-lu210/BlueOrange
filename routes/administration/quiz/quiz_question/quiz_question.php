@@ -11,9 +11,9 @@ Route::controller(QuizQuestionController::class)->prefix('question')->name('ques
     Route::get('/create', 'create')->name('create')->can('Quiz Create');
     Route::post('/store', 'store')->name('store')->can('Quiz Create');
 
-    Route::get('/show/{test}', 'show')->name('show')->can('Quiz Read');
-    Route::get('/edit/{test}', 'edit')->name('edit')->can('Quiz Update');
-    Route::put('/update/{test}', 'update')->name('update')->can('Quiz Update');
+    Route::get('/show/{question}', 'show')->name('show')->can('Quiz Read');
+    Route::get('/edit/{question}', 'edit')->name('edit')->can('Quiz Update');
+    Route::put('/update/{question}', 'update')->name('update')->can('Quiz Update');
 
-    Route::delete('/destroy/{test}', 'destroy')->name('destroy')->can('Quiz Delete');
+    Route::get('/destroy/{question}', 'destroy')->name('destroy')->can('Quiz Delete');
 });
