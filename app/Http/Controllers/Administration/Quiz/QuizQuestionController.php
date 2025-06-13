@@ -20,7 +20,6 @@ class QuizQuestionController extends Controller
             'creator.media',
             'creator.roles'
         ])->orderByDesc('created_at')->get();
-        // dd($questions[0]->tests()->count());
 
         return view('administration.quiz.question.index', compact(['questions']));
     }
@@ -30,7 +29,7 @@ class QuizQuestionController extends Controller
      */
     public function create()
     {
-        //
+        return view('administration.quiz.question.create');
     }
 
     /**
@@ -38,7 +37,25 @@ class QuizQuestionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        try {
+            DB::transaction(function () use ($request) {
+                QuizQuestion::create([
+                    'creator_id' => auth()->id(),
+                    'question' => $request->question,
+                    'option_a' => $request->option_a,
+                    'option_b' => $request->option_b,
+                    'option_c' => $request->option_c,
+                    'option_d' => $request->option_d,
+                    'correct_option' => $request->correct_option,
+                ]);
+            });
+
+            toast('Question created successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
 
     /**

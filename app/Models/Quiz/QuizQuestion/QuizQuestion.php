@@ -25,5 +25,14 @@ class QuizQuestion extends Model
 
     protected $casts = [];
 
-    protected $fillable = [];
+    protected $fillable = [
+        'creator_id',
+        'question',
+        'option_a',
+        'option_b',
+        'option_c',
+        'option_d',
+        'correct_option',
+        'is_active',
+    ];
 }
