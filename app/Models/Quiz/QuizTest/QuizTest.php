@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models\QuizTest;
+namespace App\Models\Quiz\QuizTest;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\QuizTest\Mutators\QuizTestMutators;
-use App\Models\QuizTest\Accessors\QuizTestAccessors;
-use App\Models\QuizTest\Relations\QuizTestRelations;
+use App\Models\Quiz\QuizTest\Mutators\QuizTestMutators;
+use App\Models\Quiz\QuizTest\Accessors\QuizTestAccessors;
+use App\Models\Quiz\QuizTest\Relations\QuizTestRelations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class QuizTest extends Model

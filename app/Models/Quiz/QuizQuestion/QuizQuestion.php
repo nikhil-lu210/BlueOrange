@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models\QuizQuestion;
+namespace App\Models\Quiz\QuizQuestion;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use App\Models\QuizQuestion\Mutators\QuizQuestionMutators;
-use App\Models\QuizQuestion\Accessors\QuizQuestionAccessors;
-use App\Models\QuizQuestion\Relations\QuizQuestionRelations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Quiz\QuizQuestion\Mutators\QuizQuestionMutators;
+use App\Models\Quiz\QuizQuestion\Accessors\QuizQuestionAccessors;
+use App\Models\Quiz\QuizQuestion\Relations\QuizQuestionRelations;
 
 class QuizQuestion extends Model
 {

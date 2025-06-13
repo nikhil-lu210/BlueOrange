@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\QuizTest\Relations;
+namespace App\Models\Quiz\QuizTest\Relations;
 
 trait QuizTestRelations
 {

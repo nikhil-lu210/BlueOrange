@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\QuizQuestion\Mutators;
+namespace App\Models\Quiz\QuizQuestion\Mutators;
 
 trait QuizQuestionMutators
 {

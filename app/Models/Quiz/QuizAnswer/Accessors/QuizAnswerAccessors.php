@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\QuizAnswer\Accessors;
+namespace App\Models\Quiz\QuizAnswer\Accessors;
 
 trait QuizAnswerAccessors
 {
