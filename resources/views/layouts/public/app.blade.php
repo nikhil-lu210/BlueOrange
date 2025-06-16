@@ -61,11 +61,11 @@
                 <div class="d-none d-lg-flex col-lg-7 p-0">
                     <div class="auth-cover-bg auth-cover-bg-color d-flex justify-content-center align-items-center">
                         <img
-                            src="{{ asset('assets/img/illustrations/auth-login-illustration-light.png') }}"
+                            src="{{ asset('assets/img/illustrations/bulb-dark.png') }}"
                             alt="auth-cover"
                             class="img-fluid my-5 auth-illustration"
-                            data-app-light-img="illustrations/auth-login-illustration-light.png"
-                            data-app-dark-img="illustrations/auth-login-illustration-dark.png"
+                            data-app-light-img="illustrations/bulb-dark.png"
+                            data-app-dark-img="illustrations/bulb-dark.png"
                         />
 
                         <img
@@ -83,9 +83,9 @@
                 <div class="d-flex col-12 col-lg-5 align-items-center p-sm-5 p-4">
                     <div class="w-px-400 mx-auto">
                         <!-- Logo -->
-                        <div class="app-brand mb-4">
+                        <div class="app-brand mb-4 text-center">
                             <a href="{{ url('/') }}" class="app-brand-link gap-2">
-                                <img src="{{ asset(config('app.logo')) }}" alt="{{ config('app.name') }}" width="30%">
+                                <img src="{{ asset(config('app.logo')) }}" alt="{{ config('app.name') }}" width="30%" style="margin: auto;">
                             </a>
                         </div>
                         <!-- /Logo -->

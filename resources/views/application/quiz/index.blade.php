@@ -25,7 +25,7 @@
 @endsection
 
 @section('content')
-    <h3 class="mb-3 text-left"><b>Quiz Registration</b> for {{ config('app.name') }}</h3>
+    <h3 class="mb-3 text-left text-center"><b>Quiz Registration</b> for {{ config('app.name') }}</h3>
 
     @if ($errors->any())
         <div class="alert alert-danger">
@@ -48,10 +48,10 @@
 
         <div class="mb-3">
             <div class="quiz-info-card">
-                <h6 class="mb-3 text-white">
-                    <i class="ti ti-info-circle me-2"></i>
+                <h4 class="mb-3 text-white text-center">
                     <b>Quiz Information</b>
-                </h6>
+                </h4>
+                <hr class="my-3" style="border-color: rgba(255,255,255,0.3);">
                 <div class="quiz-info-item">
                     <span><i class="ti ti-list-numbers me-1"></i>Total Questions:</span>
                     <strong>10</strong>
