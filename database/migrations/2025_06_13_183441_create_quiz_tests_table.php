@@ -16,8 +16,10 @@ return new class extends Migration
 
             $table->string('testid')->unique();
 
+            // Creator can be null for walk-in tests
             $table->foreignId('creator_id')
                 ->constrained('users')
+                ->nullable()
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
