@@ -63,7 +63,14 @@ class QuizQuestionController extends Controller
      */
     public function show(QuizQuestion $question)
     {
-        //
+        $question->load([
+            'creator.employee',
+            'creator.media',
+            'creator.roles',
+            'answers.test',
+        ]);
+
+        return view('administration.quiz.question.show', compact(['question']));
     }
 
     /**
