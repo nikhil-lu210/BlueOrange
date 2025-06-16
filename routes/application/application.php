@@ -10,4 +10,7 @@ Route::prefix('application')
 ->group(function () {
     // accounts
     include_once 'accounts/accounts.php';
+    
+    // quiz
+    include_once 'quiz/quiz.php';
 });
