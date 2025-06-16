@@ -4,7 +4,7 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('All Penalties'))
+@section('page_title', __('All Tests'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -21,14 +21,16 @@
 @endsection
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All Penalties') }}</b>
+    <b class="text-uppercase">{{ __('All Tests') }}</b>
 @endsection
 
 @section('breadcrumb')
     <li class="breadcrumb-item">
         <a href="{{ route('administration.dashboard.index') }}">{{ __('Dashboard') }}</a>
     </li>
-    <li class="breadcrumb-item active">{{ __('All Penalties') }}</li>
+    <li class="breadcrumb-item">{{ __('Quiz') }}</li>
+    <li class="breadcrumb-item">{{ __('Quiz Tests') }}</li>
+    <li class="breadcrumb-item active">{{ __('All Tests') }}</li>
 @endsection
 
 @section('content')
@@ -36,10 +38,10 @@
 <!-- Basic Bootstrap Table -->
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">{{ __('All Penalties') }}</h5>
-        @canany(['Penalty Everything', 'Penalty Create'])
-            <a href="{{ route('administration.penalty.create') }}" class="btn btn-primary btn-sm">
-                <i class="ti ti-plus me-1"></i>{{ __('Add Penalty') }}
+        <h5 class="mb-0">{{ __('All Tests') }}</h5>
+        @canany(['Quiz Everything', 'Quiz Create'])
+            <a href="{{ route('administration.quiz.test.create') }}" class="btn btn-primary btn-sm">
+                <i class="ti ti-plus me-1"></i>{{ __('Create Test') }}
             </a>
         @endcanany
     </div>
@@ -50,39 +52,44 @@
                 <thead>
                     <tr>
                         <th>{{ __('SL') }}</th>
-                        <th>{{ __('Employee') }}</th>
-                        <th>{{ __('Type') }}</th>
-                        <th>{{ __('Penalty Time') }}</th>
-                        <th>{{ __('Attendance Date') }}</th>
+                        <th>{{ __('Candidate Name & Email') }}</th>
+                        <th>{{ __('Creator') }}</th>
+                        <th>{{ __('Created At') }}</th>
+                        <th class="text-center">{{ __('Total Questions') }}</th>
+                        <th class="text-center">{{ __('Result') }}</th>
                         <th class="text-center">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($penalties as $penalty)
+                    @forelse($tests as $test)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
                             <td>
-                                {!! show_user_name_and_avatar($penalty->user, role: null) !!}
+                                {{ $test->candidate_name }}<br>
+                                <small class="text-muted">{{ $test->candidate_email }}</small>
                             </td>
                             <td>
-                                <span class="text-bold text-danger">{{ $penalty->type }}</span>
+                                {!! show_user_name_and_avatar($test->creator, name: null) !!}
                             </td>
                             <td>
-                                <span class="fw-medium">{{ $penalty->total_time_formatted }}</span>
-                            </td>
-                            <td>
-                                <a href="{{ route('administration.attendance.show', ['attendance' => $penalty->attendance]) }}" target="_blank">
-                                    {{ show_date($penalty->attendance->clock_in) }}
-                                </a>
+                                {{ date_time_ago($test->created_at) }}
                             </td>
                             <td class="text-center">
-                                @canany(['Penalty Everything', 'Penalty Delete'])
-                                    <a href="{{ route('administration.penalty.destroy', ['penalty' => $penalty]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Penalty?">
+                                <span class="badge bg-label-dark text-bold">{{ $test->questions()->count() }}</span>
+                            </td>
+                            <td class="text-center">
+                                @if (!is_null($test->total_score))
+                                    <span class="badge bg-label-dark text-bold">{{ $test->total_score }}</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                @canany(['Quiz Everything', 'Quiz Delete'])
+                                    <a href="{{ route('administration.quiz.test.destroy', ['test' => $test]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Test?">
                                         <i class="ti ti-trash"></i>
                                     </a>
                                 @endcanany
-                                @canany(['Penalty Everything', 'Penalty Read'])
-                                    <a href="{{ route('administration.penalty.show', $penalty) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                @canany(['Quiz Everything', 'Quiz Read'])
+                                    <a href="{{ route('administration.quiz.test.show', $test) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="ti ti-info-hexagon"></i>
                                     </a>
                                 @endcanany
@@ -90,7 +97,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">{{ __('No penalties found') }}</td>
+                            <td colspan="6" class="text-center">{{ __('No tests found') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

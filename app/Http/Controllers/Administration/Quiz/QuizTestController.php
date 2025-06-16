@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Administration\Quiz;
 
-use App\Http\Controllers\Controller;
+use App\Models\Quiz\QuizTest\QuizTest;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class QuizTestController extends Controller
 {
@@ -12,7 +13,13 @@ class QuizTestController extends Controller
      */
     public function index()
     {
-        //
+        $tests = QuizTest::with([
+            'creator.employee',
+            'creator.media',
+            'creator.roles'
+        ])->orderByDesc('created_at')->get();
+
+        return view('administration.quiz.test.index', compact(['tests']));
     }
 
     /**

@@ -39,7 +39,12 @@ trait QuizTestRelations
             return collect();
         }
 
-        return QuizQuestion::whereIn('id', $this->question_ids)->get();
+        // Ensure we split string to array of IDs
+        $ids = is_array($this->question_ids)
+            ? $this->question_ids
+            : explode(',', $this->question_ids);
+
+        return QuizQuestion::whereIn('id', $ids)->get();
     }
 
     /**

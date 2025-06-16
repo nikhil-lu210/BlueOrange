@@ -24,6 +24,9 @@
 
 
 @section('breadcrumb')
+    <li class="breadcrumb-item">
+        <a href="{{ route('administration.dashboard.index') }}">{{ __('Dashboard') }}</a>
+    </li>
     <li class="breadcrumb-item">{{ __('Quiz') }}</li>
     <li class="breadcrumb-item">
         <a href="{{ route('administration.quiz.question.index') }}">{{ __('All Questions') }}</a>
