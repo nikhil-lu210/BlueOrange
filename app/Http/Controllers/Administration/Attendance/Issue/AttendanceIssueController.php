@@ -205,7 +205,16 @@ class AttendanceIssueController extends Controller
             'updater.roles',
         ]);
 
-        return view('administration.attendance.issue.show', compact(['issue']));
+        // Check if there's an existing Regular attendance for the same date (for warning purposes)
+        $existingRegularAttendance = null;
+        if ($issue->type === 'Regular' && !$issue->attendance_id && $issue->status === 'Pending') {
+            $existingRegularAttendance = Attendance::where('user_id', $issue->user_id)
+                ->where('clock_in_date', $issue->clock_in_date)
+                ->where('type', 'Regular')
+                ->first();
+        }
+
+        return view('administration.attendance.issue.show', compact(['issue', 'existingRegularAttendance']));
     }
 
     /**
@@ -290,6 +299,22 @@ class AttendanceIssueController extends Controller
                         'longitude' => $location->longitude ?? null,
                     ]);
                 } else {
+                    // For Regular type, check if Regular attendance already exists for this date
+                    if ($request->type === 'Regular') {
+                        $existingRegularAttendance = Attendance::where('user_id', $user->id)
+                            ->where('clock_in_date', $request->clock_in_date)
+                            ->where('type', 'Regular')
+                            ->first();
+
+                        if ($existingRegularAttendance) {
+                            $errorMessage = 'Cannot create new Regular attendance for ' . $user->alias_name . ' on ' .
+                                show_date($request->clock_in_date) . '. A Regular attendance already exists for this date. ' .
+                                'Please ask the employee to request an update to the existing attendance record instead.';
+
+                            return redirect()->back()->withInput()->with('error', $errorMessage);
+                        }
+                    }
+
                     // Create new attendance record
                     $attendance = Attendance::create([
                         'user_id' => $user->id,
