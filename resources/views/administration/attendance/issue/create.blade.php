@@ -80,7 +80,9 @@
                                                 <span class="h6 mb-0">{{ __('Update Old Attendance') }}</span>
                                             </span>
                                             <span class="custom-option-body">
-                                                <small>{{ __('If you have clocked-in already, but there is something wrong with that attendance.') }}</small>
+                                                <small>{{ __('If you have already clocked-in, but there is something wrong with that attendance.') }}</small>
+                                                <br>
+                                                <code>{{ __('যদি আপনি ইতিমধ্যেই ক্লক-ইন করে থাকেন, কিন্তু সেই উপস্থিতিতে কিছু সমস্যা আছে।') }}</code>
                                             </span>
                                         </label>
                                     </div>
@@ -94,6 +96,8 @@
                                             </span>
                                             <span class="custom-option-body">
                                                 <small>{{ __('If you have not clocked-in or, missed to clock-in today or, on any particular date.') }}</small>
+                                                <br>
+                                                <code>{{ __('যদি আপনি এখনও ক্লক-ইন না করে থাকেন, অথবা ক্লক-ইন মিস করেন।') }}</code>
                                             </span>
                                         </label>
                                     </div>
@@ -133,14 +137,14 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="clock_in" class="form-label">{{ __('Clockin Time') }} <strong class="text-danger">*</strong></label>
+                            <label for="clock_in" class="form-label">{{ __('Expected Clockin Time') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="clock_in" name="clock_in" value="{{ old('clock_in') }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_in') is-invalid @enderror" required/>
                             @error('clock_in')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="clock_out" class="form-label">{{ __('Clockout Time') }} <strong class="text-danger">*</strong></label>
+                            <label for="clock_out" class="form-label">{{ __('Expected Clockout Time') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="clock_out" name="clock_out" value="{{ old('clock_out') }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror" required/>
                             @error('clock_out')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
