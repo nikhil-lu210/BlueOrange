@@ -92,6 +92,31 @@
         </div>
     </div>
 
+    {{-- Warning for existing Regular attendance --}}
+    @if($existingRegularAttendance && $issue->status === 'Pending')
+        <div class="col-md-12">
+            <div class="alert alert-danger" role="alert">
+                <h5 class="alert-heading">
+                    <i class="ti ti-alert-triangle me-2"></i>
+                    Existing Regular Attendance Detected
+                </h5>
+                <p class="mb-2">
+                    <strong>Warning:</strong> A Regular attendance record already exists for {{ $issue->user->alias_name }} on {{ show_date($issue->clock_in_date) }}.
+                </p>
+                <p class="mb-2">
+                    <strong>Existing Record:</strong>
+                    Clock-in: {{ show_time($existingRegularAttendance->clock_in) }} |
+                    Clock-out: {{ $existingRegularAttendance->clock_out ? show_time($existingRegularAttendance->clock_out) : 'Not clocked out' }}
+                </p>
+                <hr>
+                <p class="mb-0">
+                    <strong>Recommendation:</strong> If you approve this Regular attendance issue, it will fail because a Regular attendance already exists.
+                    Consider asking the employee to request an update to the existing attendance record instead.
+                </p>
+            </div>
+        </div>
+    @endif
+
     {{-- Attendance Issue Details --}}
     <div class="col-md-7">
         @include('administration.attendance.issue.partials._issue_details')

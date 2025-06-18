@@ -4,7 +4,6 @@ namespace App\Http\Requests\Administration\Attendance\Issue;
 
 use Carbon\Carbon;
 use Illuminate\Validation\Rule;
-use App\Models\Attendance\Attendance;
 use Illuminate\Foundation\Http\FormRequest;
 
 class AttendanceIssueUpdateRequest extends FormRequest
@@ -21,7 +20,7 @@ class AttendanceIssueUpdateRequest extends FormRequest
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */    
+     */
     public function rules()
     {
         $rules = [
@@ -37,7 +36,7 @@ class AttendanceIssueUpdateRequest extends FormRequest
                 'required',
                 'date_format:Y-m-d H:i',
                 'before_or_equal:' . now()->format('Y-m-d H:i'),
-                function ($attribute, $value, $fail) {
+                function ($_, $value, $fail) {
                     $clockInDate = Carbon::parse($value)->format('Y-m-d');
                     if ($clockInDate !== $this->clock_in_date) {
                         $fail('The clock-in date-time must match the requested clock-in date.');
@@ -57,6 +56,20 @@ class AttendanceIssueUpdateRequest extends FormRequest
                     return $query->where('user_id', $this->user_id);
                 }),
             ];
+
+            // Add custom validation for Regular attendance duplication
+            if ($this->type === 'Regular' && !$this->attendance_id) {
+                $rules['type'][] = function ($_, $__, $fail) {
+                    $existingRegularAttendance = \App\Models\Attendance\Attendance::where('user_id', $this->user_id)
+                        ->where('clock_in_date', $this->clock_in_date)
+                        ->where('type', 'Regular')
+                        ->first();
+
+                    if ($existingRegularAttendance) {
+                        $fail('Cannot create new Regular attendance. A Regular attendance already exists for this date. Please request to update the existing attendance record instead.');
+                    }
+                };
+            }
         }
 
         if ($this->status === 'Rejected') {

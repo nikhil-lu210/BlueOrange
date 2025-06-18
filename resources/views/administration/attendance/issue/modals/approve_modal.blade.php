@@ -4,8 +4,8 @@
             <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body">
                 <div class="text-center mb-4">
-                    <h3 class="role-title mb-2">Reject Attendance Issue</h3>
-                    <p class="text-muted">Reject the Attendance Issue of <b class="text-primary">{{ $issue->user->alias_name }}</b></p>
+                    <h3 class="role-title mb-2">Approve Attendance Issue</h3>
+                    <p class="text-muted">Approve the Attendance Issue of <b class="text-primary">{{ $issue->user->alias_name }}</b></p>
                 </div>
                 {{-- {{ dd(get_date_only($issue->clock_in_date)) }} --}}
                 <!-- Status form -->
@@ -40,6 +40,13 @@
                         @error('type')
                             <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                         @enderror
+
+                        @if(!$issue->attendance_id)
+                            <div id="regularWarning" class="alert alert-warning mt-2" style="display: none;">
+                                <i class="ti ti-alert-triangle me-1"></i>
+                                <strong>Warning:</strong> Selecting "Regular" will create a new attendance record. If a Regular attendance already exists for this date, the approval will fail.
+                            </div>
+                        @endif
                     </div>
                     <div class="col-md-12 mb-3">
                         <label class="form-label">Note</label>
@@ -61,3 +68,28 @@
         </div>
     </div>
 </div>
+
+@if(!$issue->attendance_id)
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const typeSelect = document.getElementById('type');
+    const regularWarning = document.getElementById('regularWarning');
+
+    if (typeSelect && regularWarning) {
+        function toggleWarning() {
+            if (typeSelect.value === 'Regular') {
+                regularWarning.style.display = 'block';
+            } else {
+                regularWarning.style.display = 'none';
+            }
+        }
+
+        // Show warning on page load if Regular is already selected
+        toggleWarning();
+
+        // Show/hide warning when selection changes
+        typeSelect.addEventListener('change', toggleWarning);
+    }
+});
+</script>
+@endif
