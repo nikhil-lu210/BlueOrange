@@ -72,32 +72,28 @@
                         <div class="mb-3 col-md-12">
                             <label for="attendance_issue_type" class="form-label">{{ __('Issue For') }} <strong class="text-danger">*</strong></label>
                             <div class="row">
-                                <div class="col-md mb-md-0 mb-2">
+                                <div class="col-md mb-md-0 mb-2" title="{{ __('যদি আপনি ইতিমধ্যেই ক্লক-ইন করে থাকেন, সেই এটেন্ডেন্সের কিছু সমস্যা আছে, এবং তা আপনি ঠিক/আপডেট করাতে চান, তাহলে এই অপশনটি সিলেক্ট করুন।') }}">
                                     <div class="form-check custom-option custom-option-basic">
                                         <label class="form-check-label custom-option-content" for="attendanceOld">
                                             <input name="attendance_issue_type" class="form-check-input" type="radio" value="Old" id="attendanceOld" required @checked(old('attendance_issue_type') == 'Old')/>
                                             <span class="custom-option-header pb-0">
-                                                <span class="h6 mb-0">{{ __('Update Old Attendance') }}</span>
+                                                <span class="h6 mb-0">{{ __('Update Existing Attendance') }}</span>
                                             </span>
                                             <span class="custom-option-body">
-                                                <small>{{ __('If you have already clocked-in, but there is something wrong with that attendance.') }}</small>
-                                                <br>
-                                                <code>{{ __('যদি আপনি ইতিমধ্যেই ক্লক-ইন করে থাকেন, কিন্তু সেই উপস্থিতিতে কিছু সমস্যা আছে।') }}</code>
+                                                <small class="text-muted text-capitalize">{{ __('If you have clock in/Out data but any of them are incorrect, use this option.') }}</small>
                                             </span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="col-md">
-                                    <div class="form-check custom-option custom-option-basic">
+                                    <div class="form-check custom-option custom-option-basic" title="{{ __('যদি আপনি ক্লক-ইন করে না থাকেন, এবং সম্পূর্ণ নতুন করে এটেন্ডেন্স রেকর্ড করাতে চান, তাহলে এই অপশনটি সিলেক্ট করুন।') }}">
                                         <label class="form-check-label custom-option-content" for="attendanceNew">
                                             <input name="attendance_issue_type" class="form-check-input" type="radio" value="New" id="attendanceNew" required @checked(old('attendance_issue_type') == 'New')/>
                                             <span class="custom-option-header pb-0">
-                                                <span class="h6 mb-0">{{ __('New Attendance') }}</span>
+                                                <span class="h6 mb-0">{{ __('Create New Attendance') }}</span>
                                             </span>
                                             <span class="custom-option-body">
-                                                <small>{{ __('If you have not clocked-in or, missed to clock-in today or, on any particular date.') }}</small>
-                                                <br>
-                                                <code>{{ __('যদি আপনি এখনও ক্লক-ইন না করে থাকেন, অথবা ক্লক-ইন মিস করেন।') }}</code>
+                                                <small>{{ __('If you have no clock in/out data at all, use this option to request a new attendance') }}</small>
                                             </span>
                                         </label>
                                     </div>
