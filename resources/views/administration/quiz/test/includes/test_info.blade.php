@@ -71,8 +71,31 @@
                 </dd>
             </dl>
         @endif
-        @isset ($test->creator)
+        @if ($test->started_at && $test->ended_at)
             <dl class="row mb-1">
+                <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                    <i class="ti ti-hourglass-high"></i>
+                    <span class="fw-medium mx-2 text-heading">Total Time:</span>
+                </dt>
+                <dd class="col-sm-8">
+                    {{ total_time_difference($test->started_at, $test->ended_at) }}
+                </dd>
+            </dl>
+        @endif
+        @if ($test->total_score)
+            <dl class="row mb-1">
+                <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
+                    <i class="ti ti-bookmark-edit"></i>
+                    <span class="fw-medium mx-2 text-heading">Total Score:</span>
+                </dt>
+                <dd class="col-sm-8">
+                    <span class="badge bg-dark text-bold">{{ $test->total_score }}</span>
+                </dd>
+            </dl>
+        @endif
+        <hr>
+        @isset ($test->creator)
+            <dl class="row mt-3 mb-1">
                 <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                     <i class="ti ti-user-cog"></i>
                     <span class="fw-medium mx-2 text-heading">Creator:</span>
