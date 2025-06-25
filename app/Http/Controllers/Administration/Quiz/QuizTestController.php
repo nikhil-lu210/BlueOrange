@@ -201,6 +201,13 @@ class QuizTestController extends Controller
      */
     public function destroy(QuizTest $test)
     {
-        //
+        try {
+            $test->forceDelete();
+
+            toast('Quiz Test deleted successfully.', 'success');
+            return redirect()->route('administration.quiz.test.index');
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
     }
 }

@@ -83,11 +83,11 @@
                                 @endif
                             </td>
                             <td class="text-center">
-                                @canany(['Quiz Everything', 'Quiz Delete'])
+                                @hasanyrole(['Super Admin', 'Developer'])
                                     <a href="{{ route('administration.quiz.test.destroy', ['test' => $test]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Test?">
                                         <i class="ti ti-trash"></i>
                                     </a>
-                                @endcanany
+                                @endhasanyrole
                                 @canany(['Quiz Everything', 'Quiz Read'])
                                     <a href="{{ route('administration.quiz.test.show', $test) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="ti ti-info-hexagon"></i>

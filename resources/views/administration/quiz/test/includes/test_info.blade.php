@@ -1,6 +1,37 @@
-<div class="card mb-4">
+<div class="card card-action mb-4">
+    <div class="card-header align-items-center pb-1 pt-3">
+        <h5 class="card-action-title mb-0">Test Details</h5>
+
+        @canany(['Quiz Everything', 'Quiz Create', 'Quiz Update'])
+            <div class="card-action-element">
+                <div class="dropdown">
+                    <button type="button" class="btn btn-icon btn-outline-primary btn-sm waves-effect waves-light dropdown-toggle hide-arrow p-0" data-bs-toggle="dropdown" aria-expanded="false">
+                        <i class="ti ti-dots"></i>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        @if ($test->status == 'Pending')
+                            <li>
+                                <button type="button" class="dropdown-item" data-bs-toggle="modal" data-bs-target="#addTaskUsersModal">
+                                    <i class="ti ti-pencil me-1 fs-5" style="margin-top: -2px;"></i>
+                                    Edit Info
+                                </button>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider" />
+                            </li>
+                        @endif
+                        <li>
+                            <a href="{{ route('administration.quiz.test.destroy', ['test' => $test]) }}" class="dropdown-item text-danger confirm-danger">
+                                <i class="ti ti-trash me-1 fs-5" style="margin-top: -2px;"></i>
+                                Delete Test
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        @endcanany
+    </div>
     <div class="card-body">
-        <small class="card-text text-uppercase">Test Details</small>
         <dl class="row mt-3 mb-1">
             <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                 <i class="ti ti-hash"></i>

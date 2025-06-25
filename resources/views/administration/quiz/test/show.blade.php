@@ -45,6 +45,22 @@
                 <h5 class="mb-0">
                     <span class="text-bold">{{ $test->candidate_name }}'s</span> Quiz Test Details
                 </h5>
+
+                @canany(['Quiz Everything', 'Quiz Create', 'Quiz Update'])
+                    <div class="card-header-elements ms-auto">
+                        @if ($test->status == 'Pending')
+                            <button type="button"
+                                    value="{{ route('administration.quiz.test.show', ['test' => $test]) }}"
+                                    class="btn btn-icon btn-outline-dark waves-effect waves-light"
+                                    id="copyTestLink"
+                                    title="Click to Copy Test Link"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top">
+                                <span class="tf-icon ti ti-copy"></span>
+                            </button>
+                        @endif
+                    </div>
+                @endcanany
             </div>
             <div class="card-body">
                 <div class="row justify-content-left">
@@ -110,6 +126,33 @@
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
+    <script>
+        $(function () {
+            // Initialize Bootstrap tooltip
+            $('[data-bs-toggle="tooltip"]').tooltip();
+        });
+
+        $(document).on('click', '#copyTestLink', function () {
+            const $btn = $(this);
+            const link = $btn.val();
+
+            // Copy to clipboard using modern API
+            navigator.clipboard.writeText(link).then(() => {
+                // Update tooltip content
+                $btn.attr('data-bs-original-title', 'Link Copied').tooltip('show');
+
+                // Change button class
+                $btn.removeClass('btn-outline-dark').addClass('btn-dark');
+
+                // Revert tooltip after 2 seconds
+                setTimeout(() => {
+                    $btn.attr('data-bs-original-title', 'Click to Copy Test Link');
+                    $btn.removeClass('btn-dark').addClass('btn-outline-dark');
+                }, 2000);
+            });
+        });
+    </script>
+
     <script>
         $(document).ready(function () {
             // Handle question answer modal data population
