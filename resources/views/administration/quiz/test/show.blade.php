@@ -4,13 +4,13 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('Penalty Details'))
+@section('page_title', __('Quiz Test Details'))
 
 @section('css_links')
     {{--  External CSS  --}}
 
     {{-- Lightbox CSS --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" integrity="sha512-ZKX+BvQihRJPA8CROKBhDNvoc2aDMOdAlcm7TUQY+35XYtrd3yh95QOOhsPDQY9QnKE0Wqag9y38OIgEvb88cA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" />
 @endsection
 
 @section('custom_css')
@@ -44,20 +44,19 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Penalty Details') }}</b>
+    <b class="text-uppercase">{{ __('Quiz Test Details') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Penalty') }}</li>
+    <li class="breadcrumb-item">{{ __('Quiz') }}</li>
+    <li class="breadcrumb-item">{{ __('Quiz Tests') }}</li>
     <li class="breadcrumb-item">
-        @canany(['Penalty Everything', 'Penalty Update', 'Penalty Delete'])
-            <a href="{{ route('administration.penalty.index') }}">{{ __('All Penalties') }}</a>
-        @elsecanany(['Penalty Read'])
-            <a href="{{ route('administration.penalty.my') }}">{{ __('My Penalties') }}</a>
+        @canany(['Quiz Everything', 'Quiz Update', 'Quiz Delete'])
+            <a href="{{ route('administration.quiz.test.index') }}">{{ __('All Tests') }}</a>
         @endcan
     </li>
-    <li class="breadcrumb-item active">{{ __('Penalty Details') }}</li>
+    <li class="breadcrumb-item active">{{ __('Quiz Test Details') }}</li>
 @endsection
 
 
@@ -69,36 +68,57 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">
-                    <span class="text-bold">{{ $penalty->user->alias_name }}'s</span> Penalty Details
+                    <span class="text-bold">{{ $test->candidate_name }}'s</span> Quiz Test Details
                 </h5>
             </div>
             <div class="card-body">
                 <div class="row justify-content-left">
                     <div class="col-md-6">
-                        @include('administration.penalty.includes.penalty_details')
+                        @include('administration.quiz.test.includes.test_info')
                     </div>
 
                     <div class="col-md-6">
                         <div class="card card-action mb-4">
                             <div class="card-header align-items-center pb-3 pt-3">
-                                <h5 class="card-action-title mb-0">Penalty Reason</h5>
+                                <h5 class="card-action-title mb-0">Question And Answers</h5>
                             </div>
                             <div class="card-body">
-                                <div class="penalty-reason">
-                                    {!! $penalty->reason !!}
-                                </div>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>{{ __('SL') }}</th>
+                                            <th>{{ __('Question') }}</th>
+                                            <th>{{ __('Answer') }}</th>
+                                            <th>{{ __('Is Correct') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {{-- @forelse ($test->answers as $answer)
+                                            <tr>
+                                                <td>{{ $loop->iteration }}</td>
+                                                <td>{{ $answer->question->question }}</td>
+                                                <td>{{ $answer->selected_option }}</td>
+                                                <td>
+                                                    @if ($answer->is_correct)
+                                                        <span class="badge bg-success">{{ __('Yes') }}</span>
+                                                    @else
+                                                        <span class="badge bg-danger">{{ __('No') }}</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="4" class="text-center">
+                                                    <span class="text-muted">{{ __('No Answers Found') }}</span>
+                                                </td>
+                                            </tr>
+                                        @endforelse --}}
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
                 </div>
-
-                @if ($penalty->files->count() > 0)
-                    <div class="row justify-content-center">
-                        <div class="col-md-12">
-                                @include('administration.penalty.includes.penalty_proof_files')
-                            </div>
-                    </div>
-                @endif
             </div>
         </div>
     </div>
@@ -112,7 +132,7 @@
     {{--  External Javascript Links --}}
 
     {{-- Lightbox JS --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js" integrity="sha512-Ixzuzfxv1EqafeQlTCufWfaC6ful6WFqIz4G+dWvK0beHw0NVJwvCKSgafpy5gwNqKmgUfIBraVwkKI+Cz0SEQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 @endsection
 
 @section('custom_script')
