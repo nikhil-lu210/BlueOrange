@@ -69,4 +69,7 @@ Route::prefix('')
 
             // booking
             include_once 'booking/booking.php';
+
+            // quiz
+            include_once 'quiz/quiz.php';
         });

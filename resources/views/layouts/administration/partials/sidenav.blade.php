@@ -40,6 +40,8 @@
 
         @include('layouts.administration.partials.menus.booking')
 
+        @include('layouts.administration.partials.menus.quiz')
+
         <!-- Accounts -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">{{ __('Accounts') }}</span>
