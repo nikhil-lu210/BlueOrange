@@ -67,7 +67,7 @@ class QuizQuestionController extends Controller
             'creator.employee',
             'creator.media',
             'creator.roles',
-            'answers.test',
+            'tests',
         ]);
 
         return view('administration.quiz.question.show', compact(['question']));

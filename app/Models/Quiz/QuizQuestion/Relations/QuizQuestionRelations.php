@@ -4,9 +4,6 @@ namespace App\Models\Quiz\QuizQuestion\Relations;
 
 use App\Models\User;
 use App\Models\Quiz\QuizTest\QuizTest;
-use App\Models\Quiz\QuizAnswer\QuizAnswer;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 

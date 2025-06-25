@@ -3,10 +3,7 @@
 namespace App\Models\Quiz\QuizTest\Relations;
 
 use App\Models\User;
-use Illuminate\Support\Collection;
-use App\Models\Quiz\QuizAnswer\QuizAnswer;
 use App\Models\Quiz\QuizQuestion\QuizQuestion;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 

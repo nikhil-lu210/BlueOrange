@@ -1,15 +1,5 @@
 @php
     $correctOption = $question->correct_option;
-
-    function getOptionIcon($optionKey, $correctOption)
-    {
-        return $optionKey === $correctOption ? 'circle-check text-success' : 'xbox-x text-danger';
-    }
-
-    function getOptionColor($optionKey, $correctOption)
-    {
-        return $optionKey === $correctOption ? 'text-success' : 'text-danger';
-    }
 @endphp
 
 <div class="card mb-4">
@@ -27,12 +17,13 @@
         @foreach (['A', 'B', 'C', 'D'] as $option)
             @php
                 $optionValue = 'option_' . strtolower($option);
-                $icon = getOptionIcon($option, $correctOption);
-                $color = getOptionColor($option, $correctOption);
+                $isCorrect = $option === $correctOption;
+                $icon = $isCorrect ? 'circle-check' : 'xbox-x';
+                $color = $isCorrect ? 'text-success' : 'text-danger';
             @endphp
             <dl class="row mb-1">
                 <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
-                    <i class="ti ti-{{ $icon }}"></i>
+                    <i class="ti ti-{{ $icon }} {{ $color }}"></i>
                     <span class="fw-medium mx-2 text-bold {{ $color }}">Option {{ $option }}:</span>
                 </dt>
                 <dd class="col-sm-8">

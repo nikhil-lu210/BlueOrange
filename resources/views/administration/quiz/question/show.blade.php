@@ -57,27 +57,41 @@
                         <div class="card card-action mb-4">
                             <div class="card-header d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">{{ __('All Answers') }}</h5>
-                                <h6 class="m-0 badge bg-dark">{{ $question->answers->count() }}</h6>
+                                <h6 class="m-0 badge bg-dark">{{ $question->tests->count() }}</h6>
                             </div>
                             <div class="card-body">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th>{{ __('SL') }}</th>
-                                            <th>{{ __('Candidate Name') }}</th>
-                                            <th>{{ __('Is Correct') }}</th>
+                                            <th>{{ __('Candidate') }}</th>
+                                            <th>{{ __('Answer') }}</th>
+                                            <th>{{ __('Answered At') }}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @forelse ($question->answers as $answer)
+                                        @forelse ($question->tests as $test)
                                             <tr>
                                                 <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $answer->test->name }}</td>
                                                 <td>
-                                                    @if ($answer->is_correct)
-                                                        <span class="badge bg-success">{{ __('Yes') }}</span>
+                                                    <a href="{{ route('administration.quiz.test.show', ['test' => $test]) }}" target="_blank" class="text-primary text-bold" title="Show Test Details of {{ $test->candidate_name }}">{{ $test->candidate_name }}</a>
+                                                    <br>
+                                                    <span class="text-muted">{{ $test->candidate_email }}</span>
+                                                </td>
+                                                <td>
+                                                    @if ($test->pivot->selected_option)
+                                                        <strong class="text-{{ $test->pivot->is_correct ? 'success' : 'danger' }}">{{ $test->pivot->selected_option }}</strong>
                                                     @else
-                                                        <span class="badge bg-danger">{{ __('No') }}</span>
+                                                        <span class="text-muted">Not Answered</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if ($test->pivot->answered_at)
+                                                        {{ get_date_only($test->pivot->answered_at) }}
+                                                        <br>
+                                                        at {{ show_time($test->pivot->answered_at) }}
+                                                    @else
+                                                        {{ show_status($test->status) }}
                                                     @endif
                                                 </td>
                                             </tr>
