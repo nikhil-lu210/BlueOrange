@@ -21,9 +21,11 @@ class QuizQuestion extends Model
     // Accessors & Mutators
     use QuizQuestionAccessors, QuizQuestionMutators;
 
-    protected $cascadeDeletes = ['answers'];
+    protected $cascadeDeletes = [];
 
-    protected $casts = [];
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
 
     protected $fillable = [
         'creator_id',

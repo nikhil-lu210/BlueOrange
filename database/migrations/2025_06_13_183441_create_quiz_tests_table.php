@@ -29,7 +29,6 @@ return new class extends Migration
             $table->integer('total_questions')->default(10)->comment('Total questions in the test');
             $table->integer('total_time')->default(10)->comment('In minutes');
             $table->integer('passing_score')->default(6)->comment('Passing score out of total questions. Must be less than or equal to total questions.');
-            $table->json('question_ids');
 
             $table->timestamp('started_at')->nullable();
             $table->timestamp('ended_at')->nullable();

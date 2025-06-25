@@ -8,6 +8,7 @@ use App\Models\Quiz\QuizAnswer\QuizAnswer;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait QuizQuestionRelations
 {
@@ -20,24 +21,12 @@ trait QuizQuestionRelations
     }
 
     /**
-     * Get all answers submitted for this question.
+     * Get all tests submitted for this question.
      */
-    public function answers(): HasMany
+    public function tests(): BelongsToMany
     {
-        return $this->hasMany(QuizAnswer::class, 'quiz_question_id');
-    }
-
-    /**
-     * All quiz tests in which this question appears.
-     *
-     * Because the question IDs are stored in a JSON column (`quiz_tests.question_ids`)
-     * instead of a traditional pivot table, we expose this as a convenience method
-     * that returns a Collection (not a true Eloquent relationship).
-     */
-    public function tests(): Collection
-    {
-        return QuizTest::query()
-            ->whereJsonContains('question_ids', $this->id)
-            ->get();
+        return $this->belongsToMany(QuizTest::class)
+            ->withPivot(['selected_option', 'is_correct', 'answered_at'])
+            ->withTimestamps();
     }
 }

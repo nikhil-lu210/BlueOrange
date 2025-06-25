@@ -83,38 +83,35 @@
                                 <h5 class="card-action-title mb-0">Question And Answers</h5>
                             </div>
                             <div class="card-body">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th>{{ __('SL') }}</th>
-                                            <th>{{ __('Question') }}</th>
-                                            <th>{{ __('Answer') }}</th>
-                                            <th>{{ __('Is Correct') }}</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {{-- @forelse ($test->answers as $answer)
-                                            <tr>
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $answer->question->question }}</td>
-                                                <td>{{ $answer->selected_option }}</td>
-                                                <td>
-                                                    @if ($answer->is_correct)
-                                                        <span class="badge bg-success">{{ __('Yes') }}</span>
-                                                    @else
-                                                        <span class="badge bg-danger">{{ __('No') }}</span>
-                                                    @endif
-                                                </td>
-                                            </tr>
-                                        @empty
-                                            <tr>
-                                                <td colspan="4" class="text-center">
-                                                    <span class="text-muted">{{ __('No Answers Found') }}</span>
-                                                </td>
-                                            </tr>
-                                        @endforelse --}}
-                                    </tbody>
-                                </table>
+                                <div class="demo-inline-spacing mt-3">
+                                    <div class="list-group">
+                                        @forelse ($test->questions as $question)
+                                            <a href="javascript:void(0);" class="list-group-item list-group-item-action d-flex justify-content-between">
+                                                <div class="li-wrapper d-flex justify-content-start align-items-center">
+                                                    <div class="avatar avatar-sm me-3">
+                                                        <span class="avatar-initial rounded-circle bg-label-{{ $question->pivot->is_correct ? 'success' : 'danger' }}">
+                                                            <i class="ti ti-{{ $question->pivot->is_correct ? 'check' : 'x' }}"></i>
+                                                        </span>
+                                                    </div>
+                                                    <div class="list-content">
+                                                        <h6 class="mb-1">{{ $question->question }}</h6>
+                                                        <small class="text-muted" title="Answered At">{{ $question->pivot->answered_at ? show_date_time($question->pivot->answered_at) : 'Not Answered' }}</small>
+                                                    </div>
+                                                </div>
+                                                @if ($question->pivot->selected_option)
+                                                    <small class="text-bold">
+                                                        <span class="text-{{ $question->pivot->selected_option == $question->correct_option ? 'success' : 'danger' }}">{{ $question->pivot->selected_option }}</span> /
+                                                        <span class="text-success">{{ $question->correct_option }}</span>
+                                                    </small>
+                                                @else
+                                                    <small class="text-bold">
+                                                        <span class="text-muted">Not Answered</span>
+                                                    </small>
+                                                @endif
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>

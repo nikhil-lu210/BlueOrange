@@ -8,6 +8,7 @@ use App\Models\Quiz\QuizAnswer\QuizAnswer;
 use App\Models\Quiz\QuizQuestion\QuizQuestion;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 trait QuizTestRelations
 {
@@ -20,38 +21,12 @@ trait QuizTestRelations
     }
 
     /**
-     * Get all answers submitted for this test.
+     * Get all questions submitted for this test.
      */
-    public function answers(): HasMany
+    public function questions(): BelongsToMany
     {
-        return $this->hasMany(QuizAnswer::class, 'quiz_test_id');
-    }
-
-    /**
-     * All quiz questions in this test.
-     *
-     * This is not a standard Eloquent relation but acts as a helper method
-     * returning a Collection of QuizQuestion models.
-     */
-    public function questions(): Collection
-    {
-        if (empty($this->question_ids)) {
-            return collect();
-        }
-
-        // Ensure we split string to array of IDs
-        $ids = is_array($this->question_ids)
-            ? $this->question_ids
-            : explode(',', $this->question_ids);
-
-        return QuizQuestion::whereIn('id', $ids)->get();
-    }
-
-    /**
-     * Get answered questions only (helper).
-     */
-    public function answered_questions(): Collection
-    {
-        return QuizQuestion::whereIn('id', $this->answers()->pluck('quiz_question_id'))->get();
+        return $this->belongsToMany(QuizQuestion::class)
+            ->withPivot(['selected_option', 'is_correct', 'answered_at'])
+            ->withTimestamps();
     }
 }

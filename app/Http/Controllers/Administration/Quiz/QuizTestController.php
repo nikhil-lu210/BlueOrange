@@ -125,9 +125,23 @@ class QuizTestController extends Controller
                     'total_questions' => $validated['total_questions'],
                     'total_time' => $validated['total_time'],
                     'passing_score' => $validated['passing_score'],
-                    'question_ids' => $questionIds,
                     'status' => 'Pending',
                 ]);
+
+                // Attach questions via pivot table
+                $pivotData = collect($questionIds)->mapWithKeys(function ($questionId) {
+                    return [
+                        $questionId => [
+                            'selected_option' => null,
+                            'is_correct' => false,
+                            'answered_at' => null,
+                            'created_at' => now(),
+                            'updated_at' => now(),
+                        ]
+                    ];
+                })->toArray();
+
+                $createdTest->questions()->attach($pivotData);
             });
 
             // Success message with additional info
@@ -153,7 +167,11 @@ class QuizTestController extends Controller
         $test->load([
             'creator.employee',
             'creator.media',
-            'creator.roles'
+            'creator.roles',
+            'questions.tests',
+            'questions.tests.creator.employee',
+            'questions.tests.creator.media',
+            'questions.tests.creator.roles',
         ]);
 
         return view('administration.quiz.test.show', compact(['test']));

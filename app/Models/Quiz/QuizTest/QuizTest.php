@@ -22,10 +22,9 @@ class QuizTest extends Model
     // Accessors & Mutators
     use QuizTestAccessors, QuizTestMutators;
 
-    protected $cascadeDeletes = ['answers'];
+    protected $cascadeDeletes = [];
 
     protected $casts = [
-        'question_ids' => 'array',
         'started_at' => 'datetime',
         'ended_at' => 'datetime',
         'auto_submitted' => 'boolean',
@@ -38,7 +37,6 @@ class QuizTest extends Model
         'total_questions',
         'total_time',
         'passing_score',
-        'question_ids',
         'started_at',
         'ended_at',
         'attempted_questions',
