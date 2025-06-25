@@ -8,21 +8,21 @@
         .authentication-wrapper {
             background: #f8f9fa !important;
         }
-        
+
         .authentication-inner {
             max-width: 800px;
             margin: 0 auto;
         }
-        
+
         .d-none.d-lg-flex {
             display: none !important;
         }
-        
+
         .col-lg-5 {
             flex: 0 0 100% !important;
             max-width: 100% !important;
         }
-        
+
         .w-px-400 {
             width: 100% !important;
             max-width: 700px !important;
@@ -185,7 +185,7 @@
         @php
             $passed = $test->total_score >= $test->passing_score;
             $percentage = round(($test->total_score / $test->total_questions) * 100);
-            $timeTaken = $test->started_at && $test->ended_at ? 
+            $timeTaken = $test->started_at && $test->ended_at ?
                 $test->started_at->diffInMinutes($test->ended_at) : 0;
         @endphp
 
@@ -250,10 +250,10 @@
             <!-- Motivational Message -->
             <div class="motivational-message {{ $passed ? 'success' : 'failure' }}">
                 @if($passed)
-                    <strong>Excellent work!</strong> Your dedication and knowledge have paid off. 
+                    <strong>Excellent work!</strong> Your dedication and knowledge have paid off.
                     You've demonstrated strong understanding of the subject matter.
                 @else
-                    <strong>Don't give up!</strong> Every expert was once a beginner. 
+                    <strong>Don't give up!</strong> Every expert was once a beginner.
                     Use this as a learning opportunity and try again after some more preparation.
                 @endif
             </div>
@@ -310,9 +310,9 @@
                                 zIndex: 9999,
                                 pointerEvents: 'none'
                             });
-                            
+
                             $('body').append(confetti);
-                            
+
                             confetti.animate({
                                 top: $(window).height() + 'px',
                                 left: '+=' + (Math.random() * 200 - 100) + 'px'
@@ -322,7 +322,7 @@
                         }, i * 100);
                     }
                 }
-                
+
                 // Trigger confetti after a short delay
                 setTimeout(createConfetti, 500);
             @endif
