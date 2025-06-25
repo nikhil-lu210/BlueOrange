@@ -13,5 +13,9 @@ Route::controller(QuizController::class)->prefix('quiz')->name('quiz.')->group(f
 
     Route::get('/test/show/{testid}', 'show')->name('test.show');
 
+    Route::post('/test/save-answer/{testid}', 'saveAnswer')->name('test.save.answer');
+
     Route::post('/test/store/{testid}', 'store')->name('test.store');
+
+    Route::get('/test/results/{testid}', 'results')->name('test.results');
 });

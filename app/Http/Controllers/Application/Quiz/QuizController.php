@@ -25,6 +25,15 @@ class QuizController extends Controller
 
     public function index()
     {
+        // Check if user completed a quiz in the last hour
+        $completedAt = request()->cookie('quiz_completed_at');
+        if ($completedAt && (now()->timestamp - $completedAt) < 3600) {
+            $remainingTime = 3600 - (now()->timestamp - $completedAt);
+            $minutes = ceil($remainingTime / 60);
+            toast("You can take another quiz after {$minutes} minutes.", 'warning');
+            return redirect()->back();
+        }
+
         // Check if there's an existing quiz_test_id in cookies
         $existingTestId = request()->cookie('quiz_test_id');
 
@@ -121,8 +130,7 @@ class QuizController extends Controller
 
         // Check if test is completed
         if ($test->status === 'Completed') {
-            toast('This quiz test has already been completed.', 'info');
-            return redirect()->route('application.quiz.test.index');
+            return redirect()->route('application.quiz.test.results', $test->testid);
         }
 
         // Check if test is cancelled
@@ -137,9 +145,49 @@ class QuizController extends Controller
                 'status' => 'Running',
                 'started_at' => now(),
             ]);
+            $test->refresh(); // Refresh to get the updated started_at
+        }
+
+        // Check if time has expired
+        if ($test->started_at) {
+            $elapsedMinutes = $test->started_at->diffInMinutes(now());
+            if ($elapsedMinutes >= $test->total_time) {
+                // Time expired, auto-complete the test
+                $this->autoCompleteTest($test);
+                return redirect()->route('application.quiz.test.results', $test->testid);
+            }
         }
 
         return view('application.quiz.show', compact('test'));
+    }
+
+    private function autoCompleteTest($test)
+    {
+        DB::transaction(function () use ($test) {
+            // Calculate score from already saved answers in pivot table
+            $correctAnswers = $test->questions()
+                ->wherePivot('is_correct', true)
+                ->count();
+
+            $attemptedQuestions = $test->questions()
+                ->whereNotNull('quiz_question_quiz_test.selected_option')
+                ->count();
+
+            // Update test with results
+            $test->update([
+                'status' => 'Completed',
+                'ended_at' => now(),
+                'attempted_questions' => $attemptedQuestions,
+                'total_score' => $correctAnswers,
+                'auto_submitted' => true,
+            ]);
+        });
+
+        // Remove the quiz test cookie
+        Cookie::queue(Cookie::forget('quiz_test_id'));
+
+        // Set completion cookie to prevent new quiz for 1 hour
+        Cookie::queue('quiz_completed_at', now()->timestamp, 60);
     }
 
     public function store(Request $request, $testid)
@@ -154,39 +202,19 @@ class QuizController extends Controller
 
         // Check if test is already completed
         if ($test->status === 'Completed') {
-            toast('This quiz test has already been completed.', 'info');
-            return redirect()->route('application.quiz.test.index');
+            return redirect()->route('application.quiz.test.results', $test->testid);
         }
 
-        // Validate answers
-        $validated = $request->validate([
-            'answers' => 'required|array',
-            'answers.*' => 'required|in:A,B,C,D',
-        ]);
-
         try {
-            DB::transaction(function () use ($test, $validated) {
-                $correctAnswers = 0;
-                $attemptedQuestions = count($validated['answers']);
+            DB::transaction(function () use ($test) {
+                // Calculate score from already saved answers in pivot table
+                $correctAnswers = $test->questions()
+                    ->wherePivot('is_correct', true)
+                    ->count();
 
-                // Process each answer
-                foreach ($validated['answers'] as $questionId => $selectedOption) {
-                    $question = $test->questions()->where('quiz_questions.id', $questionId)->first();
-
-                    if ($question) {
-                        $isCorrect = $question->correct_option === $selectedOption;
-                        if ($isCorrect) {
-                            $correctAnswers++;
-                        }
-
-                        // Update pivot table
-                        $test->questions()->updateExistingPivot($questionId, [
-                            'selected_option' => $selectedOption,
-                            'is_correct' => $isCorrect,
-                            'answered_at' => now(),
-                        ]);
-                    }
-                }
+                $attemptedQuestions = $test->questions()
+                    ->whereNotNull('quiz_question_quiz_test.selected_option')
+                    ->count();
 
                 // Update test with results
                 $test->update([
@@ -197,20 +225,73 @@ class QuizController extends Controller
                 ]);
             });
 
-            // Remove the cookie
+            // Remove the quiz test cookie
             Cookie::queue(Cookie::forget('quiz_test_id'));
 
-            $passed = $test->total_score >= $test->passing_score;
-            $message = $passed
-                ? "Congratulations! You passed the quiz with {$test->total_score}/{$test->total_questions} correct answers."
-                : "You scored {$test->total_score}/{$test->total_questions}. Better luck next time!";
+            // Set completion cookie to prevent new quiz for 1 hour
+            Cookie::queue('quiz_completed_at', now()->timestamp, 60);
 
-            toast($message, $passed ? 'success' : 'info');
-            return redirect()->route('application.quiz.test.index')->with('test_completed', true);
+            return redirect()->route('application.quiz.test.results', $test->testid);
 
         } catch (Exception $e) {
             toast('Failed to submit quiz: ' . $e->getMessage(), 'error');
             return back();
         }
+    }
+
+    public function saveAnswer(Request $request, $testid)
+    {
+        $test = QuizTest::where('testid', $testid)->first();
+
+        if (!$test || $test->status !== 'Running') {
+            return response()->json(['success' => false, 'message' => 'Test not found or not active']);
+        }
+
+        $validated = $request->validate([
+            'question_id' => 'required|exists:quiz_questions,id',
+            'selected_option' => 'required|in:A,B,C,D',
+        ]);
+
+        try {
+            $question = $test->questions()->where('quiz_questions.id', $validated['question_id'])->first();
+
+            if ($question) {
+                $isCorrect = $question->correct_option === $validated['selected_option'];
+
+                $test->questions()->updateExistingPivot($validated['question_id'], [
+                    'selected_option' => $validated['selected_option'],
+                    'is_correct' => $isCorrect,
+                    'answered_at' => now(),
+                ]);
+
+                return response()->json(['success' => true, 'message' => 'Answer saved']);
+            }
+
+            return response()->json(['success' => false, 'message' => 'Question not found']);
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed to save answer']);
+        }
+    }
+
+    public function results($testid)
+    {
+        $test = QuizTest::where('testid', $testid)
+            ->with(['questions' => function ($query) {
+                $query->withPivot(['selected_option', 'is_correct', 'answered_at']);
+            }])
+            ->first();
+
+        if (!$test) {
+            toast('Quiz test not found.', 'error');
+            return redirect()->route('application.quiz.test.index');
+        }
+
+        // Only allow viewing results for completed tests
+        if ($test->status !== 'Completed') {
+            toast('This quiz test is not yet completed.', 'warning');
+            return redirect()->route('application.quiz.test.show', $test->testid);
+        }
+
+        return view('application.quiz.results', compact('test'));
     }
 }
