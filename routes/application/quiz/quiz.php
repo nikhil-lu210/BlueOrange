@@ -7,5 +7,11 @@ use App\Http\Controllers\Application\Quiz\QuizController;
 ===============< Non-Auth Quiz Routes >=========
 ===============================================*/
 Route::controller(QuizController::class)->prefix('quiz')->name('quiz.')->group(function () {
-    Route::get('/test', 'index')->name('index');
+    Route::get('/test', 'index')->name('test.index');
+
+    Route::post('/test/start', 'startTest')->name('test.start');
+
+    Route::get('/test/show/{testid}', 'show')->name('test.show');
+
+    Route::post('/test/store/{testid}', 'store')->name('test.store');
 });

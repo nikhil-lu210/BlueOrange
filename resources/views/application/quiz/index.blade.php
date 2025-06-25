@@ -43,7 +43,7 @@
         </div>
     @endif
 
-    <form id="formQuizRegistration" class="mb-3" method="POST" action="#" autocomplete="off">
+    <form id="formQuizRegistration" class="mb-3" method="POST" action="{{ route('application.quiz.test.start') }}" autocomplete="off">
         @csrf
 
         <div class="mb-3">

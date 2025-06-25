@@ -50,7 +50,7 @@
                     <div class="card-header-elements ms-auto">
                         @if ($test->status == 'Pending')
                             <button type="button"
-                                    value="{{ route('administration.quiz.test.show', ['test' => $test]) }}"
+                                    value="{{ route('application.quiz.test.show', ['testid' => $test->testid]) }}"
                                     class="btn btn-icon btn-outline-dark waves-effect waves-light"
                                     id="copyTestLink"
                                     title="Click to Copy Test Link"
