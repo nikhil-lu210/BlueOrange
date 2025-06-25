@@ -8,37 +8,12 @@
 
 @section('css_links')
     {{--  External CSS  --}}
-
-    {{-- Lightbox CSS --}}
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" />
 @endsection
 
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
         /* Custom CSS Here */
-        .img-thumbnail {
-            padding: 3px;
-            border: 3px solid var(--bs-border-color);
-            border-radius: 5px;
-        }
-        .file-thumbnail-container {
-            width: 150px;
-            height: 100px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 0.25rem;
-        }
-        .file-thumbnail-container .file-name {
-            max-width: 140px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
     </style>
 @endsection
 
@@ -79,14 +54,14 @@
 
                     <div class="col-md-6">
                         <div class="card card-action mb-4">
-                            <div class="card-header align-items-center pb-3 pt-3">
+                            <div class="card-header align-items-center pb-1 pt-3">
                                 <h5 class="card-action-title mb-0">Question And Answers</h5>
                             </div>
                             <div class="card-body">
-                                <div class="demo-inline-spacing mt-3">
+                                <div class="demo-inline-spacing mt-1">
                                     <div class="list-group">
                                         @forelse ($test->questions as $question)
-                                            <a href="javascript:void(0);" class="list-group-item list-group-item-action d-flex justify-content-between">
+                                            <a href="javascript:void(0);" class="list-group-item list-group-item-action d-flex justify-content-between" data-bs-toggle="modal" data-bs-target="#showQuestionAnswerModal" data-question="{{ json_encode($question) }}">
                                                 <div class="li-wrapper d-flex justify-content-start align-items-center">
                                                     <div class="avatar avatar-sm me-3">
                                                         <span class="avatar-initial rounded-circle bg-label-{{ $question->pivot->is_correct ? 'success' : 'danger' }}">
@@ -95,7 +70,7 @@
                                                     </div>
                                                     <div class="list-content">
                                                         <h6 class="mb-1">{{ $question->question }}</h6>
-                                                        <small class="text-muted" title="Answered At">{{ $question->pivot->answered_at ? show_date_time($question->pivot->answered_at) : 'Not Answered' }}</small>
+                                                        <small class="text-muted">{{ $question->pivot->answered_at ? show_date_time($question->pivot->answered_at) : 'Not Answered' }}</small>
                                                     </div>
                                                 </div>
                                                 @if ($question->pivot->selected_option)
@@ -122,25 +97,88 @@
 </div>
 <!-- End row -->
 
+
+{{-- Question And Answers Modal --}}
+@include('administration.quiz.test.modals.question_answer_details_modal')
+
 @endsection
 
 
 @section('script_links')
     {{--  External Javascript Links --}}
-
-    {{-- Lightbox JS --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
         $(document).ready(function () {
-            // Lightbox configuration
-            lightbox.option({
-                'resizeDuration': 200,
-                'wrapAround': true,
-                'albumLabel': "Image %1 of %2"
+            // Handle question answer modal data population
+            $('#showQuestionAnswerModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var questionData = button.data('question'); // Extract question data from data-* attributes
+
+                // Clear previous data
+                $('.question-title').text('');
+                $('.option-a, .option-b, .option-c, .option-d').text('');
+                $('.question-creator').text('');
+                $('.correct-answer').text('');
+                $('.selected-answer').html('');
+                $('.answered-at').text('');
+
+                if (questionData) {
+                    try {
+                        // Populate question details
+                        $('.question-title').text(questionData.question || 'N/A');
+                        $('.option-a').text(questionData.option_a || 'N/A');
+                        $('.option-b').text(questionData.option_b || 'N/A');
+                        $('.option-c').text(questionData.option_c || 'N/A');
+                        $('.option-d').text(questionData.option_d || 'N/A');
+
+                        // Populate creator information
+                        var creatorName = 'Unknown';
+                        if (questionData.creator && questionData.creator.name) {
+                            creatorName = questionData.creator.name;
+                        }
+                        $('.question-creator').text(creatorName);
+
+                        // Populate correct answer
+                        if (questionData.correct_option) {
+                            var correctOption = questionData.correct_option.toUpperCase();
+                            var correctOptionText = questionData['option_' + correctOption.toLowerCase()] || 'N/A';
+                            var correctAnswer = correctOption + '. ' + correctOptionText;
+                            $('.correct-answer').text(correctAnswer);
+                        }
+
+                        // Populate answer details
+                        var selectedAnswer = 'Not Answered';
+                        if (questionData.pivot && questionData.pivot.selected_option) {
+                            var selectedOption = questionData.pivot.selected_option.toUpperCase();
+                            var optionText = questionData['option_' + selectedOption.toLowerCase()] || 'N/A';
+                            selectedAnswer = selectedOption + '. ' + optionText;
+
+                            // Add color coding for correct/incorrect answers
+                            var isCorrect = questionData.pivot.is_correct;
+                            var answerClass = isCorrect ? 'text-success' : 'text-danger';
+                            $('.selected-answer').html('<span class="' + answerClass + '">' + selectedAnswer + '</span>');
+                        } else {
+                            $('.selected-answer').html('<span class="text-muted">' + selectedAnswer + '</span>');
+                        }
+
+                        // Populate answered at time
+                        var answeredAt = 'Not Answered';
+                        if (questionData.pivot && questionData.pivot.answered_at) {
+                            // Format the date if needed
+                            answeredAt = questionData.pivot.answered_at;
+                        }
+                        $('.answered-at').text(answeredAt);
+
+                    } catch (error) {
+                        console.error('Error populating modal data:', error);
+                        $('.question-title').text('Error loading question data');
+                    }
+                } else {
+                    $('.question-title').text('No question data available');
+                }
             });
         });
     </script>
