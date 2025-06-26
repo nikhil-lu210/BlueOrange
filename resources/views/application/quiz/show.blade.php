@@ -1,41 +1,8 @@
-<!DOCTYPE html>
+@extends('layouts.public.quiz.app')
 
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light-style layout-wide customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="{{ url('assets') }}/" data-template="">
-<head>
-    <meta charset="utf-8" />
-    <!-- CSRF Token -->
-    <meta name="csrf-token" content="{{ csrf_token() }}" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <title>{{ __('SI Quiz Test') }}</title>
-    <meta name="description" content="" />
+@section('page_title', __('QUIZ TEST'))
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
-
-    <!-- Icons -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/fontawesome.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/tabler-icons.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/flag-icons.css') }}" />
-
-    <!-- Core CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/rtl/core.css') }}" class="template-customizer-core-css" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/rtl/theme-default.css') }}" class="template-customizer-theme-css" />
-    <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
-
-    <!-- Vendors CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/typeahead-js/typeahead.css') }}" />
-    <!-- Vendor -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/@form-validation/umd/styles/index.min.css') }}" />
-
-    <!-- Page CSS -->
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}" />
-
-    <!-- Helpers -->
-    <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
-    <script src="{{ asset('assets/js/config.js') }}"></script>
-
+@section('custom_css')
     <style>
         /* Save Indicator */
         .save-indicator {
@@ -147,194 +114,183 @@
             color: #5d596c;
         }
     </style>
-</head>
+@endsection
+    
+@section('content')
+    {{-- <!-- Save Indicator --> --}}
+    <div class="save-indicator" id="saveIndicator">
+        <i class="ti ti-check me-2"></i>
+        Answer Saved Successfully!
+    </div>
 
-<body>
-    <!-- Content -->
-    <section class="container mt-5 mb-5">
-        <!-- Save Indicator -->
-        <div class="save-indicator" id="saveIndicator">
-            <i class="ti ti-check me-2"></i>
-            Answer Saved Successfully!
-        </div>
-
-        <!-- Quiz Header -->
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                <div class="row justify-content-center">
-                    <!-- Logo -->
-                    <div class="col-10">
-                        <div class="app-brand mb-4 text-center">
-                            <a href="{{ url('/') }}" class="app-brand-link gap-2">
-                                <img src="{{ asset(config('app.logo')) }}" alt="{{ config('app.name') }}" width="20%" style="margin: auto;">
-                            </a>
-                        </div>
-                    </div>
-                    <!-- /Logo -->
-
-                    <!-- Timer -->
-                    <div class="col-6">
-                        <div class="quiz-timer mb-4" id="timer">
-                            <i class="ti ti-clock me-2"></i>
-                            Time Remaining: <span id="time-display">{{ $test->total_time }}:00</span>
-                        </div>
-                    </div>
-
-                    <!-- Progress Info -->
-                    <div class="col-12">
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <div class="text-center">
-                                            <div class="mb-2">
-                                                <i class="ti ti-user text-primary" style="font-size: 2rem;"></i>
-                                            </div>
-                                            <h4 class="mb-1">{{ $test->candidate_name }}</h4>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="text-center">
-                                            <div class="mb-2">
-                                                <i class="ti ti-mail text-primary" style="font-size: 2rem;"></i>
-                                            </div>
-                                            <h4 class="mb-1">{{ $test->candidate_email }}</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="card mb-4">
-                            <div class="card-body">
-                                <div class="row g-3">
-                                    <div class="col-6 col-md-3">
-                                        <div class="text-center">
-                                            <div class="mb-2">
-                                                <i class="ti ti-list-numbers text-primary" style="font-size: 2rem;"></i>
-                                            </div>
-                                            <h4 class="mb-1">{{ $test->total_questions }}</h4>
-                                            <small class="text-muted">Total Questions</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-md-3">
-                                        <div class="text-center">
-                                            <div class="mb-2">
-                                                <i class="ti ti-check text-success" style="font-size: 2rem;"></i>
-                                            </div>
-                                            <h4 class="mb-1" id="answered-count">0</h4>
-                                            <small class="text-muted">Answered</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-md-3">
-                                        <div class="text-center">
-                                            <div class="mb-2">
-                                                <i class="ti ti-clock-hour-4 text-warning" style="font-size: 2rem;"></i>
-                                            </div>
-                                            <h4 class="mb-1">{{ $test->total_time }}</h4>
-                                            <small class="text-muted">Total Minutes</small>
-                                        </div>
-                                    </div>
-                                    <div class="col-6 col-md-3">
-                                        <div class="text-center">
-                                            <div class="mb-2">
-                                                <i class="ti ti-target text-info" style="font-size: 2rem;"></i>
-                                            </div>
-                                            <h4 class="mb-1">{{ $test->passing_score }}</h4>
-                                            <small class="text-muted">Passing Score</small>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+    {{-- <!-- Quiz Header --> --}}
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="row justify-content-center">
+                <!-- Logo -->
+                <div class="col-10">
+                    <div class="app-brand mb-4 text-center">
+                        <a href="{{ url('/') }}" class="app-brand-link gap-2">
+                            <img src="{{ asset(config('app.logo')) }}" alt="{{ config('app.name') }}" width="20%" style="margin: auto;">
+                        </a>
                     </div>
                 </div>
-            </div>
-        </div>
+                <!-- /Logo -->
 
-        <!-- Questions Section -->
-        <div class="row justify-content-center">
-            <div class="col-md-10">
-                @foreach($test->questions as $index => $question)
-                    <div class="card mb-4 {{ $question->pivot->selected_option ? 'answered' : '' }}" data-question="{{ $index + 1 }}">
+                <!-- Timer -->
+                <div class="col-6">
+                    <div class="quiz-timer mb-4" id="timer">
+                        <i class="ti ti-clock me-2"></i>
+                        Time Remaining: <span id="time-display">{{ $test->total_time }}:00</span>
+                    </div>
+                </div>
+
+                <!-- Progress Info -->
+                <div class="col-12">
+                    <div class="card mb-4">
                         <div class="card-body">
-                            <div class="question-title">
-                                {{ $index + 1 }}. {{ $question->question }}
-                            </div>
-
-                            <div class="options">
-                                <label class="option-label">
-                                    <input type="radio" name="question_{{ $question->id }}" value="A"
-                                           class="quiz-option" data-question-id="{{ $question->id }}"
-                                           {{ $question->pivot->selected_option === 'A' ? 'checked' : '' }}>
-                                    <span class="option-letter">A</span>
-                                    <span class="option-text">{{ $question->option_a }}</span>
-                                </label>
-
-                                <label class="option-label">
-                                    <input type="radio" name="question_{{ $question->id }}" value="B"
-                                           class="quiz-option" data-question-id="{{ $question->id }}"
-                                           {{ $question->pivot->selected_option === 'B' ? 'checked' : '' }}>
-                                    <span class="option-letter">B</span>
-                                    <span class="option-text">{{ $question->option_b }}</span>
-                                </label>
-
-                                <label class="option-label">
-                                    <input type="radio" name="question_{{ $question->id }}" value="C"
-                                           class="quiz-option" data-question-id="{{ $question->id }}"
-                                           {{ $question->pivot->selected_option === 'C' ? 'checked' : '' }}>
-                                    <span class="option-letter">C</span>
-                                    <span class="option-text">{{ $question->option_c }}</span>
-                                </label>
-
-                                <label class="option-label">
-                                    <input type="radio" name="question_{{ $question->id }}" value="D"
-                                           class="quiz-option" data-question-id="{{ $question->id }}"
-                                           {{ $question->pivot->selected_option === 'D' ? 'checked' : '' }}>
-                                    <span class="option-letter">D</span>
-                                    <span class="option-text">{{ $question->option_d }}</span>
-                                </label>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <i class="ti ti-user text-primary" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <h4 class="mb-1">{{ $test->candidate_name }}</h4>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <i class="ti ti-mail text-primary" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <h4 class="mb-1">{{ $test->candidate_email }}</h4>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                @endforeach
 
-                <!-- End Quiz Section -->
-                <div class="card">
-                    <div class="card-body text-center">
-                        <div class="mb-3">
-                            <i class="ti ti-flag-check text-primary" style="font-size: 3rem;"></i>
+                    <div class="card mb-4">
+                        <div class="card-body">
+                            <div class="row g-3">
+                                <div class="col-6 col-md-3">
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <i class="ti ti-list-numbers text-primary" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <h4 class="mb-1">{{ $test->total_questions }}</h4>
+                                        <small class="text-muted">Total Questions</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <i class="ti ti-check text-success" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <h4 class="mb-1" id="answered-count">0</h4>
+                                        <small class="text-muted">Answered</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <i class="ti ti-clock-hour-4 text-warning" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <h4 class="mb-1">{{ $test->total_time }}</h4>
+                                        <small class="text-muted">Total Minutes</small>
+                                    </div>
+                                </div>
+                                <div class="col-6 col-md-3">
+                                    <div class="text-center">
+                                        <div class="mb-2">
+                                            <i class="ti ti-target text-info" style="font-size: 2rem;"></i>
+                                        </div>
+                                        <h4 class="mb-1">{{ $test->passing_score }}</h4>
+                                        <small class="text-muted">Passing Score</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <h4 class="mb-3">Ready to Submit?</h4>
-                        <p class="text-muted mb-4">Make sure you have answered all questions. Once submitted, you cannot change your answers.</p>
-                        <button type="button" class="btn btn-primary btn-lg" id="endQuizBtn" disabled>
-                            <i class="ti ti-send me-2"></i>
-                            End Quiz Test
-                        </button>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
 
-    <!-- Hidden form for final submission -->
+    {{-- <!-- Questions Section --> --}}
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            @foreach($test->questions as $index => $question)
+                <div class="card mb-4 {{ $question->pivot->selected_option ? 'answered' : '' }}" data-question="{{ $index + 1 }}">
+                    <div class="card-body">
+                        <div class="question-title">
+                            {{ $index + 1 }}. {{ $question->question }}
+                        </div>
+
+                        <div class="options">
+                            <label class="option-label">
+                                <input type="radio" name="question_{{ $question->id }}" value="A"
+                                        class="quiz-option" data-question-id="{{ $question->id }}"
+                                        {{ $question->pivot->selected_option === 'A' ? 'checked' : '' }}>
+                                <span class="option-letter">A</span>
+                                <span class="option-text">{{ $question->option_a }}</span>
+                            </label>
+
+                            <label class="option-label">
+                                <input type="radio" name="question_{{ $question->id }}" value="B"
+                                        class="quiz-option" data-question-id="{{ $question->id }}"
+                                        {{ $question->pivot->selected_option === 'B' ? 'checked' : '' }}>
+                                <span class="option-letter">B</span>
+                                <span class="option-text">{{ $question->option_b }}</span>
+                            </label>
+
+                            <label class="option-label">
+                                <input type="radio" name="question_{{ $question->id }}" value="C"
+                                        class="quiz-option" data-question-id="{{ $question->id }}"
+                                        {{ $question->pivot->selected_option === 'C' ? 'checked' : '' }}>
+                                <span class="option-letter">C</span>
+                                <span class="option-text">{{ $question->option_c }}</span>
+                            </label>
+
+                            <label class="option-label">
+                                <input type="radio" name="question_{{ $question->id }}" value="D"
+                                        class="quiz-option" data-question-id="{{ $question->id }}"
+                                        {{ $question->pivot->selected_option === 'D' ? 'checked' : '' }}>
+                                <span class="option-letter">D</span>
+                                <span class="option-text">{{ $question->option_d }}</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+
+            <!-- End Quiz Section -->
+            <div class="card">
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <i class="ti ti-flag-check text-primary" style="font-size: 3rem;"></i>
+                    </div>
+                    <h4 class="mb-3">Ready to Submit?</h4>
+                    <p class="text-muted mb-4">Make sure you have answered all questions. Once submitted, you cannot change your answers.</p>
+                    <button type="button" class="btn btn-primary btn-lg" id="endQuizBtn" disabled>
+                        <i class="ti ti-send me-2"></i>
+                        End Quiz Test
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- <!-- Hidden form for final submission --> --}}
     <form id="finalSubmitForm" method="POST" action="{{ route('application.quiz.test.store', $test->testid) }}" style="display: none;">
         @csrf
         <input type="hidden" name="final_submit" value="1">
     </form>
-    <!-- / Content -->
+    {{-- <!-- / Content --> --}}
+@endsection
 
-    <!-- Core JS -->
-    <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
-    <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
-    <script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
 
-    <!-- SweetAlert2 -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    @include('sweetalert::alert')
-
+@section('custom_script')
     <script>
         $(document).ready(function() {
             // console.log('Document ready, jQuery loaded:', typeof $ !== 'undefined'); // Debug log
@@ -558,5 +514,4 @@
             });
         });
     </script>
-</body>
-</html>
+@endsection

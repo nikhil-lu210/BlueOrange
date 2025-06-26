@@ -1,6 +1,6 @@
-@extends('layouts.public.app')
+@extends('layouts.public.quiz.app')
 
-@section('page_title', __('QUIZ RESULTS'))
+@section('page_title', __('QUIZ TEST RESULTS'))
 
 @section('custom_css')
     <style>
