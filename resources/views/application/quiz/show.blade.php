@@ -3,6 +3,8 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light-style layout-wide customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="{{ url('assets') }}/" data-template="">
 <head>
     <meta charset="utf-8" />
+    <!-- CSRF Token -->
+    <meta name="csrf-token" content="{{ csrf_token() }}" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <title>{{ __('SI Quiz Test') }}</title>
     <meta name="description" content="" />
@@ -183,6 +185,29 @@
                         <div class="card mb-4">
                             <div class="card-body">
                                 <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <div class="text-center">
+                                            <div class="mb-2">
+                                                <i class="ti ti-user text-primary" style="font-size: 2rem;"></i>
+                                            </div>
+                                            <h4 class="mb-1">{{ $test->candidate_name }}</h4>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="text-center">
+                                            <div class="mb-2">
+                                                <i class="ti ti-mail text-primary" style="font-size: 2rem;"></i>
+                                            </div>
+                                            <h4 class="mb-1">{{ $test->candidate_email }}</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card mb-4">
+                            <div class="card-body">
+                                <div class="row g-3">
                                     <div class="col-6 col-md-3">
                                         <div class="text-center">
                                             <div class="mb-2">
@@ -305,11 +330,27 @@
     <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     @include('sweetalert::alert')
 
     <script>
         $(document).ready(function() {
+            // console.log('Document ready, jQuery loaded:', typeof $ !== 'undefined'); // Debug log
+            // console.log('Quiz options found:', $('.quiz-option').length); // Debug log
+
+            // Setup CSRF token for all AJAX requests
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
+            // Debug CSRF token
+            const csrfToken = $('meta[name="csrf-token"]').attr('content');
+            // console.log('CSRF Token:', csrfToken ? 'Found' : 'Missing', csrfToken); // Debug log
+
             // Timer functionality with proper calculation based on started_at
             const totalMinutes = {{ $test->total_time }};
             const startedAt = new Date("{{ $test->started_at ? $test->started_at->toISOString() : now()->toISOString() }}");
@@ -359,10 +400,13 @@
 
             // AJAX auto-save functionality
             $('.quiz-option').on('change', function() {
+                // console.log('Quiz option changed!'); // Debug log
                 const questionId = $(this).data('question-id');
                 const selectedOption = $(this).val();
                 const saveIndicator = $('#saveIndicator');
                 const questionCard = $(this).closest('.card');
+
+                // console.log('Question ID:', questionId, 'Selected Option:', selectedOption); // Debug log
 
                 // Add to answered questions set
                 answeredQuestions.add(questionId);
@@ -377,27 +421,86 @@
                     url: "{{ route('application.quiz.test.save.answer', $test->testid) }}",
                     method: 'POST',
                     data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
                         question_id: questionId,
                         selected_option: selectedOption
+                    },
+                    beforeSend: function() {
+                        // Show loading indicator
+                        saveIndicator.addClass('show').text('Saving You Answer...');
                     },
                     success: function(response) {
                         if (response.success) {
                             // Show save indicator
-                            saveIndicator.addClass('show');
+                            saveIndicator.text('Your answer has been saved successfully.').addClass('show');
                             setTimeout(() => {
                                 saveIndicator.removeClass('show');
                             }, 2000);
+
+                            // Show SweetAlert success notification
+                            // Swal.fire({
+                            //     icon: 'success',
+                            //     title: 'Answer Saved!',
+                            //     text: 'Your answer has been saved successfully.',
+                            //     timer: 1500,
+                            //     showConfirmButton: false,
+                            //     toast: true,
+                            //     position: 'top-end'
+                            // });
+                        } else {
+                            // Handle server-side error
+                            saveIndicator.text('Failed to save your answer. Please try again.').addClass('show');
+                            setTimeout(() => {
+                                saveIndicator.removeClass('show');
+                            }, 2000);
+
+                            // Swal.fire({
+                            //     icon: 'error',
+                            //     title: 'Save Failed',
+                            //     text: response.message || 'Failed to save your answer. Please try again.',
+                            //     timer: 2000,
+                            //     showConfirmButton: false,
+                            //     toast: true,
+                            //     position: 'top-end'
+                            // });
+
+                            // Remove from answered set if save failed
+                            answeredQuestions.delete(questionId);
+                            questionCard.removeClass('answered');
+                            updateProgress();
                         }
                     },
-                    error: function() {
-                        console.log('Failed to save answer');
+                    error: function(xhr, status, error) {
+                        console.log('AJAX Error:', error);
+                        console.log('Response:', xhr.responseText);
+
+                        saveIndicator.text('Failed to save').addClass('show');
+                        setTimeout(() => {
+                            saveIndicator.removeClass('show');
+                        }, 2000);
+
+                        // Show error notification
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Connection Error',
+                            text: 'Failed to save your answer. Please check your connection and try again.',
+                            timer: 3000,
+                            showConfirmButton: false,
+                            toast: true,
+                            position: 'top-end'
+                        });
+
                         // Remove from answered set if save failed
                         answeredQuestions.delete(questionId);
                         questionCard.removeClass('answered');
                         updateProgress();
                     }
                 });
+            });
+
+            // Fallback event listener using event delegation
+            $(document).on('change', '.quiz-option', function() {
+                // console.log('Fallback event listener triggered!'); // Debug log
+                // This will trigger if the above event listener doesn't work
             });
 
             // Update progress counter and enable/disable submit button
