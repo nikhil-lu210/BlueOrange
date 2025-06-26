@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light-style layout-wide customizer-hide" dir="ltr" data-theme="theme-default" data-assets-path="../../assets/" data-template="">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="light-style layout-wide" dir="ltr" data-theme="theme-default" data-assets-path="{{ url('assets') }}/" data-template="">
     <head>
         <meta charset="utf-8" />
         <!-- CSRF Token -->
@@ -44,10 +44,6 @@
 
         <!-- Helpers -->
         <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
-        <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-        <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
-        <script src="{{ asset('assets/vendor/js/template-customizer.js') }}"></script>
-        <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
         <script src="{{ asset('assets/js/config.js') }}"></script>
 
         @yield('custom_css')
@@ -64,16 +60,16 @@
                             src="{{ asset('assets/img/illustrations/bulb-dark.png') }}"
                             alt="auth-cover"
                             class="img-fluid my-5 auth-illustration"
-                            data-app-light-img="illustrations/bulb-dark.png"
-                            data-app-dark-img="illustrations/bulb-dark.png"
+                            data-app-light-img="{{ asset('illustrations/bulb-dark.png') }}"
+                            data-app-dark-img="{{ asset('illustrations/bulb-dark.png') }}"
                         />
 
                         <img
                             src="{{ asset('assets/img/illustrations/bg-shape-image-light.png') }}"
                             alt="auth-cover"
                             class="platform-bg"
-                            data-app-light-img="illustrations/bg-shape-image-light.png"
-                            data-app-dark-img="illustrations/bg-shape-image-dark.png"
+                            data-app-light-img="{{ asset('illustrations/bg-shape-image-light.png') }}"
+                            data-app-dark-img="{{ asset('illustrations/bg-shape-image-dark.png') }}"
                         />
                     </div>
                 </div>
@@ -111,19 +107,6 @@
         <script src="{{ asset('assets/vendor/libs/i18n/i18n.js') }}"></script>
         <script src="{{ asset('assets/vendor/libs/typeahead-js/typeahead.js') }}"></script>
         <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
-
-        <!-- endbuild -->
-
-        <!-- Vendors JS -->
-        <script src="{{ asset('assets/vendor/libs/@form-validation/umd/bundle/popular.min.js') }}"></script>
-        <script src="{{ asset('assets/vendor/libs/@form-validation/umd/plugin-bootstrap5/index.min.js') }}"></script>
-        <script src="{{ asset('assets/vendor/libs/@form-validation/umd/plugin-auto-focus/index.min.js') }}"></script>
-
-        <!-- Main JS -->
-        <script src="{{ asset('assets/js/main.js') }}"></script>
-
-        <!-- Page JS -->
-        <script src="{{ asset('assets/js/pages-auth.js') }}"></script>
 
         @yield('script_links')
 
