@@ -106,6 +106,19 @@ class UserController extends Controller
         return view('administration.settings.user.includes.attendance', compact(['user', 'attendances']));
     }
 
+
+    /**
+     * Display the user files list.
+     */
+    public function showFiles(User $user)
+    {
+        $user = $this->userService->getUser($user);
+
+        return view('administration.settings.user.includes.user_files', compact(['user']));
+    }
+
+
+
     /**
      * Show the form for editing the specified resource.
      */
