@@ -12,8 +12,8 @@
                 <form method="post" action="{{ route('administration.settings.user.user_file.upload', ['user' => $user]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">
                     @csrf
                     <div class="mb-3 col-md-12">
-                        <label for="file" class="form-label">{{ __('Task File') }} <strong class="text-danger">*</strong></label>
-                        <input type="file" id="file" name="file" value="{{ old('file') }}" placeholder="{{ __('Task File') }}" class="form-control @error('file') is-invalid @enderror" required
+                        <label for="file" class="form-label">{{ __('User File') }} <strong class="text-danger">*</strong></label>
+                        <input type="file" id="file" name="file" value="{{ old('file') }}" placeholder="{{ __('User File') }}" class="form-control @error('file') is-invalid @enderror" required
                             accept=".pdf,image/jpeg,image/jpg,image/png"/>
                         @error('file')
                             <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
