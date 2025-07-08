@@ -5,7 +5,7 @@
             <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
             <div class="modal-body">
                 <div class="text-center mb-4">
-                    <h3 class="role-title mb-2">Uplaod Task Files</h3>
+                    <h3 class="role-title mb-2">Upload Task Files</h3>
                     <p class="text-muted">Upload Files For This Task</p>
                 </div>
                 <!-- Holiday Create form -->

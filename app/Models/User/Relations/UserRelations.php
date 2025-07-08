@@ -7,12 +7,14 @@ use App\Models\Task\Task;
 use App\Models\Vault\Vault;
 use App\Models\Salary\Salary;
 use App\Models\Comment\Comment;
+use App\Models\Penalty\Penalty;
 use App\Models\Ticket\ItTicket;
 use App\Models\Religion\Religion;
 use App\Models\Shortcut\Shortcut;
 use App\Models\User\LoginHistory;
 use App\Models\Leave\LeaveAllowed;
 use App\Models\Leave\LeaveHistory;
+use App\Models\FileMedia\FileMedia;
 use App\Models\Leave\LeaveAvailable;
 use App\Models\Attendance\Attendance;
 use App\Models\DailyBreak\DailyBreak;
@@ -24,9 +26,9 @@ use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Education\Institute\Institute;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
-use App\Models\Penalty\Penalty;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\Education\EducationLevel\EducationLevel;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
@@ -100,6 +102,14 @@ trait UserRelations
         return $this->hasMany(LeaveAllowed::class);
     }
 
+
+    /**
+     * Get the files associated with the task.
+     */
+    public function files(): MorphMany
+    {
+        return $this->morphMany(FileMedia::class, 'fileable');
+    }
 
 
     /**

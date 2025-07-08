@@ -106,6 +106,43 @@ class UserController extends Controller
         return view('administration.settings.user.includes.attendance', compact(['user', 'attendances']));
     }
 
+
+    /**
+     * Display the user files list.
+     */
+    public function showFiles(User $user)
+    {
+        $user = $this->userService->getUser($user);
+
+        return view('administration.settings.user.includes.user_files', compact(['user']));
+    }
+
+    /**
+     * Store the file.
+     */
+    public function uploadFile(Request $request, User $user)
+    {
+        $user = $this->userService->getUser($user);
+
+        try {
+            $request->validate([
+                'file' => 'required|file|mimes:pdf,jpg,jpeg,png|max:5120', // max:5120 = 5MB if needed
+                'note' => 'required|string',
+            ]);
+
+            $directory = 'users/' . $user->userid . '/files';
+            store_file_media($request->file('file'), $user, $directory, $request->input('note'));
+
+            toast('File Uploaded Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
+    }
+
+
+
     /**
      * Show the form for editing the specified resource.
      */

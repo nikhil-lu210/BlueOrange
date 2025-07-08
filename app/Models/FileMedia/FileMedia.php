@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 class FileMedia extends Model
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, Relations, HasCustomRouteId;
-    
+
     protected $cascadeDeletes = [];
 
     protected $fillable = [
@@ -22,6 +22,7 @@ class FileMedia extends Model
         'mime_type',
         'file_size',
         'original_name',
+        'note'
     ];
 
     protected static function boot()

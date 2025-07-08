@@ -13,9 +13,10 @@ if (!function_exists('store_file_media')) {
      * @param UploadedFile $file
      * @param Model $model
      * @param string $directory
+     * @param string|null $note
      * @return FileMedia
      */
-    function store_file_media(UploadedFile $file, Model $model, string $directory): FileMedia
+    function store_file_media(UploadedFile $file, Model $model, string $directory, string $note = null): FileMedia
     {
         $path = $file->store($directory);
         $fileMedia = new FileMedia([
@@ -24,12 +25,14 @@ if (!function_exists('store_file_media')) {
             'mime_type' => $file->getMimeType(),
             'file_size' => $file->getSize(),
             'original_name' => $file->getClientOriginalName(),
+            'note' => $note,
         ]);
         $model->files()->save($fileMedia);
 
         return $fileMedia;
     }
 }
+
 
 
 if (!function_exists('get_file_media_url')) {
