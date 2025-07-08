@@ -50,4 +50,7 @@ Route::prefix('user')->name('user.')->group(function () {
 
     // salary
     include_once 'salary/salary.php';
+
+    // user_file
+    include_once 'user_file/user_file.php';
 });

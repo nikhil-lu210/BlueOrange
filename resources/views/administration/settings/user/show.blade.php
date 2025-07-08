@@ -47,6 +47,28 @@
         text-transform: uppercase;
         cursor: not-allowed;
     }
+    .img-thumbnail {
+        padding: 3px;
+        border: 3px solid var(--bs-border-color);
+        border-radius: 5px;
+    }
+    .file-thumbnail-container {
+        width: 150px;
+        height: 100px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.25rem;
+    }
+    .file-thumbnail-container .file-name {
+        max-width: 140px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     </style>
 @endsection
 
@@ -198,6 +220,14 @@
                     </a>
                 </li>
             @endcan
+            @canany (['User Everything', 'User Create', 'User Update', 'User Delete'])
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('settings/user/show/*/user_file*') ? 'active' : '' }}" href="{{ route('administration.settings.user.user_file.index', ['user' => $user]) }}">
+                        <i class="ti-xs ti ti-calendar-x me-1"></i>
+                        User Files
+                    </a>
+                </li>
+            @endcanany
         </ul>
     </div>
 </div>

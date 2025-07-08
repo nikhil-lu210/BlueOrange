@@ -9,13 +9,21 @@
                     <p class="text-muted">Upload File For This User</p>
                 </div>
                 <!-- Holiday Create form -->
-                <form method="post" action="#" enctype="multipart/form-data" class="row g-3" autocomplete="off">
+                <form method="post" action="{{ route('administration.settings.user.user_file.upload', ['user' => $user]) }}" enctype="multipart/form-data" class="row g-3" autocomplete="off">
                     @csrf
                     <div class="mb-3 col-md-12">
                         <label for="file" class="form-label">{{ __('Task File') }} <strong class="text-danger">*</strong></label>
-                        <input type="file" id="file" name="file" value="{{ old('file') }}" placeholder="{{ __('Task File') }}" class="form-control @error('file') is-invalid @enderror" required/>
+                        <input type="file" id="file" name="file" value="{{ old('file') }}" placeholder="{{ __('Task File') }}" class="form-control @error('file') is-invalid @enderror" required
+                            accept=".pdf,image/jpeg,image/jpg,image/png"/>
                         @error('file')
                             <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
+                        @enderror
+                    </div>
+                    <div class="mb-3 col-md-12">
+                        <label for="note" class="form-label">{{ __('File Note') }} <strong class="text-danger">*</strong></label>
+                        <input type="text" id="note" name="note" value="{{ old('note') }}" placeholder="{{ __('File Note') }}" class="form-control @error('note') is-invalid @enderror" required/>
+                        @error('note')
+                            <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                         @enderror
                     </div>
                     <div class="col-12 text-center mt-4">
