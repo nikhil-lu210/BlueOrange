@@ -151,10 +151,14 @@ class DashboardService
         $today = Carbon::today();
         $currentTime = Carbon::now();
 
+        // Get IDs of users who are currently working to exclude them from absent list
+        $currentlyWorkingUserIds = $this->getCurrentlyWorkingUsers()->pluck('id')->toArray();
+
         // First, get all users with active shifts
         $usersWithActiveShifts = User::with(['employee', 'media', 'employee_shifts'])
             ->where('status', 'Active')
             ->whereNotIn('id', [1, 2]) // Exclude Developer and Controller users
+            ->whereNotIn('id', $currentlyWorkingUserIds) // Exclude users who are currently working
             ->whereHas('employee_shifts', function($query) {
                 $query->where('status', 'Active');
             })
