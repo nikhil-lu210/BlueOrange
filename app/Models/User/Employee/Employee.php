@@ -5,6 +5,7 @@ namespace App\Models\User\Employee;
 use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use App\Models\User\Employee\Traits\EmployeeRelations;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,6 +15,10 @@ class Employee extends Model
     use HasFactory, SoftDeletes, CascadeSoftDeletes, EmployeeRelations, HasCustomRouteId;
 
     protected $cascadeDeletes = ['user'];
+
+    protected $casts = [
+        'note' => PurifyHtmlOnGet::class,
+    ];
 
     protected $fillable = [
         'user_id',
@@ -32,5 +37,6 @@ class Employee extends Model
         'institute_id',
         'education_level_id',
         'passing_year',
+        'note',
     ];
 }
