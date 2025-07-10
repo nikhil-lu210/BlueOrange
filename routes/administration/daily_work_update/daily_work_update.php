@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Administration\DailyWorkUpdate\DailyWorkUpdateController;
+use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use Illuminate\Support\Facades\Route;
 
 /* ==============================================
@@ -19,4 +20,14 @@ Route::controller(DailyWorkUpdateController::class)
         Route::get('/edit/{daily_work_update}', 'edit')->name('edit')->can('Daily Work Update Update');
         Route::post('/update/{daily_work_update}', 'update')->name('update')->can('Daily Work Update Update');
         Route::get('/destroy/{daily_work_update}', 'destroy')->name('destroy')->can('Daily Work Update Delete');
+
+        // Debug route to test route binding
+        Route::get('/debug/{daily_work_update}', function(DailyWorkUpdate $dailyWorkUpdate) {
+            return response()->json([
+                'id' => $dailyWorkUpdate->id,
+                'route_key' => $dailyWorkUpdate->getRouteKey(),
+                'user_id' => $dailyWorkUpdate->user_id,
+                'date' => $dailyWorkUpdate->date
+            ]);
+        })->name('debug');
     });

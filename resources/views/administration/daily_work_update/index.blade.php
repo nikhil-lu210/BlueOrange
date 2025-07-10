@@ -182,11 +182,11 @@
                                                         break;
                                                 }
                                             @endphp
-                                            <small class="badge bg-{{ $color }}">
+                                            <small class="badge bg-{{ $color }} rating-display">
                                                 {{ $dailyUpdate->rating }} out of 5
                                             </small>
                                         @else
-                                            <small class="badge bg-danger">
+                                            <small class="badge bg-danger rating-display">
                                                 {{ __('Not Reviewed') }}
                                             </small>
                                         @endif
@@ -216,6 +216,31 @@
                                                 <i class="text-white ti ti-info-hexagon"></i>
                                             </a>
                                         @endcan
+
+                                        @canany (['Daily Work Update Everything', 'Daily Work Update Update'])
+                                            <div class="dropdown mt-1">
+                                                @if (!is_null($dailyUpdate->rating))
+                                                    <button class="btn btn-sm btn-outline-dark dropdown-toggle" type="button" id="dropdownMenuButton{{ $dailyUpdate->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="ti ti-star-filled me-1"></i>{{ $dailyUpdate->rating }}
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-sm btn-dark dropdown-toggle" type="button" id="dropdownMenuButton{{ $dailyUpdate->id }}" data-bs-toggle="dropdown" aria-expanded="false">
+                                                        <i class="text-white ti ti-check"></i>
+                                                    </button>
+                                                @endif
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton{{ $dailyUpdate->id }}">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        <li>
+                                                            <a class="dropdown-item rating-update" href="#"
+                                                            data-url="{{ route('administration.daily_work_update.update', ['daily_work_update' => $dailyUpdate]) }}"
+                                                            data-rating="{{ $i }}">
+                                                                <i class="ti ti-star me-2"></i>{{ $i }}
+                                                            </a>
+                                                        </li>
+                                                    @endfor
+                                                </ul>
+                                            </div>
+                                        @endcanany
                                     </td>
                                 </tr>
                             @endforeach
@@ -263,6 +288,150 @@
                 todayHighlight: true,
                 autoclose: true,
                 orientation: 'auto right'
+            });
+        });
+    </script>
+
+    <script>
+        $(document).ready(function() {
+            $('.rating-update').click(function(e) {
+                e.preventDefault();
+
+                var $this = $(this);
+                var url = $this.data('url');
+                var rating = $this.data('rating');
+                var $dropdown = $this.closest('.dropdown');
+                var $button = $dropdown.find('.dropdown-toggle');
+
+                // Debug logging
+                console.log('Rating Update Request:', {
+                    url: url,
+                    rating: rating
+                });
+
+                // Show loading state
+                var originalButtonHtml = $button.html();
+                $button.html('<i class="text-white ti ti-loader-2 ti-spin"></i>').prop('disabled', true);
+
+                // Close dropdown
+                $dropdown.find('.dropdown-menu').removeClass('show');
+                $button.removeClass('show').attr('aria-expanded', 'false');
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    data: {
+                        _token: '{{ csrf_token() }}',
+                        rating: rating
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                            // Update button to show rating with new styling
+                            $button.html('<i class="ti ti-star-filled me-1"></i>' + rating)
+                                   .removeClass('btn-dark btn-primary')
+                                   .addClass('btn-outline-dark')
+                                   .prop('disabled', false);
+
+                            // Show toast success message
+                            @if(function_exists('toast'))
+                                // Use Laravel SweetAlert toast
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Rating Updated!',
+                                    text: response.message || 'Daily Work Update has been rated successfully.',
+                                    timer: 3000,
+                                    showConfirmButton: false,
+                                    toast: true,
+                                    position: 'top-end',
+                                    timerProgressBar: true
+                                });
+                            @else
+                                // Fallback to toastr if available
+                                if (typeof toastr !== 'undefined') {
+                                    toastr.success(response.message || 'Rating updated successfully');
+                                } else {
+                                    alert(response.message || 'Rating updated successfully');
+                                }
+                            @endif
+
+                            // Update the rating display in the row if exists
+                            var $ratingCell = $this.closest('tr').find('.rating-display');
+                            if ($ratingCell.length) {
+                                // Determine badge color based on rating
+                                var badgeColor = 'success';
+                                switch(rating) {
+                                    case '1': badgeColor = 'danger'; break;
+                                    case '2': badgeColor = 'warning'; break;
+                                    case '3': badgeColor = 'dark'; break;
+                                    case '4': badgeColor = 'primary'; break;
+                                    default: badgeColor = 'success'; break;
+                                }
+                                $ratingCell.removeClass('bg-danger bg-warning bg-dark bg-primary bg-success')
+                                          .addClass('bg-' + badgeColor)
+                                          .text(rating + ' out of 5');
+                            }
+
+                            // Remove the danger background from the row if it was unrated
+                            $this.closest('tr').removeClass('bg-label-danger');
+                        } else {
+                            throw new Error(response.message || 'Unknown error occurred');
+                        }
+                    },
+                    error: function(xhr) {
+                        // Restore original button state
+                        $button.html(originalButtonHtml).prop('disabled', false);
+
+                        // Log error details for debugging
+                        console.log('AJAX Error Details:', {
+                            status: xhr.status,
+                            statusText: xhr.statusText,
+                            responseText: xhr.responseText,
+                            url: url,
+                            rating: rating
+                        });
+
+                        var errorMessage = 'Failed to update rating';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.status === 404) {
+                            errorMessage = 'Daily Work Update not found. Please refresh the page and try again.';
+                        } else if (xhr.status === 422) {
+                            errorMessage = 'Validation error occurred';
+                        } else if (xhr.status === 403) {
+                            errorMessage = 'You do not have permission to perform this action';
+                        } else if (xhr.status === 500) {
+                            errorMessage = 'Server error occurred. Please try again.';
+                        }
+
+                        // Show toast error message
+                        @if(function_exists('toast'))
+                            // Use Laravel SweetAlert toast
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Rating Failed!',
+                                text: errorMessage,
+                                timer: 4000,
+                                showConfirmButton: false,
+                                toast: true,
+                                position: 'top-end',
+                                timerProgressBar: true
+                            });
+                        @else
+                            // Fallback to toastr if available
+                            if (typeof toastr !== 'undefined') {
+                                toastr.error(errorMessage);
+                            } else {
+                                alert('Error: ' + errorMessage);
+                            }
+                        @endif
+                    }
+                });
             });
         });
     </script>

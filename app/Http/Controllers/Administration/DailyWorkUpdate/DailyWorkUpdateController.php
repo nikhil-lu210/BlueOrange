@@ -341,7 +341,7 @@ class DailyWorkUpdateController extends Controller
                 $teamLeader->notify(new DailyWorkUpdateCreateNotification($workUpdate, auth()->user()));
 
                 // Send Mail to the Team Leader
-                Mail::to($teamLeader->employee->official_email)->queue(new DailyWorkUpdateRequestMail($workUpdate, $teamLeader));
+                // Mail::to($teamLeader->employee->official_email)->queue(new DailyWorkUpdateRequestMail($workUpdate, $teamLeader));
             });
 
             toast('Daily Work Update Has Been Submitted Successfully.', 'success');
@@ -379,7 +379,13 @@ class DailyWorkUpdateController extends Controller
      */
     public function update(Request $request, DailyWorkUpdate $dailyWorkUpdate)
     {
-        // dd($request->all(), $comment);
+        // Validate rating if provided
+        if ($request->has('rating')) {
+            $request->validate([
+                'rating' => 'required|integer|min:1|max:5'
+            ]);
+        }
+
         try {
             DB::transaction(function () use ($request, $dailyWorkUpdate) {
                 $comment = $request->input('comment');
@@ -397,9 +403,34 @@ class DailyWorkUpdateController extends Controller
                 $dailyWorkUpdate->user->notify(new DailyWorkUpdateUpdateNotification($dailyWorkUpdate, auth()->user()));
             });
 
+            // Handle AJAX requests
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Daily Work Update Has Been Rated Successfully.',
+                    'rating' => $dailyWorkUpdate->fresh()->rating
+                ]);
+            }
+
             toast('Daily Work Update Has Been Rated Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
+            // Log the error for debugging
+            \Log::error('Daily Work Update rating error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'request_data' => $request->all(),
+                'daily_work_update_id' => $dailyWorkUpdate->id ?? 'N/A'
+            ]);
+
+            // Handle AJAX error requests
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'An error occurred: ' . $e->getMessage()
+                ], 500);
+            }
+
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
         }
     }
