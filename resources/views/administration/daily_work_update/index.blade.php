@@ -294,7 +294,9 @@
 
     <script>
         $(document).ready(function() {
-            $('.rating-update').click(function(e) {
+            // Use event delegation for DataTables compatibility
+            // This ensures rating dropdowns work on all pages/rows, not just the first 10
+            $(document).on('click', '.rating-update', function(e) {
                 e.preventDefault();
 
                 var $this = $(this);
