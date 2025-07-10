@@ -77,6 +77,7 @@ class UserUpdateRequest extends FormRequest
                 }
             }],
             'passing_year' => ['nullable', 'integer', 'min:1950', 'max:' . (date('Y') + 10)],
+            'note' => ['nullable', 'string'],
         ];
     }
 

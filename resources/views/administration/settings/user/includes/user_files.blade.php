@@ -67,6 +67,9 @@
                                                 <a href="{{ file_media_download($file) }}" target="_blank" class="btn btn-icon btn-primary btn-sm waves-effect" title="Download {{ $file->original_name }}">
                                                     <i class="ti ti-download"></i>
                                                 </a>
+                                                <a href="{{ get_file_media_url($file) }}" target="_blank" class="btn btn-icon btn-dark btn-sm waves-effect" title="View {{ $file->original_name }}">
+                                                    <i class="ti ti-eye"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     @endforeach

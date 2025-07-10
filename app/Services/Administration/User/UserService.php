@@ -318,6 +318,7 @@ class UserService
                     'institute_id' => $instituteId,
                     'education_level_id' => $educationLevelId,
                     'passing_year' => $data['passing_year'] ?? null,
+                    'note' => $data['note'] ?? null,
                 ]);
             }
 

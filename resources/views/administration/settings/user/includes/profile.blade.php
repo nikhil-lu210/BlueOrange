@@ -239,6 +239,22 @@
         </div>
     </div>
 
+
+    @canany(['User Create', 'User Update'])
+        <div class="col-md-12">
+            <div class="card mb-4">
+                <div class="card-header pb-0">
+                    <h6 class="card-text text-uppercase float-start">User Note</h6>
+                </div>
+
+                <div class="card-body mt-3">
+                    {!! optional($user->employee)->note !!}
+                </div>
+            </div>
+        </div>
+    @endcanany
+
+
     <div class="col-md-6">
         @canany(['User Create', 'User Update'])
             <div class="card mb-4">

@@ -11,6 +11,9 @@
     {{--  External CSS  --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/typography.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/katex.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/quill/editor.css') }}" />
 
     {{-- Bootstrap Select --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
@@ -64,7 +67,7 @@
             </div>
             <!-- Account -->
             <div class="card-body">
-                <form action="{{ route('administration.settings.user.update', ['user' => $user]) }}" method="post" enctype="multipart/form-data" autocomplete="off">
+                <form id="profileForm" action="{{ route('administration.settings.user.update', ['user' => $user]) }}" method="post" enctype="multipart/form-data" autocomplete="off">
                     @csrf
                     <div class="d-flex align-items-start align-items-sm-center gap-4">
                         @if ($user->hasMedia('avatar'))
@@ -299,6 +302,14 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
+                        <div class="mb-3 col-md-12">
+                            <label class="form-label">User's Note</label>
+                            <div name="note" id="full-editor">{!! old('note', optional($user->employee)->note) !!}</div>
+                            <textarea class="d-none" name="note" id="note-input">{{ old('note', optional($user->employee)->note) }}</textarea>
+                            @error('note')
+                                <b class="text-danger">{{ $message }}</b>
+                            @enderror
+                        </div>
                     </div>
                     <div class="mt-2 float-end">
                         <button type="reset" onclick="return confirm('Sure Want To Reset?');" class="btn btn-outline-danger me-2">Reset Form</button>
@@ -320,6 +331,11 @@
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
+
+
+    <!-- Vendors JS -->
+    <script src="{{ asset('assets/vendor/libs/quill/katex.js') }}"></script>
+    <script src="{{ asset('assets/vendor/libs/quill/quill.js') }}"></script>
 
     {{-- Bootstrap Select --}}
     <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
@@ -448,6 +464,39 @@
                     // Only insert if user explicitly selects the tag
                     data.push(tag);
                 }
+            });
+        });
+    </script>
+
+
+    <script>
+        $(document).ready(function () {
+            var fullToolbar = [
+                [{ font: [] }, { size: [] }],
+                ["bold", "italic", "underline", "strike"],
+                [{ color: [] }, { background: [] }],
+                ["link"],
+                [{ header: "1" }, { header: "2" }, "blockquote", "code-block"],
+                [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+            ];
+
+            var fullEditor = new Quill("#full-editor", {
+                bounds: "#full-editor",
+                placeholder: "Ex: Mr. John Doe got promoted as Manager",
+                modules: {
+                    formula: true,
+                    toolbar: fullToolbar,
+                },
+                theme: "snow",
+            });
+
+            // Set the editor content to the old note if validation fails
+            @if(old('note'))
+                fullEditor.root.innerHTML = {!! json_encode(old('note')) !!};
+            @endif
+
+            $('#profileForm').on('submit', function() {
+                $('#note-input').val(fullEditor.root.innerHTML);
             });
         });
     </script>
