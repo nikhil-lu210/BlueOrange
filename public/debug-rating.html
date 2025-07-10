@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Rating Issue</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Debug Daily Work Update Rating Issue</h2>
+        
+        <div class="card">
+            <div class="card-body">
+                <h5>Steps to Debug:</h5>
+                <ol>
+                    <li>Open the Daily Work Update page</li>
+                    <li>Open browser Developer Tools (F12)</li>
+                    <li>Go to Console tab</li>
+                    <li>Try to rate a work update</li>
+                    <li>Check the console for debug information</li>
+                </ol>
+                
+                <h5 class="mt-4">What to Look For:</h5>
+                <ul>
+                    <li><strong>URL Format:</strong> Should contain encoded ID (like: /daily_work_update/update/abc123def456)</li>
+                    <li><strong>Error Status:</strong> 404 = Route not found, 500 = Server error</li>
+                    <li><strong>Response Text:</strong> Will show the exact error message</li>
+                </ul>
+                
+                <h5 class="mt-4">Common Issues:</h5>
+                <ul>
+                    <li><strong>404 Error:</strong> Route binding failed - check if Hashids is working</li>
+                    <li><strong>500 Error:</strong> Server error - check Laravel logs</li>
+                    <li><strong>422 Error:</strong> Validation failed - check rating value</li>
+                    <li><strong>403 Error:</strong> Permission denied - check user permissions</li>
+                </ul>
+                
+                <div class="alert alert-info mt-4">
+                    <strong>Debug Information:</strong><br>
+                    The JavaScript now logs detailed information to the browser console.
+                    Check the console for "Rating Update Request" and "AJAX Error Details" messages.
+                </div>
+                
+                <h5 class="mt-4">Test Route:</h5>
+                <p>You can also test the route binding by visiting:</p>
+                <code>/daily_work_update/debug/{encoded_id}</code>
+                <p class="mt-2">Replace {encoded_id} with an actual encoded ID from the page.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

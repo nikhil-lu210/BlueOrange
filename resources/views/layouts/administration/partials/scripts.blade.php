@@ -38,6 +38,9 @@
 {{-- Custom Js by NIKHIL --}}
 <script src="{{ asset('assets/js/custom.js') }}"></script>
 
+<!-- SweetAlert2 for Toast Notifications -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
 <!-- Page JS -->
 @yield('script_links')
 
