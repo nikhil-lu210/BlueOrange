@@ -123,6 +123,9 @@
                             <tr>
                                 <th>Sl.</th>
                                 <th>Date</th>
+                                @canany (['Daily Work Update Everything', 'Daily Work Update Update'])
+                                    <th>Employee</th>
+                                @endcanany
                                 <th>Team Leader</th>
                                 <th>Submitted At</th>
                                 <th class="text-center">Action</th>
@@ -164,26 +167,13 @@
                                             </small>
                                         @endif
                                     </td>
+                                    @canany (['Daily Work Update Everything', 'Daily Work Update Update'])
+                                        <td>
+                                            {!! show_user_name_and_avatar($dailyUpdate->user, role: null) !!}
+                                        </td>
+                                    @endcanany
                                     <td>
-                                        <div class="d-flex justify-content-start align-items-center user-name">
-                                            <div class="avatar-wrapper">
-                                                <div class="avatar me-2">
-                                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}">
-                                                        @if ($dailyUpdate->team_leader->hasMedia('avatar'))
-                                                            <img src="{{ $dailyUpdate->team_leader->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $dailyUpdate->team_leader->name }} Avatar" class="rounded-circle">
-                                                        @else
-                                                            <span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">
-                                                                {{ profile_name_pic($dailyUpdate->team_leader) }}
-                                                            </span>
-                                                        @endif
-                                                    </a>
-                                                </div>
-                                            </div>
-                                            <div class="d-flex flex-column">
-                                                <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyUpdate->team_leader]) }}" target="_blank" class="emp_name text-truncate">{{ $dailyUpdate->team_leader->alias_name }}</a>
-                                                <small class="emp_post text-truncate text-muted">{{ $dailyUpdate->team_leader->role->name }}</small>
-                                            </div>
-                                        </div>
+                                        {!! show_user_name_and_avatar($dailyUpdate->team_leader, role: null) !!}
                                     </td>
                                     <td>
                                         <small class="text-bold">{{ show_date($dailyUpdate->created_at) }}</small>
