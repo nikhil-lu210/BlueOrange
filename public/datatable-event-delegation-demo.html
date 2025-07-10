@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DataTable Event Delegation Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/dataTables.bootstrap5.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap5.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        .ti {
+            width: 1em;
+            height: 1em;
+            display: inline-block;
+        }
+        .ti-star-filled::before { content: "★"; }
+        .ti-star::before { content: "☆"; }
+        .ti-check::before { content: "✓"; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>DataTable Event Delegation Demo</h2>
+        <p class="text-muted">This demonstrates how event delegation fixes the dropdown issue in DataTables</p>
+        
+        <div class="alert alert-info">
+            <h6><strong>The Problem:</strong></h6>
+            <p class="mb-2">When using DataTables with pagination, event handlers attached with <code>$('.rating-update').click()</code> only work for the first page because they're only bound to initially loaded DOM elements.</p>
+            
+            <h6><strong>The Solution:</strong></h6>
+            <p class="mb-0">Use event delegation with <code>$(document).on('click', '.rating-update', function())</code> which works for dynamically loaded content.</p>
+        </div>
+        
+        <div class="card">
+            <div class="card-body">
+                <table id="demo-table" class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Employee</th>
+                            <th>Date</th>
+                            <th>Rating</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Data will be populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h5>Test Instructions:</h5>
+            <ol>
+                <li>Navigate to different pages in the table above</li>
+                <li>Try clicking the rating dropdowns on any page</li>
+                <li>Notice that they work on all pages, not just the first one</li>
+                <li>This is because we're using event delegation</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            // Generate sample data
+            var data = [];
+            for (var i = 1; i <= 50; i++) {
+                var rating = Math.floor(Math.random() * 5) + 1;
+                var isRated = Math.random() > 0.3;
+                
+                data.push([
+                    i,
+                    'Employee ' + i,
+                    '2024-01-' + String(i % 28 + 1).padStart(2, '0'),
+                    isRated ? '<span class="badge bg-success rating-display">' + rating + ' out of 5</span>' : '<span class="badge bg-danger rating-display">Not Reviewed</span>',
+                    '<div class="dropdown">' +
+                        '<button class="btn btn-sm ' + (isRated ? 'btn-outline-dark' : 'btn-dark') + ' dropdown-toggle" type="button" data-bs-toggle="dropdown">' +
+                            (isRated ? '<i class="ti ti-star-filled me-1"></i>' + rating : '<i class="text-white ti ti-check"></i>') +
+                        '</button>' +
+                        '<ul class="dropdown-menu">' +
+                            '<li><a class="dropdown-item rating-update" href="#" data-rating="1" data-id="' + i + '"><i class="ti ti-star me-2"></i>1</a></li>' +
+                            '<li><a class="dropdown-item rating-update" href="#" data-rating="2" data-id="' + i + '"><i class="ti ti-star me-2"></i>2</a></li>' +
+                            '<li><a class="dropdown-item rating-update" href="#" data-rating="3" data-id="' + i + '"><i class="ti ti-star me-2"></i>3</a></li>' +
+                            '<li><a class="dropdown-item rating-update" href="#" data-rating="4" data-id="' + i + '"><i class="ti ti-star me-2"></i>4</a></li>' +
+                            '<li><a class="dropdown-item rating-update" href="#" data-rating="5" data-id="' + i + '"><i class="ti ti-star me-2"></i>5</a></li>' +
+                        '</ul>' +
+                    '</div>'
+                ]);
+            }
+            
+            // Initialize DataTable
+            $('#demo-table').DataTable({
+                data: data,
+                pageLength: 10,
+                responsive: true,
+                columnDefs: [
+                    { orderable: false, targets: [4] }
+                ]
+            });
+            
+            // Event delegation for rating updates - THIS IS THE KEY FIX!
+            $(document).on('click', '.rating-update', function(e) {
+                e.preventDefault();
+                
+                var $this = $(this);
+                var rating = $this.data('rating');
+                var id = $this.data('id');
+                var $dropdown = $this.closest('.dropdown');
+                var $button = $dropdown.find('.dropdown-toggle');
+                
+                // Update button
+                $button.html('<i class="ti ti-star-filled me-1"></i>' + rating)
+                       .removeClass('btn-dark')
+                       .addClass('btn-outline-dark');
+                
+                // Update badge
+                var $ratingCell = $this.closest('tr').find('.rating-display');
+                $ratingCell.removeClass('bg-danger bg-warning bg-dark bg-primary bg-success')
+                          .addClass('bg-success')
+                          .text(rating + ' out of 5');
+                
+                // Close dropdown
+                $dropdown.find('.dropdown-menu').removeClass('show');
+                $button.removeClass('show').attr('aria-expanded', 'false');
+                
+                // Show success message
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Rating Updated!',
+                    text: 'Employee ' + id + ' rated ' + rating + ' out of 5',
+                    timer: 2000,
+                    showConfirmButton: false,
+                    toast: true,
+                    position: 'top-end'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
