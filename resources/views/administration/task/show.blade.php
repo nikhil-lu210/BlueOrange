@@ -205,9 +205,18 @@
         </div>
     </div>
 
-    <div class="col-md-5">
+    <div class="col-md-7">
         {{-- <!-- About Task --> --}}
         @include('administration.task.includes.about_task')
+
+        {{-- Task Details --}}
+        @include('administration.task.includes.task_details')
+
+        {{-- <!-- Task Files --> --}}
+        @include('administration.task.includes.task_files')
+
+        {{-- <!-- Sub Tasks --> --}}
+        @include('administration.task.includes.sub_tasks')
 
         {{-- Task Assignees --}}
         @include('administration.task.includes.task_assignees')
@@ -218,16 +227,7 @@
         @endif
     </div>
 
-    <div class="col-md-7">
-        {{-- Task Details --}}
-        @include('administration.task.includes.task_details')
-
-        {{-- <!-- Task Files --> --}}
-        @include('administration.task.includes.task_files')
-
-        {{-- <!-- Sub Tasks --> --}}
-        @include('administration.task.includes.sub_tasks')
-
+    <div class="col-md-5">
         {{-- Task Comments --}}
         @include('administration.task.includes.task_comments')
     </div>

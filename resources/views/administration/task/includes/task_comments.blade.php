@@ -17,7 +17,7 @@
             <div class="col-md-12">
                 <form action="{{ route('administration.task.comment.store', ['task' => $task]) }}" method="post" enctype="multipart/form-data" autocomplete="off" id="taskCommentForm">
                     @csrf
-                    <div class="collapse" id="taskComment">
+                    <div class="collapse show" id="taskComment">
                         <div class="row">
                             <div class="mb-3 col-md-12">
                                 <div name="comment" id="taskCommentEditor">{!! old('comment') !!}</div>
@@ -46,10 +46,10 @@
 
         <div class="row">
             <div class="col-md-12 comments">
-                <table class="table">
+                <table class="table" style="border-spacing: 0 15px; border-collapse: separate;">
                     <tbody>
                         @foreach ($task->comments as $comment)
-                            <tr class="border-0 border-bottom-0">
+                            <tr class="mb-3 rounded pt-3" style="background-color: #7367f014 !important; border: 1px solid #7367f05c !important;">
                                 <td class="border-0 border-bottom-0">
                                     <div class="d-flex justify-content-between align-items-center user-name">
                                         {!! show_user_name_and_avatar($comment->commenter, name: null) !!}
