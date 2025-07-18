@@ -1,6 +1,9 @@
 <?php
 
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,7 +20,16 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
+Auth::routes([
+    'reset' => false, // Disable default password reset routes
+]);
+
+// Custom password reset routes
+Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('password/sent', [ForgotPasswordController::class, 'showLinkSentPage'])->name('password.sent');
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 
 /*==============================================================
