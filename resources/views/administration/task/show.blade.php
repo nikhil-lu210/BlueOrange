@@ -144,6 +144,7 @@
                     <div class="d-flex align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
                         <div class="user-profile-info">
                             <h4 class="mb-0 text-capitalize">{{ $task->title }}</h4>
+                            <small class="text-muted">{{ $task->taskid }}</small>
                             @if ($task->users)
                                 <div class="d-flex align-items-center">
                                     <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2 mt-1">
@@ -204,9 +205,18 @@
         </div>
     </div>
 
-    <div class="col-md-5">
+    <div class="col-md-7">
         {{-- <!-- About Task --> --}}
         @include('administration.task.includes.about_task')
+
+        {{-- Task Details --}}
+        @include('administration.task.includes.task_details')
+
+        {{-- <!-- Task Files --> --}}
+        @include('administration.task.includes.task_files')
+
+        {{-- <!-- Sub Tasks --> --}}
+        @include('administration.task.includes.sub_tasks')
 
         {{-- Task Assignees --}}
         @include('administration.task.includes.task_assignees')
@@ -217,16 +227,7 @@
         @endif
     </div>
 
-    <div class="col-md-7">
-        {{-- Task Details --}}
-        @include('administration.task.includes.task_details')
-
-        {{-- <!-- Task Files --> --}}
-        @include('administration.task.includes.task_files')
-
-        {{-- <!-- Sub Tasks --> --}}
-        @include('administration.task.includes.sub_tasks')
-
+    <div class="col-md-5">
         {{-- Task Comments --}}
         @include('administration.task.includes.task_comments')
     </div>

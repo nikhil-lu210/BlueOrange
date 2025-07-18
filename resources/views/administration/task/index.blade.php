@@ -204,6 +204,11 @@
                                     <td>
                                         @if (!is_null($task->deadline))
                                             <b>{{ show_date($task->deadline) }}</b>
+                                            @php
+                                                $deadlineStatus = task_deadline_status($task->deadline, $task->created_at);
+                                            @endphp
+                                            <br>
+                                            <span class="badge {{ $deadlineStatus['badge_class'] }} fs-tiny fw-bold">{{ $deadlineStatus['text'] }}</span>
                                         @else
                                             <span class="badge bg-success">Ongoing Task</span>
                                         @endif
