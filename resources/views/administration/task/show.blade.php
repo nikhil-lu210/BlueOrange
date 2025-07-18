@@ -144,6 +144,7 @@
                     <div class="d-flex align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
                         <div class="user-profile-info">
                             <h4 class="mb-0 text-capitalize">{{ $task->title }}</h4>
+                            <small class="text-muted">{{ $task->taskid }}</small>
                             @if ($task->users)
                                 <div class="d-flex align-items-center">
                                     <ul class="list-unstyled d-flex align-items-center avatar-group mb-0 zindex-2 mt-1">

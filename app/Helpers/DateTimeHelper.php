@@ -560,3 +560,75 @@ if (!function_exists('total_regular_working_days')) {
         return $workingDays->count();
     }
 }
+
+
+if (!function_exists('task_deadline_status')) {
+    /**
+     * Calculate task deadline status and return appropriate badge with days remaining.
+     *
+     * @param string|Carbon|null $deadline The task deadline date
+     * @param string|Carbon|null $createdAt The task creation date (optional, defaults to current date)
+     * @return array Returns array with 'badge_class', 'text', and 'days_remaining'
+     */
+    function task_deadline_status($deadline, $createdAt = null)
+    {
+        if (is_null($deadline)) {
+            return [
+                'badge_class' => 'bg-success',
+                'text' => 'Ongoing Task',
+                'days_remaining' => null
+            ];
+        }
+
+        $deadlineDate = Carbon::parse($deadline)->startOfDay();
+        $today = Carbon::now()->startOfDay();
+        $createdDate = $createdAt ? Carbon::parse($createdAt)->startOfDay() : $today;
+
+        // Calculate days remaining (can be negative if overdue)
+        $daysRemaining = $today->diffInDays($deadlineDate, false);
+
+        // If deadline is overdue
+        if ($daysRemaining < 0) {
+            $overdueDays = abs($daysRemaining);
+            return [
+                'badge_class' => 'bg-danger',
+                'text' => $overdueDays . ' day' . ($overdueDays > 1 ? 's' : '') . ' overdue',
+                'days_remaining' => $daysRemaining
+            ];
+        }
+
+        // Calculate total duration from creation to deadline
+        $totalDuration = $createdDate->diffInDays($deadlineDate);
+
+        // If total duration is 0 (same day task), treat as urgent
+        if ($totalDuration == 0) {
+            return [
+                'badge_class' => 'bg-warning',
+                'text' => 'Due today',
+                'days_remaining' => $daysRemaining
+            ];
+        }
+
+        // Calculate elapsed time percentage
+        $elapsedDays = $createdDate->diffInDays($today);
+        $elapsedPercentage = $totalDuration > 0 ? ($elapsedDays / $totalDuration) * 100 : 0;
+
+        // Determine badge class based on remaining time percentage
+        if ($elapsedPercentage <= 50) {
+            // 50% or more time remaining - success (green)
+            $badgeClass = 'bg-success';
+        } else {
+            // Less than 50% time remaining - warning (yellow)
+            $badgeClass = 'bg-warning';
+        }
+
+        // Format the text
+        $text = $daysRemaining . ' day' . ($daysRemaining > 1 ? 's' : '') . ' remaining';
+
+        return [
+            'badge_class' => $badgeClass,
+            'text' => $text,
+            'days_remaining' => $daysRemaining
+        ];
+    }
+}
