@@ -1,6 +1,6 @@
 git checkout develop
 git pull origin develop
-git checkout -b release-v1.9.9
+git checkout -b release-v1.9.9.1
 git push origin release-v1.9.9.1
 git add .
 git commit -m "Task Details Modified in release v1.9.9.1"
