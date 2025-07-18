@@ -2,12 +2,6 @@
     <div class="card-header header-elements pt-3 pb-3">
         <h5 class="mb-0">{{ __('Sub Tasks') }}</h5>
         <div class="card-header-elements ms-auto">
-            @if (auth()->user()->id == $task->creator->id)
-                <a href="{{ route('administration.task.create', ['parent_task_id' => $task->id]) }}" target="_blank" class="btn btn-xs btn-dark">
-                    <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                    {{ __('Create Sub-Task') }}
-                </a>
-            @endif
             <button id="toggleView" class="btn btn-xs btn-outline-dark" title="Switch View" style="padding: 3px;">
                 <span class="tf-icon ti ti-layout-2"></span>
             </button>

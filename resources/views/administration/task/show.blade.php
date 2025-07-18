@@ -165,6 +165,14 @@
                         </div>
 
                         <div class="actions d-flex">
+                            @can('Task Create')
+                                @if (auth()->user()->id == $task->creator->id)
+                                    <a href="{{ route('administration.task.create', ['parent_task_id' => $task->id]) }}" target="_blank" class="btn btn-success me-1">
+                                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
+                                        {{ __('Create Sub-Task') }}
+                                    </a>
+                                @endif
+                            @endcan
                             @can ('Task Read')
                                 @if ($task->creator_id === auth()->user()->id)
                                     <button type="button" class="btn btn-primary me-1" title="Update Task Status" data-bs-toggle="modal" data-bs-target="#taskStatusModal">
