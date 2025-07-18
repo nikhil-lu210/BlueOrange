@@ -40,50 +40,50 @@ class DiningRoomBookingService
     }
 
     public function disableTimes(&$availableTimeSlots, $bookings, $userBooking, $today)
-{
-    foreach ($availableTimeSlots as $index => $time) {
-        // Determine if the booking time has passed
-        $slotDate = $today;
-        if (Carbon::parse($time)->hour < Carbon::parse('09:00:00')->hour) {
-            $slotDate = Carbon::tomorrow()->toDateString();
-        }
+    {
+        foreach ($availableTimeSlots as $index => $time) {
+            // Determine if the booking time has passed
+            $slotDate = $today;
+            if (Carbon::parse($time)->hour < Carbon::parse('09:00:00')->hour) {
+                $slotDate = Carbon::tomorrow()->toDateString();
+            }
 
-        $slotDateTime = Carbon::parse("$slotDate $time");
-        $isPast = $slotDateTime->lt(now());
+            $slotDateTime = Carbon::parse("$slotDate $time");
+            $isPast = $slotDateTime->lt(now());
 
-        // Get the count of bookings for the specific time, excluding the current user's booking
-        $bookingCount = $bookings->where('booking_time', $time)
-            ->where('status', '!=', 'Cancelled')
-            ->where('user_id', '!=', auth()->id()) // Exclude the current user's booking
-            ->count();
+            // Get the count of bookings for the specific time, excluding the current user's booking
+            $bookingCount = $bookings->where('booking_time', $time)
+                ->where('status', '!=', 'Cancelled')
+                ->where('user_id', '!=', auth()->id()) // Exclude the current user's booking
+                ->count();
 
-        // Disable the time if it is past or if there are 8 or more bookings (excluding the user's booking)
-        if ($userBooking) {
-            // If the user has already booked this time, keep it enabled
-            if ($userBooking->booking_time == $time) {
-                $availableTimeSlots[$index] = [
-                    'time' => $time,
-                    'disabled' => false,
-                    'user_has_booking' => true,
-                ];
+            // Disable the time if it is past or if there are 8 or more bookings (excluding the user's booking)
+            if ($userBooking) {
+                // If the user has already booked this time, keep it enabled
+                if ($userBooking->booking_time == $time) {
+                    $availableTimeSlots[$index] = [
+                        'time' => $time,
+                        'disabled' => false,
+                        'user_has_booking' => true,
+                    ];
+                } else {
+                    $availableTimeSlots[$index] = [
+                        'time' => $time,
+                        'disabled' => true,
+                        'user_has_booking' => false,
+                    ];
+                }
             } else {
+                // Disable time if it has 8 bookings or it's in the past
+                $disabled = $isPast || $bookingCount >= 8;
                 $availableTimeSlots[$index] = [
                     'time' => $time,
-                    'disabled' => true,
+                    'disabled' => $disabled,
                     'user_has_booking' => false,
                 ];
             }
-        } else {
-            // Disable time if it has 8 bookings or it's in the past
-            $disabled = $isPast || $bookingCount >= 8;
-            $availableTimeSlots[$index] = [
-                'time' => $time,
-                'disabled' => $disabled,
-                'user_has_booking' => false,
-            ];
         }
     }
-}
 
 
     public function determineBookingDate($user, $bookingTime)

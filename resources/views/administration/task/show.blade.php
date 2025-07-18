@@ -168,19 +168,28 @@
                         <div class="actions d-flex">
                             @can('Task Create')
                                 @if (auth()->user()->id == $task->creator->id)
-                                    <a href="{{ route('administration.task.create', ['parent_task_id' => $task->id]) }}" target="_blank" class="btn btn-success me-1">
-                                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                                        {{ __('Create Sub-Task') }}
+                                    <a href="{{ route('administration.task.create', ['parent_task_id' => $task->id]) }}" target="_blank" class="btn btn-label-dark btn-icon waves-effect me-1" title="{{ __('Create Sub-Task') }}">
+                                        <span class="tf-icon ti ti-plus"></span>
+                                    </a>
+
+                                    <a href="{{ route('administration.task.history.show', ['task' => $task]) }}" target="_blank" class="btn btn-label-success btn-icon waves-effect me-1" title="{{ __('Task History') }}">
+                                        <span class="tf-icon ti ti-history"></span>
+                                    </a>
+
+                                    <a href="javascript:void(0);" class="btn btn-label-primary btn-icon waves-effect me-1" data-bs-toggle="modal" data-bs-target="#taskStatusModal" title="{{ __('Update Task Status') }}">
+                                        <i class="ti ti-check"></i>
+                                    </a>
+
+                                    <a href="{{ route('administration.task.edit', ['task' => $task]) }}" class="btn btn-label-info btn-icon waves-effect me-1" title="{{ __('Edit Task') }}">
+                                        <span class="tf-icon ti ti-edit"></span>
+                                    </a>
+
+                                    <a href="{{ route('administration.task.destroy', ['task' => $task]) }}" class="btn btn-label-danger btn-icon waves-effect me-1 confirm-danger" title="{{ __('Delete Task') }}">
+                                        <span class="tf-icon ti ti-trash"></span>
                                     </a>
                                 @endif
                             @endcan
                             @can ('Task Read')
-                                @if ($task->creator_id === auth()->user()->id)
-                                    <button type="button" class="btn btn-primary me-1" title="Update Task Status" data-bs-toggle="modal" data-bs-target="#taskStatusModal">
-                                        <i class="ti ti-check me-1" style="margin-top: -3px;"></i>
-                                        Update Status
-                                    </button>
-                                @endif
                                 @if ($task->users->contains(auth()->user()->id) && ($task->status == 'Active' || $task->status == 'Running'))
                                     @if (!$isWorking)
                                         <form action="{{ route('administration.task.history.start', ['task' => $task]) }}" method="post">
