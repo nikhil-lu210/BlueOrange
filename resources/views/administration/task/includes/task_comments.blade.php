@@ -48,8 +48,12 @@
             <div class="col-md-12 comments">
                 <table class="table" style="border-spacing: 0 15px; border-collapse: separate;">
                     <tbody>
+                        @php
+                            $senderColor = 'background-color: #f0676714 !important; border: 1px solid #f067675c !important;';
+                            $receiverColor = 'background-color: #7367f014 !important; border: 1px solid #7367f05c !important;';
+                        @endphp
                         @foreach ($task->comments as $comment)
-                            <tr class="mb-3 rounded pt-3" style="background-color: #7367f014 !important; border: 1px solid #7367f05c !important;">
+                            <tr class="mb-3 rounded pt-3" style="{{ $comment->commenter->id == auth()->user()->id ? $senderColor : $receiverColor }}">
                                 <td class="border-0 border-bottom-0">
                                     <div class="d-flex justify-content-between align-items-center user-name">
                                         {!! show_user_name_and_avatar($comment->commenter, name: null) !!}
