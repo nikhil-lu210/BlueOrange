@@ -18,6 +18,11 @@ class AttendanceEntryService
     public function __construct($user)
     {
         $this->user = $user;
+
+        if ($this->user->status !== 'Active') {
+            toast('You are not an active user. You cannot clock in or out.', 'danger');
+            abort(403, 'You are not an active user. You cannot clock in or out.');
+        }
     }
 
     public function clockIn($attendanceType, $clockInDate = null, $clockInTime = null, $clockInMedium = 'Manual', $scannerId = null)
