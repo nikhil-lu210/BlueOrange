@@ -217,9 +217,7 @@
         @include('administration.task.includes.task_files')
 
         {{-- <!-- Sub Tasks --> --}}
-        @if ($task->sub_tasks->count() > 0)
-            @include('administration.task.includes.sub_tasks')
-        @endif
+        @include('administration.task.includes.sub_tasks')
 
         {{-- Task Comments --}}
         @include('administration.task.includes.task_comments')

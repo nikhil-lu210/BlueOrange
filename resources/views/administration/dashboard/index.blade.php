@@ -123,13 +123,13 @@
             /* background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); */
             /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); */
             border-radius: 20px;
-            overflow: hidden;
+            /* overflow: hidden; */
             width: 100%;
             margin: 0 auto;
             padding: 0rem;
             text-align: center;
-            position: relative;
             z-index: 1;
+            position: relative;
         }
 
         .user-photo {
@@ -140,7 +140,11 @@
             margin-bottom: 1rem;
             border: 5px solid white;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            animation: float 3s ease-in-out infinite;
+            /* animation: float 3s ease-in-out infinite; */
+            position: absolute;
+            z-index: 99999999;
+            left: -17%;
+            top: 25%;
         }
 
         .birthday-wish {
@@ -148,7 +152,7 @@
             border-radius: 10px;
             border: 3px solid white;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-            animation: float 3s ease-in-out infinite;
+            /* animation: float 3s ease-in-out infinite; */
         }
 
         .message {
