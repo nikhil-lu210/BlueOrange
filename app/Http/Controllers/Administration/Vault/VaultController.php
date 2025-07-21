@@ -80,7 +80,7 @@ class VaultController extends Controller
                     $vault->viewers()->attach($request->viewers);
                 }
             });
-            
+
             toast('Credential Stored successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
@@ -118,7 +118,7 @@ class VaultController extends Controller
                         ->orderBy('name', 'asc');
             }
         ])->get();
-        
+
         return view('administration.vault.edit', compact(['roles', 'vault']));
     }
 
@@ -176,7 +176,21 @@ class VaultController extends Controller
      */
     public function export(VaultExportService $vaultExportService)
     {
-        $vaults = Vault::with(['creator'])->orderBy('name', 'ASC')->get();
+        $user = auth()->user();
+
+        if ($user->hasAnyPermission(['Vault Everything', 'Vault Update', 'Vault Delete'])) {
+            $vaults = Vault::with(['creator'])->orderBy('name', 'ASC')->get();
+        } else {
+            $vaults = Vault::with(['creator'])
+                ->where(function ($query) use ($user) {
+                    $query->where('creator_id', $user->id)
+                        ->orWhereHas('viewers', function ($relation) use ($user) {
+                            $relation->where('user_id', $user->id);
+                        });
+                })
+                ->orderBy('name', 'ASC')
+                ->get();
+        }
 
         try {
             $exportData = $vaultExportService->export($vaults);
