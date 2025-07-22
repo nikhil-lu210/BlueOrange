@@ -22,7 +22,8 @@ class CommentStoreRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'comment' => ['required', 'string', 'min:5']
+            'comment' => ['required', 'string', 'min:5'],
+            'files.*' => ['nullable', 'max:5000']
         ];
     }
 
