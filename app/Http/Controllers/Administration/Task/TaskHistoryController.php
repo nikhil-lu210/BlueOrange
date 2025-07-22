@@ -40,7 +40,7 @@ class TaskHistoryController extends Controller
             // Create comment using service
             $taskCommentService->storeComment($task, $data);
 
-            toast('Task Marked as '. ($status ? 'Understood' : 'Not Understood'), 'success');
+            toast('Task Marked as '. ($status === 'true' ? 'Understood' : 'Not Understood'), 'success');
             return redirect()->back();
         } catch (Exception $e) {
             return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
