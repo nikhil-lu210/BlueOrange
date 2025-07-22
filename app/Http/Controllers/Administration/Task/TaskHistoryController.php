@@ -30,8 +30,8 @@ class TaskHistoryController extends Controller
             $taskCommentService = new TaskCommentService();
 
             $comment = $status === 'false'
-                                    ? "I am having difficulty understanding this task.\nCould you please provide further clarification or additional details?"
-                                    : "I have reviewed and understood the task requirements.\nThank you for the clear instructions.";
+                                    ? "<p>I am having difficulty understanding this task.</p><p>Could you please provide further clarification or additional details?</p>"
+                                    : "<p>I have reviewed and understood the task requirements.</p><p>Thank you for the clear instructions.</p>";
 
             $data = [
                 'comment' => $comment
