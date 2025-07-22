@@ -3,7 +3,7 @@
         <h5 class="mb-0">Task Comments</h5>
 
         <div class="card-header-elements ms-auto">
-            @if ($task->users->contains(auth()->user()->id) || $task->creator_id == auth()->user()->id)
+            @if (($task->users->contains(auth()->user()->id) && !is_null($hasUnderstood)) || $task->creator_id == auth()->user()->id)
                 <button type="button" class="btn btn-primary btn-xs" title="Create Comment" data-bs-toggle="collapse" data-bs-target="#taskComment" aria-expanded="false" aria-controls="taskComment">
                     <span class="tf-icon ti ti-message-circle ti-xs me-1"></span>
                     Comment
@@ -13,36 +13,38 @@
     </div>
     <!-- Account -->
     <div class="card-body">
-        <div class="row">
-            <div class="col-md-12">
-                <form action="{{ route('administration.task.comment.store', ['task' => $task]) }}" method="post" enctype="multipart/form-data" autocomplete="off" id="taskCommentForm">
-                    @csrf
-                    <div class="collapse show" id="taskComment">
-                        <div class="row">
-                            <div class="mb-3 col-md-12">
-                                <div name="comment" id="taskCommentEditor">{!! old('comment') !!}</div>
-                                <textarea class="d-none" name="comment" id="comment-input">{{ old('comment') }}</textarea>
-                                @error('comment')
-                                    <b class="text-danger">{{ $message }}</b>
-                                @enderror
-                            </div>
-                            <div class="col-md-12 mb-1">
-                                <input type="file" id="files[]" name="files[]" value="{{ old('files[]') }}" placeholder="{{ __('Task Comment Files') }}" class="form-control @error('files[]') is-invalid @enderror" multiple/>
-                                @error('files[]')
-                                    <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
-                                @enderror
-                            </div>
-                            <div class="col-md-12">
-                                <button type="submit" class="btn btn-primary btn-sm btn-block mt-2 mb-3">
-                                    <i class="ti ti-check"></i>
-                                    Submit Comment
-                                </button>
+        @if (($task->users->contains(auth()->user()->id) && !is_null($hasUnderstood)) || $task->creator_id == auth()->user()->id) 
+            <div class="row">
+                <div class="col-md-12">
+                    <form action="{{ route('administration.task.comment.store', ['task' => $task]) }}" method="post" enctype="multipart/form-data" autocomplete="off" id="taskCommentForm">
+                        @csrf
+                        <div class="collapse show" id="taskComment">
+                            <div class="row">
+                                <div class="mb-3 col-md-12">
+                                    <div name="comment" id="taskCommentEditor">{!! old('comment') !!}</div>
+                                    <textarea class="d-none" name="comment" id="comment-input">{{ old('comment') }}</textarea>
+                                    @error('comment')
+                                        <b class="text-danger">{{ $message }}</b>
+                                    @enderror
+                                </div>
+                                <div class="col-md-12 mb-1">
+                                    <input type="file" id="files[]" name="files[]" value="{{ old('files[]') }}" placeholder="{{ __('Task Comment Files') }}" class="form-control @error('files[]') is-invalid @enderror" multiple/>
+                                    @error('files[]')
+                                        <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
+                                    @enderror
+                                </div>
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary btn-sm btn-block mt-2 mb-3">
+                                        <i class="ti ti-check"></i>
+                                        Submit Comment
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
-        </div>
+        @endif
 
         <div class="row">
             <div class="col-md-12 comments">

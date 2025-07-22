@@ -12,11 +12,41 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\Administration\Task\TaskStopMail;
 use App\Mail\Administration\Task\TaskStartMail;
+use App\Services\Administration\Task\TaskCommentService;
 use App\Notifications\Administration\Task\TaskStopNotification;
 use App\Notifications\Administration\Task\TaskStartNotification;
 
 class TaskHistoryController extends Controller
 {
+
+    /**
+     * Update
+     */
+    public function hasUnderstood(Task $task, $status)
+    {
+        try {
+            $task->users()->updateExistingPivot(auth()->id(), ['has_understood' => $status === 'false' ? false : true]);
+
+            $taskCommentService = new TaskCommentService();
+
+            $comment = $status === 'false' ? 'I did not understand the task. Please explain more.' : 'I have understand the task. Thanks';
+            
+            $data = [
+                'comment' => $comment
+            ];
+
+            // Create comment using service
+            $taskCommentService->storeComment($task, $data);
+
+            toast('Task Marked as '. ($status ? 'Understood' : 'Not Understood'), 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            return redirect()->back()->withInput()->withErrors('An error occurred: ' . $e->getMessage());
+        }
+    }
+
+
+
     /**
      * Store a newly created resource in storage.
      */

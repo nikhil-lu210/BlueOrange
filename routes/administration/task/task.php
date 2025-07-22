@@ -36,4 +36,6 @@ Route::controller(TaskHistoryController::class)->prefix('task/history')->name('t
     Route::get('/show/{task}', 'show')->name('show')->can('Task Read');
     Route::post('/start/{task}', 'start')->name('start')->can('Task Read');
     Route::post('/stop/{task}/{taskHistory}', 'stop')->name('stop')->can('Task Read');
+
+    Route::get('/understood/{task}/{status}', 'hasUnderstood')->name('understood')->can('Task Read');
 });

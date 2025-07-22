@@ -189,21 +189,49 @@
                                     </a>
                                 @endif
                             @endcan
+
+                            @php
+                                $userPivot = $task->users->where('id', auth()->user()->id)->first()?->pivot;
+                                $hasUnderstood = $userPivot?->has_understood;
+                            @endphp
                             @can ('Task Read')
                                 @if ($task->users->contains(auth()->user()->id) && ($task->status == 'Active' || $task->status == 'Running'))
-                                    @if (!$isWorking)
-                                        <form action="{{ route('administration.task.history.start', ['task' => $task]) }}" method="post">
-                                            @csrf
-                                            <button type="submit" class="btn btn-success me-1" title="Start Working On This Task">
-                                                <i class="ti ti-clock-check me-1" style="margin-top: -3px;"></i>
-                                                Start
+                                    {{-- Show Start or Stop button only if user has understood --}}
+                                    @if ($hasUnderstood == true)
+                                        @if (!$isWorking)
+                                            <form action="{{ route('administration.task.history.start', ['task' => $task]) }}" method="post">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success me-1" title="Start Working On This Task">
+                                                    <i class="ti ti-clock-check me-1" style="margin-top: -3px;"></i>
+                                                    Start
+                                                </button>
+                                            </form>
+                                        @else
+                                            <button type="button" class="btn btn-danger me-1" title="Stop Working On This Task" data-bs-toggle="modal" data-bs-target="#stopTaskModal">
+                                                <i class="ti ti-clock-x me-1" style="margin-top: -3px;"></i>
+                                                Stop
                                             </button>
-                                        </form>
-                                    @else
-                                        <button type="button" class="btn btn-danger me-1" title="Stop  Working On This Task" data-bs-toggle="modal" data-bs-target="#stopTaskModal">
-                                            <i class="ti ti-clock-x me-1" style="margin-top: -3px;"></i>
-                                            Stop
-                                        </button>
+                                        @endif
+                                    @endif
+                                @endif
+
+                                {{-- Buttons for marking as understood / not understood --}}
+                                @if ($task->users->contains(auth()->user()->id))
+                                    @if (is_null($hasUnderstood))
+                                        <a href="{{ route('administration.task.history.understood', ['task' => $task, 'status' => 'true']) }}" class="btn btn-success me-1 confirm-success" title="Mark as Understood">
+                                            <i class="ti ti-check me-1" style="margin-top: -3px;"></i>
+                                            Understood
+                                        </a>
+
+                                        <a href="{{ route('administration.task.history.understood', ['task' => $task, 'status' => 'false']) }}" class="btn btn-danger me-1 confirm-danger" title="Mark as Not Understood">
+                                            <i class="ti ti-x me-1" style="margin-top: -3px;"></i>
+                                            Not Understood
+                                        </a>
+                                    @elseif ($hasUnderstood == false)
+                                        <a href="{{ route('administration.task.history.understood', ['task' => $task, 'status' => 'true']) }}" class="btn btn-success me-1 confirm-success" title="Mark as Understood">
+                                            <i class="ti ti-check me-1" style="margin-top: -3px;"></i>
+                                            Understood
+                                        </a>
                                     @endif
                                 @endif
                             @endcan
