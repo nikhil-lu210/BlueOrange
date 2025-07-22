@@ -29,8 +29,10 @@ class TaskHistoryController extends Controller
 
             $taskCommentService = new TaskCommentService();
 
-            $comment = $status === 'false' ? 'I did not understand the task. Please explain more.' : 'I have understand the task. Thanks';
-            
+            $comment = $status === 'false'
+                                    ? "I am having difficulty understanding this task.\nCould you please provide further clarification or additional details?"
+                                    : "I have reviewed and understood the task requirements.\nThank you for the clear instructions.";
+
             $data = [
                 'comment' => $comment
             ];
