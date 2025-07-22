@@ -214,26 +214,6 @@
                                         @endif
                                     @endif
                                 @endif
-
-                                {{-- Buttons for marking as understood / not understood --}}
-                                @if ($task->users->contains(auth()->user()->id))
-                                    @if (is_null($hasUnderstood))
-                                        <a href="{{ route('administration.task.history.understood', ['task' => $task, 'status' => 'true']) }}" class="btn btn-success me-1 confirm-success" title="Mark as Understood">
-                                            <i class="ti ti-check me-1" style="margin-top: -3px;"></i>
-                                            Understood
-                                        </a>
-
-                                        <a href="{{ route('administration.task.history.understood', ['task' => $task, 'status' => 'false']) }}" class="btn btn-danger me-1 confirm-danger" title="Mark as Not Understood">
-                                            <i class="ti ti-x me-1" style="margin-top: -3px;"></i>
-                                            Not Understood
-                                        </a>
-                                    @elseif ($hasUnderstood == false)
-                                        <a href="{{ route('administration.task.history.understood', ['task' => $task, 'status' => 'true']) }}" class="btn btn-success me-1 confirm-success" title="Mark as Understood">
-                                            <i class="ti ti-check me-1" style="margin-top: -3px;"></i>
-                                            Understood
-                                        </a>
-                                    @endif
-                                @endif
                             @endcan
                         </div>
                     </div>
@@ -265,6 +245,30 @@
     </div>
 
     <div class="col-md-5">
+        @if ($task->users->contains(auth()->user()->id))
+            <div class="card mb-4 {{ $hasUnderstood == true ? 'd-none' : '' }}">
+                <div class="card-body">
+                    {{-- Buttons for marking as understood / not understood --}}
+                    @if (is_null($hasUnderstood))
+                        <a href="{{ route('administration.task.history.understood', ['task' => $task, 'status' => 'true']) }}" class="btn btn-label-success btn-block btn-xl me-1 text-capitalize confirm-success" title="Mark as Understood">
+                            <i class="ti ti-check me-1" style="margin-top: -3px;"></i>
+                            Yes, I have Understood The Task
+                        </a>
+
+                        <a href="{{ route('administration.task.history.understood', ['task' => $task, 'status' => 'false']) }}" class="btn btn-label-danger btn-block btn-xl me-1 text-capitalize mt-3 confirm-danger" title="Mark as Not Understood">
+                            <i class="ti ti-x me-1" style="margin-top: -3px;"></i>
+                            No, I Did Not Understand The Task
+                        </a>
+                    @elseif ($hasUnderstood == false)
+                        <a href="{{ route('administration.task.history.understood', ['task' => $task, 'status' => 'true']) }}" class="btn btn-label-success btn-block btn-xl me-1 text-capitalize confirm-success" title="Mark as Understood">
+                            <i class="ti ti-check me-1" style="margin-top: -3px;"></i>
+                            Yes, Now I have Understood The Task
+                        </a>
+                    @endif
+                </div>
+            </div>
+        @endif
+
         {{-- Task Comments --}}
         @include('administration.task.includes.task_comments')
     </div>
