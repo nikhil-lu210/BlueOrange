@@ -36,8 +36,21 @@ $(document).ready(function() {
         }
 
         // Handle main comment form submission
-        $('#taskCommentForm').on('submit', function() {
-            $('#commentInput').val(taskCommentEditor.root.innerHTML);
+        $('#taskCommentForm').on('submit', function(e) {
+            var content = taskCommentEditor.root.innerHTML;
+            var textContent = taskCommentEditor.getText().trim();
+
+            // Check if content is empty (only contains empty tags)
+            if (!textContent) {
+                e.preventDefault();
+                alert('Please enter a comment before submitting.');
+                return false;
+            }
+
+            $('#commentInput').val(content);
+
+            // Add loading state
+            $(this).find('button[type="submit"]').prop('disabled', true).html('<i class="ti ti-loader"></i> Submitting...');
         });
     }
 
@@ -81,13 +94,27 @@ $(document).ready(function() {
     });
 
     // Handle reply form submissions
-    $(document).on('submit', '.reply-form', function() {
+    $(document).on('submit', '.reply-form', function(e) {
         var form = $(this);
         var commentId = form.find('input[name="parent_comment_id"]').val();
         var replyInput = form.find('.reply-input');
 
         if (replyEditors[commentId]) {
-            replyInput.val(replyEditors[commentId].root.innerHTML);
+            var content = replyEditors[commentId].root.innerHTML;
+
+            // Check if content is empty (only contains empty tags)
+            var textContent = replyEditors[commentId].getText().trim();
+            if (!textContent) {
+                e.preventDefault();
+                alert('Please enter a reply before submitting.');
+                return false;
+            }
+
+            replyInput.val(content);
+
+            // Add loading state
+            form.addClass('loading');
+            form.find('button[type="submit"]').prop('disabled', true).html('<i class="ti ti-loader"></i> Submitting...');
         }
     });
 

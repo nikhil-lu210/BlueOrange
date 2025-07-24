@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Comment;
 
+use App\Models\Comment\Comment;
 use Illuminate\Foundation\Http\FormRequest;
 
 class CommentStoreRequest extends FormRequest
@@ -24,7 +25,20 @@ class CommentStoreRequest extends FormRequest
         return [
             'comment' => ['required', 'string', 'min:5'],
             'files.*' => ['nullable', 'max:5000'],
-            'parent_comment_id' => ['nullable', 'integer', 'exists:comments,id']
+            'parent_comment_id' => [
+                'nullable',
+                'integer',
+                'exists:comments,id',
+                function ($attribute, $value, $fail) {
+                    if ($value) {
+                        // Check if the parent comment is not a reply itself (prevent nested replies)
+                        $parentComment = Comment::find($value);
+                        if ($parentComment && $parentComment->parent_comment_id !== null) {
+                            $fail('You can only reply to main comments, not to replies.');
+                        }
+                    }
+                }
+            ]
         ];
     }
 
@@ -37,7 +51,8 @@ class CommentStoreRequest extends FormRequest
     {
         return [
             'comment.required' => 'The comment is required.',
-            'comment.min' => 'The comment must be at least 5 characters.'
+            'comment.min' => 'The comment must be at least 5 characters.',
+            'parent_comment_id.exists' => 'The selected comment does not exist.'
         ];
     }
 }

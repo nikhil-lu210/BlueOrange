@@ -42,20 +42,14 @@
 }
 
 /* Replies Container Styles */
-/* .replies-container {
-    border-left: 3px solid #7367f0;
-    padding-left: 5px;
-    margin-left: 10px;
-} */
-
 .reply-item {
-    background-color: rgba(255, 255, 255, 0.7) !important;
+    border: 1px solid #7367f070;
     border-radius: 6px !important;
     transition: all 0.2s ease;
 }
 
 .reply-item:hover {
-    background-color: rgba(255, 255, 255, 0.9) !important;
+    border: 1px solid #7367f0;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
