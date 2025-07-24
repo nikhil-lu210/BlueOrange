@@ -26,13 +26,15 @@ class TaskCommentController extends Controller
             // Prepare data for service
             $data = [
                 'comment' => $request->comment,
-                'files' => $request->hasFile('files') ? $request->file('files') : null
+                'files' => $request->hasFile('files') ? $request->file('files') : null,
+                'parent_comment_id' => $request->parent_comment_id ?? null
             ];
 
             // Create comment using service
             $this->taskCommentService->storeComment($task, $data);
 
-            toast('Task Comment Submitted Successfully.', 'success');
+            $message = $request->parent_comment_id ? 'Task Comment Reply Submitted Successfully.' : 'Task Comment Submitted Successfully.';
+            toast($message, 'success');
             return redirect()->back();
         } catch (Exception $e) {
             return redirect()->back()

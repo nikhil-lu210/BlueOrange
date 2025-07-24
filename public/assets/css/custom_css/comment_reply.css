@@ -1,0 +1,207 @@
+/**
+ * Task Comments Styles
+ * Custom styles for task comment and reply functionality
+ */
+
+/* Comment Container Styles */
+.comment-container {
+    transition: all 0.3s ease;
+    border-radius: 8px !important;
+}
+
+.comment-container:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Main Comment Styles */
+.main-comment {
+    position: relative;
+}
+
+.comment-content {
+    line-height: 1.6;
+    word-wrap: break-word;
+}
+
+/* Reply Form Styles */
+.reply-form-container {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 6px;
+    padding: 15px;
+    margin-top: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+.reply-btn {
+    transition: all 0.2s ease;
+}
+
+.reply-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Replies Container Styles */
+/* .replies-container {
+    border-left: 3px solid #7367f0;
+    padding-left: 5px;
+    margin-left: 10px;
+} */
+
+.reply-item {
+    background-color: rgba(255, 255, 255, 0.7) !important;
+    border-radius: 6px !important;
+    transition: all 0.2s ease;
+}
+
+.reply-item:hover {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+.reply-content {
+    line-height: 1.5;
+    word-wrap: break-word;
+}
+
+/* File Attachment Styles */
+.comment-image-container,
+.file-thumbnail-container {
+    transition: all 0.2s ease;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.comment-image-container:hover,
+.file-thumbnail-container:hover {
+    transform: scale(1.02);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.comment-image-container img {
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.file-thumbnail-container {
+    padding: 10px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    text-align: center;
+    min-width: 80px;
+}
+
+.file-thumbnail-container:hover {
+    background-color: rgba(115, 103, 240, 0.1);
+    border-color: #7367f0;
+}
+
+/* User Avatar and Name Styles */
+.user-name {
+    font-weight: 500;
+}
+
+.user-name .avatar {
+    margin-right: 8px;
+}
+
+/* Date Time Styles */
+.date-time {
+    font-size: 0.85rem;
+    opacity: 0.8;
+}
+
+/* Quill Editor Customization for Comments */
+.reply-form .ql-toolbar {
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+}
+
+.reply-form .ql-container {
+    border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+    border-top: none;
+    border-radius: 0 0 4px 4px;
+}
+
+/* Button Styles */
+.reply-form .btn {
+    margin-top: 10px;
+}
+
+.cancel-reply {
+    margin-left: 5px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .replies-container {
+        margin-left: 5px;
+        padding-left: 10px;
+    }
+
+    .comment-container {
+        padding: 15px !important;
+    }
+
+    .reply-form-container {
+        padding: 10px;
+    }
+
+    .comment-image-container img {
+        width: 120px !important;
+        height: 80px !important;
+    }
+
+    .file-thumbnail-container {
+        min-width: 60px;
+        padding: 8px;
+    }
+}
+
+/* Animation for showing/hiding reply forms */
+.reply-form-container {
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading state for forms */
+.reply-form.loading {
+    opacity: 0.7;
+    pointer-events: none;
+}
+
+.reply-form.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid #7367f0;
+    border-radius: 50%;
+    border-top-color: transparent;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

@@ -30,7 +30,7 @@ class Comment extends Model implements HasMedia
         'comment' => PurifyHtmlOnGet::class
     ];
 
-    protected $fillable = ['commentable_id', 'commentable_type', 'user_id', 'comment'];
+    protected $fillable = ['commentable_id', 'commentable_type', 'user_id', 'parent_comment_id', 'comment'];
 
 
     protected static function booted()

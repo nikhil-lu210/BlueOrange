@@ -23,7 +23,8 @@ class CommentStoreRequest extends FormRequest
     {
         return [
             'comment' => ['required', 'string', 'min:5'],
-            'files.*' => ['nullable', 'max:5000']
+            'files.*' => ['nullable', 'max:5000'],
+            'parent_comment_id' => ['nullable', 'integer', 'exists:comments,id']
         ];
     }
 
