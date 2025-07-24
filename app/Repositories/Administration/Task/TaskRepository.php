@@ -12,7 +12,7 @@ class TaskRepository
 {
     /**
      * Get roles with users who have Task Create permission
-     * 
+     *
      * @return Collection
      */
     public function getRolesWithTaskCreators(): Collection
@@ -35,7 +35,7 @@ class TaskRepository
 
     /**
      * Get users who can be assigned to tasks
-     * 
+     *
      * @return Collection
      */
     public function getAssignableUsers(): Collection
@@ -49,7 +49,7 @@ class TaskRepository
 
     /**
      * Get tasks query with filters
-     * 
+     *
      * @param Request $request
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -70,7 +70,7 @@ class TaskRepository
 
     /**
      * Get my tasks query with filters
-     * 
+     *
      * @param Request $request
      * @return \Illuminate\Database\Eloquent\Builder
      */
@@ -97,7 +97,7 @@ class TaskRepository
 
     /**
      * Get detailed task by ID and taskid
-     * 
+     *
      * @param Task $task
      * @param string $taskid
      * @return Task
@@ -120,6 +120,14 @@ class TaskRepository
                     'commenter.roles',
                     'commenter.employee',
                     'commenter.media',
+                    'replies' => function ($reply) {
+                        $reply->with([
+                            'files',
+                            'commenter.roles',
+                            'commenter.employee',
+                            'commenter.media',
+                        ])->orderBy('created_at');
+                    }
                 ])->orderByDesc('created_at')->get();
             },
             'histories' => function ($history) {
@@ -133,7 +141,7 @@ class TaskRepository
 
     /**
      * Get roles with users for task assignment
-     * 
+     *
      * @return Collection
      */
     public function getRolesWithUsers(): Collection
@@ -149,7 +157,7 @@ class TaskRepository
 
     /**
      * Get roles with users not assigned to a specific task
-     * 
+     *
      * @param Task $task
      * @return Collection
      */
@@ -168,7 +176,7 @@ class TaskRepository
 
     /**
      * Apply common filters to task queries
-     * 
+     *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @param Request $request
      * @return void
@@ -192,7 +200,7 @@ class TaskRepository
 
     /**
      * Get users by IDs with employee relationship
-     * 
+     *
      * @param array $userIds
      * @return Collection
      */

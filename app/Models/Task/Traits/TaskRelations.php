@@ -49,6 +49,14 @@ trait TaskRelations
      */
     public function comments(): MorphMany
     {
+        return $this->morphMany(Comment::class, 'commentable')->whereNull('parent_comment_id');
+    }
+
+    /**
+     * Get all comments (including replies) associated with the task.
+     */
+    public function all_comments(): MorphMany
+    {
         return $this->morphMany(Comment::class, 'commentable');
     }
 

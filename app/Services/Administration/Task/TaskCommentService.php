@@ -26,10 +26,18 @@ class TaskCommentService
         $comment = null;
 
         DB::transaction(function () use ($task, $data, &$comment) {
-            // Create the comment
-            $comment = $task->comments()->create([
+            // Prepare comment data
+            $commentData = [
                 'comment' => $data['comment']
-            ]);
+            ];
+
+            // Add parent comment ID if this is a reply
+            if (isset($data['parent_comment_id']) && !empty($data['parent_comment_id'])) {
+                $commentData['parent_comment_id'] = $data['parent_comment_id'];
+            }
+
+            // Create the comment using allComments to allow replies
+            $comment = $task->all_comments()->create($commentData);
 
             // Store Task's Comment Files
             if (isset($data['files']) && !empty($data['files'])) {

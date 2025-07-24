@@ -21,6 +21,9 @@
 
     {{-- Lightbox CSS --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" integrity="sha512-ZKX+BvQihRJPA8CROKBhDNvoc2aDMOdAlcm7TUQY+35XYtrd3yh95QOOhsPDQY9QnKE0Wqag9y38OIgEvb88cA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    {{-- Task Comments CSS --}}
+    <link rel="stylesheet" href="{{ asset('assets/css/custom_css/comment_reply.css') }}" />
 @endsection
 
 @section('custom_css')
@@ -304,6 +307,9 @@
 
     {{-- Lightbox JS --}}
     <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js" integrity="sha512-Ixzuzfxv1EqafeQlTCufWfaC6ful6WFqIz4G+dWvK0beHw0NVJwvCKSgafpy5gwNqKmgUfIBraVwkKI+Cz0SEQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    {{-- Task Comments JS --}}
+    <script src="{{ asset('assets/js/custom_js/task/task_comments.js') }}"></script>
 @endsection
 
 @section('custom_script')
@@ -319,24 +325,7 @@
                 [{ list: "ordered" }, { list: "bullet" }],
             ];
 
-            var taskCommentEditor = new Quill("#taskCommentEditor", {
-                bounds: "#taskCommentEditor",
-                placeholder: "Ex: Your task need to be completed by 20th of this month.",
-                modules: {
-                    formula: true,
-                    toolbar: fullToolbar,
-                },
-                theme: "snow",
-            });
-
-            // Set the editor content to the old comment if validation fails
-            @if(old('comment'))
-                taskCommentEditor.root.innerHTML = {!! json_encode(old('comment')) !!};
-            @endif
-
-            $('#taskCommentForm').on('submit', function() {
-                $('#comment-input').val(taskCommentEditor.root.innerHTML);
-            });
+            // Task Comments are handled by external JS file
 
             var taskStopNoteEditor = new Quill("#taskStopNoteEditor", {
                 bounds: "#taskStopNoteEditor",
