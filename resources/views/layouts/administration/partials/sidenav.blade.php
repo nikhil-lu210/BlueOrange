@@ -20,27 +20,27 @@
 
         @include('layouts.administration.partials.menus.chatting')
 
-        @include('layouts.administration.partials.menus.vault')
-
         @include('layouts.administration.partials.menus.attendance')
 
         @include('layouts.administration.partials.menus.daily_break')
 
-        @include('layouts.administration.partials.menus.leave')
-
-        @include('layouts.administration.partials.menus.penalty')
-
-        @include('layouts.administration.partials.menus.announcement')
+        @include('layouts.administration.partials.menus.daily_work_update')
 
         @include('layouts.administration.partials.menus.task')
 
-        @include('layouts.administration.partials.menus.daily_work_update')
+        @include('layouts.administration.partials.menus.leave')
+
+        @include('layouts.administration.partials.menus.announcement')
 
         @include('layouts.administration.partials.menus.it_ticket')
 
         @include('layouts.administration.partials.menus.booking')
 
+        @include('layouts.administration.partials.menus.penalty')
+
         @include('layouts.administration.partials.menus.quiz')
+
+        @include('layouts.administration.partials.menus.vault')
 
         <!-- Settings -->
         <li class="menu-header small text-uppercase">
