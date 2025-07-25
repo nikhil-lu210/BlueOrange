@@ -1,8 +1,3 @@
-<!-- Settings -->
-<li class="menu-header small text-uppercase">
-    <span class="menu-header-text">{{ __('Settings') }}</span>
-</li>
-
 <!-- System Settings -->
 @canany (['App Setting Read', 'Weekend Read', 'Holiday Read'])
     <li class="menu-item {{ request()->is('settings/system*') ? 'active open' : '' }}">

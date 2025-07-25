@@ -42,17 +42,23 @@
 
         @include('layouts.administration.partials.menus.quiz')
 
-        <!-- Accounts -->
+        <!-- Settings -->
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">{{ __('Accounts') }}</span>
+            <span class="menu-header-text">{{ __('Settings') }}</span>
+        </li>
+
+        @include('layouts.administration.partials.menus.settings')
+
+        <!-- Accounting -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">{{ __('Accounting') }}</span>
         </li>
 
         @include('layouts.administration.partials.menus.salary')
 
         @include('layouts.administration.partials.menus.income_expense')
 
+        {{-- Logs --}}
         @include('layouts.administration.partials.menus.logs')
-
-        @include('layouts.administration.partials.menus.settings')
     </ul>
 </aside>
