@@ -41,20 +41,14 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* Replies Container Styles */
-.reply-item {
-    border: 1px solid #7367f070;
-    border-radius: 6px !important;
-    transition: all 0.2s ease;
+/* Comment with Parent Preview Styles */
+.comment-container.has-parent {
+    border-left: 3px solid #7367f0;
+    margin-left: 10px;
 }
 
-.reply-item:hover {
-    border: 1px solid #7367f0;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
-}
-
-.reply-content {
-    line-height: 1.5;
+.comment-content {
+    line-height: 1.6;
     word-wrap: break-word;
 }
 
@@ -198,4 +192,124 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+/* Chat-like Interface Styles */
+.chat-message {
+    position: relative;
+    scroll-margin-top: 20px; /* For smooth scrolling */
+}
+
+.chat-reply {
+    position: relative;
+    scroll-margin-top: 20px; /* For smooth scrolling */
+}
+
+/* Parent Comment Preview Styles */
+.parent-comment-preview {
+    transition: all 0.2s ease;
+    cursor: pointer;
+    border-radius: 6px !important;
+}
+
+.parent-comment-preview:hover {
+    background-color: rgba(115, 103, 240, 0.1) !important;
+    border-left-color: #7367f0 !important;
+    transform: translateX(2px);
+}
+
+.parent-comment-preview .text-muted {
+    font-size: 0.8rem;
+}
+
+/* Flat Comment Structure Styles */
+.comment-container {
+    position: relative;
+}
+
+/* Highlight Animation for Scrolled Comments */
+.comment-highlight {
+    animation: highlightPulse 2s ease-out;
+}
+
+@keyframes highlightPulse {
+    0% {
+        box-shadow: 0 0 0 rgba(115, 103, 240, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(115, 103, 240, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 0 rgba(115, 103, 240, 0.5);
+    }
+}
+
+/* Improved Reply Button Styles */
+.reply-btn {
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-decoration: none !important;
+}
+
+.reply-btn:hover {
+    background-color: rgba(115, 103, 240, 0.1);
+    color: #7367f0 !important;
+}
+
+/* Enhanced Reply Form Container */
+.reply-form-container {
+    border-left: 3px solid #7367f0;
+    margin-left: 10px;
+}
+
+/* Chat Message Alignment */
+.chat-message.own-message {
+    margin-left: auto;
+    margin-right: 0;
+}
+
+.chat-message.other-message {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* Improved File Attachment Display */
+.comment-image-container img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Better Mobile Responsiveness */
+@media (max-width: 768px) {
+    .parent-comment-preview {
+        margin-left: 0;
+        padding: 8px !important;
+    }
+
+    .comment-container.has-parent {
+        margin-left: 5px !important;
+    }
+
+    .reply-form-container {
+        margin-left: 5px;
+    }
+}
+
+/* Smooth Transitions */
+.comment-container,
+.reply-item,
+.parent-comment-preview {
+    transition: all 0.3s ease;
+}
+
+/* Focus States for Accessibility */
+.parent-comment-preview:focus {
+    outline: 2px solid #7367f0;
+    outline-offset: 2px;
+}
+
+.reply-btn:focus {
+    outline: 2px solid #7367f0;
+    outline-offset: 2px;
 }

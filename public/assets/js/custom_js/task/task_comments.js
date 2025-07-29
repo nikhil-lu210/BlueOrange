@@ -118,6 +118,27 @@ $(document).ready(function() {
         }
     });
 
+    // Function to scroll to a specific comment (also available globally)
+    window.scrollToComment = function(commentId) {
+        const commentElement = document.getElementById('comment-' + commentId);
+        if (commentElement) {
+            // Add highlight effect
+            commentElement.style.transition = 'all 0.3s ease';
+            commentElement.style.boxShadow = '0 0 15px rgba(115, 103, 240, 0.5)';
+
+            // Scroll to the comment
+            commentElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            // Remove highlight after 2 seconds
+            setTimeout(() => {
+                commentElement.style.boxShadow = '';
+            }, 2000);
+        }
+    };
+
     // Lightbox configuration for comment images
     if (typeof lightbox !== 'undefined') {
         lightbox.option({

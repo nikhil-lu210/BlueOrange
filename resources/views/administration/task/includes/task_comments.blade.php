@@ -53,9 +53,33 @@
                     $receiverColor = 'background-color: #7367f014 !important; border: 1px solid #7367f05c !important;';
                 @endphp
 
-                @foreach ($task->comments as $comment)
-                    <div class="comment-container mb-4 p-3 rounded" style="{{ $comment->commenter->id == auth()->user()->id ? $senderColor : $receiverColor }}">
-                        <!-- Main Comment -->
+                @foreach ($task->all_comments()->with(['commenter.employee', 'commenter.media', 'files', 'parent_comment.commenter.employee', 'parent_comment.commenter.media'])->orderByDesc('created_at')->get() as $comment)
+                    <div class="comment-container mb-4 p-3 rounded chat-message {{ $comment->parent_comment_id ? 'has-parent' : '' }}" id="comment-{{ $comment->id }}" style="{{ $comment->commenter->id == auth()->user()->id ? $senderColor : $receiverColor }}">
+                        <!-- Parent Comment Preview (if this is a reply) -->
+                        @if ($comment->parent_comment_id)
+                            @php
+                                $parentComment = $comment->parent_comment;
+                                $isReplyToMainComment = $parentComment->parent_comment_id === null;
+                            @endphp
+                            <div class="parent-comment-preview mb-3 p-2 rounded" style="background-color: rgba(0,0,0,0.05); border-left: 2px solid #dee2e6; cursor: pointer;" onclick="scrollToComment({{ $parentComment->id }})">
+                                <div class="d-flex align-items-center mb-1">
+                                    {!! show_user_name_and_avatar($parentComment->commenter, name: false, avatar: false) !!}
+                                    <small class="text-muted ms-2">
+                                        <i class="ti ti-corner-down-left me-1"></i>
+                                        Replying to {{ $isReplyToMainComment ? 'this comment' : 'this reply' }}
+                                    </small>
+                                </div>
+                                <div class="text-muted small" style="line-height: 1.2;">
+                                    @php
+                                        $truncatedComment = strip_tags($parentComment->comment);
+                                        $truncatedComment = show_content($truncatedComment, 80);
+                                    @endphp
+                                    {{ $truncatedComment }}
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Comment Content -->
                         <div class="main-comment">
                             <div class="d-flex justify-content-between align-items-center user-name mb-2">
                                 {!! show_user_name_and_avatar($comment->commenter, name: false) !!}
@@ -130,55 +154,34 @@
                                 </div>
                             @endif
                         </div>
-
-                        <!-- Replies -->
-                        @if ($comment->replies->count() > 0)
-                            <div class="replies-container mt-3">
-                                @foreach ($comment->replies as $reply)
-                                    <div class="reply-item mb-3 p-2 rounded" style="border-left: 3px solid #7367f0;">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            {!! show_user_name_and_avatar($reply->commenter, name: false) !!}
-                                            <small class="date-time text-muted">{{ date_time_ago($reply->created_at) }}</small>
-                                        </div>
-
-                                        <div class="reply-content">
-                                            {!! $reply->comment !!}
-                                        </div>
-
-                                        @if ($reply->files->count() > 0)
-                                            <div class="d-flex flex-wrap gap-2 mb-3">
-                                                @foreach ($reply->files as $replyFile)
-                                                    @if (in_array($replyFile->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']))
-                                                        <div class="comment-image-container" title="Click to view {{ $replyFile->original_name }}">
-                                                            <a href="{{ file_media_download($replyFile) }}" data-lightbox="comment-images-{{ $reply->id }}" data-title="{{ $replyFile->original_name }}">
-                                                                <img src="{{ file_media_download($replyFile) }}" alt="{{ $replyFile->original_name }}" class="img-fluid img-thumbnail" style="width: 150px; height: 100px; object-fit: cover;">
-                                                            </a>
-                                                        </div>
-                                                    @else
-                                                        <div class="file-thumbnail-container" title="Click to Download {{ $replyFile->original_name }}">
-                                                            <a href="{{ file_media_download($replyFile) }}" target="_blank" class="text-decoration-none">
-                                                                <div class="d-flex flex-column align-items-center">
-                                                                    <i class="ti ti-file-download fs-2 mb-2 text-primary"></i>
-                                                                    <span class="file-name text-center small fw-medium">
-                                                                        {{ show_content($replyFile->original_name, 15) }}
-                                                                    </span>
-                                                                    <small class="text-muted">{{ strtoupper(pathinfo($replyFile->original_name, PATHINFO_EXTENSION)) }}</small>
-                                                                </div>
-                                                            </a>
-                                                        </div>
-                                                    @endif
-                                                @endforeach
-                                            </div>
-                                        @endif
-                                    </div>
-                                @endforeach
-                            </div>
-                        @endif
                     </div>
                 @endforeach
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Function to scroll to a specific comment
+    function scrollToComment(commentId) {
+        const commentElement = document.getElementById('comment-' + commentId);
+        if (commentElement) {
+            // Add highlight effect
+            commentElement.style.transition = 'all 0.3s ease';
+            commentElement.style.boxShadow = '0 0 15px rgba(115, 103, 240, 0.5)';
+
+            // Scroll to the comment
+            commentElement.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+            });
+
+            // Remove highlight after 2 seconds
+            setTimeout(() => {
+                commentElement.style.boxShadow = '';
+            }, 2000);
+        }
+    }
+</script>
 
 

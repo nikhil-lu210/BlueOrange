@@ -20,39 +20,45 @@
 
         @include('layouts.administration.partials.menus.chatting')
 
-        @include('layouts.administration.partials.menus.vault')
-
         @include('layouts.administration.partials.menus.attendance')
 
         @include('layouts.administration.partials.menus.daily_break')
 
-        @include('layouts.administration.partials.menus.leave')
-
-        @include('layouts.administration.partials.menus.penalty')
-
-        @include('layouts.administration.partials.menus.announcement')
+        @include('layouts.administration.partials.menus.daily_work_update')
 
         @include('layouts.administration.partials.menus.task')
 
-        @include('layouts.administration.partials.menus.daily_work_update')
+        @include('layouts.administration.partials.menus.leave')
+
+        @include('layouts.administration.partials.menus.announcement')
 
         @include('layouts.administration.partials.menus.it_ticket')
 
         @include('layouts.administration.partials.menus.booking')
 
+        @include('layouts.administration.partials.menus.penalty')
+
         @include('layouts.administration.partials.menus.quiz')
 
-        <!-- Accounts -->
+        @include('layouts.administration.partials.menus.vault')
+
+        <!-- Settings -->
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">{{ __('Accounts') }}</span>
+            <span class="menu-header-text">{{ __('Settings') }}</span>
+        </li>
+
+        @include('layouts.administration.partials.menus.settings')
+
+        <!-- Accounting -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">{{ __('Accounting') }}</span>
         </li>
 
         @include('layouts.administration.partials.menus.salary')
 
         @include('layouts.administration.partials.menus.income_expense')
 
+        {{-- Logs --}}
         @include('layouts.administration.partials.menus.logs')
-
-        @include('layouts.administration.partials.menus.settings')
     </ul>
 </aside>

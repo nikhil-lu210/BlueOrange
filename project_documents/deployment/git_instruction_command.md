@@ -3,7 +3,7 @@ git pull origin develop
 git checkout -b release-v1.9.9.9
 git push origin release-v1.9.9.9
 git add .
-git commit -m "Task comment reply done in release v1.9.9.9"
+git commit -m "Task comment reply modified in release v1.9.9.9"
 git push origin release-v1.9.9.9
 git checkout master
 git pull origin master

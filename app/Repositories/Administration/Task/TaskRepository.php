@@ -119,15 +119,7 @@ class TaskRepository
                     'files',
                     'commenter.roles',
                     'commenter.employee',
-                    'commenter.media',
-                    'replies' => function ($reply) {
-                        $reply->with([
-                            'files',
-                            'commenter.roles',
-                            'commenter.employee',
-                            'commenter.media',
-                        ])->orderBy('created_at');
-                    }
+                    'commenter.media'
                 ])->orderByDesc('created_at')->get();
             },
             'histories' => function ($history) {
