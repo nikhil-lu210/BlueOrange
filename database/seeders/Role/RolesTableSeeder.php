@@ -41,6 +41,12 @@ class RolesTableSeeder extends Seeder
                     'Logs Update',
                     'Logs Delete',
 
+                    'Certificate Everything',
+                    'Certificate Create',
+                    'Certificate Read',
+                    'Certificate Update',
+                    'Certificate Delete',
+
                     'Vault Everything',
                     'Vault Create',
                     'Vault Read',
@@ -165,6 +171,12 @@ class RolesTableSeeder extends Seeder
                 $permissions = [
                     'Logs Read',
 
+                    'Certificate Everything',
+                    'Certificate Create',
+                    'Certificate Read',
+                    'Certificate Update',
+                    'Certificate Delete',
+
                     'Vault Create',
                     'Vault Read',
                     'Vault Update',
@@ -269,6 +281,8 @@ class RolesTableSeeder extends Seeder
             } else {
                 $permissions = [
                     'Announcement Read',
+
+                    'Certificate Read',
 
                     'Attendance Read',
 

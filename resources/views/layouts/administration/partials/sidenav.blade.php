@@ -49,6 +49,13 @@
 
         @include('layouts.administration.partials.menus.settings')
 
+        <!-- Administration -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">{{ __('Administration') }}</span>
+        </li>
+
+        @include('layouts.administration.partials.menus.certificate')
+
         <!-- Accounting -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">{{ __('Accounting') }}</span>
