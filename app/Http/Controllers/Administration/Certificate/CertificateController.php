@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Administration\Certificate;
 
-use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 
 class CertificateController extends Controller
 {
@@ -12,7 +13,17 @@ class CertificateController extends Controller
      */
     public function index()
     {
-        return view('administration.certificate.index');
+        $certificates = [];
+        return view('administration.certificate.index', compact(['certificates']));
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function my()
+    {
+        $certificates = [];
+        return view('administration.certificate.my', compact(['certificates']));
     }
 
     /**
@@ -20,7 +31,23 @@ class CertificateController extends Controller
      */
     public function create()
     {
-        return view('administration.certificate.create');
+        $employees = User::select(['id', 'name'])->orderBy('name')->get();
+
+        return view('administration.certificate.create', compact(['employees']));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function generate(Request $request)
+    {
+        $certificate = [
+            'user_id' => $request->user_id,
+            'type' => $request->type,
+            'issue_date' => $request->issue_date,
+        ];
+
+        return view('administration.certificate.create', compact(['certificate']));
     }
 
     /**
