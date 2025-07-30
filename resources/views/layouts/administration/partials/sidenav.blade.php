@@ -36,6 +36,13 @@
 
         @include('layouts.administration.partials.menus.booking')
 
+        <!-- Administration -->
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">{{ __('Administration') }}</span>
+        </li>
+
+        @include('layouts.administration.partials.menus.certificate')
+
         @include('layouts.administration.partials.menus.penalty')
 
         @include('layouts.administration.partials.menus.quiz')
@@ -48,13 +55,6 @@
         </li>
 
         @include('layouts.administration.partials.menus.settings')
-
-        <!-- Administration -->
-        <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">{{ __('Administration') }}</span>
-        </li>
-
-        @include('layouts.administration.partials.menus.certificate')
 
         <!-- Accounting -->
         <li class="menu-header small text-uppercase">
