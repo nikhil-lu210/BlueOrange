@@ -27,8 +27,8 @@
                         <option value="Appointment Letter" {{ old('type') == 'Appointment Letter' ? 'selected' : '' }}>Appointment Letter</option>
                         <option value="Employment Certificate" {{ old('type') == 'Employment Certificate' ? 'selected' : '' }}>Employment Certificate</option>
                         <option value="Experience Letter" {{ old('type') == 'Experience Letter' ? 'selected' : '' }}>Experience Letter</option>
-                        <option value="NOC/No Objection Letter" {{ old('type') == 'NOC/No Objection Letter' ? 'selected' : '' }}>NOC/No Objection Letter</option>
                         <option value="Release Letter" {{ old('type') == 'Release Letter' ? 'selected' : '' }}>Release Letter</option>
+                        <option value="NOC/No Objection Letter" {{ old('type') == 'NOC/No Objection Letter' ? 'selected' : '' }}>NOC/No Objection Letter</option>
                     </select>
                     @error('type')
                         <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -38,6 +38,15 @@
                     <label class="form-label">Issue Date <strong class="text-danger">*</strong></label>
                     <input type="text" name="issue_date" value="{{ old('issue_date') }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
                     @error('issue_date')
+                        <span class="text-danger">{{ $message }}</span>
+                    @enderror
+                </div>
+
+                {{-- Joining Date will be visible and required only for Appointment Letter --}}
+                <div class="mb-3 col-md-12">
+                    <label class="form-label">Joining Date <strong class="text-danger">*</strong></label>
+                    <input type="text" name="joining_date" value="{{ old('joining_date') }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
+                    @error('joining_date')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
                 </div>

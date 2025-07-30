@@ -45,6 +45,16 @@ class CertificateController extends Controller
             'user_id' => $request->user_id,
             'type' => $request->type,
             'issue_date' => $request->issue_date,
+
+            'joining_date' => $request->joining_date, // Required for Appointment Letter
+            'salary' => $request->salary, // Required for Appointment Letter and Employment Certificate
+            'resignation_date' => $request->resignation_date, // Required for Experience Letter
+            'release_date' => $request->release_date, // Required for Release Letter
+            'release_reason' => $request->release_reason, // Required for Release Letter
+            'country_name' => $request->country_name, // Required for NOC/No Objection Letter
+            'visiting_purpose' => $request->visiting_purpose, // Required for NOC/No Objection Letter
+            'leave_starts_from' => $request->leave_starts_from, // Required for NOC/No Objection Letter
+            'leave_ends_on' => $request->leave_ends_on, // Optional for NOC/No Objection Letter
         ];
 
         return view('administration.certificate.create', compact(['certificate']));
