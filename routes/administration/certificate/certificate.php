@@ -17,6 +17,7 @@ Route::prefix('certificate')
                 Route::get('/generate', 'generate')->name('generate')->can('Certificate Create');
                 Route::post('/store', 'store')->name('store')->can('Certificate Create');
                 Route::get('/show/{certificate}', 'show')->name('show')->can('Certificate Read');
+                Route::get('/print/{certificate}', 'print')->name('print')->can('Certificate Read');
                 Route::get('/destroy/{certificate}', 'destroy')->name('destroy')->can('Certificate Delete');
             });
     });

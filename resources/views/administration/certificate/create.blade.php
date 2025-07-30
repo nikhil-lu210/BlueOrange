@@ -27,7 +27,22 @@
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
-    /* Custom CSS Here */
+        /* Prevent horizontal scroll in certificate form */
+        .certificate-form-container {
+            overflow-x: hidden;
+        }
+
+        /* Certificate preview styling */
+        .certificate-preview {
+            max-width: 100%;
+            overflow-x: auto;
+        }
+
+        /* Ensure proper container width */
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+        }
     </style>
 @endsection
 
@@ -48,12 +63,15 @@
 <!-- Start row -->
 <div class="row justify-content-center">
     <div class="col-md-4">
-        @include('administration.certificate.includes.generate_form')
+        @include('administration.certificate.includes.generate_form', ['employees' => $employees])
     </div>
 
-    <div class="col-md-8">
-        @include('administration.certificate.includes.generated_certificate')
-    </div>
+    {{-- It will visible only if $certificate is not null  --}}
+    @if (isset($certificate) && $certificate)
+        <div class="col-md-8">
+            @include('administration.certificate.includes.generated_certificate')
+        </div>
+    @endif
 </div>
 <!-- End row -->
 
@@ -73,30 +91,50 @@
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/jquery-timepicker/jquery-timepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
+
+    {{-- Certificate Form Handler --}}
+    <script src="{{ asset('assets/js/custom_js/certificate/certificate-form.js') }}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Custom Script Here
         $(document).ready(function() {
-            $('.bootstrap-select').each(function() {
-                if (!$(this).data('bs.select')) { // Check if it's already initialized
-                    $(this).selectpicker();
+            // Debug: Check if employees data is available
+            console.log('Employee dropdown options count:', $('#user_id option').length);
+            console.log('Employee dropdown HTML:', $('#user_id').html());
+
+            // Wait for DOM to be fully loaded
+            setTimeout(function() {
+                // Destroy any existing Select2 instance first
+                if ($('#user_id').hasClass('select2-hidden-accessible')) {
+                    $('#user_id').select2('destroy');
                 }
-            });
 
-            $('.date-picker').datepicker({
-                format: 'yyyy-mm-dd',
-                todayHighlight: true,
-                autoclose: true,
-                orientation: 'auto right'
-            });
+                // Initialize Select2 for employee dropdown
+                $('#user_id').select2({
+                    placeholder: 'Select Employee',
+                    allowClear: true,
+                    width: '100%',
+                    dropdownParent: $('#user_id').parent()
+                });
 
-            $('.time-picker').flatpickr({
-                enableTime: true,
-                noCalendar: true
-            });
+                console.log('Select2 initialized for #user_id');
+                console.log('Select2 container:', $('.select2-container').length);
+            }, 100);
+
+            // Initialize Bootstrap Select for certificate type
+            setTimeout(function() {
+                $('.bootstrap-select').each(function() {
+                    if (!$(this).data('bs.select')) {
+                        $(this).selectpicker();
+                    }
+                });
+                console.log('Bootstrap Select initialized');
+            }, 150);
+
+            // Certificate form is handled by certificate-form.js
+            // Additional custom scripts can be added here if needed
         });
     </script>
 @endsection

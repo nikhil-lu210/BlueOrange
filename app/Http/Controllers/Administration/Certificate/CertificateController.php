@@ -2,18 +2,25 @@
 
 namespace App\Http\Controllers\Administration\Certificate;
 
-use App\Models\User;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Certificate\Certificate;
+use App\Services\Administration\Certificate\CertificateService;
+use App\Http\Requests\Administration\Certificate\CertificateRequest;
 
 class CertificateController extends Controller
 {
+    protected $certificateService;
+
+    public function __construct(CertificateService $certificateService)
+    {
+        $this->certificateService = $certificateService;
+    }
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $certificates = [];
+        $certificates = $this->certificateService->getAllCertificates();
         return view('administration.certificate.index', compact(['certificates']));
     }
 
@@ -22,7 +29,7 @@ class CertificateController extends Controller
      */
     public function my()
     {
-        $certificates = [];
+        $certificates = $this->certificateService->getUserCertificates(auth()->id());
         return view('administration.certificate.my', compact(['certificates']));
     }
 
@@ -31,72 +38,75 @@ class CertificateController extends Controller
      */
     public function create()
     {
-        $employees = User::select(['id', 'name'])->orderBy('name')->get();
+        $employees = $this->certificateService->getEmployeesForDropdown();
+        $certificate = null; // Initialize as null for the view
+        $certificateTypes = $this->certificateService->getCertificateTypes();
 
-        return view('administration.certificate.create', compact(['employees']));
+        return view('administration.certificate.create', compact(['employees', 'certificate', 'certificateTypes']));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Generate certificate preview
      */
-    public function generate(Request $request)
+    public function generate(CertificateRequest $request)
     {
-        $certificate = [
-            'user_id' => $request->user_id,
-            'type' => $request->type,
-            'issue_date' => $request->issue_date,
+        try {
+            $certificate = $this->certificateService->generateCertificatePreview($request->validated());
+            $employees = $this->certificateService->getEmployeesForDropdown();
+            $certificateTypes = $this->certificateService->getCertificateTypes();
 
-            'joining_date' => $request->joining_date, // Required for Appointment Letter
-            'salary' => $request->salary, // Required for Appointment Letter and Employment Certificate
-            'resignation_date' => $request->resignation_date, // Required for Experience Letter
-            'release_date' => $request->release_date, // Required for Release Letter
-            'release_reason' => $request->release_reason, // Required for Release Letter
-            'country_name' => $request->country_name, // Required for NOC/No Objection Letter
-            'visiting_purpose' => $request->visiting_purpose, // Required for NOC/No Objection Letter
-            'leave_starts_from' => $request->leave_starts_from, // Required for NOC/No Objection Letter
-            'leave_ends_on' => $request->leave_ends_on, // Optional for NOC/No Objection Letter
-        ];
-
-        return view('administration.certificate.create', compact(['certificate']));
+            return view('administration.certificate.create', compact(['certificate', 'employees', 'certificateTypes']));
+        } catch (\Exception $e) {
+            return back()->withError('Failed to generate certificate preview: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(CertificateRequest $request)
     {
-        //
+        try {
+            $certificate = $this->certificateService->createCertificate($request->validated());
+
+            toast('Certificate has been created successfully.', 'success');
+            return redirect()->route('administration.certificate.show', $certificate);
+        } catch (\Exception $e) {
+            return back()->withError('Failed to create certificate: ' . $e->getMessage())->withInput();
+        }
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Certificate $certificate)
     {
-        return view('administration.certificate.show');
+        $certificate = $this->certificateService->getCertificateWithRelations($certificate);
+        return view('administration.certificate.show', compact('certificate'));
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Print the certificate
      */
-    public function edit(string $id)
+    public function print(Certificate $certificate)
     {
-        return view('administration.certificate.edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        $certificate = $this->certificateService->getCertificateWithRelations($certificate);
+        $isPrint = true;
+        return view('administration.certificate.print', compact('certificate', 'isPrint'));
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Certificate $certificate)
     {
-        //
+        try {
+            $this->certificateService->deleteCertificate($certificate);
+            toast('Certificate has been deleted successfully.', 'success');
+            return redirect()->route('administration.certificate.index');
+        } catch (\Exception $e) {
+            return back()->withError('Failed to delete certificate: ' . $e->getMessage());
+        }
     }
+
 }

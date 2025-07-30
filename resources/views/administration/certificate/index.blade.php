@@ -50,6 +50,7 @@
                 <thead>
                     <tr>
                         <th>{{ __('SL') }}</th>
+                        <th>{{ __('Reference No') }}</th>
                         <th>{{ __('Employee') }}</th>
                         <th>{{ __('Type') }}</th>
                         <th>{{ __('Certificate Time') }}</th>
@@ -61,6 +62,9 @@
                         <tr>
                             <td>#{{ serial($certificates, $key) }}</td>
                             <td>
+                                <span class="badge bg-primary">{{ $certificate->formatted_reference_no ?? 'CERT-' . $certificate->reference_no }}</span>
+                            </td>
+                            <td>
                                 {!! show_user_name_and_avatar($certificate->user, role: null) !!}
                             </td>
                             <td>
@@ -70,26 +74,39 @@
                                 <span class="fw-medium">{{ show_date($certificate->created_at) }}</span>
                             </td>
                             <td class="text-center">
-                                @canany(['Certificate Everything', 'Certificate Delete'])
-                                    <a href="{{ route('administration.certificate.destroy', ['certificate' => $certificate]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Certificate?">
-                                        <i class="ti ti-trash"></i>
+                                @canany(['Certificate Everything', 'Certificate Read'])
+                                    <a href="{{ route('administration.certificate.show', $certificate) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                        <i class="ti ti-eye"></i>
                                     </a>
                                 @endcanany
                                 @canany(['Certificate Everything', 'Certificate Read'])
-                                    <a href="{{ route('administration.certificate.show', $certificate) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
-                                        <i class="ti ti-info-hexagon"></i>
+                                    <a href="{{ route('administration.certificate.print', $certificate) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Print Certificate" target="_blank">
+                                        <i class="ti ti-printer"></i>
+                                    </a>
+                                @endcanany
+                                @canany(['Certificate Everything', 'Certificate Delete'])
+                                    <a href="{{ route('administration.certificate.destroy', ['certificate' => $certificate]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Certificate?" onclick="return confirm('Are you sure you want to delete this certificate?')">
+                                        <i class="ti ti-trash"></i>
                                     </a>
                                 @endcanany
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">{{ __('No penalties found') }}</td>
+                            <td colspan="6" class="text-center">{{ __('No certificates found') }}</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+
+        @if($certificates->hasPages())
+            <div class="card-footer">
+                <div class="d-flex justify-content-center">
+                    {{ $certificates->links() }}
+                </div>
+            </div>
+        @endif
     </div>
 </div>
 <!--/ Basic Bootstrap Table -->

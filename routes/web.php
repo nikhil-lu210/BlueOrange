@@ -20,6 +20,29 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Temporary test route for certificate functionality
+Route::get('/test-certificate', function () {
+    $employees = \App\Models\User::select(['id', 'name'])
+        ->with('employee:id,user_id,alias_name')
+        ->whereHas('employee')
+        ->orderBy('name')
+        ->get();
+
+    $certificateTypes = certificate_get_types();
+
+    // Test reference number generation
+    $testReferenceNo = certificate_generate_reference_number();
+
+    return response()->json([
+        'employees_count' => $employees->count(),
+        'employees' => $employees->toArray(),
+        'certificate_types' => $certificateTypes,
+        'helper_test' => certificate_get_type_badge_class('Employment Certificate'),
+        'test_reference_no' => $testReferenceNo,
+        'formatted_reference_no' => certificate_format_reference_number($testReferenceNo)
+    ]);
+})->name('test.certificate');
+
 Auth::routes([
     'reset' => false, // Disable default password reset routes
 ]);
