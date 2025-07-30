@@ -32,10 +32,10 @@
             left: 50%;
             width: 80%;
             height: 80%;
-            background: url('{{ asset(config('app.logo')) }}') no-repeat center center;
+            background: url('{{ asset(config('certificate.company.logo')) }}') no-repeat center center;
             background-size: contain;
-            opacity: 0.1;
-            transform: translate(-50%, -50%);
+            opacity: 0.05;
+            transform: translate(-50%, -50%) rotate(-45deg);
             z-index: 0;
         }
 
@@ -121,7 +121,7 @@
 
                 <p>Dear {{ $certificate->user->name }},</p>
 
-                <p>We are pleased to inform you that you have been selected for the position of <strong>{{ $certificate->user->roles->first()->name ?? 'Employee' }}</strong> at <strong>{{ config('app.name') }}</strong>.</p>
+                <p>We are pleased to inform you that you have been selected for the position of <strong>{{ $certificate->user->roles->first()->name ?? 'Employee' }}</strong> at <strong>{{ config('certificate.company.name') }}</strong>.</p>
 
                 <p>Your appointment will be effective from <strong>{{ $certificate->formatted_joining_date }}</strong>. Your monthly salary will be <strong>BDT {{ $certificate->formatted_salary }}</strong>.</p>
 
@@ -135,7 +135,7 @@
 
                 <p>We look forward to your valuable contribution to our organization.</p>
 
-                <p>Congratulations and welcome to {{ config('app.name') }}!</p>
+                <p>Congratulations and welcome to {{ config('certificate.company.name') }}!</p>
             </div>
 
             <div class="signature">
@@ -144,7 +144,7 @@
                 <p style="font-weight: 100;">_____________________________</p>
                 <p><strong>MD. Abdul Razzak Chowdhury</strong></p>
                 <p>General Manager</p>
-                <p>{{ config('app.name') }}</p>
+                <p>{{ config('certificate.company.name') }}</p>
             </div>
         </div>
     </section>
@@ -187,7 +187,7 @@
                     left: 50%;
                     width: 80%;
                     height: 80%;
-                    background: url('{{ asset(config('app.logo')) }}') no-repeat center center;
+                    background: url('{{ asset(config('certificate.company.logo')) }}') no-repeat center center;
                     background-size: contain;
                     opacity: 0.1;
                     transform: translate(-50%, -50%);

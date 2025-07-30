@@ -144,8 +144,8 @@ return [
     */
 
     'company' => [
-        'name' => env('APP_NAME', 'Your Company Name'),
-        'logo' => env('APP_LOGO', 'assets/img/logo.png'),
+        'name' => 'Staff-India',
+        'logo' => 'Logo/si_logo_png.png',
         'signature' => [
             'name' => 'MD. Abdul Razzak Chowdhury',
             'designation' => 'General Manager',
