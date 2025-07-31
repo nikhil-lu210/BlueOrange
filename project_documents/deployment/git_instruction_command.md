@@ -1,16 +1,16 @@
 git checkout develop
 git pull origin develop
-git checkout -b release-v2.0.0.1
-git push origin release-v2.0.0.1
+git checkout -b release-v2.0.0.2
+git push origin release-v2.0.0.2
 git add .
-git commit -m "Print Layout Modified in release v2.0.0.1"
-git push origin release-v2.0.0.1
+git commit -m "Gender and Content Updated for Certificates in release v2.0.0.2"
+git push origin release-v2.0.0.2
 git checkout master
 git pull origin master
-git merge --no-ff release-v2.0.0.1 -m "Merge release v2.0.0.1 into master"
+git merge --no-ff release-v2.0.0.2 -m "Merge release v2.0.0.2 into master"
 git push origin master
 git checkout develop
-git merge --no-ff release-v2.0.0.1 -m "Merge release v2.0.0.1 into develop"
+git merge --no-ff release-v2.0.0.2 -m "Merge release v2.0.0.2 into develop"
 git push origin develop
-git branch -d release-v2.0.0.1
-git push origin --delete release-v2.0.0.1
+git branch -d release-v2.0.0.2
+git push origin --delete release-v2.0.0.2
