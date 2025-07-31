@@ -35,7 +35,7 @@
         /* Certificate preview styling */
         .certificate-preview {
             max-width: 100%;
-            overflow-x: auto;
+            overflow-x: hidden;
         }
 
         /* Ensure proper container width */

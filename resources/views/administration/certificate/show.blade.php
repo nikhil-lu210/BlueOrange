@@ -80,9 +80,15 @@
                 <div class="mt-4">
                     <h6>{{ __('Certificate Information') }}</h6>
                     <hr>
-                    <p><strong>{{ __('Reference No') }}:</strong><br><span class="badge bg-primary">{{ $certificate->formatted_reference_no ?? 'CERT-' . $certificate->reference_no }}</span></p>
+                    <p>
+                        <strong>{{ __('Reference No') }}:</strong>
+                        <br>
+                        <span class="text-bold text-primary">
+                            {{ $certificate->formatted_reference_no ?? 'CERT-' . $certificate->reference_no }}
+                        </span>
+                    </p>
                     <p><strong>{{ __('Type') }}:</strong><br>{{ $certificate->type }}</p>
-                    <p><strong>{{ __('Employee') }}:</strong><br>{{ $certificate->user->name }}</p>
+                    <p><strong>{{ __('Employee') }}:</strong><br><a href="{{ route('administration.settings.user.show.profile', ['user' => $certificate->user]) }}" target="_blank" class="text-primary">{{ $certificate->user->name }}</a></p>
                     <p><strong>{{ __('Issue Date') }}:</strong><br>{{ $certificate->formatted_issue_date }}</p>
                     <p><strong>{{ __('Created By') }}:</strong><br>{{ $certificate->creator->name }}</p>
                     <p><strong>{{ __('Created At') }}:</strong><br>{{ $certificate->created_at->format('M j, Y g:i A') }}</p>
