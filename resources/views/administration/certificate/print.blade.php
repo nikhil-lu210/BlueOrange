@@ -16,7 +16,7 @@
                     page-break-inside: avoid !important;
                 }
                 .certificate-content {
-                    margin-top: 20mm;
+                    margin-top: 10mm;
                 }
             }
 
