@@ -97,12 +97,12 @@
             }
 
             .certificate-content {
-                margin-top: 20mm;
+                margin-top: 10mm;
             }
 
             @page {
                 size: Letter;
-                margin-top: 4.5cm;
+                margin-top: 4.4cm;
                 margin-left: 1.6cm;
                 margin-right: 1.5cm;
             }
