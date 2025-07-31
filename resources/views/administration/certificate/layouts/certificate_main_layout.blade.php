@@ -71,11 +71,17 @@
         }
 
         .signature {
-            margin-top: 60px;
+            margin-top: 30px;
         }
 
         .signature p {
             margin-bottom: 5px;
+        }
+        .manager-signature {
+            margin-top: 3cm;
+            padding-top: 5px;
+            border-top: 1px dotted #c5c5c5;
+            width: fit-content;
         }
 
         /* Print Styles */
@@ -97,12 +103,12 @@
             }
 
             .certificate-content {
-                margin-top: 20mm;
+                margin-top: 10mm;
             }
 
             @page {
                 size: Letter;
-                margin-top: 4.5cm;
+                margin-top: 4.4cm;
                 margin-left: 1.6cm;
                 margin-right: 1.5cm;
             }
@@ -131,14 +137,10 @@
 
         @yield('certificate_content')
 
-        {{-- <div class="signature">
+        <div class="signature">
             <p>Best Regards,</p>
-            <br><br>
-            <p style="font-weight: 100;">_____________________________</p>
-            <p><strong>MD. Abdul Razzak Chowdhury</strong></p>
-            <p>General Manager</p>
-            <p>{{ config('certificate.company.name') }}</p>
-        </div> --}}
+            <p class="manager-signature"><strong>MD. Abdul Razzak Chowdhury</strong></p>
+        </div>
     </section>
 </body>
 </html>
