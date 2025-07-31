@@ -9,15 +9,6 @@
                 .print-controls {
                     display: none !important;
                 }
-                /* Ensure no extra content creates additional pages */
-                * {
-                    page-break-after: avoid !important;
-                    page-break-before: avoid !important;
-                    page-break-inside: avoid !important;
-                }
-                .certificate-content {
-                    margin-top: 10mm;
-                }
             }
 
             /* Print Controls */
