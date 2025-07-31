@@ -13,6 +13,9 @@ Route::prefix('')
             // logs
             include_once 'logs/logs.php';
 
+            // certificate
+            include_once 'certificate/certificate.php';
+
             // localization
             include_once 'localization/localization.php';
 

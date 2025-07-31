@@ -28,6 +28,11 @@ input[type="number"] {
     text-align: right !important;
 }
 
+.btn-block {
+    display: block;
+    width: 100% !important;
+}
+
 .float-left, .float-start, .pull-left, .pull-start {
     float: left !important;
 }
@@ -53,7 +58,7 @@ input[type="number"] {
     margin-left: 5px !important;
 }
 
-body.swal2-toast-shown .swal2-container.swal2-top-end, 
+body.swal2-toast-shown .swal2-container.swal2-top-end,
 body.swal2-toast-shown .swal2-container.swal2-top-right {
     z-index: 9999999 !important;
 }
