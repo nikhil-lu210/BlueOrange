@@ -9,6 +9,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Montserrat', sans-serif;
             margin: 0;
@@ -18,11 +22,13 @@
         .certificate-container {
             position: relative;
             max-width: 800px;
-            margin: 10mm auto;
-            padding: 30px;
+            margin: 0 auto;
+            padding: 20mm;
             background-color: #fff;
             width: 100%;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            min-height: calc(100vh - 40mm); /* prevent pushing to 2nd page */
+            overflow: hidden;
         }
 
         .certificate-container::before {
@@ -74,26 +80,35 @@
 
         /* Print Styles */
         @media print {
-            body {
+            html, body {
+                height: auto;
                 margin: 0 !important;
                 padding: 0 !important;
+                overflow: hidden;
             }
 
             .certificate-container {
-                margin: 0;
-                padding: 0;
+                margin: 0 auto;
+                padding: 20mm;
                 box-shadow: none;
-                page-break-inside: avoid;
+                page-break-inside: avoid !important;
+                height: auto;
+                overflow: hidden;
             }
 
             @page {
-                size: A4;
-                margin: 20mm;
-                margin-top: 50mm;
+                size: Letter;
+                margin: 10mm;
             }
 
             .print-button {
                 display: none !important;
+            }
+
+            * {
+                page-break-after: avoid !important;
+                page-break-before: avoid !important;
+                page-break-inside: avoid !important;
             }
         }
     </style>
@@ -103,108 +118,12 @@
 
 <body>
     <section class="certificate-container">
-        @yield('certificate_content')
-    </section>
-
-    @if(!isset($isPrint))
-        <div class="print-button" style="text-align: center; margin-top: 20px;">
-            <button onclick="printCertificate()" class="btn btn-primary">
-                <i class="ti ti-printer me-1"></i>Print Certificate
-            </button>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; color: #666;">
+            <strong style="margin-left: 30px;"> {{ $certificate->formatted_reference_no ?? 'CERT-' . ($certificate->reference_no ?? 'XXXXXXXXXX') }}</strong>
+            <strong> {{ $certificate->formatted_issue_date }}</strong>
         </div>
 
-        <script>
-            function printCertificate() {
-                var container = document.querySelector(".certificate-container");
-                var containerHtml = container.outerHTML;
-
-                var printWindow = window.open("", "_blank");
-
-                printWindow.document.open();
-                printWindow.document.write('<html><head><title>Print Certificate</title><style>');
-
-                printWindow.document.write(`
-                    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap');
-                    body {
-                        font-family: 'Montserrat', sans-serif;
-                        margin: 0;
-                    }
-                    .certificate-container {
-                        position: relative;
-                        max-width: 800px;
-                        margin: 20mm auto;
-                        padding: 30px;
-                        background-color: #fff;
-                        width: 100%;
-                    }
-                    .certificate-container::before {
-                        content: "";
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        width: 80%;
-                        height: 80%;
-                        background: url('{{ asset(config('certificate.company.logo')) }}') no-repeat center center;
-                        background-size: contain;
-                        opacity: 0.1;
-                        transform: translate(-50%, -50%);
-                        z-index: 0;
-                    }
-                    .certificate-content {
-                        position: relative;
-                        z-index: 1;
-                    }
-                    h1, h3 {
-                        text-align: center;
-                        margin-bottom: 30px;
-                        text-transform: uppercase;
-                    }
-                    h1 u, h3 u {
-                        text-decoration: underline;
-                    }
-                    p {
-                        margin-bottom: 10px;
-                        line-height: 1.6;
-                        text-align: justify;
-                    }
-                    .signature {
-                        margin-top: 60px;
-                    }
-                    .signature p {
-                        margin-bottom: 5px;
-                    }
-                    @media print {
-                        body {
-                            margin: 0 !important;
-                            padding: 0 !important;
-                        }
-                        .certificate-container {
-                            margin: 0;
-                            padding: 0;
-                            box-shadow: none;
-                            page-break-inside: avoid;
-                        }
-                        @page {
-                            size: A4;
-                            margin: 20mm;
-                            margin-top: 50mm;
-                        }
-                    }
-                `);
-
-                printWindow.document.write('</style></head><body>');
-                printWindow.document.write(containerHtml);
-                printWindow.document.write('</body></html>');
-                printWindow.document.close();
-
-                setTimeout(function () {
-                    printWindow.print();
-                    printWindow.close();
-                }, 500);
-            }
-        </script>
-
-        @yield('certificate_custom_js')
-    @endif
+        @yield('certificate_content')
+    </section>
 </body>
 </html>

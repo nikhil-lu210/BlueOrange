@@ -9,12 +9,21 @@
                 .print-controls {
                     display: none !important;
                 }
+                /* Ensure no extra content creates additional pages */
+                * {
+                    page-break-after: avoid !important;
+                    page-break-before: avoid !important;
+                    page-break-inside: avoid !important;
+                }
+                .certificate-content {
+                    margin-top: 20mm;
+                }
             }
 
             /* Print Controls */
             .print-controls {
                 position: fixed;
-                bottom: 20px;
+                bottom: 50%;
                 right: 20px;
                 z-index: 1000;
                 background: #fff;

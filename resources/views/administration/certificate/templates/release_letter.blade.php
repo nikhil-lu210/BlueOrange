@@ -2,17 +2,10 @@
 
 @section('certificate_content')
     <div class="certificate-content">
-        <div style="text-align: right; margin-bottom: 20px; font-size: 14px; color: #666;">
-            <strong>Reference No: {{ $certificate->formatted_reference_no ?? 'CERT-' . ($certificate->reference_no ?? 'XXXXXXXXXX') }}</strong>
-        </div>
-
         <h1><u>Release Letter</u></h1>
         <h3><u>To Whom It May Concern</u></h3>
 
         <div class="letter-content">
-            <p><strong>Date:</strong> {{ $certificate->formatted_issue_date }}</p>
-            <br>
-
             <p>This is to certify that <strong>{{ $certificate->user->name }}</strong>, son/daughter of <strong>{{ $certificate->user->employee->father_name ?? 'N/A' }}</strong>, was employed at <strong>{{ config('certificate.company.name') }}</strong> as a <strong>{{ $certificate->user->roles->first()->name ?? 'Employee' }}</strong>.</p>
 
             <p>He/She joined our organization on <strong>{{ $certificate->formatted_joining_date }}</strong> and has been released from his/her duties effective <strong>{{ $certificate->formatted_release_date }}</strong>.</p>
