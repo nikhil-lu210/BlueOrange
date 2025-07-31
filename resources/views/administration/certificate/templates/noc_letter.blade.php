@@ -12,14 +12,5 @@
 
             <p>Please feel free to contact us for any further information.</p>
         </div>
-
-        <div class="signature">
-            <p>Best Regards,</p>
-            <br><br>
-            <p style="font-weight: 100;">_____________________________</p>
-            <p><strong>MD. Abdul Razzak Chowdhury</strong></p>
-            <p>General Manager</p>
-            <p>{{ config('certificate.company.name') }}</p>
-        </div>
     </div>
 @endsection

@@ -22,7 +22,7 @@
         .certificate-container {
             position: relative;
             max-width: 800px;
-            margin: 0 auto;
+            margin: 30px auto;
             padding: 20mm;
             background-color: #fff;
             width: 100%;
@@ -89,7 +89,7 @@
 
             .certificate-container {
                 margin: 0 auto;
-                padding: 20mm;
+                padding: 0;
                 box-shadow: none;
                 page-break-inside: avoid !important;
                 height: auto;
@@ -98,7 +98,9 @@
 
             @page {
                 size: Letter;
-                margin: 10mm;
+                margin-top: 4.5cm;
+                margin-left: 1.6cm;
+                margin-right: 1.3cm;
             }
 
             .print-button {
@@ -119,11 +121,20 @@
 <body>
     <section class="certificate-container">
         <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; color: #666;">
-            <strong style="margin-left: 30px;"> {{ $certificate->formatted_reference_no ?? 'CERT-' . ($certificate->reference_no ?? 'XXXXXXXXXX') }}</strong>
+            <strong> {{ $certificate->formatted_reference_no ?? 'CERT-' . ($certificate->reference_no ?? 'XXXXXXXXXX') }}</strong>
             <strong> {{ $certificate->formatted_issue_date }}</strong>
         </div>
 
         @yield('certificate_content')
+
+        {{-- <div class="signature">
+            <p>Best Regards,</p>
+            <br><br>
+            <p style="font-weight: 100;">_____________________________</p>
+            <p><strong>MD. Abdul Razzak Chowdhury</strong></p>
+            <p>General Manager</p>
+            <p>{{ config('certificate.company.name') }}</p>
+        </div> --}}
     </section>
 </body>
 </html>
