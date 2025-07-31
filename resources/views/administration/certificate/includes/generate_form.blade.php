@@ -11,7 +11,7 @@
                         <option value="" selected>Select Employee</option>
                         @if(isset($employees) && $employees->count() > 0)
                             @foreach ($employees as $user)
-                                <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
+                                <option value="{{ $user->id }}" {{ (isset($certificate) && $certificate->user->id == $user->id) ? 'selected' : '' }}>
                                     {{ $user->name }} @if($user->employee && $user->employee->alias_name)({{ $user->employee->alias_name }})@endif
                                 </option>
                             @endforeach
@@ -28,7 +28,7 @@
                     <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default" required>
                         <option value="" selected disabled>Select Certificate Type</option>
                         @foreach(certificate_get_types() as $typeKey)
-                            <option value="{{ $typeKey }}" {{ old('type') == $typeKey ? 'selected' : '' }}>
+                            <option value="{{ $typeKey }}" {{ (isset($certificate) && $certificate->type == $typeKey) ? 'selected' : '' }}>
                                 {{ certificate_get_type_config($typeKey)['label'] }}
                             </option>
                         @endforeach
@@ -39,7 +39,7 @@
                 </div>
                 <div class="mb-3 col-md-12">
                     <label class="form-label">Issue Date <strong class="text-danger">*</strong></label>
-                    <input type="text" name="issue_date" value="{{ old('issue_date') }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
+                    <input type="text" name="issue_date" value="{{ (isset($certificate) ? show_date($certificate->issue_date, 'Y-m-d') : old('issue_date')) }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
                     @error('issue_date')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -48,7 +48,7 @@
                 {{-- Joining Date will be visible and required only for Appointment Letter --}}
                 <div class="mb-3 col-md-12">
                     <label class="form-label">Joining Date <strong class="text-danger">*</strong></label>
-                    <input type="text" name="joining_date" value="{{ old('joining_date') }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
+                    <input type="text" name="joining_date" value="{{ (isset($certificate) ? show_date($certificate->joining_date, 'Y-m-d') : old('joining_date')) }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
                     @error('joining_date')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -57,7 +57,7 @@
                 {{-- Salary will be visible and required only for Appointment Letter And Employment Certificate --}}
                 <div class="mb-3 col-md-12">
                     <label class="form-label">Salary <strong class="text-danger">*</strong></label>
-                    <input type="number" name="salary" value="{{ old('salary') }}" class="form-control" placeholder="25000" required/>
+                    <input type="number" name="salary" value="{{ (isset($certificate) ? $certificate->salary : old('salary')) }}" class="form-control" placeholder="25000" required/>
                     @error('salary')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -66,7 +66,7 @@
                 {{-- Resignation Date will be visible and required only for Experience Letter --}}
                 <div class="mb-3 col-md-12">
                     <label class="form-label">Resignation Date <strong class="text-danger">*</strong></label>
-                    <input type="text" name="resignation_date" value="{{ old('resignation_date') }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
+                    <input type="text" name="resignation_date" value="{{ (isset($certificate) ? show_date($certificate->resignation_date, 'Y-m-d') : old('resignation_date')) }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
                     @error('resignation_date')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -75,7 +75,7 @@
                 {{-- Release Date will be visible and required only for Release Letter --}}
                 <div class="mb-3 col-md-12">
                     <label class="form-label">Release Date <strong class="text-danger">*</strong></label>
-                    <input type="text" name="release_date" value="{{ old('release_date') }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
+                    <input type="text" name="release_date" value="{{ (isset($certificate) ? show_date($certificate->release_date, 'Y-m-d') : old('release_date')) }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
                     @error('release_date')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -84,7 +84,7 @@
                 {{-- Release Reason will be visible and required only for Release Reason --}}
                 <div class="mb-3 col-md-12">
                     <label class="form-label">Release Reason <strong class="text-danger">*</strong></label>
-                    <input type="text" name="release_reason" value="{{ old('release_reason') }}" class="form-control" placeholder="Ex: Health Issue" required/>
+                    <input type="text" name="release_reason" value="{{ (isset($certificate) ? $certificate->release_reason : old('release_reason')) }}" class="form-control" placeholder="Ex: Health Issue" required/>
                     @error('release_reason')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -93,7 +93,7 @@
                 {{-- Country Name will be visible and required only for NOC/No Objection Letter --}}
                 <div class="mb-3 col-md-12">
                     <label class="form-label">Country Name <strong class="text-danger">*</strong></label>
-                    <input type="text" name="country_name" value="{{ old('country_name') }}" class="form-control" placeholder="Ex: United State of America" required/>
+                    <input type="text" name="country_name" value="{{ (isset($certificate) ? $certificate->country_name : old('country_name')) }}" class="form-control" placeholder="Ex: United State of America" required/>
                     @error('country_name')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -102,7 +102,7 @@
                 {{-- Visiting Purpose will be visible and required only for NOC/No Objection Letter --}}
                 <div class="mb-3 col-md-12">
                     <label class="form-label">Visiting Purpose <strong class="text-danger">*</strong></label>
-                    <input type="text" name="visiting_purpose" value="{{ old('visiting_purpose') }}" class="form-control" placeholder="Ex: United State of America" required/>
+                    <input type="text" name="visiting_purpose" value="{{ (isset($certificate) ? $certificate->visiting_purpose : old('visiting_purpose')) }}" class="form-control" placeholder="Ex: United State of America" required/>
                     @error('visiting_purpose')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -111,7 +111,7 @@
                 {{-- Leave Starts From will be visible and required only for NOC/No Objection Letter --}}
                 <div class="mb-3 col-md-12">
                     <label class="form-label">Leave Starts From <strong class="text-danger">*</strong></label>
-                    <input type="text" name="leave_starts_from" value="{{ old('leave_starts_from') }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
+                    <input type="text" name="leave_starts_from" value="{{ (isset($certificate) ? show_date($certificate->leave_starts_from, 'Y-m-d') : old('leave_starts_from')) }}" class="form-control date-picker" placeholder="YYYY-MM-DD" required/>
                     @error('leave_starts_from')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
@@ -120,7 +120,7 @@
                 {{-- Leave Ends On will be visible but not required only for NOC/No Objection Letter --}}
                 <div class="mb-3 col-md-12">
                     <label class="form-label">Leave Ends On</label>
-                    <input type="text" name="leave_ends_on" value="{{ old('leave_ends_on') }}" class="form-control date-picker" placeholder="YYYY-MM-DD"/>
+                    <input type="text" name="leave_ends_on" value="{{ (isset($certificate) ? show_date($certificate->leave_ends_on, 'Y-m-d') : old('leave_ends_on')) }}" class="form-control date-picker" placeholder="YYYY-MM-DD"/>
                     @error('leave_ends_on')
                         <span class="text-danger">{{ $message }}</span>
                     @enderror
