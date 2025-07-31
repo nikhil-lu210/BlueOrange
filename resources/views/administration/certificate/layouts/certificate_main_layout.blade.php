@@ -102,7 +102,7 @@
 
             @page {
                 size: Letter;
-                margin-top: 4cm;
+                margin-top: 3.4cm;
                 margin-left: 1.6cm;
                 margin-right: 1.5cm;
             }
