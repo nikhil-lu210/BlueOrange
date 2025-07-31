@@ -102,7 +102,7 @@
 
             @page {
                 size: Letter;
-                margin-top: 3.4cm;
+                margin-top: 2.4cm;
                 margin-left: 1.6cm;
                 margin-right: 1.5cm;
             }
@@ -125,7 +125,7 @@
 <body>
     <section class="certificate-container">
         <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; color: #666;">
-            <strong style="margin-left: 5px;"> {{ $certificate->formatted_reference_no ?? 'CERT-' . ($certificate->reference_no ?? 'XXXXXXXXXX') }}</strong>
+            <strong style="margin-left: 15px;"> {{ $certificate->formatted_reference_no ?? 'CERT-' . ($certificate->reference_no ?? 'XXXXXXXXXX') }}</strong>
             <strong> {{ $certificate->formatted_issue_date }}</strong>
         </div>
 
