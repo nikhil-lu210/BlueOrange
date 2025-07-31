@@ -23,7 +23,7 @@
             position: relative;
             max-width: 800px;
             margin: 30px auto;
-            padding: 20mm;
+            padding: 2cm;
             background-color: #fff;
             width: 100%;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
@@ -88,19 +88,23 @@
             }
 
             .certificate-container {
-                margin: 0 auto;
-                padding: 0;
-                box-shadow: none;
+                margin: 0 auto !important;
+                padding: 0 !important;
+                box-shadow: none !important;
                 page-break-inside: avoid !important;
-                height: auto;
-                overflow: hidden;
+                height: auto !important;
+                overflow: hidden !important;
+            }
+
+            .certificate-content {
+                margin-top: 20mm;
             }
 
             @page {
                 size: Letter;
-                margin-top: 4.5cm;
+                margin-top: 4cm;
                 margin-left: 1.6cm;
-                margin-right: 1.3cm;
+                margin-right: 1.5cm;
             }
 
             .print-button {
@@ -121,7 +125,7 @@
 <body>
     <section class="certificate-container">
         <div style="display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; color: #666;">
-            <strong> {{ $certificate->formatted_reference_no ?? 'CERT-' . ($certificate->reference_no ?? 'XXXXXXXXXX') }}</strong>
+            <strong style="margin-left: 5px;"> {{ $certificate->formatted_reference_no ?? 'CERT-' . ($certificate->reference_no ?? 'XXXXXXXXXX') }}</strong>
             <strong> {{ $certificate->formatted_issue_date }}</strong>
         </div>
 
