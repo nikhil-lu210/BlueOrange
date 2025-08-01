@@ -44,6 +44,7 @@ return new class extends Migration
             $table->string('visiting_purpose')->nullable();
             $table->date('leave_starts_from')->nullable();
             $table->date('leave_ends_on')->nullable();
+            $table->integer('email_sent')->default(0)->comment('Number of times email was sent to employee');
 
             $table->timestamps();
             $table->softDeletes();

@@ -50,6 +50,7 @@ class Certificate extends Model
         'visiting_purpose',
         'leave_starts_from',
         'leave_ends_on',
+        'email_sent',
     ];
 
     /**

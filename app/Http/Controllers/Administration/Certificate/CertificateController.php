@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Administration\Certificate;
 
+use Exception;
 use App\Http\Controllers\Controller;
 use App\Models\Certificate\Certificate;
 use App\Services\Administration\Certificate\CertificateService;
@@ -56,7 +57,7 @@ class CertificateController extends Controller
             $certificateTypes = $this->certificateService->getCertificateTypes();
 
             return view('administration.certificate.create', compact(['certificate', 'employees', 'certificateTypes']));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->withError('Failed to generate certificate preview: ' . $e->getMessage())->withInput();
         }
     }
@@ -96,6 +97,22 @@ class CertificateController extends Controller
     }
 
     /**
+     * Send certificate email to employee
+     */
+    public function sendEmail(Certificate $certificate)
+    {
+        try {
+            $this->certificateService->sendCertificateEmail($certificate);
+
+            toast('Certificate email sent successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            toast('Failed to send email: ' . $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
+
+    /**
      * Remove the specified resource from storage.
      */
     public function destroy(Certificate $certificate)
@@ -104,7 +121,7 @@ class CertificateController extends Controller
             $this->certificateService->deleteCertificate($certificate);
             toast('Certificate has been deleted successfully.', 'success');
             return redirect()->route('administration.certificate.index');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return back()->withError('Failed to delete certificate: ' . $e->getMessage());
         }
     }
