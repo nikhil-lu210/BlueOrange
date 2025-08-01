@@ -6,23 +6,23 @@
         <h3><u>To Whom It May Concern</u></h3>
 
         <div class="letter-content">
-            <p>This is to certify that <strong>{{ $certificate->user->name }}</strong>, {{ $certificate->user->employee->gender == 'Male' ? 'son' : 'daughter' }} of <strong>{{ $certificate->user->employee->father_name ?? 'N/A' }}</strong>, was employed with <strong>{{ config('certificate.company.name') }}</strong> as a <strong>{{ $certificate->user->roles->first()->name ?? 'Employee' }}</strong>.</p>
+            <p>Dear
+                @if($certificate->user->employee->gender == 'Male')
+                    Mr.
+                @elseif($certificate->user->employee->gender == 'Female')
+                    Mrs./Miss.
+                @else
+                    Mr./Mrs./Miss.
+                @endif
+                <strong>{{ $certificate->user->name }}</strong>,
+            </p>
+            <p>This is to inform you that you are released from the services of the company with effect from the close of office hours on <strong>{{ $certificate->formatted_release_date }}</strong> due to <strong>{{ $certificate->release_reason }}</strong>.</p>
 
-            <p>{{ $certificate->user->employee->gender == 'Male' ? 'He' : 'She' }} joined our organization on <strong>{{ $certificate->formatted_joining_date }}</strong> and {{ $certificate->user->employee->gender == 'Male' ? 'his' : 'her' }} employment has been terminated by the company effective <strong>{{ $certificate->formatted_release_date }}</strong>.</p>
+            <p>We also certify that your full and final settlement of account with the organization (if any) will be cleared as per the company payment schedule.</p>
 
-            <p><strong>Reason for Release:</strong> {{ $certificate->release_reason }}</p>
+            <p>Thanks for your service for the company from <strong>{{ $certificate->formatted_joining_date }}</strong>. We truly value the contributions you've made during your time with us. We intend to reach out to you again in the future if a suitable contract becomes available that will match your skill set.</p>
 
-            <p>{{ $certificate->user->employee->gender == 'Male' ? 'He' : 'She' }} has completed the necessary handover procedures and cleared all dues and obligations with the company as per company policy. All company properties, documents, and materials have been returned.</p>
-
-            <p>During {{ $certificate->user->employee->gender == 'Male' ? 'his' : 'her' }} employment period with us, all assigned responsibilities have been completed as per the terms of employment.</p>
-
-            <p>{{ $certificate->user->employee->gender == 'Male' ? 'He' : 'She' }} is hereby officially released from all contractual obligations and employment responsibilities with <strong>{{ config('certificate.company.name') }}</strong> effective from the above-mentioned date.</p>
-
-            <p>This release letter serves as official documentation of the termination of employment relationship between <strong>{{ $certificate->user->name }}</strong> and <strong>{{ config('certificate.company.name') }}</strong>.</p>
-
-            <p>This release letter is issued for official and legal purposes.</p>
-
-            <p>Issued on <strong>{{ $certificate->formatted_issue_date }}</strong>.</p>
+            <p>We wish you all the best in your future endeavors.</p>
         </div>
     </div>
 @endsection

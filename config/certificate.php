@@ -66,7 +66,6 @@ return [
                 'user_id',
                 'type',
                 'issue_date',
-                'resignation_date',
                 'resign_application_date',
                 'resignation_approval_date',
                 'release_date',
