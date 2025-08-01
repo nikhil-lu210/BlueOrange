@@ -16,7 +16,7 @@
                 @endif
                 <strong>{{ $certificate->user->name }}</strong>,
             </p>
-            <p>This has reference to your letter of resignation dated <strong>{{ $certificate->formatted_resignation_approval_date }}</strong>, wherein you have requested to be relieved from the services of the company on <strong>{{ $certificate->formatted_resign_application_date }}</strong> due to <strong>{{ $certificate->release_reason }}</strong>.</p>
+            <p>This has reference to your letter of resignation dated <strong>{{ $certificate->formatted_resign_application_date }}</strong>, wherein you have requested to be relieved from the services of the company on <strong>{{ $certificate->formatted_resignation_approval_date }}</strong> due to <strong>{{ $certificate->release_reason }}</strong>.</p>
 
             <p>We wish to inform you that your resignation is hereby accepted and you are being relieved from the services of the company with effect from close of office hours on <strong>{{ $certificate->formatted_release_date }}</strong>.</p>
 
