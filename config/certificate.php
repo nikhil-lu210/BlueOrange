@@ -19,9 +19,8 @@ return [
             'badge_class' => 'badge-success',
             'required_fields' => [
                 'user_id',
-                'type', 
+                'type',
                 'issue_date',
-                'joining_date',
                 'salary'
             ],
             'optional_fields' => [],
@@ -37,7 +36,6 @@ return [
                 'user_id',
                 'type',
                 'issue_date',
-                'joining_date',
                 'salary'
             ],
             'optional_fields' => [],
@@ -59,11 +57,29 @@ return [
             'description' => 'Work experience certification letter'
         ],
 
-        'Release Letter' => [
-            'label' => 'Release Letter',
-            'template' => 'release_letter',
+        'Release Letter by Employee' => [
+            'label' => 'Release Letter by Employee',
+            'template' => 'release_letter_employee_resigned',
             'icon' => 'ti-user-minus',
             'badge_class' => 'badge-warning',
+            'required_fields' => [
+                'user_id',
+                'type',
+                'issue_date',
+                'resign_application_date',
+                'resignation_approval_date',
+                'release_date',
+                'release_reason'
+            ],
+            'optional_fields' => [],
+            'description' => 'Release letter for resigned employee'
+        ],
+
+        'Release Letter by Employer' => [
+            'label' => 'Release Letter by Employer',
+            'template' => 'release_letter_employer',
+            'icon' => 'ti-user-x',
+            'badge_class' => 'badge-danger',
             'required_fields' => [
                 'user_id',
                 'type',
@@ -72,7 +88,7 @@ return [
                 'release_reason'
             ],
             'optional_fields' => [],
-            'description' => 'Employee release letter with reason'
+            'description' => 'Employer-initiated release letter with reason'
         ],
 
         'NOC/No Objection Letter' => [
@@ -108,9 +124,10 @@ return [
         'user_id' => 'Employee',
         'type' => 'Certificate Type',
         'issue_date' => 'Issue Date',
-        'joining_date' => 'Joining Date',
         'salary' => 'Salary',
         'resignation_date' => 'Resignation Date',
+        'resign_application_date' => 'Resign Application Date',
+        'resignation_approval_date' => 'Resign Approval Date',
         'release_date' => 'Release Date',
         'release_reason' => 'Release Reason',
         'country_name' => 'Country Name',
@@ -123,9 +140,10 @@ return [
         'user_id' => 'Select the employee for whom the certificate is being generated',
         'type' => 'Choose the type of certificate to generate',
         'issue_date' => 'Date when the certificate is being issued',
-        'joining_date' => 'Date when the employee joined the organization',
         'salary' => 'Monthly salary amount in BDT',
         'resignation_date' => 'Date when the employee resigned',
+        'resign_application_date' => 'Date when the employee submitted resignation application',
+        'resignation_approval_date' => 'Date when the resignation was approved by management',
         'release_date' => 'Date when the employee is being released',
         'release_reason' => 'Reason for releasing the employee',
         'country_name' => 'Name of the country to visit',

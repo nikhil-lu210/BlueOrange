@@ -78,7 +78,7 @@
             margin-bottom: 5px;
         }
         .manager-signature {
-            margin-top: 3cm;
+            margin-top: 2cm;
             padding-top: 5px;
             border-top: 1px dotted #c5c5c5;
             width: fit-content;

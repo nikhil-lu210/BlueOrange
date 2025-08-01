@@ -2,8 +2,14 @@
 
 namespace App\Services\Administration\Certificate;
 
+use Log;
+use Mail;
+use Exception;
 use App\Models\User;
+use RuntimeException;
 use App\Models\Certificate\Certificate;
+use Illuminate\Validation\ValidationException;
+use App\Mail\Administration\Certificate\CertificateMail;
 
 class CertificateService
 {
@@ -96,5 +102,31 @@ class CertificateService
     public function getCertificateTypeConfig($type = null)
     {
         return Certificate::getTypeConfig($type);
+    }
+
+    /**
+     * Send certificate email to employee
+     */
+    public function sendCertificateEmail(Certificate $certificate)
+    {
+        // Load relationships
+        $certificate = $this->getCertificateWithRelations($certificate);
+
+        // Validate presence of personal email
+        if (!$certificate->user->employee || !$certificate->user->employee->personal_email) {
+            throw ValidationException::withMessages([
+                'email' => 'The employee does not have a personal email address.'
+            ]);
+        }
+
+        try {
+            // Send the email
+            Mail::to($certificate->user->employee->personal_email)->send(new CertificateMail($certificate, $certificate->user));
+
+            // Increment email sent count
+            $certificate->increment('email_sent');
+        } catch (Exception $e) {
+            throw new RuntimeException('Failed to send the certificate email. Please try again later.');
+        }
     }
 }

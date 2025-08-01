@@ -29,26 +29,22 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
 
-            $table->enum('type', [
-                'Appointment Letter',
-                'Employment Certificate',
-                'Experience Letter',
-                'Release Letter',
-                'NOC/No Objection Letter'
-            ]);
+            $table->string('type');
 
             $table->date('issue_date');
 
             // Fields for different certificate types
-            $table->date('joining_date')->nullable();
             $table->decimal('salary', 10, 2)->nullable();
             $table->date('resignation_date')->nullable();
+            $table->date('resign_application_date')->nullable();
+            $table->date('resignation_approval_date')->nullable();
             $table->date('release_date')->nullable();
             $table->string('release_reason')->nullable();
             $table->string('country_name')->nullable();
             $table->string('visiting_purpose')->nullable();
             $table->date('leave_starts_from')->nullable();
             $table->date('leave_ends_on')->nullable();
+            $table->integer('email_sent')->default(0)->comment('Number of times email was sent to employee');
 
             $table->timestamps();
             $table->softDeletes();

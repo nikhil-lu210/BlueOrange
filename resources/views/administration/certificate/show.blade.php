@@ -63,10 +63,19 @@
                         <i class="ti ti-printer me-1"></i>{{ __('Print Certificate') }}
                     </a>
 
+                    <form method="POST" action="{{ route('administration.certificate.send-email', $certificate) }}">
+                        @csrf
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="ti ti-mail me-1"></i>{{ __('Send Email') }}
+                            @if($certificate->email_sent > 0)
+                                <sup class="me-1 p-1 text-bold">{{ $certificate->email_sent }}</sup>
+                            @endif
+                        </button>
+                    </form>
+
                     @canany(['Certificate Everything', 'Certificate Delete'])
                         <a href="{{ route('administration.certificate.destroy', $certificate) }}"
-                           class="btn btn-danger"
-                           onclick="return confirm('Are you sure you want to delete this certificate?')">
+                           class="btn btn-danger confirm-danger">
                             <i class="ti ti-trash me-1"></i>{{ __('Delete Certificate') }}
                         </a>
                     @endcanany
@@ -92,6 +101,12 @@
                     <p><strong>{{ __('Issue Date') }}:</strong><br>{{ $certificate->formatted_issue_date }}</p>
                     <p><strong>{{ __('Created By') }}:</strong><br>{{ $certificate->creator->name }}</p>
                     <p><strong>{{ __('Created At') }}:</strong><br>{{ $certificate->created_at->format('M j, Y g:i A') }}</p>
+                    <p>
+                        <strong>{{ __('Email Sent') }}:</strong><br>
+                        <span class="badge bg-{{ $certificate->email_sent > 0 ? 'success' : 'secondary' }}">
+                            {{ $certificate->email_sent }} {{ $certificate->email_sent == 1 ? 'time' : 'times' }}
+                        </span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -119,6 +134,48 @@
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Any custom JavaScript for the certificate show page
+        function sendCertificateEmail(certificateId) {
+            // Show loading state
+            const button = event.target.closest('button');
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<i class="ti ti-loader ti-spin me-1"></i>Sending...';
+
+            // Send AJAX request
+            fetch(`{{ route('administration.certificate.send-email', '') }}/${certificateId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success toast
+                    toastr.success(data.message);
+
+                    // Update button with new count
+                    const newCount = data.email_sent_count;
+                    let buttonHtml = '<i class="ti ti-mail me-1"></i>{{ __("Send Email") }}';
+                    if (newCount > 0) {
+                        buttonHtml += `<span class="badge bg-white text-success ms-1">${newCount}</span>`;
+                    }
+                    button.innerHTML = buttonHtml;
+                } else {
+                    // Show error toast
+                    toastr.error(data.message || 'Failed to send email');
+                    button.innerHTML = originalText;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toastr.error('An error occurred while sending the email');
+                button.innerHTML = originalText;
+            })
+            .finally(() => {
+                button.disabled = false;
+            });
+        }
     </script>
 @endsection
