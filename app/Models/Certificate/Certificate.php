@@ -25,8 +25,9 @@ class Certificate extends Model
 
     protected $casts = [
         'issue_date' => 'date',
-        'joining_date' => 'date',
         'resignation_date' => 'date',
+        'resign_application_date' => 'date',
+        'resignation_approval_date' => 'date',
         'release_date' => 'date',
         'leave_starts_from' => 'date',
         'leave_ends_on' => 'date',
@@ -39,9 +40,10 @@ class Certificate extends Model
         'creator_id',
         'type',
         'issue_date',
-        'joining_date',
         'salary',
         'resignation_date',
+        'resign_application_date',
+        'resignation_approval_date',
         'release_date',
         'release_reason',
         'country_name',

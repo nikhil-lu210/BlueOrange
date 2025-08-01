@@ -26,52 +26,93 @@ class CertificateRequest extends FormRequest
             'issue_date' => 'required|date',
         ];
 
-        // Add conditional validation based on certificate type (following form comments)
-        switch ($this->input('type')) {
-            case 'Appointment Letter':
-                // Joining Date and Salary are required for Appointment Letter
-                $rules = array_merge($rules, [
-                    'joining_date' => 'required|date',
-                    'salary' => 'required|numeric|min:0',
-                ]);
-                break;
+        // Get certificate configuration
+        $certificateTypes = config('certificate.types');
+        $selectedType = $this->input('type');
 
-            case 'Employment Certificate':
-                // Joining Date and Salary are required for Employment Certificate
-                $rules = array_merge($rules, [
-                    'joining_date' => 'required|date',
-                    'salary' => 'required|numeric|min:0',
-                ]);
-                break;
+        if (isset($certificateTypes[$selectedType])) {
+            $typeConfig = $certificateTypes[$selectedType];
 
-            case 'Experience Letter':
-                // Only Resignation Date is required for Experience Letter
-                $rules = array_merge($rules, [
-                    'resignation_date' => 'required|date',
-                ]);
-                break;
+            // Add validation rules for required fields (excluding basic fields)
+            $basicFields = ['user_id', 'type', 'issue_date'];
+            $requiredFields = array_diff($typeConfig['required_fields'], $basicFields);
 
-            case 'Release Letter':
-                // Release Date and Release Reason are required for Release Letter
-                $rules = array_merge($rules, [
-                    'release_date' => 'required|date',
-                    'release_reason' => 'required|string|max:255',
-                ]);
-                break;
+            foreach ($requiredFields as $field) {
+                $rules[$field] = $this->getFieldValidationRule($field);
+            }
 
-            case 'NOC/No Objection Letter':
-                // Country Name, Visiting Purpose, Leave Starts From are required
-                // Leave Ends On is optional for NOC Letter
-                $rules = array_merge($rules, [
-                    'country_name' => 'required|string|max:255',
-                    'visiting_purpose' => 'required|string|max:255',
-                    'leave_starts_from' => 'required|date',
-                    'leave_ends_on' => 'nullable|date|after:leave_starts_from',
-                ]);
-                break;
+            // Add validation rules for optional fields
+            if (isset($typeConfig['optional_fields'])) {
+                foreach ($typeConfig['optional_fields'] as $field) {
+                    $rules[$field] = $this->getFieldValidationRule($field, false);
+                }
+            }
         }
 
         return $rules;
+    }
+
+    /**
+     * Get validation rule for a specific field
+     */
+    private function getFieldValidationRule(string $field, bool $required = true): string
+    {
+        $baseRule = $required ? 'required' : 'nullable';
+
+        switch ($field) {
+            case 'salary':
+                return $baseRule . '|numeric|min:0';
+
+            case 'resignation_date':
+            case 'resign_application_date':
+            case 'resignation_approval_date':
+            case 'release_date':
+            case 'leave_starts_from':
+            case 'leave_ends_on':
+                return $this->getDateValidationRule($field, $required);
+
+            case 'release_reason':
+            case 'country_name':
+            case 'visiting_purpose':
+                return $baseRule . '|string|max:255';
+
+            default:
+                return $baseRule . '|string|max:255';
+        }
+    }
+
+    /**
+     * Get date validation rule with relationship constraints
+     */
+    private function getDateValidationRule(string $field, bool $required = true): string
+    {
+        $baseRule = $required ? 'required' : 'nullable';
+        $rule = $baseRule . '|date';
+
+        // Add relationship constraints for resignation workflow
+        switch ($field) {
+            case 'resignation_approval_date':
+                if ($this->has('resign_application_date')) {
+                    $rule .= '|after_or_equal:resign_application_date';
+                }
+                break;
+
+            case 'release_date':
+                if ($this->has('resignation_approval_date')) {
+                    $rule .= '|after_or_equal:resignation_approval_date';
+                } elseif ($this->has('resignation_date')) {
+                    $rule .= '|after_or_equal:resignation_date';
+                }
+                break;
+
+            case 'leave_ends_on':
+                if ($this->has('leave_starts_from')) {
+                    $rule .= '|after:leave_starts_from';
+                }
+                break;
+        }
+
+        return $rule;
     }
 
     /**
@@ -86,17 +127,20 @@ class CertificateRequest extends FormRequest
             'type.in' => 'The selected certificate type is invalid.',
             'issue_date.required' => 'Please provide the issue date.',
             'issue_date.date' => 'Please provide a valid issue date.',
-            'joining_date.required' => 'Please provide the joining date.',
-            'joining_date.date' => 'Please provide a valid joining date.',
+
             'salary.required' => 'Please provide the salary amount.',
             'salary.numeric' => 'Salary must be a valid number.',
             'salary.min' => 'Salary cannot be negative.',
             'resignation_date.required' => 'Please provide the resignation date.',
             'resignation_date.date' => 'Please provide a valid resignation date.',
-            'resignation_date.after' => 'Resignation date must be after joining date.',
+            'resign_application_date.required' => 'Please provide the resignation application date.',
+            'resign_application_date.date' => 'Please provide a valid resignation application date.',
+            'resignation_approval_date.required' => 'Please provide the resignation approval date.',
+            'resignation_approval_date.date' => 'Please provide a valid resignation approval date.',
+            'resignation_approval_date.after_or_equal' => 'Resignation approval date must be on or after the application date.',
             'release_date.required' => 'Please provide the release date.',
             'release_date.date' => 'Please provide a valid release date.',
-            'release_date.after' => 'Release date must be after joining date.',
+            'release_date.after_or_equal' => 'Release date must be on or after the resignation approval date.',
             'release_reason.required' => 'Please provide the release reason.',
             'release_reason.max' => 'Release reason cannot exceed 255 characters.',
             'country_name.required' => 'Please provide the country name.',
@@ -119,9 +163,10 @@ class CertificateRequest extends FormRequest
             'user_id' => 'employee',
             'type' => 'certificate type',
             'issue_date' => 'issue date',
-            'joining_date' => 'joining date',
             'salary' => 'salary',
             'resignation_date' => 'resignation date',
+            'resign_application_date' => 'resignation application date',
+            'resignation_approval_date' => 'resignation approval date',
             'release_date' => 'release date',
             'release_reason' => 'release reason',
             'country_name' => 'country name',

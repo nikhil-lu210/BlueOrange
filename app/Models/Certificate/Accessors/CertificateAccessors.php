@@ -21,11 +21,13 @@ trait CertificateAccessors
     }
 
     /**
-     * Get formatted joining date
+     * Get formatted joining date from employee
      */
     public function getFormattedJoiningDateAttribute()
     {
-        return $this->joining_date ? $this->joining_date->format('F j, Y') : null;
+        return $this->user && $this->user->employee && $this->user->employee->joining_date
+            ? \Carbon\Carbon::parse($this->user->employee->joining_date)->format('F j, Y')
+            : null;
     }
 
     /**
@@ -34,6 +36,22 @@ trait CertificateAccessors
     public function getFormattedResignationDateAttribute()
     {
         return $this->resignation_date ? $this->resignation_date->format('F j, Y') : null;
+    }
+
+    /**
+     * Get formatted resign application date
+     */
+    public function getFormattedResignApplicationDateAttribute()
+    {
+        return $this->resign_application_date ? $this->resign_application_date->format('F j, Y') : null;
+    }
+
+    /**
+     * Get formatted resignation approval date
+     */
+    public function getFormattedResignationApprovalDateAttribute()
+    {
+        return $this->resignation_approval_date ? $this->resignation_approval_date->format('F j, Y') : null;
     }
 
     /**

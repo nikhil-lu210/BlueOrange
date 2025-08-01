@@ -1,10 +1,11 @@
 /**
  * Certificate Form Dynamic Handler
- * Handles dynamic form field visibility based on certificate type
+ * Handles dynamic form field visibility based on certificate configuration
  */
 
 class CertificateForm {
     constructor() {
+        this.config = window.certificateConfig || {};
         this.init();
     }
 
@@ -49,59 +50,65 @@ class CertificateForm {
         // Hide all conditional fields first
         this.hideAllConditionalFields();
 
-        // Show fields based on selected type according to form comments
-        switch (type) {
-            case 'Appointment Letter':
-                // Joining Date and Salary are required for Appointment Letter
-                this.showFields(['joining_date', 'salary']);
-                this.setRequiredFields(['joining_date', 'salary']);
-                break;
+        // Get configuration for the selected certificate type
+        const typeConfig = this.config[type];
 
-            case 'Employment Certificate':
-                // Joining Date and Salary are required for Employment Certificate
-                this.showFields(['joining_date', 'salary']);
-                this.setRequiredFields(['joining_date', 'salary']);
-                break;
-
-            case 'Experience Letter':
-                // Only Resignation Date is required for Experience Letter
-                this.showFields(['resignation_date']);
-                this.setRequiredFields(['resignation_date']);
-                break;
-
-            case 'Release Letter':
-                // Release Date and Release Reason are required for Release Letter
-                this.showFields(['release_date', 'release_reason']);
-                this.setRequiredFields(['release_date', 'release_reason']);
-                break;
-
-            case 'NOC/No Objection Letter':
-                // Country Name, Visiting Purpose, Leave Starts From are required
-                // Leave Ends On is optional for NOC Letter
-                this.showFields(['country_name', 'visiting_purpose', 'leave_starts_from', 'leave_ends_on']);
-                this.setRequiredFields(['country_name', 'visiting_purpose', 'leave_starts_from']);
-                this.setOptionalFields(['leave_ends_on']);
-                break;
-
-            default:
-                this.hideAllConditionalFields();
-                break;
+        if (!typeConfig) {
+            console.warn(`No configuration found for certificate type: ${type}`);
+            return;
         }
+
+        // Extract field names from required_fields and optional_fields (excluding basic fields)
+        const basicFields = ['user_id', 'type', 'issue_date'];
+        const requiredFields = typeConfig.required_fields.filter(field => !basicFields.includes(field));
+        const optionalFields = typeConfig.optional_fields || [];
+
+        // Show and set required fields
+        if (requiredFields.length > 0) {
+            this.showFields(requiredFields);
+            this.setRequiredFields(requiredFields);
+        }
+
+        // Show and set optional fields
+        if (optionalFields.length > 0) {
+            this.showFields(optionalFields);
+            this.setOptionalFields(optionalFields);
+        }
+
+        console.log(`Certificate type: ${type}`);
+        console.log(`Required fields:`, requiredFields);
+        console.log(`Optional fields:`, optionalFields);
 
         // Update form validation
         this.updateFormValidation();
     }
 
     hideAllConditionalFields() {
-        const conditionalFields = [
-            'joining_date', 'salary', 'resignation_date', 'release_date',
-            'release_reason', 'country_name', 'visiting_purpose',
-            'leave_starts_from', 'leave_ends_on'
-        ];
+        // Get all possible fields from configuration
+        const basicFields = ['user_id', 'type', 'issue_date'];
+        const allFields = new Set();
 
+        // Collect all fields from all certificate types
+        Object.values(this.config).forEach(typeConfig => {
+            typeConfig.required_fields.forEach(field => allFields.add(field));
+            if (typeConfig.optional_fields) {
+                typeConfig.optional_fields.forEach(field => allFields.add(field));
+            }
+        });
+
+        // Filter out basic fields to get only conditional fields
+        const conditionalFields = Array.from(allFields).filter(field => !basicFields.includes(field));
+
+        // Hide all conditional fields and remove required attributes
         conditionalFields.forEach(field => {
-            $(`[name="${field}"]`).closest('.mb-3').hide();
-            $(`[name="${field}"]`).removeAttr('required');
+            const fieldElement = $(`[name="${field}"]`);
+            const containerElement = fieldElement.closest('.mb-3');
+
+            containerElement.hide();
+            fieldElement.removeAttr('required');
+
+            // Remove required indicator from label
+            containerElement.find('label .text-danger').remove();
         });
     }
 
@@ -113,20 +120,31 @@ class CertificateForm {
 
     setRequiredFields(fields) {
         fields.forEach(field => {
-            $(`[name="${field}"]`).attr('required', true);
-            // Update label to show required indicator
-            const label = $(`label[for="${field}"]`);
-            if (!label.find('.text-danger').length) {
-                label.append(' <strong class="text-danger">*</strong>');
+            const fieldElement = $(`[name="${field}"]`);
+            const containerElement = fieldElement.closest('.mb-3');
+            const labelElement = containerElement.find('label');
+
+            // Set required attribute
+            fieldElement.attr('required', true);
+
+            // Add required indicator to label if not already present
+            if (!labelElement.find('.text-danger').length) {
+                labelElement.append(' <strong class="text-danger">*</strong>');
             }
         });
     }
 
     setOptionalFields(fields) {
         fields.forEach(field => {
-            $(`[name="${field}"]`).removeAttr('required');
+            const fieldElement = $(`[name="${field}"]`);
+            const containerElement = fieldElement.closest('.mb-3');
+            const labelElement = containerElement.find('label');
+
+            // Remove required attribute
+            fieldElement.removeAttr('required');
+
             // Remove required indicator from label
-            $(`label[for="${field}"] .text-danger`).remove();
+            labelElement.find('.text-danger').remove();
         });
     }
 
