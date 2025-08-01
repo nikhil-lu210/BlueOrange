@@ -1,19 +1,32 @@
 <form action="{{ route('administration.certificate.store') }}" method="post">
     @csrf
 
-    {{-- Hidden fields to pass certificate data --}}
-    <input type="hidden" name="user_id" value="{{ $certificate->user_id }}">
-    <input type="hidden" name="type" value="{{ $certificate->type }}">
-    <input type="hidden" name="issue_date" value="{{ $certificate->issue_date }}">
-    <input type="hidden" name="joining_date" value="{{ $certificate->joining_date }}">
-    <input type="hidden" name="salary" value="{{ $certificate->salary }}">
-    <input type="hidden" name="resignation_date" value="{{ $certificate->resignation_date }}">
-    <input type="hidden" name="release_date" value="{{ $certificate->release_date }}">
-    <input type="hidden" name="release_reason" value="{{ $certificate->release_reason }}">
-    <input type="hidden" name="country_name" value="{{ $certificate->country_name }}">
-    <input type="hidden" name="visiting_purpose" value="{{ $certificate->visiting_purpose }}">
-    <input type="hidden" name="leave_starts_from" value="{{ $certificate->leave_starts_from }}">
-    <input type="hidden" name="leave_ends_on" value="{{ $certificate->leave_ends_on }}">
+    {{-- Hidden fields to pass certificate data - dynamically generated based on config --}}
+    @php
+        $certificateConfig = config('certificate.types')[$certificate->type] ?? null;
+        $allFields = [];
+
+        if ($certificateConfig) {
+            // Get all required and optional fields for this certificate type
+            $allFields = array_merge(
+                $certificateConfig['required_fields'] ?? [],
+                $certificateConfig['optional_fields'] ?? []
+            );
+        }
+    @endphp
+
+    @if($certificateConfig && !empty($allFields))
+        @foreach($allFields as $field)
+            @if(isset($certificate->$field) && $certificate->$field !== null)
+                <input type="hidden" name="{{ $field }}" value="{{ $certificate->$field }}">
+            @endif
+        @endforeach
+    @else
+        {{-- Fallback: Basic required fields --}}
+        <input type="hidden" name="user_id" value="{{ $certificate->user_id }}">
+        <input type="hidden" name="type" value="{{ $certificate->type }}">
+        <input type="hidden" name="issue_date" value="{{ $certificate->issue_date }}">
+    @endif
 
     <div class="card mb-4">
         <div class="card-header header-elements">
