@@ -236,14 +236,45 @@
         });
     </script>
 
-    {{-- <script>
+    <script>
         $(document).ready(function () {
-            $("#barcodeScannerForm").on("keypress", function (event) {
-                // Check if the Enter key was pressed
-                if (event.which === 13) {
-                    event.preventDefault(); // Prevent form submission
+            const $input = $('#userid');
+            const $form = $input.closest('form'); // automatically finds the form
+            let barcode = '';
+            let lastKeyTime = Date.now();
+            const MAX_INTERVAL = 50; // Max time between keystrokes to qualify as barcode
+
+            $input.on('keydown', function (e) {
+                const now = Date.now();
+                const timeDiff = now - lastKeyTime;
+
+                if (timeDiff > MAX_INTERVAL) {
+                    barcode = '';
                 }
+
+                lastKeyTime = now;
+                const key = e.key;
+
+                if (/^[\w\d]$/.test(key)) {
+                    barcode += key;
+                } else if (e.keyCode === 13) {
+                    // Enter key = end of barcode
+                    e.preventDefault(); // prevent manual submission
+                    $input.val(barcode); // populate input
+                    barcode = '';
+
+                    // Submit the form
+                    $form.submit();
+                }
+
+                // Prevent all manual input
+                e.preventDefault();
+            });
+
+            // Block pasting or right-click
+            $input.on('paste contextmenu', function (e) {
+                e.preventDefault();
             });
         });
-    </script> --}}
+    </script>
 @endsection
