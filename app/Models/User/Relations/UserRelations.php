@@ -26,6 +26,8 @@ use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Education\Institute\Institute;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
+use App\Models\Hiring\HiringCandidate;
+use App\Models\Hiring\HiringStageEvaluation;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -345,5 +347,45 @@ trait UserRelations
     public function created_penalties(): HasMany
     {
         return $this->hasMany(Penalty::class, 'creator_id');
+    }
+
+    /**
+     * Get the hiring candidates created by this user
+     */
+    public function createdHiringCandidates(): HasMany
+    {
+        return $this->hasMany(HiringCandidate::class, 'created_by');
+    }
+
+    /**
+     * Get the hiring candidate record if this user was hired through the system
+     */
+    public function hiringCandidate(): HasOne
+    {
+        return $this->hasOne(HiringCandidate::class, 'user_id');
+    }
+
+    /**
+     * Get the stage evaluations assigned to this user
+     */
+    public function assignedEvaluations(): HasMany
+    {
+        return $this->hasMany(HiringStageEvaluation::class, 'assigned_to');
+    }
+
+    /**
+     * Get the stage evaluations created by this user
+     */
+    public function createdEvaluations(): HasMany
+    {
+        return $this->hasMany(HiringStageEvaluation::class, 'created_by');
+    }
+
+    /**
+     * Get the stage evaluations updated by this user
+     */
+    public function updatedEvaluations(): HasMany
+    {
+        return $this->hasMany(HiringStageEvaluation::class, 'updated_by');
     }
 }

@@ -75,4 +75,7 @@ Route::prefix('')
 
             // quiz
             include_once 'quiz/quiz.php';
+
+            // hiring
+            include_once 'hiring/hiring.php';
         });

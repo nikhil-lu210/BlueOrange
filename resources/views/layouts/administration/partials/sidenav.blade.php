@@ -45,6 +45,8 @@
 
         @include('layouts.administration.partials.menus.penalty')
 
+        @include('layouts.administration.partials.menus.hiring')
+
         @include('layouts.administration.partials.menus.quiz')
 
         @include('layouts.administration.partials.menus.vault')
