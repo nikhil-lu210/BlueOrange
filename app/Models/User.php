@@ -38,6 +38,17 @@ class User extends Authenticatable implements HasMedia
         'deleted_at'
     ];
 
+    // Employee Recognition relationships
+    public function recognitionsGiven()
+    {
+        return $this->hasMany(EmployeeRecognition::class, 'recognizer_id');
+    }
+
+    public function recognitionsReceived()
+    {
+        return $this->hasMany(EmployeeRecognition::class, 'employee_id');
+    }
+
     // We're removing the automatic loading of relationships to prevent n+1 queries
     // Instead, we'll explicitly load what we need in each controller
     protected $with = [];

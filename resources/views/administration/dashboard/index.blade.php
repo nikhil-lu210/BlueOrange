@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     {{-- FullCalendar --}}
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/rateyo/rateyo.css') }}" />
 
 @endsection
 
@@ -199,6 +200,10 @@
 @section('content')
 {{-- <!-- Start row --> --}}
 
+
+{{-- Employee Recognition System (ERS) --}}
+@include('administration.dashboard.partials._employee_recognition')
+
 {{-- Birdthday Wish --}}
 @include('administration.dashboard.partials._birthday_wish')
 
@@ -258,10 +263,41 @@
     <!-- Dashboard Calendar JS -->
     <script src="{{ asset('assets/js/custom_js/calendar/dashboard_calendar.js') }}"></script>
 
+    <script src="{{ asset('assets/vendor/libs/rateyo/rateyo.js') }}"></script>
 @endsection
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
+    <script>
+        $(document).ready(function() {
+            // Initialize select2 for staff selection
+            $('#employee_id').select2({
+                dropdownParent: $('#giveRecognitionModal'),
+                width: '100%'
+            });
+
+            // RateYo star rating logic for each category
+            var categories = ['Behavior', 'Appreciation', 'Leadership', 'Loyalty', 'Dedication'];
+            categories.forEach(function(cat) {
+                $('#full-star_' + cat).rateYo({
+                    rating: 0,
+                    numStars: 5,
+                    maxValue: 5,
+                    minValue: 1,
+                    starWidth: '32px',
+                    fullStar: true,
+                    normalFill: '#ddd',
+                    ratedFill: '#ffc107',
+                    spacing: '5px',
+                }).on('rateyo.set', function (e, data) {
+                    var rating = data.rating;
+                    $('#rating_' + cat).val(rating);
+                    $('#rating_value_' + cat).text(rating + ' / 5');
+                });
+            });
+        });
+    </script>
+
     <script>
         // ShowLiveTime
         $(document).ready(function() {

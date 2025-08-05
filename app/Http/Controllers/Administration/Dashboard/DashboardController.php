@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Administration\Dashboard;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Administration\Dashboard\DashboardService;
 
 class DashboardController extends Controller
 {
     protected $dashboardService;
+    protected $employeeRecognitionService;
 
     /**
      * Create a new controller instance.
@@ -17,6 +17,7 @@ class DashboardController extends Controller
     public function __construct(DashboardService $dashboardService)
     {
         $this->dashboardService = $dashboardService;
+        $this->employeeRecognitionService = app(\App\Services\Administration\Dashboard\EmployeeRecognitionService::class);
     }
 
     /**
@@ -24,38 +25,32 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // Get the current authenticated user
+        // ...existing code...
         $user = $this->dashboardService->getCurrentUser();
-
-        // Get a random birthday wish
         $wish = $this->dashboardService->getRandomBirthdayWish();
-
-        // Get attendance statistics
         $attendanceStats = $this->dashboardService->getAttendanceStatistics($user);
         $totalWorkedDays = $attendanceStats['totalWorkedDays'];
         $totalRegularWork = $attendanceStats['totalRegularWork'];
         $totalOvertimeWork = $attendanceStats['totalOvertimeWork'];
         $totalRegularWorkingHour = $attendanceStats['totalRegularWorkingHour'];
         $totalOvertimeWorkingHour = $attendanceStats['totalOvertimeWorkingHour'];
-
-        // Get active attendance and current month attendances
         $activeAttendance = $this->dashboardService->getActiveAttendance($user);
         $attendances = $this->dashboardService->getCurrentMonthAttendances($user);
-
-        // Get users who are currently working, on leave, or absent
         $currentlyWorkingUsers = $this->dashboardService->getCurrentlyWorkingUsers();
         $onLeaveUsers = $this->dashboardService->getUsersOnLeaveToday();
         $absentUsers = $this->dashboardService->getAbsentUsers();
-
-        // Check if the employee info update modal should be shown
         $showEmployeeInfoUpdateModal = $this->dashboardService->shouldShowEmployeeInfoUpdateModal($user);
-
-        // Get grouped blood groups for the dropdown
         $groupedBloodGroups = $this->dashboardService->getGroupedBloodGroups();
-
-        // Get institutes and education levels for the modal
         $institutes = $this->dashboardService->getAllInstitutes();
         $educationLevels = $this->dashboardService->getAllEducationLevels();
+
+        // Employee Recognition System (ERS) integration
+        $canGiveRecognition = $this->dashboardService->isEligibleForRecognition($user);
+        $recentRecognitions = $canGiveRecognition ? $this->dashboardService->getRecentRecognitions($user) : collect();
+        $showRecognitionReminder = $canGiveRecognition ? $this->dashboardService->needsRecognitionReminder($user) : false;
+        $recognitionAnnouncements = $this->dashboardService->getRecognitionAnnouncements();
+
+        // dd($recognitionAnnouncements, $canGiveRecognition);
 
         return view('administration.dashboard.index', compact([
             'user',
@@ -74,6 +69,51 @@ class DashboardController extends Controller
             'groupedBloodGroups',
             'institutes',
             'educationLevels',
+            // ERS
+            'canGiveRecognition',
+            'recentRecognitions',
+            'showRecognitionReminder',
+            'recognitionAnnouncements',
         ]));
+    }
+
+    /**
+     * Store a new employee recognition.
+     */
+    public function storeRecognition(Request $request)
+    {
+        $request->validate([
+            'employee_id' => 'required|exists:users,id',
+            'category_ratings' => 'required|array',
+            'category_ratings.*' => 'integer|min:1|max:5',
+            'comment' => 'nullable|string|max:255',
+        ]);
+
+        $user = auth()->user();
+        if (!$this->dashboardService->isEligibleForRecognition($user)) {
+            return redirect()->back()->with('error', __('You are not eligible to give recognition.'));
+        }
+
+        $recognitions = [];
+        foreach ($request->category_ratings as $category => $points) {
+            if ($points > 0) {
+                $recognitions[] = [
+                    'employee_id' => $request->employee_id,
+                    'recognizer_id' => $user->id,
+                    'category' => $category,
+                    'points' => $points,
+                    'comment' => $request->comment,
+                ];
+            }
+        }
+
+        foreach ($recognitions as $data) {
+            $this->employeeRecognitionService->giveRecognition($data);
+        }
+
+        // Optionally, trigger notification/announcement here
+
+        toast('Recognition submitted successfully.', 'success');
+        return redirect()->back();
     }
 }

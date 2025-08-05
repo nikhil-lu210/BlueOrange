@@ -10,6 +10,7 @@ use App\Http\Controllers\Administration\Dashboard\DashboardCalendarController;
 ===============================================*/
 Route::controller(DashboardController::class)->prefix('dashboard')->name('dashboard.')->group(function () {
     Route::get('/', 'index')->name('index');
+    Route::post('/recognition/store', 'storeRecognition')->name('recognition.store');
 });
 
 // Calendar API Routes

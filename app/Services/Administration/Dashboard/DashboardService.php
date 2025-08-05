@@ -12,16 +12,42 @@ use App\Services\Administration\Attendance\AttendanceService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
+
+use App\Services\Administration\Dashboard\EmployeeRecognitionService;
+
 class DashboardService
 {
     protected $attendanceService;
+    protected $employeeRecognitionService;
 
     /**
      * Create a new service instance.
      */
-    public function __construct(AttendanceService $attendanceService)
+    public function __construct(AttendanceService $attendanceService, EmployeeRecognitionService $employeeRecognitionService)
     {
         $this->attendanceService = $attendanceService;
+        $this->employeeRecognitionService = $employeeRecognitionService;
+    }
+
+    // Employee Recognition System helpers
+    public function isEligibleForRecognition($user)
+    {
+        return $this->employeeRecognitionService->isEligibleToGiveRecognition($user);
+    }
+
+    public function getRecentRecognitions($user, $limit = 5)
+    {
+        return $this->employeeRecognitionService->getRecentRecognitions($user, $limit);
+    }
+
+    public function needsRecognitionReminder($user)
+    {
+        return $this->employeeRecognitionService->needsReminder($user);
+    }
+
+    public function getRecognitionAnnouncements($limit = 10)
+    {
+        return $this->employeeRecognitionService->getAnnouncements($limit);
     }
 
     /**
