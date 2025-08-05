@@ -200,6 +200,10 @@
 @section('content')
 {{-- <!-- Start row --> --}}
 
+{{-- Employee Recognition Notice --}}
+@include('administration.dashboard.partials._employee_recognition_notice')
+
+
 
 {{-- Employee Recognition System (ERS) --}}
 @include('administration.dashboard.partials._employee_recognition')
