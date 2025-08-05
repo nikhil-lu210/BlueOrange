@@ -51,7 +51,8 @@ class DashboardController extends Controller
         $showRecognitionReminder = $canGiveRecognition ? $this->dashboardService->needsRecognitionReminder($user) : false;
         $recognitionAnnouncements = $this->dashboardService->getRecognitionAnnouncements();
 
-        // dd($recognitionAnnouncements, $canGiveRecognition);
+        // Employee Recognition Notice logic (full marks in previous month)
+        $fullMarkCategories = $this->dashboardService->getFullMarkCategoriesPreviousMonth($user);
 
         return view('administration.dashboard.index', compact([
             'user',
@@ -75,6 +76,7 @@ class DashboardController extends Controller
             'recentRecognitions',
             'showRecognitionReminder',
             'recognitionAnnouncements',
+            'fullMarkCategories',
         ]));
     }
 

@@ -14,6 +14,7 @@ use Illuminate\Support\Collection;
 
 use App\Services\Administration\Dashboard\EmployeeRecognitionService;
 
+// Removed duplicate class declaration
 class DashboardService
 {
     protected $attendanceService;
@@ -48,6 +49,20 @@ class DashboardService
     {
         return $this->employeeRecognitionService->getAnnouncements($limit);
     }
+    
+    public function getFullMarkCategoriesPreviousMonth($user)
+    {
+        $previousMonth = now()->subMonth();
+        return $user->received_recognitions()
+            ->whereBetween('created_at', [
+                $previousMonth->copy()->startOfMonth(),
+                $previousMonth->copy()->endOfMonth()
+            ])
+            ->where('points', 5)
+            ->pluck('category')
+            ->unique();
+    }
+    
 
     /**
      * Get the current authenticated user with employee relationship.
