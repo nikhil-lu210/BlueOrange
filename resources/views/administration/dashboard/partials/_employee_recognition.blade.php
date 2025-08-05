@@ -60,7 +60,7 @@
 
     {{-- Give Recognition Modal --}}
     <div class="modal fade" id="giveRecognitionModal" tabindex="-1" aria-labelledby="giveRecognitionModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-xl modal-dialog-centered">
             <form method="POST" action="{{ route('administration.dashboard.recognition.store') }}">
                 @csrf
                 <div class="modal-content">
@@ -78,28 +78,30 @@
                                 @endforeach
                             </select>
                         </div>
+
                         <div class="col-md-12 mb-3">
                             <label class="form-label">{{ __('Rate by Category') }}</label>
                             <small class="text-muted d-block mb-2">{{ __('Click the stars to rate each category (1 = lowest, 5 = highest)') }}</small>
                             <div class="row justify-content-center">
                                 @foreach(['Behavior', 'Appreciation', 'Leadership', 'Loyalty', 'Dedication'] as $cat)
-                                    <div class="col-md-5 bg-label-primary p-2 m-1">
+                                    <div class="col-md-5 bg-label-primary p-3 m-1 rounded">
                                         <label class="form-label mb-1 d-flex justify-content-between">
-                                            <span>{{ __($cat) }}</span>
-                                            <span class="ms-2 text-muted rating-value" id="rating_value_{{ $cat }}"></sup>
+                                            <span>{{ __($cat) }} <b class="text-danger">*</b></span>
+                                            <span class="ms-2 text-muted rating-value" id="rating_value_{{ $cat }}"></span>
                                         </label>
+
+                                        {{-- Rating Input --}}
                                         <input type="hidden" name="category_ratings[{{ $cat }}]" id="rating_{{ $cat }}" value="0">
                                         <div class="star-rating" tabindex="0" data-category="{{ $cat }}">
                                             <div class="full-star-ratings" id="full-star_{{ $cat }}" data-rateyo-full-star="true"></div>
                                         </div>
+
+                                        {{-- Individual Comment --}}
+                                        <label for="comment_{{ $cat }}" class="form-label mt-2">{{ __('Comment for') }} {{ __($cat) }}</label>
+                                        <textarea class="form-control" id="comment_{{ $cat }}" name="category_comments[{{ $cat }}]" rows="2" placeholder="{{ __('Write comment...') }}"></textarea>
                                     </div>
                                 @endforeach
                             </div>
-                        </div>
-
-                        <div class="col-md-12 mb-3">
-                            <label for="comment" class="form-label">{{ __('Comment (optional)') }}</label>
-                            <textarea class="form-control" id="comment" name="comment" rows="2"></textarea>
                         </div>
                     </div>
                     <div class="modal-footer">

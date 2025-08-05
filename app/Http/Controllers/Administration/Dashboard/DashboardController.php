@@ -86,7 +86,8 @@ class DashboardController extends Controller
             'employee_id' => 'required|exists:users,id',
             'category_ratings' => 'required|array',
             'category_ratings.*' => 'integer|min:1|max:5',
-            'comment' => 'nullable|string|max:255',
+            'category_comments' => 'nullable|array',
+            'category_comments.*' => 'nullable|string|max:255',
         ]);
 
         $user = auth()->user();
@@ -98,11 +99,11 @@ class DashboardController extends Controller
         foreach ($request->category_ratings as $category => $points) {
             if ($points > 0) {
                 $recognitions[] = [
-                    'employee_id' => $request->employee_id,
+                    'employee_id'   => $request->employee_id,
                     'recognizer_id' => $user->id,
-                    'category' => $category,
-                    'points' => $points,
-                    'comment' => $request->comment,
+                    'category'      => $category,
+                    'points'        => $points,
+                    'comment'       => $request->category_comments[$category] ?? null,
                 ];
             }
         }
