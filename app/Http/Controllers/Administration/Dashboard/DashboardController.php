@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Administration\Dashboard;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Administration\Dashboard\DashboardService;
+use App\Services\Administration\Dashboard\EmployeeRecognitionService;
 
 class DashboardController extends Controller
 {
@@ -17,7 +18,7 @@ class DashboardController extends Controller
     public function __construct(DashboardService $dashboardService)
     {
         $this->dashboardService = $dashboardService;
-        $this->employeeRecognitionService = app(\App\Services\Administration\Dashboard\EmployeeRecognitionService::class);
+        $this->employeeRecognitionService = app(EmployeeRecognitionService::class);
     }
 
     /**

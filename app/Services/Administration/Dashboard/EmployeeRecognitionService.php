@@ -1,10 +1,9 @@
 <?php
 
 namespace App\Services\Administration\Dashboard;
-
-use App\Models\EmployeeRecognition;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use App\Models\User\Employee\EmployeeRecognition;
 
 class EmployeeRecognitionService
 {

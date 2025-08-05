@@ -26,6 +26,7 @@ use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Education\Institute\Institute;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
+use App\Models\User\Employee\EmployeeRecognition;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -345,5 +346,21 @@ trait UserRelations
     public function created_penalties(): HasMany
     {
         return $this->hasMany(Penalty::class, 'creator_id');
+    }
+
+    /**
+     * Get the given_recognitions associated with the user (recognitions created by this user).
+     */
+    public function given_recognitions(): HasMany
+    {
+        return $this->hasMany(EmployeeRecognition::class, 'recognizer_id');
+    }
+
+    /**
+     * Get the received_recognitions associated with the user (recognitions received by this user).
+     */
+    public function received_recognitions(): HasMany
+    {
+        return $this->hasMany(EmployeeRecognition::class, 'employee_id');
     }
 }

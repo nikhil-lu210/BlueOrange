@@ -12,7 +12,6 @@ use App\Services\Administration\Attendance\AttendanceService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-
 use App\Services\Administration\Dashboard\EmployeeRecognitionService;
 
 class DashboardService
