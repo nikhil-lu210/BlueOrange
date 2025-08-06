@@ -12,7 +12,14 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
 
     public function __construct($attendances)
     {
-        $this->attendances = $attendances;
+        $this->attendances = $attendances->load([
+            'user',
+            'clockin_scanner',
+            'clockout_scanner',
+            'employee_shift',
+            'daily_breaks',
+            'penalties'
+        ]);
     }
 
     /**
@@ -20,6 +27,7 @@ class AttendanceExport extends BaseExportSettings implements FromCollection
     */
     public function collection()
     {
+        // dd($this->attendances[14]->toArray(), $this->attendances[14]->penalties);
         return $this->attendances->map(function ($attendance) {
             return [
                 'name' => $attendance->user->alias_name,
