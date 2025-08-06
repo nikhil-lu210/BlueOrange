@@ -24,7 +24,11 @@
                             <ul class="list-group mb-3">
                                 @forelse($recentRecognitions as $recognition)
                                     <li class="list-group-item">
-                                        <strong>{{ $recognition->employee->alias_name }}</strong> -
+                                        <strong>
+                                            <a href="{{ route('administration.settings.user.user_recognition.index', ['user' => $recognition->employee]) }}" target="_blank" class="text-primary">
+                                                {{ $recognition->employee->alias_name }}
+                                            </a>
+                                        </strong> -
                                         <span class="badge bg-info">{{ $recognition->category }}</span>
                                         <span class="badge bg-success">{{ $recognition->points }} pts</span>
                                         <span class="text-muted">{{ $recognition->created_at->diffForHumans() }}</span>
