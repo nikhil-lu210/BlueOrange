@@ -321,11 +321,24 @@ class AttendanceController extends Controller
         $query = Attendance::select([
                 'attendances.id', 'attendances.user_id', 'attendances.employee_shift_id',
                 'attendances.clock_in_date', 'attendances.clock_in', 'attendances.clock_out',
-                'attendances.total_time', 'attendances.total_adjusted_time', 'attendances.type'
+                'attendances.total_time', 'attendances.total_adjusted_time', 'attendances.type',
+                'attendances.clockin_medium',
+                'attendances.clockout_medium',
+                'attendances.clockin_scanner_id',
+                'attendances.clockout_scanner_id',
+                'attendances.ip_address',
+                'attendances.country',
+                'attendances.city',
+                'attendances.zip_code',
+                'attendances.time_zone',
+                'attendances.latitude',
+                'attendances.longitude',
+                'attendances.created_at',
+                'attendances.updated_at',
             ])
             ->with([
                 'user:id,name',
-                'employee_shift:id,start_time,end_time'
+                'employee_shift:id,start_time,end_time',
             ])
             ->join('users', 'users.id', '=', 'attendances.user_id')
             ->orderBy('users.name'); // Order by user name
