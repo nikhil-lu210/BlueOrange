@@ -19,9 +19,9 @@
 
                             if ($rating >= 4.5) {
                                 $color = 'success';
-                            } elseif ($rating >= 3.0) {
+                            } elseif ($rating >= 3.5) {
                                 $color = 'primary';
-                            } elseif ($rating >= 2.0) {
+                            } elseif ($rating >= 2.5) {
                                 $color = 'warning';
                             } elseif ($rating > 0) {
                                 $color = 'danger';
