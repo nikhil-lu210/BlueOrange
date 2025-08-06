@@ -117,6 +117,30 @@ class UserController extends Controller
         return view('administration.settings.user.includes.user_files', compact(['user']));
     }
 
+
+    /**
+     * Display the user recognitions.
+     */
+    public function showRecognitions(User $user)
+    {
+        $user = $this->userService->getUser($user);
+
+        // Fetch recognitions for the user, group by date
+        $recognitions = $user->received_recognitions()
+            ->with(['recognizer.employee', 'recognizer.roles', 'recognizer.media'])
+            ->get()
+            ->sortByDesc('created_at')
+            ->groupBy(function ($item) {
+                return $item->created_at->format('Y-m-d');
+            });
+
+        $averageRatings = $user->received_recognitions
+                                ->groupBy('category')
+                                ->map(fn($group) => round($group->avg('points'), 2));
+
+        return view('administration.settings.user.includes.user_recognitions', compact(['user', 'recognitions', 'averageRatings']));
+    }
+
     /**
      * Store the file.
      */

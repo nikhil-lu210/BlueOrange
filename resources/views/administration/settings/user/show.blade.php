@@ -228,6 +228,14 @@
                     </a>
                 </li>
             @endcanany
+            @if (!empty(auth()->user()->tl_employees) && auth()->user()->tl_employees->count() > 0)
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('settings/user/show/*/user_recognition*') ? 'active' : '' }}" href="{{ route('administration.settings.user.user_recognition.index', ['user' => $user]) }}">
+                        <i class="ti-xs ti ti-award me-1"></i>
+                        User Recognitions
+                    </a>
+                </li>
+            @endif
         </ul>
     </div>
 </div>

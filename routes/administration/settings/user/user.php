@@ -53,4 +53,7 @@ Route::prefix('user')->name('user.')->group(function () {
 
     // user_file
     include_once 'user_file/user_file.php';
+
+    // user_recognition
+    include_once 'user_recognition/user_recognition.php';
 });
