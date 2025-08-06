@@ -24,7 +24,7 @@
                             <ul class="list-group mb-3">
                                 @forelse($recentRecognitions as $recognition)
                                     <li class="list-group-item">
-                                        <strong>{{ $recognition->employee->name }}</strong> -
+                                        <strong>{{ $recognition->employee->alias_name }}</strong> -
                                         <span class="badge bg-info">{{ $recognition->category }}</span>
                                         <span class="badge bg-success">{{ $recognition->points }} pts</span>
                                         <span class="text-muted">{{ $recognition->created_at->diffForHumans() }}</span>
@@ -43,7 +43,7 @@
                             <ul class="list-group">
                                 @forelse($recognitionAnnouncements as $announcement)
                                     <li class="list-group-item">
-                                        🎉 <strong>{{ $announcement->employee->name }}</strong> was recognized for <strong>{{ $announcement->category }}</strong> by <strong>{{ $announcement->recognizer->name }}</strong>!
+                                        🎉 <strong>{{ $announcement->employee->alias_name }}</strong> was recognized for <strong>{{ $announcement->category }}</strong> by <strong>{{ $announcement->recognizer->alias_name }}</strong>!
                                         <span class="badge bg-success">{{ $announcement->points }} pts</span>
                                         <span class="text-muted">{{ $announcement->created_at->diffForHumans() }}</span>
                                     </li>
@@ -74,7 +74,7 @@
                             <select class="form-select select2" id="employee_id" name="employee_id" required>
                                 <option value="">{{ __('Select Staff') }}</option>
                                 @foreach($user->tl_employees as $employee)
-                                    <option value="{{ $employee->id }}">{{ $employee->name }}</option>
+                                    <option value="{{ $employee->id }}">{{ $employee->alias_name }} ({{ $employee->name }})</option>
                                 @endforeach
                             </select>
                         </div>
