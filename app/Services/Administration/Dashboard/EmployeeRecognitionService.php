@@ -9,7 +9,8 @@ class EmployeeRecognitionService
 {
     public function isEligibleToGiveRecognition(User $user): bool
     {
-        return !empty($user->tl_employees);
+        // dd($user->tl_employees, $user->tl_employees->count());
+        return !empty($user->tl_employees) && $user->tl_employees->count() > 0;
     }
 
     public function getRecentRecognitions(User $user, $limit = 5)

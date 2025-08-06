@@ -59,7 +59,7 @@
     </div>
 
     {{-- Give Recognition Modal --}}
-    <div class="modal fade" id="giveRecognitionModal" tabindex="-1" aria-labelledby="giveRecognitionModalLabel" aria-hidden="true">
+    <div class="modal fade" data-bs-backdrop="static" id="giveRecognitionModal" tabindex="-1" aria-labelledby="giveRecognitionModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl modal-dialog-centered">
             <form method="POST" action="{{ route('administration.dashboard.recognition.store') }}">
                 @csrf
