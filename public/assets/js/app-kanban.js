@@ -1,5 +1,5 @@
 /**
- * App Kanban
+ * Enhanced App Kanban - Laravel Integration with Parent Task Support
  */
 
 'use strict';
@@ -14,17 +14,39 @@
     kanbanAddBoardBtn = document.querySelector('.kanban-add-board-btn'),
     datePicker = document.querySelector('#due-date'),
     select2 = $('.select2'), // ! Using jquery vars due to select2 jQuery dependency
-    assetsPath = document.querySelector('html').getAttribute('data-assets-path');
+    baseUrl = window.location.origin, // Get base URL
+    csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
   // Init kanban Offcanvas
   const kanbanOffcanvas = new bootstrap.Offcanvas(kanbanSidebar);
 
-  // Get kanban data
-  const kanbanResponse = await fetch(assetsPath + 'json/kanban.json');
-  if (!kanbanResponse.ok) {
-    console.error('error', kanbanResponse);
+  // Get kanban data from Laravel API
+  try {
+    const kanbanResponse = await fetch(`${baseUrl}/api/kanban/data`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-CSRF-TOKEN': csrfToken
+      }
+    });
+    
+    if (!kanbanResponse.ok) {
+      throw new Error(`HTTP error! status: ${kanbanResponse.status}`);
+    }
+    
+    boards = await kanbanResponse.json();
+    console.log('Kanban data loaded:', boards);
+  } catch (error) {
+    console.error('Error loading kanban data:', error);
+    // Fallback to empty boards
+    boards = [
+      { id: 'board-activated', title: 'Activated', item: [] },
+      { id: 'board-running', title: 'Running', item: [] },
+      { id: 'board-completed', title: 'Completed', item: [] },
+      { id: 'board-cancelled', title: 'Cancelled', item: [] }
+    ];
   }
-  boards = await kanbanResponse.json();
 
   // datepicker init
   if (datePicker) {
@@ -36,7 +58,6 @@
     });
   }
 
-  //! TODO: Update Event label and guest code to JS once select removes jQuery dependency
   // select2
   if (select2.length) {
     function renderLabels(option) {
@@ -85,106 +106,328 @@
       '</div>'
     );
   }
+  
   // Render item dropdown
-  function renderDropdown() {
+  function renderDropdown(taskId) {
+    const historyUrl = `${baseUrl}/task/history/show/${taskId}`;
+    const taskShowUrl = `${baseUrl}/task/show/${taskId}`;
     return (
       "<div class='dropdown kanban-tasks-item-dropdown'>" +
       "<i class='dropdown-toggle ti ti-dots-vertical' id='kanban-tasks-item-dropdown' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></i>" +
       "<div class='dropdown-menu dropdown-menu-end' aria-labelledby='kanban-tasks-item-dropdown'>" +
-      "<a class='dropdown-item' href='javascript:void(0)'>Copy task link</a>" +
-      "<a class='dropdown-item' href='javascript:void(0)'>Duplicate task</a>" +
-      "<a class='dropdown-item delete-task' href='javascript:void(0)'>Delete</a>" +
+      "<a class='dropdown-item' href='" + historyUrl + "'>Task History</a>" +
+      "<a class='dropdown-item' href='javascript:void(0)'>Show task</a>" +
+      "<a class='dropdown-item delete-task' href='javascript:void(0)'>Delete task</a>" +
       '</div>' +
       '</div>'
     );
   }
-  // Render header
-  function renderHeader(color, text) {
+  
+  // Render header with priority badge
+  function renderHeader(color, text, subTasks, taskId) {
     return (
       "<div class='d-flex justify-content-between flex-wrap align-items-center mb-2 pb-1'>" +
-      "<div class='item-badges'> " +
-      "<div class='badge rounded-pill bg-label-" +
-      color +
-      "'> " +
-      text +
-      '</div>' +
-      '</div>' +
-      renderDropdown() +
-      '</div>'
+        "<div class='item-badges'> " +
+          "<div class='badge rounded-pill bg-label-" +
+            color +
+            "'>" +
+            text +
+          "</div>" +
+          (subTasks
+          ? "<span class='badge rounded-pill bg-info text-dark ms-1' " +
+              "data-bs-toggle='tooltip' data-bs-placement='top' title='Total Sub-tasks: " + subTasks + "'>" +
+              subTasks +
+            "</span>"
+          : '') +
+        "</div>" +
+        renderDropdown(taskId) +
+      "</div>"
     );
   }
 
-  // Render avatar
+
+  // NEW: Render Parent Task Info
+  function renderParentTask(parentId, parentTitle) {
+    if (!parentId || !parentTitle) return '';
+    return (
+      "<div class='parent-task-info mb-2'>" +
+      "<small class='text-muted d-flex align-items-center'>" +
+      "<i class='ti ti-arrow-up-right ti-xs me-1'></i>" +
+      "<span>Sub-task of: <strong>" + parentTitle + "</strong></span>" +
+      "</small>" +
+      "</div>"
+    );
+  }
+
+  // NEW: Render Task Creator
+  function renderTaskCreator(createdBy) {
+    if (!createdBy) return '';
+    return (
+      "<div class='task-creator mb-2'>" +
+      "<small class='text-muted d-flex align-items-center'>" +
+      "<i class='ti ti-user-plus ti-xs me-1'></i>" +
+      "<span>Assigned by <strong>" + createdBy + "</strong></span>" +
+      "</small>" +
+      "</div>"
+    );
+  }
+
+  // NEW: Render Progress Bar with board-specific styling
+  function renderProgressBar(progress, boardId) {
+    if (progress === undefined || progress === null) progress = 0;
+    
+    // Determine progress bar color based on board status and percentage
+    let progressColor = 'bg-success';
+    let progressText = 'Progress';
+    
+    if (boardId && boardId.includes('cancelled')) {
+      progressColor = 'bg-secondary';
+      progressText = 'Cancelled at';
+    } else if (boardId && boardId.includes('completed')) {
+      progressColor = 'bg-success';
+      progressText = 'Completed';
+    } else if (boardId && boardId.includes('running')) {
+      progressColor = progress < 50 ? 'bg-warning' : 'bg-info';
+      progressText = 'Running';
+    } else if (boardId && boardId.includes('activated')) {
+      progressColor = progress < 30 ? 'bg-danger' : 'bg-warning';
+      progressText = 'Started';
+    } else {
+      // Default color logic
+      if (progress < 30) {
+        progressColor = 'bg-danger';
+      } else if (progress < 70) {
+        progressColor = 'bg-warning';
+      }
+    }
+    
+    return (
+      "<div class='task-progress mb-2'>" +
+      "<div class='d-flex justify-content-between align-items-center mb-1'>" +
+      "<small class='text-muted fw-medium'>" + progressText + "</small>" +
+      "<small class='text-muted'>" + progress + "%</small>" +
+      "</div>" +
+      "<div class='progress' style='height: 4px;'>" +
+      "<div class='progress-bar " + progressColor + "' role='progressbar' style='width: " + progress + "%' " +
+      "aria-valuenow='" + progress + "' aria-valuemin='0' aria-valuemax='100'></div>" +
+      "</div>" +
+      "</div>"
+    );
+  }
+
+  // Render description
+  function renderDescription(description) {
+    if (!description) return '';
+
+    const words = description.trim().split(/\s+/);
+    const isLong = words.length > 100;
+    const shortDescription = isLong ? words.slice(0, 100).join(' ') + '...' : description;
+
+    return (
+      "<div class='kanban-description text-muted small mb-2'>" +
+      "<p class='mb-0' style='font-size: 0.75rem; line-height: 1.2;'>" + shortDescription + "</p>" +
+      "</div>"
+    );
+  }
+
+
+  // Render avatar (updated to handle different avatar sources)
   function renderAvatar(images, pullUp, size, margin, members) {
     var $transition = pullUp ? ' pull-up' : '',
       $size = size ? 'avatar-' + size + '' : '',
-      member = members == undefined ? ' ' : members.split(',');
+      member = members == undefined ? [] : (Array.isArray(members) ? members : members.split(','));
 
-    return images == undefined
-      ? ' '
-      : images
-          .split(',')
-          .map(function (img, index, arr) {
-            var $margin = margin && index !== arr.length - 1 ? ' me-' + margin + '' : '';
+    if (!images || images.length === 0) return '';
 
-            return (
-              "<div class='avatar " +
-              $size +
-              $margin +
-              "'" +
-              "data-bs-toggle='tooltip' data-bs-placement='top'" +
-              "title='" +
-              member[index] +
-              "'" +
-              '>' +
-              "<img src='" +
-              assetsPath +
-              'img/avatars/' +
-              img +
-              "' alt='Avatar' class='rounded-circle " +
-              $transition +
-              "'>" +
-              '</div>'
-            );
-          })
-          .join(' ');
+    const imageArray = Array.isArray(images) ? images : images.split(',');
+
+    return imageArray
+      .map(function (img, index, arr) {
+        var $margin = margin && index !== arr.length - 1 ? ' me-' + margin + '' : '';
+        var memberName = member[index] || 'User';
+
+        // Check if it's initials (2 characters and no URL indicators)
+        if (img.length <= 3 && !img.includes('http') && !img.includes('/') && !img.includes('.')) {
+          // Render initials avatar
+          return (
+            "<div class='avatar " +
+            $size +
+            $margin +
+            "'" +
+            "data-bs-toggle='tooltip' data-bs-placement='top'" +
+            "title='" +
+            memberName +
+            "'" +
+            '>' +
+            "<span class='avatar-initial rounded-circle bg-label-primary " +
+            $transition +
+            "'>" + img + "</span>" +
+            '</div>'
+          );
+        } else {
+          // Handle image URL
+          var imageSrc = img.includes('http') ? img : `${baseUrl}/storage/avatars/${img}`;
+          
+          return (
+            "<div class='avatar " +
+            $size +
+            $margin +
+            "'" +
+            "data-bs-toggle='tooltip' data-bs-placement='top'" +
+            "title='" +
+            memberName +
+            "'" +
+            '>' +
+            "<img src='" +
+            imageSrc +
+            "' alt='Avatar' class='rounded-circle " +
+            $transition +
+            "' onerror=\"this.src='" + baseUrl + "/assets/img/avatars/default-avatar.png'\">" +
+            '</div>'
+          );
+        }
+      })
+      .join(' ');
   }
 
-  // Render footer
-  function renderFooter(attachments, comments, assigned, members) {
-    return (
-      "<div class='d-flex justify-content-between align-items-center flex-wrap mt-2 pt-1'>" +
-      "<div class='d-flex'> <span class='d-flex align-items-center me-2'><i class='ti ti-paperclip ti-xs me-1'></i>" +
-      "<span class='attachments'>" +
-      attachments +
-      '</span>' +
-      "</span> <span class='d-flex align-items-center ms-1'><i class='ti ti-message-dots ti-xs me-1'></i>" +
-      '<span> ' +
-      comments +
-      ' </span>' +
-      '</span></div>' +
-      "<div class='avatar-group d-flex align-items-center assigned-avatar'>" +
-      renderAvatar(assigned, true, 'xs', null, members) +
-      '</div>' +
-      '</div>'
-    );
+  // ENHANCED: Render footer with detailed tooltips
+  function renderFooter(attachments, comments, assigned, members, dueDate) {
+    // Default values
+    attachments = attachments || '0';
+    comments = comments || '0';
+    dueDate = dueDate || 'null';
+
+    // Create tooltip texts
+    const attachmentTooltip = attachments === '1' ? '1 attachment' : attachments + ' attachments';
+    const commentTooltip = comments === '1' ? '1 comment' : comments + ' comments';
+    const dueDateTooltip = 'Due date: ' + dueDate;
+
+    // Start building the footer
+    let footerHTML = `
+      <div class='enhanced-footer'>
+        <div class='d-flex justify-content-between align-items-center flex-wrap mt-2 pt-1'>
+          <div class='d-flex flex-wrap'>
+            <span class='d-flex align-items-center me-2 mb-1' data-bs-toggle='tooltip' data-bs-placement='top' title='${attachmentTooltip}'>
+              <i class='ti ti-paperclip ti-xs me-1 text-muted'></i>
+              <small class='text-muted'>${attachments}</small>
+            </span>
+            <span class='d-flex align-items-center me-2 mb-1' data-bs-toggle='tooltip' data-bs-placement='top' title='${commentTooltip}'>
+              <i class='ti ti-message-dots ti-xs me-1 text-muted'></i>
+              <small class='text-muted'>${comments}</small>
+            </span>`;
+
+    // Conditionally add due date if it's not 'null'
+    if (dueDate !== 'null') {
+      footerHTML += `
+            <span class='d-flex align-items-center me-2 mb-1' data-bs-toggle='tooltip' data-bs-placement='top' title='${dueDateTooltip}'>
+              <i class='ti ti-calendar ti-xs me-1 text-muted'></i>
+              <small class='text-muted'>${dueDate}</small>
+            </span>`;
+    }
+
+    // Add avatars section and closing tags
+    footerHTML += `
+          </div>
+          <div class='avatar-group d-flex align-items-center assigned-avatar'>
+            ${renderAvatar(assigned, true, 'xs', null, members)}
+          </div>
+        </div>
+      </div>`;
+
+    return footerHTML;
   }
+
+
+  // API Helper Functions
+  async function createTaskAPI(title, boardId, description = '') {
+    try {
+      const response = await fetch(`${baseUrl}/api/kanban/tasks`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({
+          title: title,
+          board_id: boardId,
+          description: description
+        })
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+      return result.task;
+    } catch (error) {
+      console.error('Error creating task:', error);
+      throw error;
+    }
+  }
+
+  async function updateTaskStatusAPI(taskId, newStatus) {
+    try {
+      const response = await fetch(`${baseUrl}/api/kanban/tasks/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({
+          task_id: taskId,
+          new_status: newStatus
+        })
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+      return result;
+    } catch (error) {
+      console.error('Error updating task status:', error);
+      throw error;
+    }
+  }
+
+  async function deleteTaskAPI(taskId) {
+    try {
+      const response = await fetch(`${baseUrl}/api/kanban/tasks`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-CSRF-TOKEN': csrfToken
+        },
+        body: JSON.stringify({
+          task_id: taskId
+        })
+      });
+
+      const result = await response.json();
+      if (!result.success) {
+        throw new Error(result.message);
+      }
+      return result;
+    } catch (error) {
+      console.error('Error deleting task:', error);
+      throw error;
+    }
+  }
+  
   // Init kanban
   const kanban = new jKanban({
     element: '.kanban-wrapper',
     gutter: '15px',
-    widthBoard: '250px',
+    widthBoard: '300px', // Increased width for better content display
     dragItems: true,
     boards: boards,
     dragBoards: true,
     addItemButton: true,
-    buttonContent: '+ Add Item',
-    itemAddOptions: {
-      enabled: true, // add a button to board for easy item creation
-      content: '+ Add New Item', // text or html content of the board button
-      class: 'kanban-title-button btn', // default class of the button
-      footer: false // position the button on footer
-    },
+    
+    // Handle item click
     click: function (el) {
       let element = el;
       let title = element.getAttribute('data-eid')
@@ -199,11 +442,14 @@
         label = element.getAttribute('data-badge-text'),
         avatars = element.getAttribute('data-assigned');
 
+      let description = element.getAttribute('data-description') || '';
+
       // Show kanban offcanvas
       kanbanOffcanvas.show();
 
       // To get data on sidebar
       kanbanSidebar.querySelector('#title').value = title;
+      kanbanSidebar.querySelector('#description').value = description;
       kanbanSidebar.querySelector('#due-date').nextSibling.value = dateToUse;
 
       // ! Using jQuery method to get sidebar due to select2 dependency
@@ -222,58 +468,165 @@
         );
     },
 
+    // Handle drag and drop
+    dropEl: async function (el, target, source, sibling) {
+      try {
+        const taskId = el.getAttribute('data-eid');
+        const newBoardId = target.parentNode.getAttribute('data-id');
+        
+        await updateTaskStatusAPI(taskId, newBoardId);
+        console.log('Task status updated successfully');
+      } catch (error) {
+        console.error('Failed to update task status:', error);
+        // Revert the move if API call fails
+        source.appendChild(el);
+      }
+    },
+
+    // Handle add new task
     buttonClick: function (el, boardId) {
       const addNew = document.createElement('form');
       addNew.setAttribute('class', 'new-item-form');
       addNew.innerHTML =
         '<div class="mb-3">' +
-        '<textarea class="form-control add-new-item" rows="2" placeholder="Add Content" autofocus required></textarea>' +
+        '<textarea class="form-control add-new-item" rows="2" placeholder="Add Task Title" autofocus required></textarea>' +
         '</div>' +
         '<div class="mb-3">' +
-        '<button type="submit" class="btn btn-primary btn-sm me-2">Add</button>' +
+        '<textarea class="form-control add-new-description" rows="1" placeholder="Task Description (Optional)"></textarea>' +
+        '</div>' +
+        '<div class="mb-3">' +
+        '<button type="submit" class="btn btn-primary btn-sm me-2">Add Task</button>' +
         '<button type="button" class="btn btn-label-secondary btn-sm cancel-add-item">Cancel</button>' +
         '</div>';
       kanban.addForm(boardId, addNew);
 
-      addNew.addEventListener('submit', function (e) {
+      addNew.addEventListener('submit', async function (e) {
         e.preventDefault();
-        const currentBoard = [].slice.call(
-          document.querySelectorAll('.kanban-board[data-id=' + boardId + '] .kanban-item')
-        );
-        kanban.addElement(boardId, {
-          title: "<span class='kanban-text'>" + e.target[0].value + '</span>',
-          id: boardId + '-' + currentBoard.length + 1
-        });
+        
+        const titleInput = e.target.querySelector('.add-new-item');
+        const descriptionInput = e.target.querySelector('.add-new-description');
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        
+        // Disable submit button and show loading
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Adding...';
 
-        // add dropdown in new boards
-        const kanbanText = [].slice.call(
-          document.querySelectorAll('.kanban-board[data-id=' + boardId + '] .kanban-text')
-        );
-        kanbanText.forEach(function (e) {
-          e.insertAdjacentHTML('beforebegin', renderDropdown());
-        });
+        try {
+          // Create task via API
+          const newTask = await createTaskAPI(
+            titleInput.value,
+            boardId,
+            descriptionInput.value
+          );
 
-        // prevent sidebar to open onclick dropdown buttons of new tasks
-        const newTaskDropdown = [].slice.call(document.querySelectorAll('.kanban-item .kanban-tasks-item-dropdown'));
-        if (newTaskDropdown) {
-          newTaskDropdown.forEach(function (e) {
-            e.addEventListener('click', function (el) {
-              el.stopPropagation();
+          // Add task to kanban board
+          kanban.addElement(boardId, {
+            title: "<span class='kanban-text'>" + newTask.title + '</span>',
+            id: newTask.id
+          });
+
+          // Get the newly added element and enhance it
+          const newTaskElement = document.querySelector(`[data-eid="${newTask.id}"]`);
+          if (newTaskElement) {
+            // Set all data attributes
+            newTaskElement.setAttribute('data-description', newTask.description || '');
+            newTaskElement.setAttribute('data-progress', newTask.progress || '0');
+            newTaskElement.setAttribute('data-created-by', newTask['created-by'] || '');
+            newTaskElement.setAttribute('data-badge-text', newTask['badge-text'] || 'Medium');
+            newTaskElement.setAttribute('data-badge', newTask.badge || 'warning');
+            newTaskElement.setAttribute('data-due-date', newTask['due-date'] || '');
+            newTaskElement.setAttribute('data-attachments', newTask.attachments || '0');
+            newTaskElement.setAttribute('data-comments', newTask.comments || '0');
+            newTaskElement.setAttribute('data-assigned', newTask.assigned ? newTask.assigned.join(',') : '');
+            newTaskElement.setAttribute('data-members', newTask.members ? newTask.members.join(',') : '');
+            
+            if (newTask.parent_id) {
+              newTaskElement.setAttribute('data-parent-id', newTask.parent_id);
+              newTaskElement.setAttribute('data-parent-title', newTask.parent_title || '');
+            }
+
+            // Rebuild the task content
+            newTaskElement.innerHTML = '';
+            
+            let cardContent = '';
+            
+            // Header with badge and dropdown
+            if (newTask.badge && newTask['badge-text']) {
+              cardContent += renderHeader(newTask.badge, newTask['badge-text'], newTask.sub_tasks, newTask.id);
+            }
+            
+            // Title
+            cardContent += "<div class='kanban-text fw-medium mb-1'>" + newTask.title + '</div>';
+            
+            // Parent Task Info
+            if (newTask.parent_id && newTask.parent_title) {
+              cardContent += renderParentTask(newTask.parent_id, newTask.parent_title);
+            }
+            
+            // Task Creator
+            cardContent += renderTaskCreator(newTask['created-by']);
+            
+            // Description
+            cardContent += renderDescription(newTask.description);
+            
+            // Progress Bar
+            cardContent += renderProgressBar(newTask.progress, boardId);
+            
+            // Insert content
+            newTaskElement.insertAdjacentHTML('afterbegin', cardContent);
+            
+            // Footer
+            newTaskElement.insertAdjacentHTML(
+              'beforeend',
+              renderFooter(
+                newTask.attachments,
+                newTask.comments,
+                newTask.assigned,
+                newTask.members,
+                newTask['due-date']
+              )
+            );
+
+            // Add event listeners for dropdowns
+            const dropdown = newTaskElement.querySelector('.kanban-tasks-item-dropdown');
+            if (dropdown) {
+              dropdown.addEventListener('click', function (e) {
+                e.stopPropagation();
+              });
+            }
+
+            // Add delete functionality
+            const deleteBtn = newTaskElement.querySelector('.delete-task');
+            if (deleteBtn) {
+              deleteBtn.addEventListener('click', async function () {
+                try {
+                  await deleteTaskAPI(newTask.id);
+                  kanban.removeElement(newTask.id);
+                } catch (error) {
+                  console.error('Failed to delete task:', error);
+                  alert('Failed to delete task. Please try again.');
+                }
+              });
+            }
+
+            // Re-initialize tooltips for new task
+            const tooltips = newTaskElement.querySelectorAll('[data-bs-toggle="tooltip"]');
+            tooltips.forEach(function (tooltip) {
+              new bootstrap.Tooltip(tooltip);
             });
-          });
-        }
+          }
 
-        // delete tasks for new boards
-        const deleteTask = [].slice.call(
-          document.querySelectorAll('.kanban-board[data-id=' + boardId + '] .delete-task')
-        );
-        deleteTask.forEach(function (e) {
-          e.addEventListener('click', function () {
-            const id = this.closest('.kanban-item').getAttribute('data-eid');
-            kanban.removeElement(id);
-          });
-        });
-        addNew.remove();
+          // Remove the form
+          addNew.remove();
+
+        } catch (error) {
+          console.error('Failed to create task:', error);
+          alert('Failed to create task. Please try again.');
+          
+          // Re-enable submit button
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = 'Add Task';
+        }
       });
 
       // Remove form on clicking cancel button
@@ -292,26 +645,59 @@
     kanbanTitleBoard = [].slice.call(document.querySelectorAll('.kanban-title-board')),
     kanbanItem = [].slice.call(document.querySelectorAll('.kanban-item'));
 
-  // Render custom items
+  // ENHANCED: Render custom items with all new features
   if (kanbanItem) {
     kanbanItem.forEach(function (el) {
-      const element = "<span class='kanban-text'>" + el.textContent + '</span>';
+      const element = "<div class='kanban-text fw-medium mb-1'>" + el.textContent + '</div>';
       let img = '';
       if (el.getAttribute('data-image') !== null) {
         img =
           "<img class='img-fluid rounded mb-2' src='" +
-          assetsPath +
-          'img/elements/' +
+          baseUrl +
+          '/storage/images/' +
           el.getAttribute('data-image') +
           "'>";
       }
+      
+      // Get all data attributes
+      const description = el.getAttribute('data-description') || '';
+      const progress = el.getAttribute('data-progress') || '0';
+      const createdBy = el.getAttribute('data-created-by') || '';
+      const parentId = el.getAttribute('data-parent_id') || '';
+      const parentTitle = el.getAttribute('data-parent_title') || '';
+      
       el.textContent = '';
+      
+      // Build the complete card content
+      let cardContent = '';
+      
+      // Header with badge and dropdown
       if (el.getAttribute('data-badge') !== undefined && el.getAttribute('data-badge-text') !== undefined) {
-        el.insertAdjacentHTML(
-          'afterbegin',
-          renderHeader(el.getAttribute('data-badge'), el.getAttribute('data-badge-text')) + img + element
-        );
+        cardContent += renderHeader(el.getAttribute('data-badge'), el.getAttribute('data-badge-text'), el.getAttribute('data-sub_tasks'), el.getAttribute('data-id'));
       }
+      
+      // Image if exists
+      cardContent += img;
+      
+      // Title
+      cardContent += element;
+      
+      // Parent Task Info
+      cardContent += renderParentTask(parentId, parentTitle);
+      
+      // Task Creator
+      cardContent += renderTaskCreator(createdBy);
+      
+      // Description
+      cardContent += renderDescription(description);
+      
+      // Progress Bar with board context
+      cardContent += renderProgressBar(progress, el.closest('.kanban-board')?.getAttribute('data-id'));
+      
+      // Insert all content
+      el.insertAdjacentHTML('afterbegin', cardContent);
+      
+      // Footer with enhanced tooltips
       if (
         el.getAttribute('data-comments') !== undefined ||
         el.getAttribute('data-due-date') !== undefined ||
@@ -323,12 +709,161 @@
             el.getAttribute('data-attachments'),
             el.getAttribute('data-comments'),
             el.getAttribute('data-assigned'),
-            el.getAttribute('data-members')
+            el.getAttribute('data-members'),
+            el.getAttribute('data-due-date')
           )
         );
       }
     });
   }
+
+  // Enhanced Custom CSS for better styling with board-specific colors
+  const customCSS = `
+    <style>
+      .kanban-item {
+        background: #fff;
+        border: 1px solid rgba(67, 89, 113, 0.1);
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+        transition: all 0.2s ease;
+        margin-bottom: 12px;
+        padding: 16px;
+      }
+      
+      .kanban-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
+      }
+      
+      /* Board-specific styling */
+      .kanban-board[data-id*="activated"] {
+        background: rgba(255, 62, 29, 0.05);
+        border-left: 3px solid #ff3e1d;
+      }
+      
+      .kanban-board[data-id*="running"] {
+        background: rgba(13, 110, 253, 0.05);
+        border-left: 3px solid #0d6efd;
+      }
+      
+      .kanban-board[data-id*="completed"] {
+        background: rgba(25, 135, 84, 0.05);
+        border-left: 3px solid #198754;
+      }
+      
+      .kanban-board[data-id*="cancelled"] {
+        background: rgba(108, 117, 125, 0.05);
+        border-left: 3px solid #6c757d;
+      }
+      
+      /* Board-specific item styling */
+      .kanban-board[data-id*="activated"] .kanban-item {
+        border-left: 2px solid rgba(255, 62, 29, 0.3);
+      }
+      
+      .kanban-board[data-id*="running"] .kanban-item {
+        border-left: 2px solid rgba(13, 110, 253, 0.3);
+      }
+      
+      .kanban-board[data-id*="completed"] .kanban-item {
+        border-left: 2px solid rgba(25, 135, 84, 0.3);
+      }
+      
+      .kanban-board[data-id*="cancelled"] .kanban-item {
+        border-left: 2px solid rgba(108, 117, 125, 0.3);
+        opacity: 0.8;
+      }
+      
+      .task-creator small, .parent-task-info small {
+        font-size: 0.7rem;
+      }
+      
+      .parent-task-info {
+        background: rgba(13, 110, 253, 0.1);
+        border-radius: 4px;
+        padding: 4px 8px;
+      }
+      
+      .task-progress .progress {
+        border-radius: 2px;
+        background-color: rgba(67, 89, 113, 0.1);
+      }
+      
+      .task-progress .progress-bar {
+        transition: width 0.3s ease;
+      }
+      
+      .enhanced-footer {
+        border-top: 1px solid rgba(67, 89, 113, 0.05);
+        margin-top: 12px;
+        padding-top: 8px;
+      }
+      
+      .enhanced-footer small {
+        font-size: 0.7rem;
+        font-weight: 500;
+      }
+      
+      .kanban-text {
+        font-size: 0.875rem;
+        line-height: 1.3;
+        color: #566a7f;
+      }
+      
+      .kanban-description p {
+        color: #8592a3;
+      }
+      
+      .kanban-board {
+        border-radius: 8px;
+        padding: 16px 12px;
+      }
+      
+      .kanban-title-board {
+        font-weight: 600;
+        color: #566a7f;
+        margin-bottom: 16px;
+        font-size: 1rem;
+      }
+      
+      /* Status-specific board titles */
+      .kanban-board[data-id*="activated"] .kanban-title-board {
+        color: #ff3e1d;
+      }
+      
+      .kanban-board[data-id*="running"] .kanban-title-board {
+        color: #0d6efd;
+      }
+      
+      .kanban-board[data-id*="completed"] .kanban-title-board {
+        color: #198754;
+      }
+      
+      .kanban-board[data-id*="cancelled"] .kanban-title-board {
+        color: #6c757d;
+      }
+      
+      .new-item-form {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 12px;
+        margin-bottom: 12px;
+      }
+      
+      .new-item-form .form-control {
+        border: 1px solid #dee2e6;
+        font-size: 0.875rem;
+      }
+      
+      .spinner-border-sm {
+        width: 0.875rem;
+        height: 0.875rem;
+      }
+    </style>
+  `;
+  
+  // Inject custom CSS
+  document.head.insertAdjacentHTML('beforeend', customCSS);
 
   // To initialize tooltips for rendered items
   const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -345,6 +880,23 @@
       });
     });
   }
+
+  // Add delete functionality to existing tasks
+  const deleteTaskButtons = document.querySelectorAll('.delete-task');
+  deleteTaskButtons.forEach(function(btn) {
+    btn.addEventListener('click', async function() {
+      if (confirm('Are you sure you want to delete this task?')) {
+        try {
+          const taskId = this.closest('.kanban-item').getAttribute('data-eid');
+          await deleteTaskAPI(taskId);
+          kanban.removeElement(taskId);
+        } catch (error) {
+          console.error('Failed to delete task:', error);
+          alert('Failed to delete task. Please try again.');
+        }
+      }
+    });
+  });
 
   // Toggle add new input and actions add-new-btn
   if (kanbanAddBoardBtn) {
@@ -384,17 +936,6 @@
     });
   }
 
-  // Delete task for rendered boards
-  const deleteTask = [].slice.call(document.querySelectorAll('.delete-task'));
-  if (deleteTask) {
-    deleteTask.forEach(function (e) {
-      e.addEventListener('click', function () {
-        const id = this.closest('.kanban-item').getAttribute('data-eid');
-        kanban.removeElement(id);
-      });
-    });
-  }
-
   // Cancel btn add new input
   const cancelAddNew = document.querySelector('.kanban-add-board-cancel-btn');
   if (cancelAddNew) {
@@ -405,7 +946,7 @@
     });
   }
 
-  // Add new board
+  // Add new board (if needed)
   if (kanbanAddNewBoard) {
     kanbanAddNewBoard.addEventListener('submit', function (e) {
       e.preventDefault();
@@ -419,19 +960,17 @@
         }
       ]);
 
-      // Adds delete board option to new board, delete new boards & updates data-order
+      // Additional board setup code...
       const kanbanBoardLastChild = document.querySelectorAll('.kanban-board:last-child')[0];
       if (kanbanBoardLastChild) {
         const header = kanbanBoardLastChild.querySelector('.kanban-title-board');
         header.insertAdjacentHTML('afterend', renderBoardDropdown());
 
-        // To make newly added boards title editable
         kanbanBoardLastChild.querySelector('.kanban-title-board').addEventListener('mouseenter', function () {
           this.contentEditable = 'true';
         });
       }
 
-      // Add delete event to delete newly added boards
       const deleteNewBoards = kanbanBoardLastChild.querySelector('.delete-board');
       if (deleteNewBoards) {
         deleteNewBoards.addEventListener('click', function () {
@@ -440,14 +979,12 @@
         });
       }
 
-      // Remove current append new add new form
       if (kanbanAddNewInput) {
         kanbanAddNewInput.forEach(el => {
           el.classList.add('d-none');
         });
       }
 
-      // To place inline add new btn after clicking add btn
       if (kanbanContainer) {
         kanbanContainer.appendChild(kanbanAddNewBoard);
       }
@@ -469,3 +1006,4 @@
     });
   }
 })();
+

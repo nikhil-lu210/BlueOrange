@@ -11,6 +11,17 @@
                 <a href="{{ route('administration.task.index') }}" class="menu-link">{{ __('All Tasks') }}</a>
             </li>
         @endcanany
+
+        @canany(['Task Everything'])
+            <li class="menu-item {{ request()->is('task/kanban*') ? 'active' : '' }}">
+                <a href="{{ route('administration.task.index.kanban') }}" class="menu-link">{{ __('All Tasks Board') }}</a>
+            </li>
+        @endcanany
+        @canany(['Task Everything'])
+            <li class="menu-item {{ request()->is('task/sprint*') ? 'active' : '' }}">
+                <a href="{{ route('administration.task.index.sprint') }}" class="menu-link">{{ __('All Tasks Board Sprint') }}</a>
+            </li>
+        @endcanany
         @can('Task Read')
             <li class="menu-item {{ request()->is('task/my*') ? 'active' : '' }}">
                 <a href="{{ route('administration.task.my') }}" class="menu-link">{{ __('My Tasks') }}</a>
