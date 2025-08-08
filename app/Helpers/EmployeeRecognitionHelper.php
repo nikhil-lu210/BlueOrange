@@ -2,8 +2,8 @@
 
 use App\Models\User;
 use Illuminate\Support\Carbon;
-use App\Models\User\Employee\EmployeeMonthlyEvaluation;
-use App\Services\Administration\EmployeeRecognition\MonthlyEvaluationService;
+use App\Models\User\Employee\EmployeeRecognition;
+use App\Services\Administration\EmployeeRecognition\EmployeeRecognitionService;
 
 if (!function_exists('ers_badge_map')) {
     /**
@@ -75,19 +75,20 @@ if (!function_exists('ers_score_range_for_badge')) {
     }
 }
 
-if (!function_exists('ers_is_evaluation_window_open')) {
+if (!function_exists('ers_is_recognition_window_open')) {
     /**
-     * Check if evaluation window is currently open according to service constants.
+     * Check if recognition window is currently open according to service constants.
      */
-    function ers_is_evaluation_window_open(?Carbon $date = null): bool
+    function ers_is_recognition_window_open(?Carbon $date = null): bool
     {
         $date = $date ?: now();
         $day = (int) $date->day;
-        $start = MonthlyEvaluationService::WINDOW_START_DAY;
-        $end   = MonthlyEvaluationService::WINDOW_END_DAY;
+        $start = EmployeeRecognitionService::WINDOW_START_DAY;
+        $end   = EmployeeRecognitionService::WINDOW_END_DAY;
         return $day >= $start && $day <= $end;
     }
 }
+
 
 if (!function_exists('ers_top_team_performers')) {
     /**
@@ -96,7 +97,7 @@ if (!function_exists('ers_top_team_performers')) {
     function ers_top_team_performers(User $teamLeader, ?Carbon $month = null, int $limit = 5)
     {
         $month = ($month ?: now())->copy()->startOfMonth();
-        return EmployeeMonthlyEvaluation::with(['employee.employee', 'employee.roles', 'employee.media'])
+        return EmployeeRecognition::with(['employee.employee', 'employee.roles', 'employee.media'])
             ->where('team_leader_id', $teamLeader->id)
             ->whereDate('month', $month->format('Y-m-d'))
             ->orderByDesc('total_score')
@@ -105,17 +106,17 @@ if (!function_exists('ers_top_team_performers')) {
     }
 }
 
-if (!function_exists('ers_employee_running_or_last_month_evaluation')) {
+if (!function_exists('ers_employee_running_or_last_month_recognition')) {
     /**
-     * Get an employee's evaluation for the running month (preferred) or the last month.
+     * Get an employee's recognition for the running month (preferred) or the last month.
      * Optionally scoped to a specific team leader (e.g., active_team_leader).
      */
-    function ers_employee_running_or_last_month_evaluation(User $employee, ?User $teamLeader = null): ?EmployeeMonthlyEvaluation
+    function ers_employee_running_or_last_month_recognition(User $employee, ?User $teamLeader = null): ?EmployeeRecognition
     {
         $runMonth = now()->copy()->startOfMonth();
         $lastMonth = now()->copy()->subMonthNoOverflow()->startOfMonth();
 
-        $query = EmployeeMonthlyEvaluation::with(['teamLeader.employee', 'teamLeader.roles', 'teamLeader.media'])
+        $query = EmployeeRecognition::with(['teamLeader.employee', 'teamLeader.roles', 'teamLeader.media'])
             ->where('employee_id', $employee->id);
         if ($teamLeader) {
             $query->where('team_leader_id', $teamLeader->id);
@@ -131,18 +132,20 @@ if (!function_exists('ers_employee_running_or_last_month_evaluation')) {
     }
 }
 
-if (!function_exists('ers_can_view_user_evaluations')) {
+
+if (!function_exists('ers_can_view_user_recognitions')) {
     /**
-     * Determine if the authenticated user can view the User Evaluations tab.
+     * Determine if the authenticated user can view the User Recognitions tab.
      * Rules: a) has active tl_employees OR b) has role Developer or Super Admin.
      */
-    function ers_can_view_user_evaluations(User $authUser): bool
+    function ers_can_view_user_recognitions(User $authUser): bool
     {
         $isTl = $authUser->tl_employees()->wherePivot('is_active', true)->exists();
         $isPrivileged = method_exists($authUser, 'hasAnyRole') ? $authUser->hasAnyRole(['Developer','Super Admin']) : false;
         return $isTl || $isPrivileged;
     }
 }
+
 
 if (!function_exists('ers_criterion_color')) {
     /**
@@ -160,6 +163,6 @@ if (!function_exists('ers_badge_timeline')) {
      */
     function ers_badge_timeline(User $employee, ?int $year = null)
     {
-        return app(MonthlyEvaluationService::class)->employeeBadgeTimeline($employee, $year);
+        return app(EmployeeRecognitionService::class)->employeeBadgeTimeline($employee, $year);
     }
 }

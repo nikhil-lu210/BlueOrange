@@ -12,7 +12,7 @@ use App\Models\EmployeeShift\EmployeeShift;
 use App\Services\Administration\User\UserService;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
-use App\Services\Administration\EmployeeRecognition\MonthlyEvaluationService;
+use App\Services\Administration\EmployeeRecognition\EmployeeRecognitionService;
 
 class UserController extends Controller
 {
@@ -109,19 +109,19 @@ class UserController extends Controller
     }
 
     /**
-     * Display monthly evaluations (ERS) for this user.
+     * Display monthly recognitions (ERS) for this user.
      */
-    public function showEvaluations(User $user)
+    public function showRecognitions(User $user)
     {
         $user = $this->userService->getUser($user);
 
-        // Load evaluations (latest first) with team leader eager loaded
-        $evaluations = $user->monthly_evaluations()
+        // Load recognitions (latest first) with team leader eager loaded
+        $recognitions = $user->recognitions()
             ->with(['teamLeader.employee', 'teamLeader.roles', 'teamLeader.media'])
             ->orderByDesc('month')
             ->get();
 
-        // Compute average per-criterion across all evaluations and presentational color
+        // Compute average per-criterion across all recognitions and presentational color
         $criteria = [
             'behavior' => 'Behavior',
             'appreciation' => 'Appreciation',
@@ -131,7 +131,7 @@ class UserController extends Controller
         ];
         $avgCriteriaOutput = [];
         foreach ($criteria as $key => $label) {
-            $val = round((float) ($evaluations->avg($key) ?? 0), 2);
+            $val = round((float) ($recognitions->avg($key) ?? 0), 2);
             $color = ers_criterion_color($val);
             $avgCriteriaOutput[] = [
                 'key' => $key,
@@ -142,7 +142,7 @@ class UserController extends Controller
         }
 
         // Badge timeline (pre-computed in service) -> format for view
-        $timelineRaw = app(MonthlyEvaluationService::class)
+        $timelineRaw = app(EmployeeRecognitionService::class)
             ->employeeBadgeTimeline($user);
         $timelinePrepared = $timelineRaw->map(function ($row) {
             return [
@@ -153,8 +153,8 @@ class UserController extends Controller
             ];
         });
 
-        // Prepare evaluations rows with badge meta and formatted month
-        $evaluationsPrepared = $evaluations->map(function ($e) {
+        // Prepare recognition rows with badge meta and formatted month
+        $recognitionsPrepared = $recognitions->map(function ($e) {
             $score = (int) $e->total_score;
             $badge = ers_badge_for_score($score);
             return [
@@ -179,7 +179,7 @@ class UserController extends Controller
             'user' => $user,
             'avgCriteriaOutput' => $avgCriteriaOutput,
             'timelinePrepared' => $timelinePrepared,
-            'evaluationsPrepared' => $evaluationsPrepared,
+            'recognitionsPrepared' => $recognitionsPrepared,
         ]);
     }
 

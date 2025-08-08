@@ -41,6 +41,12 @@ class RolesTableSeeder extends Seeder
                     'Logs Update',
                     'Logs Delete',
 
+                    'Recognition Everything',
+                    'Recognition Create',
+                    'Recognition Read',
+                    'Recognition Update',
+                    'Recognition Delete',
+
                     'Certificate Everything',
                     'Certificate Create',
                     'Certificate Read',
@@ -171,6 +177,12 @@ class RolesTableSeeder extends Seeder
                 $permissions = [
                     'Logs Read',
 
+                    'Recognition Everything',
+                    'Recognition Create',
+                    'Recognition Read',
+                    'Recognition Update',
+                    'Recognition Delete',
+
                     'Certificate Everything',
                     'Certificate Create',
                     'Certificate Read',
@@ -281,6 +293,8 @@ class RolesTableSeeder extends Seeder
             } else {
                 $permissions = [
                     'Announcement Read',
+                    
+                    'Recognition Read',
 
                     'Certificate Read',
 

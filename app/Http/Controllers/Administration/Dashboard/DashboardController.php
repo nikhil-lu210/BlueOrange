@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Administration\Dashboard;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Services\Administration\Dashboard\DashboardService;
-use App\Models\User\Employee\EmployeeMonthlyEvaluation;
+use App\Models\User\Employee\EmployeeRecognition;
 
 class DashboardController extends Controller
 {
@@ -43,13 +43,13 @@ class DashboardController extends Controller
         $institutes = $this->dashboardService->getAllInstitutes();
         $educationLevels = $this->dashboardService->getAllEducationLevels();
 
-        // ERS New Module: Monthly Evaluations quick widgets
+        // ERS New Module: Monthly Recognitions quick widgets
         $isTeamLeader = $user->tl_employees()->wherePivot('is_active', true)->exists();
         $currentMonth = now()->startOfMonth();
         $tlTop5 = $isTeamLeader ? ers_top_team_performers($user, $currentMonth, 5) : collect();
-        $tlHasMonthEval = $isTeamLeader ? EmployeeMonthlyEvaluation::where('team_leader_id', $user->id)
+        $tlHasMonthEval = $isTeamLeader ? EmployeeRecognition::where('team_leader_id', $user->id)
             ->whereDate('month', $currentMonth->format('Y-m-d'))->exists() : false;
-        $employeeEval = ers_employee_running_or_last_month_evaluation($user, $user->active_team_leader);
+        $employeeEval = ers_employee_running_or_last_month_recognition($user, $user->active_team_leader);
         $employeeBadge = $employeeEval ? ers_badge_for_score((int)$employeeEval->total_score) : null;
 
         return view('administration.dashboard.index', compact([

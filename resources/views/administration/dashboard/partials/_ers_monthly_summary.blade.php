@@ -5,15 +5,15 @@
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h5 class="mb-0">{{ __('Top Performers (This Month)') }}</h5>
-          <a href="{{ route('administration.employee_recognition.monthly.index', ['month' => now()->format('Y-m-01')]) }}" class="btn btn-sm btn-primary">{{ __('Evaluate Now') }}</a>
+          <a href="{{ route('administration.employee_recognition.index', ['month' => now()->format('Y-m-01')]) }}" class="btn btn-sm btn-primary">{{ __('Recognize Now') }}</a>
         </div>
         <div class="card-body">
           @if(!$tlHasMonthEval)
             <div class="alert alert-warning d-flex align-items-center" role="alert">
               <i class="ti ti-alert-triangle me-2"></i>
               <div>
-                {{ __('You have not submitted this month\'s evaluations. Please evaluate your team members.') }}
-                <a href="{{ route('administration.employee_recognition.monthly.index', ['month' => now()->format('Y-m-01')]) }}" class="btn btn-sm btn-outline-primary ms-2">{{ __('Go to Evaluation') }}</a>
+                {{ __('You have not submitted this month\'s recognitions. Please recognize your team members.') }}
+                <a href="{{ route('administration.employee_recognition.index', ['month' => now()->format('Y-m-01')]) }}" class="btn btn-sm btn-outline-primary ms-2">{{ __('Go to Recognition') }}</a>
               </div>
             </div>
           @endif
@@ -38,7 +38,7 @@
                     <td><span class="badge {{ ers_badge_class($bd['code']) }}">{{ $bd['emoji'] }} {{ __($bd['label']) }}</span></td>
                   </tr>
                 @empty
-                  <tr><td colspan="4" class="text-center text-muted">{{ __('No evaluations yet.') }}</td></tr>
+                  <tr><td colspan="4" class="text-center text-muted">{{ __('No recognitions yet.') }}</td></tr>
                 @endforelse
               </tbody>
             </table>

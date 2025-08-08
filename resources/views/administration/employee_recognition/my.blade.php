@@ -37,7 +37,7 @@
               </tr>
             </thead>
             <tbody>
-              @forelse($evaluations as $eval)
+              @forelse($recognitions as $eval)
                 <tr>
                   <td>{{ \Illuminate\Support\Carbon::parse($eval->month)->format('M Y') }}</td>
                   <td>{{ $eval->behavior }}</td>
@@ -55,7 +55,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="8" class="text-center text-muted">{{ __('No evaluations found.') }}</td>
+                  <td colspan="8" class="text-center text-muted">{{ __('No recognitions found.') }}</td>
                 </tr>
               @endforelse
             </tbody>

@@ -34,7 +34,7 @@
             <h5 class="card-header">{{ __('Badge Timeline') }}</h5>
             <div class="card-body">
                 @if($timelinePrepared->isEmpty())
-                    <p class="text-muted mb-0">{{ __('No monthly evaluations yet.') }}</p>
+                    <p class="text-muted mb-0">{{ __('No monthly recognitions yet.') }}</p>
                 @else
                     <div class="row g-2">
                         @foreach($timelinePrepared as $item)
@@ -58,7 +58,7 @@
 <div class="row justify-content-center">
     <div class="col-md-12">
         <div class="card">
-            <h5 class="card-header">{{ __('Monthly Evaluations') }}</h5>
+            <h5 class="card-header">{{ __('Monthly Recognitions') }}</h5>
             <div class="card-body pb-0">
                 <div class="table-responsive">
                     <table class="table table-striped align-middle">
@@ -76,7 +76,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        @forelse($evaluationsPrepared as $row)
+                        @forelse($recognitionsPrepared as $row)
                             <tr>
                                 <td>{{ $row['month_label'] }}</td>
                                 <td>{!! show_user_name_and_avatar($row['team_leader'], name: null, role: null) !!}</td>
@@ -90,7 +90,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="text-center text-muted">{{ __('No evaluations found.') }}</td>
+                                <td colspan="9" class="text-center text-muted">{{ __('No recognitions found.') }}</td>
                             </tr>
                         @endforelse
                         </tbody>

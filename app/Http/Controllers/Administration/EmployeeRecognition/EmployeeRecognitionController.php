@@ -6,12 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Services\Administration\EmployeeRecognition\MonthlyEvaluationService;
+use App\Services\Administration\EmployeeRecognition\EmployeeRecognitionService;
 use Illuminate\Support\Facades\Gate;
 
-class MonthlyEvaluationController extends Controller
+class EmployeeRecognitionController extends Controller
 {
-    public function __construct(protected MonthlyEvaluationService $service)
+    public function __construct(protected EmployeeRecognitionService $service)
     {
     }
 
@@ -24,12 +24,12 @@ class MonthlyEvaluationController extends Controller
         // Load team members ordered by current month's total score (highest first)
         $teamMembers = $this->service->orderTeamMembersByScore($user, $month);
 
-        // Load existing evaluations for the month to prefill
-        $evaluations = $user->given_monthly_evaluations()->whereDate('month', $month->format('Y-m-d'))->get()->keyBy('employee_id');
+        // Load existing recognitions for the month to prefill
+        $recognitions = $user->given_recognitions()->whereDate('month', $month->format('Y-m-d'))->get()->keyBy('employee_id');
 
         // Move window and badge logic out of Blade
-        $isWindowOpen = $this->service->withinEvaluationWindow();
-        $badgeMap = $evaluations->mapWithKeys(function ($e) {
+        $isWindowOpen = $this->service->withinRecognitionWindow();
+        $badgeMap = $recognitions->mapWithKeys(function ($e) {
             $score = (int) $e->total_score;
             $code = $this->service->badgeCodeForScore($score);
             $label = $this->service->badgeLabelForScore($score);
@@ -46,10 +46,10 @@ class MonthlyEvaluationController extends Controller
             return [$e->employee_id => compact('code', 'label', 'emoji', 'class')];
         });
 
-        return view('administration.employee_recognition.monthly.index', compact('user', 'month', 'teamMembers', 'evaluations', 'isWindowOpen', 'badgeMap'));
+        return view('administration.employee_recognition.index', compact('user', 'month', 'teamMembers', 'recognitions', 'isWindowOpen', 'badgeMap'));
     }
 
-    // Store or update evaluations for multiple employees in the selected month
+    // Store or update recognitions for multiple employees in the selected month
     public function store(Request $request)
     {
         $user = auth()->user();
@@ -67,14 +67,14 @@ class MonthlyEvaluationController extends Controller
 
         foreach ($validated['scores'] as $employeeId => $scores) {
             $employee = User::findOrFail($employeeId);
-            $this->service->upsertMonthlyEvaluation($user, $employee, $scores, $month);
+            $this->service->upsertEmployeeRecognition($user, $employee, $scores, $month);
         }
 
         // After submission, lock the month for this TL
         $this->service->lockMonthForTeamLeader($user, $month);
 
-        toast('Monthly evaluations saved and locked.', 'success');
-        return redirect()->route('administration.employee_recognition.monthly.index', ['month' => $month->format('Y-m-d')]);
+        toast('Monthly recognitions saved and locked.', 'success');
+        return redirect()->route('administration.employee_recognition.index', ['month' => $month->format('Y-m-d')]);
     }
 
     // Leaderboards and analytics for TL
@@ -111,7 +111,7 @@ class MonthlyEvaluationController extends Controller
             return [$row->id => compact('code', 'label', 'emoji', 'class')];
         });
 
-        return view('administration.employee_recognition.monthly.leaderboard', compact('user', 'month', 'leaderboard', 'badge', 'badgeOptions', 'rowBadges'));
+        return view('administration.employee_recognition.leaderboard', compact('user', 'month', 'leaderboard', 'badge', 'badgeOptions', 'rowBadges'));
     }
 
     // Employee self-view: see own monthly scores and trends
@@ -119,8 +119,8 @@ class MonthlyEvaluationController extends Controller
     {
         $user = auth()->user();
         $year = (int)($request->input('year') ?: now()->year);
-        $evaluations = $user->monthly_evaluations()->forYear($year)->orderBy('month')->get();
-        return view('administration.employee_recognition.monthly.my', compact('user', 'year', 'evaluations'));
+        $recognitions = $user->given_recognitions()->forYear($year)->orderBy('month')->get();
+        return view('administration.employee_recognition.my', compact('user', 'year', 'recognitions'));
     }
 
     // Admin reports: top performers and team comparison for a month
@@ -159,7 +159,7 @@ class MonthlyEvaluationController extends Controller
             return [$row->id => compact('code', 'label', 'emoji', 'class')];
         });
 
-        return view('administration.employee_recognition.monthly.reports', compact('month', 'topPerformers', 'teamComparison', 'badge', 'badgeOptions', 'topBadges'));
+        return view('administration.employee_recognition.reports', compact('month', 'topPerformers', 'teamComparison', 'badge', 'badgeOptions', 'topBadges'));
     }
 
     // Admin: employee trend view
@@ -170,6 +170,6 @@ class MonthlyEvaluationController extends Controller
         }
         $year = (int)($request->input('year') ?: now()->year);
         $trend = $this->service->employeeTrend($user, $year);
-        return view('administration.employee_recognition.monthly.employee_trend', compact('user', 'year', 'trend'));
+        return view('administration.employee_recognition.employee_trend', compact('user', 'year', 'trend'));
     }
 }

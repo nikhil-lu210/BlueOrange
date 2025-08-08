@@ -26,7 +26,7 @@ use App\Models\Salary\Monthly\MonthlySalary;
 use App\Models\Education\Institute\Institute;
 use App\Models\DailyWorkUpdate\DailyWorkUpdate;
 use App\Models\Announcement\AnnouncementComment;
-use App\Models\User\Employee\EmployeeMonthlyEvaluation;
+use App\Models\User\Employee\EmployeeRecognition;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
@@ -349,18 +349,18 @@ trait UserRelations
     }
 
     /**
-     * Get monthly evaluations where this user is the employee being evaluated.
+     * Get monthly recognitions where this user is the employee being recognized.
      */
-    public function monthly_evaluations(): HasMany
+    public function recognitions(): HasMany
     {
-        return $this->hasMany(EmployeeMonthlyEvaluation::class, 'employee_id');
+        return $this->hasMany(EmployeeRecognition::class, 'employee_id');
     }
 
     /**
-     * Get monthly evaluations created by this user as team leader.
+     * Get monthly recognitions created by this user as team leader.
      */
-    public function given_monthly_evaluations(): HasMany
+    public function given_recognitions(): HasMany
     {
-        return $this->hasMany(EmployeeMonthlyEvaluation::class, 'team_leader_id');
+        return $this->hasMany(EmployeeRecognition::class, 'team_leader_id');
     }
 }

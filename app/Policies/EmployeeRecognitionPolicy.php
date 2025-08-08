@@ -3,13 +3,13 @@
 namespace App\Policies;
 
 use App\Models\User;
-use App\Models\User\Employee\EmployeeMonthlyEvaluation;
+use App\Models\User\Employee\EmployeeRecognition;
 
-class EmployeeMonthlyEvaluationPolicy
+class EmployeeRecognitionPolicy
 {
-    public function view(User $user, EmployeeMonthlyEvaluation $evaluation): bool
+    public function view(User $user, EmployeeRecognition $recognition): bool
     {
-        return $user->id === $evaluation->employee_id || $user->id === $evaluation->team_leader_id || $user->can('Employee Hiring Everything');
+        return $user->id === $recognition->employee_id || $user->id === $recognition->team_leader_id || $user->can('Employee Hiring Everything');
     }
 
     public function create(User $user): bool

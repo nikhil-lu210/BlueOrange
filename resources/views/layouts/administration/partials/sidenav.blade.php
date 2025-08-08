@@ -41,13 +41,13 @@
             <span class="menu-header-text">{{ __('Administration') }}</span>
         </li>
 
-        @include('layouts.administration.partials.menus.certificate')
-
-        @include('layouts.administration.partials.menus.penalty')
-
-        @include('layouts.administration.partials.menus.quiz')
-
         @include('layouts.administration.partials.menus.employee_recognition')
+        
+        @include('layouts.administration.partials.menus.certificate')
+        
+        @include('layouts.administration.partials.menus.penalty')
+        
+        @include('layouts.administration.partials.menus.quiz')
 
         @include('layouts.administration.partials.menus.vault')
 

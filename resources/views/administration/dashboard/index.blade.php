@@ -200,7 +200,7 @@
 @section('content')
 {{-- <!-- Start row --> --}}
 
-{{-- Monthly Evaluations Summary (ERS New) --}}
+{{-- Monthly Recognitions Summary (ERS New) --}}
 @include('administration.dashboard.partials._ers_monthly_summary')
 
 {{-- Birdthday Wish --}}

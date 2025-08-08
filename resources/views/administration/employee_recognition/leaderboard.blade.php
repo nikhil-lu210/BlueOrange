@@ -12,7 +12,7 @@
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">{{ __('Leaderboard for') }} {{ $month->format('F Y') }}</h5>
-        <form method="GET" action="{{ route('administration.employee_recognition.monthly.leaderboard') }}" class="d-flex align-items-center gap-2">
+        <form method="GET" action="{{ route('administration.employee_recognition.leaderboard') }}" class="d-flex align-items-center gap-2">
           <input type="month" class="form-control" name="month" value="{{ $month->format('Y-m') }}">
           <select name="badge" class="form-select">
             <option value="">{{ __('All Badges') }}</option>
@@ -21,7 +21,7 @@
             @endforeach
           </select>
           <button class="btn btn-secondary" type="submit">{{ __('Load') }}</button>
-          <a href="{{ route('administration.employee_recognition.monthly.index', ['month' => $month->format('Y-m-d')]) }}" class="btn btn-primary">{{ __('Back to Evaluations') }}</a>
+          <a href="{{ route('administration.employee_recognition.index', ['month' => $month->format('Y-m-d')]) }}" class="btn btn-primary">{{ __('Back to Recognitions') }}</a>
         </form>
       </div>
       <div class="card-body">
@@ -48,7 +48,7 @@
                 </tr>
               @empty
                 <tr>
-                  <td colspan="4" class="text-center text-muted">{{ __('No evaluations for this month.') }}</td>
+                  <td colspan="4" class="text-center text-muted">{{ __('No recognitions for this month.') }}</td>
                 </tr>
               @endforelse
             </tbody>

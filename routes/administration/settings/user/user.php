@@ -26,7 +26,7 @@ Route::prefix('user')->name('user.')->group(function () {
 
         Route::get('/show/{user}/profile', 'showProfile')->name('show.profile')->can('User Read');
         Route::get('/show/{user}/attendance', 'showAttendance')->name('show.attendance')->can('User Read');
-        Route::get('/show/{user}/user_evaluations', 'showEvaluations')->name('show.evaluations')->can('User Read');
+        Route::get('/show/{user}/user_recognitions', 'showRecognitions')->name('show.recognitions')->can('User Read');
 
         Route::post('/shift/{shift}/update/{user}', 'updateShift')->name('shift.update')->can('User Update');
 

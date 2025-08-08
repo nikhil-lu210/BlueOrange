@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Carbon;
 
-class EmployeeMonthlyEvaluation extends Model
+class EmployeeRecognition extends Model
 {
+    protected $table = 'employee_recognitions';
+
     protected $fillable = [
         'employee_id',
         'team_leader_id',

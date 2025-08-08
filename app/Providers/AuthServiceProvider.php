@@ -4,8 +4,8 @@ namespace App\Providers;
 
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
-use App\Models\User\Employee\EmployeeMonthlyEvaluation;
-use App\Policies\EmployeeMonthlyEvaluationPolicy;
+use App\Models\User\Employee\EmployeeRecognition;
+use App\Policies\EmployeeRecognitionPolicy;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -16,7 +16,7 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Models\Model' => 'App\Policies\ModelPolicy',
-        EmployeeMonthlyEvaluation::class => EmployeeMonthlyEvaluationPolicy::class,
+        EmployeeRecognition::class => EmployeeRecognitionPolicy::class,
     ];
 
     /**

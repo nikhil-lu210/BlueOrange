@@ -1,9 +1,9 @@
 @extends('layouts.administration.app')
 
-@section('page_title', __('Monthly Team Evaluations'))
+@section('page_title', __('Monthly Team Recognitions'))
 
 @section('page_name')
-<b class="text-uppercase">{{ __('Monthly Team Evaluations') }}</b>
+<b class="text-uppercase">{{ __('Monthly Team Recognitions') }}</b>
 @endsection
 
 @section('content')
@@ -11,19 +11,19 @@
   <div class="col-12">
     <div class="card">
       <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">{{ __('Evaluation Panel') }}</h5>
-        <form method="GET" action="{{ route('administration.employee_recognition.monthly.index') }}" class="d-flex align-items-center gap-2">
+        <h5 class="mb-0">{{ __('Recognition Panel') }}</h5>
+        <form method="GET" action="{{ route('administration.employee_recognition.index') }}" class="d-flex align-items-center gap-2">
           <input type="month" class="form-control" name="month" value="{{ $month->format('Y-m') }}">
           <button class="btn btn-secondary" type="submit">{{ __('Load') }}</button>
-          <a href="{{ route('administration.employee_recognition.monthly.leaderboard', ['month' => $month->format('Y-m-d')]) }}" class="btn btn-info">{{ __('Leaderboard') }}</a>
+          <a href="{{ route('administration.employee_recognition.leaderboard', ['month' => $month->format('Y-m-d')]) }}" class="btn btn-info">{{ __('Leaderboard') }}</a>
         </form>
       </div>
       <div class="card-body">
         @if(!$isWindowOpen)
-          <div class="alert alert-warning">{{ __('Evaluation window is from 1st to 5th of each month.') }}</div>
+          <div class="alert alert-warning">{{ __('Recognition window is from 1st to 5th of each month.') }}</div>
         @endif
 
-        <form method="POST" action="{{ route('administration.employee_recognition.monthly.store') }}">
+        <form method="POST" action="{{ route('administration.employee_recognition.store') }}">
           @csrf
           <input type="hidden" name="month" value="{{ $month->format('Y-m-d') }}">
           <div class="table-responsive">
@@ -49,11 +49,11 @@
                   @foreach(['behavior','appreciation','leadership','loyalty','dedication'] as $crit)
                     <td style="width:120px">
                       <input type="number" class="form-control" name="scores[{{ $member->id }}][{{ $crit }}]" min="0" max="20"
-                             value="{{ old("scores.$member->id.$crit", ($evaluations[$member->id]->$crit ?? null)) }}" {{ (($evaluations[$member->id]->locked_at ?? null)) ? 'readonly' : '' }} />
+                             value="{{ old("scores.$member->id.$crit", ($recognitions[$member->id]->$crit ?? null)) }}" {{ (($recognitions[$member->id]->locked_at ?? null)) ? 'readonly' : '' }} />
                     </td>
                   @endforeach
                   <td>
-                    <span class="badge bg-primary">{{ isset($evaluations[$member->id]) ? $evaluations[$member->id]->total_score : '-' }}</span>
+                    <span class="badge bg-primary">{{ isset($recognitions[$member->id]) ? $recognitions[$member->id]->total_score : '-' }}</span>
                   </td>
                   <td>
                     <span class="badge {{ isset($badgeMap[$member->id]) ? $badgeMap[$member->id]['class'] : 'bg-secondary' }}">{{ isset($badgeMap[$member->id]) ? ($badgeMap[$member->id]['emoji'].' '.$badgeMap[$member->id]['label']) : '-' }}</span>

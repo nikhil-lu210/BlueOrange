@@ -228,11 +228,11 @@
                     </a>
                 </li>
             @endcanany
-            @if (ers_can_view_user_evaluations(auth()->user()))
+            @if (ers_can_view_user_recognitions(auth()->user()))
                 <li class="nav-item">
-                    <a class="nav-link {{ request()->is('settings/user/show/*/user_evaluations*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.evaluations', ['user' => $user]) }}">
+                    <a class="nav-link {{ request()->is('settings/user/show/*/user_recognitions*') ? 'active' : '' }}" href="{{ route('administration.settings.user.show.recognitions', ['user' => $user]) }}">
                         <i class="ti-xs ti ti-award me-1"></i>
-                        User Evaluations
+                        User Recognitions
                     </a>
                 </li>
             @endif

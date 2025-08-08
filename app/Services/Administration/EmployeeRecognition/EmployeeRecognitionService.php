@@ -5,12 +5,12 @@ namespace App\Services\Administration\EmployeeRecognition;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Models\User\Employee\EmployeeMonthlyEvaluation;
+use App\Models\User\Employee\EmployeeRecognition;
 use Illuminate\Validation\ValidationException;
 
-class MonthlyEvaluationService
+class EmployeeRecognitionService
 {
-    // Default evaluation window: 1st to 30th (inclusive)
+    // Default recognition window: 1st to 30th (inclusive)
     public const WINDOW_START_DAY = 1;
     public const WINDOW_END_DAY = 30;
 
@@ -23,26 +23,26 @@ class MonthlyEvaluationService
             ->exists();
     }
 
-    public function withinEvaluationWindow(Carbon $date = null): bool
+    public function withinRecognitionWindow(Carbon $date = null): bool
     {
         $date = $date ?: now();
         $day = (int)$date->day;
         return $day >= static::WINDOW_START_DAY && $day <= static::WINDOW_END_DAY;
     }
 
-    public function upsertMonthlyEvaluation(User $teamLeader, User $employee, array $scores, Carbon $month): EmployeeMonthlyEvaluation
+    public function upsertEmployeeRecognition(User $teamLeader, User $employee, array $scores, Carbon $month): EmployeeRecognition
     {
         if (!$this->canTeamLeaderEvaluate($teamLeader, $employee)) {
-            throw ValidationException::withMessages(['employee_id' => 'You can only evaluate your own team members.']);
+            throw ValidationException::withMessages(['employee_id' => 'You can only recognize your own team members.']);
         }
-        if (!$this->withinEvaluationWindow()) {
-            throw ValidationException::withMessages(['month' => 'Evaluations are only allowed from 1st to 5th of each month.']);
+        if (!$this->withinRecognitionWindow()) {
+            throw ValidationException::withMessages(['month' => 'Recognitions are only allowed from 1st to 5th of each month.']);
         }
 
         $month = $month->copy()->startOfMonth();
 
         // Ensure once per month per employee per leader
-        $existing = EmployeeMonthlyEvaluation::where('employee_id', $employee->id)
+        $existing = EmployeeRecognition::where('employee_id', $employee->id)
             ->where('team_leader_id', $teamLeader->id)
             ->forMonth($month)
             ->first();
@@ -61,22 +61,22 @@ class MonthlyEvaluationService
 
         if ($existing) {
             if ($existing->isLocked()) {
-                throw ValidationException::withMessages(['month' => "This month's evaluation is locked and cannot be updated."]);
+                throw ValidationException::withMessages(['month' => "This month's recognition is locked and cannot be updated."]);
             }
             $existing->update($payload);
-            $evaluation = $existing->refresh();
+            $recognition = $existing->refresh();
         } else {
-            $evaluation = EmployeeMonthlyEvaluation::create($payload);
+            $recognition = EmployeeRecognition::create($payload);
         }
 
         // Badge is derived from total_score; computed dynamically (no persistence needed)
-        return $evaluation;
+        return $recognition;
     }
 
     public function lockMonthForTeamLeader(User $teamLeader, Carbon $month): void
     {
         $month = $month->copy()->startOfMonth();
-        EmployeeMonthlyEvaluation::where('team_leader_id', $teamLeader->id)
+        EmployeeRecognition::where('team_leader_id', $teamLeader->id)
             ->forMonth($month)
             ->whereNull('locked_at')
             ->update(['locked_at' => now()]);
@@ -94,7 +94,7 @@ class MonthlyEvaluationService
     public function monthlyLeaderboard(User $teamLeader, Carbon $month, ?string $badgeCode = null)
     {
         $month = $month->copy()->startOfMonth();
-        return EmployeeMonthlyEvaluation::with('employee')
+        return EmployeeRecognition::with('employee')
             ->where('team_leader_id', $teamLeader->id)
             ->forMonth($month)
             ->when($badgeCode, function ($q) use ($badgeCode) {
@@ -107,7 +107,7 @@ class MonthlyEvaluationService
 
     public function quarterlyLeaderboard(User $teamLeader, int $year, int $quarter)
     {
-        return EmployeeMonthlyEvaluation::with('employee')
+        return EmployeeRecognition::with('employee')
             ->where('team_leader_id', $teamLeader->id)
             ->forQuarter($year, $quarter)
             ->select('employee_id', DB::raw('AVG(total_score) as avg_score'), DB::raw('SUM(total_score) as total'))
@@ -118,7 +118,7 @@ class MonthlyEvaluationService
 
     public function yearlyLeaderboard(User $teamLeader, int $year)
     {
-        return EmployeeMonthlyEvaluation::with('employee')
+        return EmployeeRecognition::with('employee')
             ->where('team_leader_id', $teamLeader->id)
             ->forYear($year)
             ->select('employee_id', DB::raw('AVG(total_score) as avg_score'), DB::raw('SUM(total_score) as total'))
@@ -131,7 +131,7 @@ class MonthlyEvaluationService
     public function adminTopPerformersByMonth(Carbon $month, ?string $badgeCode = null)
     {
         $month = $month->copy()->startOfMonth();
-        return EmployeeMonthlyEvaluation::with([
+        return EmployeeRecognition::with([
                 'employee.employee',
                 'employee.roles',
                 'employee.media',
@@ -150,7 +150,7 @@ class MonthlyEvaluationService
 
     public function employeeTrend(User $employee, int $year)
     {
-        return EmployeeMonthlyEvaluation::where('employee_id', $employee->id)
+        return EmployeeRecognition::where('employee_id', $employee->id)
             ->forYear($year)
             ->orderBy('month')
             ->get();
@@ -159,7 +159,7 @@ class MonthlyEvaluationService
     public function compareTeamsByMonth(Carbon $month)
     {
         $month = $month->copy()->startOfMonth();
-        return EmployeeMonthlyEvaluation::with([
+        return EmployeeRecognition::with([
                 'teamLeader.employee',
                 'teamLeader.roles',
                 'teamLeader.media',
@@ -231,7 +231,7 @@ class MonthlyEvaluationService
 
     public function employeeBadgeTimeline(User $employee, ?int $year = null)
     {
-        $q = EmployeeMonthlyEvaluation::where('employee_id', $employee->id)
+        $q = EmployeeRecognition::where('employee_id', $employee->id)
             ->orderBy('month');
         if ($year) {
             $q->forYear($year);
@@ -253,10 +253,10 @@ class MonthlyEvaluationService
     public function orderTeamMembersByScore(User $teamLeader, Carbon $month)
     {
         $month = $month->copy()->startOfMonth();
-        // Join evaluations for the month and order by total_score desc, nulls last
+        // Join recognitions for the month and order by total_score desc, nulls last
         return $teamLeader->tl_employees()->with(['employee', 'media'])
             ->wherePivot('is_active', true)
-            ->leftJoin('employee_monthly_evaluations as eme', function ($join) use ($teamLeader, $month) {
+            ->leftJoin('employee_recognitions as eme', function ($join) use ($teamLeader, $month) {
                 $join->on('users.id', '=', 'eme.employee_id')
                     ->where('eme.team_leader_id', '=', $teamLeader->id)
                     ->whereDate('eme.month', '=', $month->format('Y-m-d'));
