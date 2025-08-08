@@ -37,11 +37,7 @@ class TaskController extends Controller
 
     public function kanban(Request $request)
     {
-        $roles = $this->taskRepository->getRolesWithTaskCreators();
-        $assignees = $this->taskRepository->getAssignableUsers();
-        $tasks = $this->taskRepository->getTasksQuery($request)->get();
-
-        return view('administration.task.kanban', compact(['tasks', 'roles', 'assignees']));
+        return view('administration.task.kanban');
     }
 
     public function sprint(Request $request)
