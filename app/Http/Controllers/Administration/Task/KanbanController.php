@@ -90,8 +90,8 @@ class KanbanController extends Controller
         // Format assigned users data
         $assignedData = $this->formatAssignedUsers($task->users);
         
-        // Format due date
-        $dueDate = $task->deadline ? Carbon::parse($task->deadline)->format('j F') : null;
+        // Format deadline
+        $deadline = $task->deadline ? Carbon::parse($task->deadline)->format('j F, Y') : null;
         
         // Base task data
         $taskData = [
@@ -101,12 +101,14 @@ class KanbanController extends Controller
             'comments' => (string) $task->all_comments->count(),
             'badge-text' => $badgeInfo['text'],
             'badge' => $badgeInfo['color'],
-            'due-date' => $dueDate,
+            'deadline' => $deadline,
             'attachments' => (string) $task->files->count(),
             'progress' => (string) $progress,
             'created-by' => $task->creator->name ?? 'Unknown',
             'assigned' => $assignedData['avatars'],
-            'members' => $assignedData['names']
+            'members' => $assignedData['names'],
+            'task-history-url' => route('administration.task.history.show', $task),
+            'task-show-url' => route('administration.task.show', [$task, $task->taskid]),
         ];
 
         if($task->sub_tasks->count() > 0) {
@@ -306,14 +308,13 @@ class KanbanController extends Controller
      */
     private function getStatusFromBoardId($boardId)
     {
-        $statusMap = [
-            'board-activated' => 'Activated',
-            'board-running' => 'Running',
-            'board-completed' => 'Completed',
-            'board-cancelled' => 'Cancelled',
-        ];
-
-        return $statusMap[$boardId] ?? 'Activated';
+      $statusMap = [
+        'board-activated' => 'Active',
+        'board-running' => 'Running',
+        'board-completed' => 'Completed',
+        'board-cancelled' => 'Cancelled',
+      ];
+      return $statusMap[$boardId] ?? 'Active';
     }
 
     /**
@@ -322,13 +323,12 @@ class KanbanController extends Controller
     private function getBoardConfigByStatus($status)
     {
         $configMap = [
-            'Activated' => ['id' => 'board-activated', 'title' => 'Activated', 'color' => 'danger'],
+            'Active' => ['id' => 'board-activated', 'title' => 'Activated', 'color' => 'danger'],
             'Running' => ['id' => 'board-running', 'title' => 'Running', 'color' => 'info'],
             'Completed' => ['id' => 'board-completed', 'title' => 'Completed', 'color' => 'success'],
             'Cancelled' => ['id' => 'board-cancelled', 'title' => 'Cancelled', 'color' => 'secondary'],
         ];
-
-        return $configMap[$status] ?? $configMap['Activated'];
+        return $configMap[$status] ?? $configMap['Active'];
     }
 
     /**
@@ -340,3 +340,5 @@ class KanbanController extends Controller
         return (int) substr($kanbanTaskId, strrpos($kanbanTaskId, '-') + 1);
     }
 }
+
+

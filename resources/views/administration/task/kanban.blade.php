@@ -40,24 +40,6 @@
 
 <div class="row">
     <div class="app-kanban">
-
-        <!-- Add new board -->
-        <div class="row">
-            <div class="col-12">
-            <form class="kanban-add-new-board">
-                <label class="kanban-add-board-btn" for="kanban-add-board-input">
-                <i class="ti ti-plus ti-xs"></i>
-                <span class="align-middle">Add new</span>
-                </label>
-                <input type="text" class="form-control w-px-250 kanban-add-board-input mb-2 d-none" placeholder="Add Board Title" id="kanban-add-board-input" required />
-                <div class="mb-3 kanban-add-board-input d-none">
-                <button class="btn btn-primary btn-sm me-2">Add</button>
-                <button type="button" class="btn btn-label-secondary btn-sm kanban-add-board-cancel-btn">Cancel</button>
-                </div>
-            </form>
-            </div>
-        </div>
-
         <!-- Kanban Wrapper -->
         <div class="kanban-wrapper"></div>
 
@@ -312,6 +294,10 @@
 
 
 @section('script_links')
+    {{--  External Javascript Links --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    
+    
     <script src="{{asset('assets/vendor//libs/moment/moment.js')}}"></script>
     <script src="{{asset('assets/vendor//libs/flatpickr/flatpickr.js')}}"></script>
     <script src="{{asset('assets/vendor//libs/select2/select2.js')}}"></script>

@@ -1,3 +1,4 @@
+
 /**
  * Enhanced App Kanban - Laravel Integration with Parent Task Support
  */
@@ -12,7 +13,7 @@
     kanbanAddNewBoard = document.querySelector('.kanban-add-new-board'),
     kanbanAddNewInput = [].slice.call(document.querySelectorAll('.kanban-add-board-input')),
     kanbanAddBoardBtn = document.querySelector('.kanban-add-board-btn'),
-    datePicker = document.querySelector('#due-date'),
+    datePicker = document.querySelector('#deadline'),
     select2 = $('.select2'), // ! Using jquery vars due to select2 jQuery dependency
     baseUrl = window.location.origin, // Get base URL
     csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
@@ -36,7 +37,7 @@
     }
     
     boards = await kanbanResponse.json();
-    console.log('Kanban data loaded:', boards);
+    // console.log('Kanban data loaded:', boards);
   } catch (error) {
     console.error('Error loading kanban data:', error);
     // Fallback to empty boards
@@ -109,15 +110,17 @@
   
   // Render item dropdown
   function renderDropdown(taskId) {
-    const historyUrl = `${baseUrl}/task/history/show/${taskId}`;
-    const taskShowUrl = `${baseUrl}/task/show/${taskId}`;
+    const itemEl = document.querySelector(`[data-eid="${taskId}"]`);
+    console.log(taskId);
+    const historyUrl = itemEl?.getAttribute('data-task-history-url') || '#';
+    const taskShowUrl = itemEl?.getAttribute('data-task-show-url') || '#';
     return (
       "<div class='dropdown kanban-tasks-item-dropdown'>" +
       "<i class='dropdown-toggle ti ti-dots-vertical' id='kanban-tasks-item-dropdown' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></i>" +
       "<div class='dropdown-menu dropdown-menu-end' aria-labelledby='kanban-tasks-item-dropdown'>" +
       "<a class='dropdown-item' href='" + historyUrl + "'>Task History</a>" +
-      "<a class='dropdown-item' href='javascript:void(0)'>Show task</a>" +
-      "<a class='dropdown-item delete-task' href='javascript:void(0)'>Delete task</a>" +
+      "<a class='dropdown-item' href='" + taskShowUrl + "'>Show Task</a>" +
+      "<a class='dropdown-item delete-task' href='javascript:void(0)'>Delete Task</a>" +
       '</div>' +
       '</div>'
     );
@@ -125,6 +128,7 @@
   
   // Render header with priority badge
   function renderHeader(color, text, subTasks, taskId) {
+    console.log('render header  '+taskId);
     return (
       "<div class='d-flex justify-content-between flex-wrap align-items-center mb-2 pb-1'>" +
         "<div class='item-badges'> " +
@@ -291,16 +295,16 @@
   }
 
   // ENHANCED: Render footer with detailed tooltips
-  function renderFooter(attachments, comments, assigned, members, dueDate) {
+  function renderFooter(attachments, comments, assigned, members, deadline) {
     // Default values
     attachments = attachments || '0';
     comments = comments || '0';
-    dueDate = dueDate || 'null';
+    deadline = deadline || 'null';
 
     // Create tooltip texts
     const attachmentTooltip = attachments === '1' ? '1 attachment' : attachments + ' attachments';
     const commentTooltip = comments === '1' ? '1 comment' : comments + ' comments';
-    const dueDateTooltip = 'Due date: ' + dueDate;
+    const dueDateTooltip = 'Deadline: ' + deadline;
 
     // Start building the footer
     let footerHTML = `
@@ -317,11 +321,11 @@
             </span>`;
 
     // Conditionally add due date if it's not 'null'
-    if (dueDate !== 'null') {
+    if (deadline !== 'null') {
       footerHTML += `
             <span class='d-flex align-items-center me-2 mb-1' data-bs-toggle='tooltip' data-bs-placement='top' title='${dueDateTooltip}'>
               <i class='ti ti-calendar ti-xs me-1 text-muted'></i>
-              <small class='text-muted'>${dueDate}</small>
+              <small class='text-muted'>${deadline}</small>
             </span>`;
     }
 
@@ -433,7 +437,7 @@
       let title = element.getAttribute('data-eid')
           ? element.querySelector('.kanban-text').textContent
           : element.textContent,
-        date = element.getAttribute('data-due-date'),
+        date = element.getAttribute('data-deadline'),
         dateObj = new Date(),
         year = dateObj.getFullYear(),
         dateToUse = date
@@ -450,7 +454,7 @@
       // To get data on sidebar
       kanbanSidebar.querySelector('#title').value = title;
       kanbanSidebar.querySelector('#description').value = description;
-      kanbanSidebar.querySelector('#due-date').nextSibling.value = dateToUse;
+      kanbanSidebar.querySelector('#deadline').nextSibling.value = dateToUse;
 
       // ! Using jQuery method to get sidebar due to select2 dependency
       $('.kanban-update-item-sidebar').find(select2).val(label).trigger('change');
@@ -473,9 +477,18 @@
       try {
         const taskId = el.getAttribute('data-eid');
         const newBoardId = target.parentNode.getAttribute('data-id');
-        
+
         await updateTaskStatusAPI(taskId, newBoardId);
         console.log('Task status updated successfully');
+        // Show success toast
+        Swal.fire({
+          icon: 'success',
+          title: 'Task status updated',
+          toast: true,
+          position: 'top-end',
+          timer: 2000,
+          showConfirmButton: false
+        });
       } catch (error) {
         console.error('Failed to update task status:', error);
         // Revert the move if API call fails
@@ -534,11 +547,14 @@
             newTaskElement.setAttribute('data-created-by', newTask['created-by'] || '');
             newTaskElement.setAttribute('data-badge-text', newTask['badge-text'] || 'Medium');
             newTaskElement.setAttribute('data-badge', newTask.badge || 'warning');
-            newTaskElement.setAttribute('data-due-date', newTask['due-date'] || '');
+            newTaskElement.setAttribute('data-deadline', newTask['deadline'] || '');
             newTaskElement.setAttribute('data-attachments', newTask.attachments || '0');
             newTaskElement.setAttribute('data-comments', newTask.comments || '0');
             newTaskElement.setAttribute('data-assigned', newTask.assigned ? newTask.assigned.join(',') : '');
             newTaskElement.setAttribute('data-members', newTask.members ? newTask.members.join(',') : '');
+            // Routes for Task History and Task Show
+            newTaskElement.setAttribute('data-task-history-url', newTask['task-history-url'] || '');
+            newTaskElement.setAttribute('data-task-show-url', newTask['task-show-url'] || '');
             
             if (newTask.parent_id) {
               newTaskElement.setAttribute('data-parent-id', newTask.parent_id);
@@ -583,7 +599,7 @@
                 newTask.comments,
                 newTask.assigned,
                 newTask.members,
-                newTask['due-date']
+                newTask['deadline']
               )
             );
 
@@ -598,14 +614,23 @@
             // Add delete functionality
             const deleteBtn = newTaskElement.querySelector('.delete-task');
             if (deleteBtn) {
-              deleteBtn.addEventListener('click', async function () {
-                try {
-                  await deleteTaskAPI(newTask.id);
-                  kanban.removeElement(newTask.id);
-                } catch (error) {
-                  console.error('Failed to delete task:', error);
-                  alert('Failed to delete task. Please try again.');
-                }
+              deleteBtn.addEventListener('click', async function (e) {
+                e.preventDefault(); e.stopPropagation();
+                Swal.fire({
+                  title: 'Are you sure?', text: "You won't be able to revert this!",
+                  icon: 'warning', showCancelButton: true, confirmButtonText: 'Yes, delete it!',
+                  customClass: { confirmButton: 'btn btn-primary me-2', cancelButton: 'btn btn-label-secondary' },
+                  buttonsStyling: false, showLoaderOnConfirm: true,
+                  preConfirm: async () => { try { await deleteTaskAPI(newTask.id); } catch (error) {
+                    Swal.showValidationMessage('Delete failed: ' + (error.message || 'Unknown error'));
+                  } }
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    kanban.removeElement(newTask.id);
+                    Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Task has been deleted.',
+                      customClass: { confirmButton: 'btn btn-success' } });
+                  }
+                });
               });
             }
 
@@ -673,7 +698,7 @@
       
       // Header with badge and dropdown
       if (el.getAttribute('data-badge') !== undefined && el.getAttribute('data-badge-text') !== undefined) {
-        cardContent += renderHeader(el.getAttribute('data-badge'), el.getAttribute('data-badge-text'), el.getAttribute('data-sub_tasks'), el.getAttribute('data-id'));
+        cardContent += renderHeader(el.getAttribute('data-badge'), el.getAttribute('data-badge-text'), el.getAttribute('data-sub_tasks'), el.getAttribute('data-eid'));
       }
       
       // Image if exists
@@ -700,7 +725,7 @@
       // Footer with enhanced tooltips
       if (
         el.getAttribute('data-comments') !== undefined ||
-        el.getAttribute('data-due-date') !== undefined ||
+        el.getAttribute('data-deadline') !== undefined ||
         el.getAttribute('data-assigned') !== undefined
       ) {
         el.insertAdjacentHTML(
@@ -710,7 +735,7 @@
             el.getAttribute('data-comments'),
             el.getAttribute('data-assigned'),
             el.getAttribute('data-members'),
-            el.getAttribute('data-due-date')
+            el.getAttribute('data-deadline')
           )
         );
       }
@@ -884,17 +909,24 @@
   // Add delete functionality to existing tasks
   const deleteTaskButtons = document.querySelectorAll('.delete-task');
   deleteTaskButtons.forEach(function(btn) {
-    btn.addEventListener('click', async function() {
-      if (confirm('Are you sure you want to delete this task?')) {
-        try {
-          const taskId = this.closest('.kanban-item').getAttribute('data-eid');
-          await deleteTaskAPI(taskId);
+    btn.addEventListener('click', async function(e) {
+      e.preventDefault(); e.stopPropagation();
+      const taskId = this.closest('.kanban-item').getAttribute('data-eid');
+      Swal.fire({
+        title: 'Are you sure?', text: "You won't be able to revert this!",
+        icon: 'warning', showCancelButton: true, confirmButtonText: 'Yes, delete it!',
+        customClass: { confirmButton: 'btn btn-primary me-2', cancelButton: 'btn btn-label-secondary' },
+        buttonsStyling: false, showLoaderOnConfirm: true,
+        preConfirm: async () => { try { await deleteTaskAPI(taskId); } catch (error) {
+          Swal.showValidationMessage('Delete failed: ' + (error.message || 'Unknown error'));
+        } }
+      }).then((result) => {
+        if (result.isConfirmed) {
           kanban.removeElement(taskId);
-        } catch (error) {
-          console.error('Failed to delete task:', error);
-          alert('Failed to delete task. Please try again.');
+          Swal.fire({ icon: 'success', title: 'Deleted!', text: 'Task has been deleted.',
+            customClass: { confirmButton: 'btn btn-success' } });
         }
-      }
+      });
     });
   });
 
@@ -1006,4 +1038,9 @@
     });
   }
 })();
+
+
+
+
+
 
