@@ -200,13 +200,8 @@
 @section('content')
 {{-- <!-- Start row --> --}}
 
-{{-- Employee Recognition Notice --}}
-@include('administration.dashboard.partials._employee_recognition_notice')
-
-
-
-{{-- Employee Recognition System (ERS) --}}
-@include('administration.dashboard.partials._employee_recognition')
+{{-- Monthly Evaluations Summary (ERS New) --}}
+@include('administration.dashboard.partials._ers_monthly_summary')
 
 {{-- Birdthday Wish --}}
 @include('administration.dashboard.partials._birthday_wish')

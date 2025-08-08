@@ -12,57 +12,21 @@ use App\Services\Administration\Attendance\AttendanceService;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
-use App\Services\Administration\Dashboard\EmployeeRecognitionService;
 
 // Removed duplicate class declaration
 class DashboardService
 {
     protected $attendanceService;
-    protected $employeeRecognitionService;
-
+    
     /**
      * Create a new service instance.
      */
-    public function __construct(AttendanceService $attendanceService, EmployeeRecognitionService $employeeRecognitionService)
+    public function __construct(AttendanceService $attendanceService)
     {
         $this->attendanceService = $attendanceService;
-        $this->employeeRecognitionService = $employeeRecognitionService;
     }
 
-    // Employee Recognition System helpers
-    public function isEligibleForRecognition($user)
-    {
-        return $this->employeeRecognitionService->isEligibleToGiveRecognition($user);
-    }
-
-    public function getRecentRecognitions($user, $limit = 5)
-    {
-        return $this->employeeRecognitionService->getRecentRecognitions($user, $limit);
-    }
-
-    public function needsRecognitionReminder($user)
-    {
-        return $this->employeeRecognitionService->needsReminder($user);
-    }
-
-    public function getRecognitionAnnouncements($limit = 10)
-    {
-        return $this->employeeRecognitionService->getAnnouncements($limit);
-    }
-    
-    public function getFullMarkCategoriesPreviousMonth($user)
-    {
-        $previousMonth = now()->subMonth();
-        return $user->received_recognitions()
-            ->whereBetween('created_at', [
-                $previousMonth->copy()->startOfMonth(),
-                $previousMonth->copy()->endOfMonth()
-            ])
-            ->where('points', 5)
-            ->pluck('category')
-            ->unique();
-    }
-    
+        
 
     /**
      * Get the current authenticated user with employee relationship.

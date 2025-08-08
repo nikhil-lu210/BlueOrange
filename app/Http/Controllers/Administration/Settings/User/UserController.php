@@ -6,11 +6,13 @@ use Exception;
 use App\Models\User;
 use App\Enums\BloodGroup;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use App\Http\Controllers\Controller;
 use App\Models\EmployeeShift\EmployeeShift;
 use App\Services\Administration\User\UserService;
 use App\Http\Requests\Administration\Settings\User\UserStoreRequest;
 use App\Http\Requests\Administration\Settings\User\UserUpdateRequest;
+use App\Services\Administration\EmployeeRecognition\MonthlyEvaluationService;
 
 class UserController extends Controller
 {
@@ -106,6 +108,81 @@ class UserController extends Controller
         return view('administration.settings.user.includes.attendance', compact(['user', 'attendances']));
     }
 
+    /**
+     * Display monthly evaluations (ERS) for this user.
+     */
+    public function showEvaluations(User $user)
+    {
+        $user = $this->userService->getUser($user);
+
+        // Load evaluations (latest first) with team leader eager loaded
+        $evaluations = $user->monthly_evaluations()
+            ->with(['teamLeader.employee', 'teamLeader.roles', 'teamLeader.media'])
+            ->orderByDesc('month')
+            ->get();
+
+        // Compute average per-criterion across all evaluations and presentational color
+        $criteria = [
+            'behavior' => 'Behavior',
+            'appreciation' => 'Appreciation',
+            'leadership' => 'Leadership',
+            'loyalty' => 'Loyalty',
+            'dedication' => 'Dedication',
+        ];
+        $avgCriteriaOutput = [];
+        foreach ($criteria as $key => $label) {
+            $val = round((float) ($evaluations->avg($key) ?? 0), 2);
+            $color = ers_criterion_color($val);
+            $avgCriteriaOutput[] = [
+                'key' => $key,
+                'label' => $label,
+                'value' => $val,
+                'color' => $color,
+            ];
+        }
+
+        // Badge timeline (pre-computed in service) -> format for view
+        $timelineRaw = app(MonthlyEvaluationService::class)
+            ->employeeBadgeTimeline($user);
+        $timelinePrepared = $timelineRaw->map(function ($row) {
+            return [
+                'month_label' => Carbon::parse($row['month'])->format('M Y'),
+                'total_score' => $row['total_score'],
+                'badge_emoji' => $row['badge']['emoji'],
+                'badge_label' => $row['badge']['label'],
+            ];
+        });
+
+        // Prepare evaluations rows with badge meta and formatted month
+        $evaluationsPrepared = $evaluations->map(function ($e) {
+            $score = (int) $e->total_score;
+            $badge = ers_badge_for_score($score);
+            return [
+                'month_label' => Carbon::parse($e->month)->format('M Y'),
+                'team_leader' => $e->teamLeader,
+                'behavior' => $e->behavior,
+                'appreciation' => $e->appreciation,
+                'leadership' => $e->leadership,
+                'loyalty' => $e->loyalty,
+                'dedication' => $e->dedication,
+                'total_score' => $e->total_score,
+                'badge' => [
+                    'code' => $badge['code'],
+                    'label' => $badge['label'],
+                    'emoji' => $badge['emoji'],
+                    'class' => ers_badge_class($badge['code']),
+                ],
+            ];
+        });
+
+        return view('administration.settings.user.includes.user_recognitions', [
+            'user' => $user,
+            'avgCriteriaOutput' => $avgCriteriaOutput,
+            'timelinePrepared' => $timelinePrepared,
+            'evaluationsPrepared' => $evaluationsPrepared,
+        ]);
+    }
+
 
     /**
      * Display the user files list.
@@ -118,29 +195,7 @@ class UserController extends Controller
     }
 
 
-    /**
-     * Display the user recognitions.
-     */
-    public function showRecognitions(User $user)
-    {
-        $user = $this->userService->getUser($user);
-
-        // Fetch recognitions for the user, group by date
-        $recognitions = $user->received_recognitions()
-            ->with(['recognizer.employee', 'recognizer.roles', 'recognizer.media'])
-            ->get()
-            ->sortByDesc('created_at')
-            ->groupBy(function ($item) {
-                return $item->created_at->format('Y-m-d');
-            });
-
-        $averageRatings = $user->received_recognitions
-                                ->groupBy('category')
-                                ->map(fn($group) => round($group->avg('points'), 2));
-
-        return view('administration.settings.user.includes.user_recognitions', compact(['user', 'recognitions', 'averageRatings']));
-    }
-
+    
     /**
      * Store the file.
      */

@@ -75,4 +75,7 @@ Route::prefix('')
 
             // quiz
             include_once 'quiz/quiz.php';
+
+            // employee recognition (monthly evaluations)
+            include_once 'employee_recognition/monthly.php';
         });

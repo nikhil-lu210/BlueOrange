@@ -47,6 +47,8 @@
 
         @include('layouts.administration.partials.menus.quiz')
 
+        @include('layouts.administration.partials.menus.employee_recognition')
+
         @include('layouts.administration.partials.menus.vault')
 
         <!-- Settings -->

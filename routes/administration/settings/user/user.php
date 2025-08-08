@@ -26,6 +26,7 @@ Route::prefix('user')->name('user.')->group(function () {
 
         Route::get('/show/{user}/profile', 'showProfile')->name('show.profile')->can('User Read');
         Route::get('/show/{user}/attendance', 'showAttendance')->name('show.attendance')->can('User Read');
+        Route::get('/show/{user}/user_evaluations', 'showEvaluations')->name('show.evaluations')->can('User Read');
 
         Route::post('/shift/{shift}/update/{user}', 'updateShift')->name('shift.update')->can('User Update');
 
@@ -54,6 +55,5 @@ Route::prefix('user')->name('user.')->group(function () {
     // user_file
     include_once 'user_file/user_file.php';
 
-    // user_recognition
-    include_once 'user_recognition/user_recognition.php';
+    // user_recognition removed
 });
