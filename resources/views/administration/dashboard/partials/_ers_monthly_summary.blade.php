@@ -1,82 +1,54 @@
 {{-- ERS Monthly Summary --}}
 <div class="row mb-4">
-    @if($isTeamLeader)
-    <div class="col-lg-7 col-md-12 mb-3">
-        <div class="card h-100">
+    <div class="col-md-12 mb-3">
+        <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">{{ __('Top Performers (This Month)') }}</h5>
-                <a href="{{ route('administration.employee_recognition.index', ['month' => now()->format('Y-m-d')]) }}" class="btn btn-sm btn-primary">{{ __('Recognize Now') }}</a>
+                <h5 class="mb-0">{{ __('Top Performers ('.now()->format('F Y').')') }}</h5>
             </div>
             <div class="card-body">
-                @if(!$tlHasMonthEval)
-                    <div class="alert alert-warning d-flex align-items-center" role="alert">
-                        <i class="ti ti-alert-triangle me-2"></i>
-                        <div>
-                            {{ __('You have not submitted this month\'s recognitions. Please recognize your team members.')
-                            }}
-                            <a href="{{ route('administration.employee_recognition.index', ['month' => now()->format('Y-m-01')]) }}"
-                                class="btn btn-sm btn-outline-primary ms-2">{{ __('Go to Recognition') }}</a>
+                @php
+                    $top10TeamRecognitions = collect([]); // for testing, empty collection
+                @endphp
+
+                @if ($top10TeamRecognitions->isEmpty())
+                    <div class="d-flex justify-content-center align-items-center" style="min-height: 60px;">
+                        <div class="text-center">
+                            <div class="fs-xl text-muted mb-3">{{ __('No data available.') }}</div>
+                            <a href="{{ route('administration.employee_recognition.index', ['month' => now()->format('Y-m-d')]) }}" class="btn btn-primary btn-md">
+                                {{ __('Recognize Now') }}
+                            </a>
                         </div>
                     </div>
-                @endif
-
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>{{ __('Employee') }}</th>
-                                <th>{{ __('Score') }}</th>
-                                <th>{{ __('Badge') }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($tlTop5 as $i => $e)
-                            @php $bd = ers_badge_for_score((int)$e->total_score); @endphp
-                            <tr>
-                                <td>{{ $i + 1 }}</td>
-                                <td>{!! show_user_name_and_avatar($e->employee, name: null, role: null) !!}</td>
-                                <td><span class="badge bg-primary">{{ $e->total_score }}</span></td>
-                                <td><span class="badge {{ ers_badge_class($bd['code']) }}">{{ $bd['emoji'] }} {{
-                                        __($bd['label']) }}</span></td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="text-center text-muted">{{ __('No recognitions yet.') }}</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-    @endif
-
-    <div class="col-lg-{{ $isTeamLeader ? '5' : '12' }} col-md-12 mb-3">
-        <div class="card h-100">
-            <div class="card-header">
-                <h5 class="mb-0">{{ __('Recognition Summary') }}</h5>
-            </div>
-            <div class="card-body">
-                @if($employeeEval && $employeeBadge)
-                <div class="d-flex align-items-center">
-                    {!! show_user_name_and_avatar($user, name: null, role: null) !!}
-                    <div class="ms-3">
-                        <div class="mb-1">{{ __('Congratulations!') }}</div>
-                        <div>
-                            @php $monthLabel = show_date($employeeEval->month, 'F Y'); @endphp
-                            <span class="badge {{ ers_badge_class($employeeBadge['code']) }}">{{ $employeeBadge['emoji']
-                                }} {{ __($employeeBadge['label']) }}</span>
-                            <span class="ms-2">{{ __('for') }} {{ $monthLabel }} ({{ $employeeEval->total_score
-                                }}/100)</span>
-                        </div>
-                        <div class="text-muted small mt-1">{{ __('Team Leader') }}: {!!
-                            show_user_name_and_avatar($employeeEval->teamLeader, name: null, role: null) !!}</div>
-                    </div>
-                </div>
                 @else
-                <p class="text-muted mb-0">{{ __('No recognition available yet.') }}</p>
+                    <div class="row">
+                        @foreach ($top10TeamRecognitions->chunk(5) as $column)
+                            <div class="col-md-6">
+                                <div class="list-group">
+                                    @foreach ($column as $recognition)
+                                        @php $badgeCode = ers_badge_for_score($recognition->total_score)['code']; @endphp
+                                        <div class="list-group-item list-group-item-action d-flex align-items-center gap-3">
+                                            {!! show_user_avatar($recognition->employee, 'rounded', 60) !!}
+                                            <div class="w-100 d-flex justify-content-between align-items-center">
+                                                <div>
+                                                    <h6 class="mb-0">
+                                                        <a href="{{ route('administration.settings.user.show.profile', $recognition->employee) }}" class="text-bold">
+                                                            {{ $recognition->employee->alias_name }}
+                                                        </a>
+                                                    </h6>
+                                                    <small class="mb-1">{{ $recognition->employee->roles()->first()->name }}</small>
+                                                    <div class="user-status">
+                                                        <span class="badge badge-dot {{ ers_badge_class($badgeCode) }}"></span>
+                                                        <small>Team - {{ $recognition->teamLeader->alias_name }}</small>
+                                                    </div>
+                                                </div>
+                                                <span class="badge {{ ers_badge_class($badgeCode) }}">{{ show_badge($badgeCode) }}</span>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
                 @endif
             </div>
         </div>
