@@ -21,6 +21,12 @@ class EmployeeRecognitionController extends Controller
         $user = auth()->user();
         $month = $request->input('month') ? Carbon::parse($request->input('month'))->startOfMonth() : now()->startOfMonth();
 
+        // Cannot filter future months
+        if ($month->greaterThan(now()->startOfMonth())) {
+            toast('You are not allowed to submit future months recognitions.', 'warning');
+            return redirect()->route('administration.employee_recognition.index');
+        }
+
         // Load team members ordered by current month's total score (highest first)
         $teamMembers = $this->service->orderTeamMembersByScore($user, $month);
 

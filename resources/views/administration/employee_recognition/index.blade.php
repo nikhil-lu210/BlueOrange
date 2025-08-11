@@ -34,20 +34,18 @@
                 <div class="card mb-4">
                     <div class="card-body">
                         <div class="row">
-                            <div class="mb-3 col-md-12">
-                                <label class="form-label">{{ __('Recognitions Of') }}</label>
-                                <input type="text" name="month" value="{{ $month->format('M Y') ?? old('month') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
-                                @error('month')
-                                    <span class="text-danger">{{ $message }}</span>
-                                @enderror
+                            <div class="col-md-12">
+                                <div class="input-group">
+                                    <input type="text" name="month" value="{{ $month->format('M Y') ?? old('month') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
+                                    <button type="submit" name="submit_month" value="true" class="btn btn-primary">
+                                        <span class="tf-icon ti ti-calendar ti-xs me-1"></span>
+                                        {{ __('Load Month') }}
+                                    </button>
+                                    @error('month')
+                                        <span class="text-danger">{{ $message }}</span>
+                                    @enderror
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="col-md-12 text-end">
-                            <button type="submit" name="submit_month" value="true" class="btn btn-primary">
-                                <span class="tf-icon ti ti-calendar ti-xs me-1"></span>
-                                {{ __('Load Month') }}
-                            </button>
                         </div>
                     </div>
                 </div>
