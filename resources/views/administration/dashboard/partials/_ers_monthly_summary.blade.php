@@ -6,10 +6,6 @@
                 <h5 class="mb-0">{{ __('Top Performers ('.now()->format('F Y').')') }}</h5>
             </div>
             <div class="card-body">
-                @php
-                    $top10TeamRecognitions = collect([]); // for testing, empty collection
-                @endphp
-
                 @if ($top10TeamRecognitions->isEmpty())
                     <div class="d-flex justify-content-center align-items-center" style="min-height: 60px;">
                         <div class="text-center">
