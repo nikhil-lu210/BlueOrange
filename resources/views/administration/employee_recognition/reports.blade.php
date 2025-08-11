@@ -59,8 +59,8 @@
                             <label for="badge" class="form-label">{{ __('Select Badge') }}</label>
                             <select name="badge" id="badge" class="form-select bootstrap-select w-100 @error('badge') is-invalid @enderror"  data-style="btn-default">
                                 <option value="">{{ __('All Badges') }}</option>
-                                @foreach($badgeOptions as $code => $text)
-                                    <option value="{{ $code }}" {{ (isset($badge) && $badge===$code) ? 'selected' : '' }}>{{ $text }}</option>
+                                @foreach(badge_options() as $code => $label)
+                                    <option value="{{ $code }}" {{ (isset($badge) && $badge===$code) ? 'selected' : '' }}>{{ show_badge($code) }}</option>
                                 @endforeach
                             </select>
                             @error('badge')
@@ -144,7 +144,7 @@
                                             </td>
                                             <td class="text-center">
                                                 <span class="badge {{ ers_badge_class($bd['code']) }}">
-                                                    {{ $bd ? ($bd['emoji'].' '. __($bd['label'])) : '' }}
+                                                    {{ $bd ? show_badge($bd['code']) : '' }}
                                                 </span>
                                             </td>
                                         </tr>

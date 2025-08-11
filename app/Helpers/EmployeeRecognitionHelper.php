@@ -64,6 +64,46 @@ if (!function_exists('ers_badge_class')) {
     }
 }
 
+
+if (!function_exists('badge_options')) {
+    /**
+     * Return available badge options.
+     *
+     * @return array
+     */
+    function badge_options(): array
+    {
+        return [
+            'platinum' => '🌟 Platinum Performer',
+            'gold'     => '🥇 Gold Achiever',
+            'silver'   => '🥈 Silver Contributor',
+            'bronze'   => '🥉 Bronze Supporter',
+            'rising'   => '💪 Rising Star',
+            'learner'  => '🌱 Learner',
+        ];
+    }
+}
+
+if (!function_exists('show_badge')) {
+    /**
+     * Display a badge by key.
+     *
+     * @param string|null $badge
+     * @return string
+     */
+    function show_badge(?string $badge): string
+    {
+        $options = badge_options();
+
+        return $badge && isset($options[$badge])
+            ? $options[$badge]
+            : '';
+    }
+}
+
+
+
+
 if (!function_exists('ers_score_range_for_badge')) {
     /**
      * Get min/max score range for a badge code.

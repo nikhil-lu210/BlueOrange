@@ -126,22 +126,14 @@ class EmployeeRecognitionController extends Controller
     // Admin reports: top performers and team comparison for a month
     public function reports(Request $request)
     {
-        if (!Gate::allows('User Read') && !Gate::allows('Employee Hiring Everything')) {
+        if (!Gate::allows('User Read') && !Gate::allows('Employee Recognition Everything')) {
             abort(403);
         }
         $month = $request->input('month') ? Carbon::parse($request->input('month'))->startOfMonth() : now()->startOfMonth();
         $badge = $request->input('badge');
         $topPerformers = $this->service->adminTopPerformersByMonth($month, $badge);
         $teamComparison = $this->service->compareTeamsByMonth($month);
-
-        $badgeOptions = [
-            'platinum' => '🌟 Platinum Performer',
-            'gold'     => '🥇 Gold Achiever',
-            'silver'   => '🥈 Silver Contributor',
-            'bronze'   => '🥉 Bronze Supporter',
-            'rising'   => '💪 Rising Star',
-            'learner'  => '🌱 Learner',
-        ];
+        
         $topBadges = $topPerformers->mapWithKeys(function ($row) {
             $score = (int) $row->total_score;
             $code = $this->service->badgeCodeForScore($score);
@@ -159,7 +151,7 @@ class EmployeeRecognitionController extends Controller
             return [$row->id => compact('code', 'label', 'emoji', 'class')];
         });
 
-        return view('administration.employee_recognition.reports', compact('month', 'topPerformers', 'teamComparison', 'badge', 'badgeOptions', 'topBadges'));
+        return view('administration.employee_recognition.reports', compact('month', 'topPerformers', 'teamComparison', 'badge', 'topBadges'));
     }
 
     // Admin: employee trend view
