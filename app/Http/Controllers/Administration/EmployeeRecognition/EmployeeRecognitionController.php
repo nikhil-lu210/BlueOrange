@@ -119,6 +119,12 @@ class EmployeeRecognitionController extends Controller
     {
         $user = auth()->user();
         $year = (int)($request->input('year') ?: now()->year);
+
+        if ($year > now()->year) {
+            toast('You cannot view future years.', 'warning');
+            return redirect()->route('administration.employee_recognition.my');
+        }
+
         $recognitions = $user->given_recognitions()->forYear($year)->orderBy('month')->get();
         return view('administration.employee_recognition.my', compact('user', 'year', 'recognitions'));
     }
@@ -133,7 +139,7 @@ class EmployeeRecognitionController extends Controller
         $badge = $request->input('badge');
         $topPerformers = $this->service->adminTopPerformersByMonth($month, $badge);
         $teamComparison = $this->service->compareTeamsByMonth($month);
-        
+
         $topBadges = $topPerformers->mapWithKeys(function ($row) {
             $score = (int) $row->total_score;
             $code = $this->service->badgeCodeForScore($score);
