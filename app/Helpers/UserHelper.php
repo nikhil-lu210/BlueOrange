@@ -185,6 +185,29 @@ if (!function_exists('show_user_name_and_avatar')) {
 }
 
 
+if (!function_exists('show_user_avatar')) {
+    /**
+     * Display the user's avatar or fallback initials.
+     *
+     * @param \App\Models\User $user
+     * @param int $size
+     * @param string $shape  // 'circle', 'rounded', or ''
+     * @return string
+     */
+    function show_user_avatar(User $user, string $shape = '', int $size = 40): string
+    {
+        if ($user->hasMedia('avatar')) {
+            $url = $user->getFirstMediaUrl('avatar', 'profile');
+            return '<img src="' . e($url) . '" alt="' . e($user->name) . ' Avatar" class="' . $shape . '" style="height: ' . $size . 'px; width: ' . $size . 'px;">';
+        }
+
+        return '<span class="avatar-initial ' . $shape . ' bg-label-hover-dark text-bold" style="display:inline-flex;align-items:center;justify-content:center;height:' . $size . 'px;width:' . $size . 'px;">'
+            . e(profile_name_pic($user)) .
+        '</span>';
+    }
+}
+
+
 
 if (!function_exists('get_employee_name')) {
 

@@ -157,6 +157,17 @@ if (!function_exists('ers_criterion_color')) {
     }
 }
 
+
+if (!function_exists('ers_average_color')) {
+    /**
+     * Map a 0–100 average score to a color key.
+     */
+    function ers_average_color(float $score): string
+    {
+        return $score >= 80 ? 'success' : ($score >= 60 ? 'primary' : ($score >= 40 ? 'warning' : ($score > 0 ? 'danger' : 'dark')));
+    }
+}
+
 if (!function_exists('ers_badge_timeline')) {
     /**
      * Convenience wrapper to get badge timeline for an employee using the service.

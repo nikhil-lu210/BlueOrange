@@ -60,7 +60,7 @@
                                     </option>
                                 @endforeach
                             </select>
-                            @error('announcer_id')
+                            @error('user_id')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
@@ -80,7 +80,7 @@
                                 <option value="Short" {{ request()->type == 'Short' ? 'selected' : '' }}>{{ __('Short Break') }}</option>
                                 <option value="Long" {{ request()->type == 'Long' ? 'selected' : '' }}>{{ __('Long Break') }}</option>
                             </select>
-                            @error('announcer_id')
+                            @error('type')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
