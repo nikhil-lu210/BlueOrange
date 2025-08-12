@@ -68,7 +68,13 @@
                 </div>
                 <div class="card-body">
                     @if(!$isWindowOpen)
-                        <div class="alert alert-warning">{{ __('Recognition window is from 1st to 30th of each month.') }}</div>
+                        @php
+                            $startDay = (int) config('ers.recognition_window.start_day', 1);
+                            $endDay = (int) config('ers.recognition_window.end_day', 30);
+                        @endphp
+                        <div class="alert alert-warning">
+                            {{ __('Recognition window is from :start to :end of each month.', ['start' => $startDay, 'end' => $endDay]) }}
+                        </div>
                     @endif
 
                     <form method="POST" action="{{ route('administration.employee_recognition.store') }}" class="confirm-form-warning">

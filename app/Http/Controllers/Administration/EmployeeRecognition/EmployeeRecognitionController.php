@@ -1,21 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Administration\EmployeeRecognition;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Administration\EmployeeRecognition\StoreRecognitionRequest;
 use App\Models\User;
+use App\Repositories\Administration\EmployeeRecognition\BadgeRepository;
+use App\Repositories\Administration\EmployeeRecognition\EmployeeRecognitionRepository;
+use App\Services\Administration\EmployeeRecognition\NotificationService;
+use App\Services\Administration\EmployeeRecognition\RecognitionWindowService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use App\Services\Administration\EmployeeRecognition\EmployeeRecognitionService;
 use Illuminate\Support\Facades\Gate;
 
 class EmployeeRecognitionController extends Controller
 {
-    public function __construct(protected EmployeeRecognitionService $service)
-    {
-    }
+    public function __construct(
+        protected EmployeeRecognitionRepository $recognitionRepository,
+        protected BadgeRepository $badgeRepository,
+        protected RecognitionWindowService $windowService,
+        protected NotificationService $notificationService
+    ) {}
 
-    // Team leader panel: list team members and enter scores for a month
+    /**
+     * Team leader panel: list team members and enter scores for a month
+     */
     public function index(Request $request)
     {
         $user = auth()->user();
@@ -26,13 +37,13 @@ class EmployeeRecognitionController extends Controller
         $selectedTeamLeader = $canManageAll && $teamLeaderId ? User::find($teamLeaderId) : $user;
 
         // Cannot filter future months for TLs; admins can view all months
-        if ($month->greaterThan(now()->startOfMonth()) && !$canManageAll) {
+        if ($this->windowService->isFutureMonth($month) && !$canManageAll) {
             toast('You are not allowed to submit future months recognitions.', 'warning');
             return redirect()->route('administration.employee_recognition.index');
         }
 
         // Load team members ordered by current month's total score (highest first)
-        $teamMembers = $this->service->orderTeamMembersByScore($selectedTeamLeader, $month);
+        $teamMembers = $this->recognitionRepository->getTeamMembersOrderedByScore($selectedTeamLeader, $month);
 
         // Load existing recognitions for the month to prefill (for selected TL if admin)
         $recognitionsQuery = $selectedTeamLeader->given_recognitions()->whereDate('month', $month->format('Y-m-d'));
@@ -42,23 +53,14 @@ class EmployeeRecognitionController extends Controller
         $recognitions = $recognitionsQuery->get()->keyBy('employee_id');
 
         // Move window and badge logic out of Blade
-        $isWindowOpen = $this->service->withinRecognitionWindow();
+        $isWindowOpen = $this->windowService->isWithinWindow();
         $isLocked = !$isWindowOpen && !$canManageAll; // Read-only after window closes for TLs
-        $badgeMap = $recognitions->mapWithKeys(function ($e) {
-            $score = (int) $e->total_score;
-            $code = $this->service->badgeCodeForScore($score);
-            $label = $this->service->badgeLabelForScore($score);
-            $emoji = $this->service->badgeEmojiForScore($score);
-            $classMap = [
-                'platinum' => 'bg-success',
-                'gold' => 'bg-warning',
-                'silver' => 'bg-primary',
-                'bronze' => 'bg-danger',
-                'rising' => 'bg-dark',
-                'learner' => 'bg-label-dark',
-            ];
-            $class = $classMap[$code] ?? 'bg-secondary';
-            return [$e->employee_id => compact('code', 'label', 'emoji', 'class')];
+
+        // Map badges to employee IDs
+        $badgeMap = $recognitions->mapWithKeys(function ($recognition) {
+            $score = (int) $recognition->total_score;
+            $badge = $this->badgeRepository->getBadgeForScore($score);
+            return [$recognition->employee_id => $badge];
         });
 
         // Missing recognitions: employees without a record for the month (for dashboard/notification UI)
@@ -82,25 +84,18 @@ class EmployeeRecognitionController extends Controller
         ));
     }
 
-    // Store or update recognitions for multiple employees in the selected month
-    public function store(Request $request)
+    /**
+     * Store or update recognitions for multiple employees in the selected month
+     */
+    public function store(StoreRecognitionRequest $request)
     {
         $user = auth()->user();
-        $validated = $request->validate([
-            'month' => 'required|date',
-            'scores' => 'required|array',
-            'scores.*.behavior' => 'required|integer|min:0|max:20',
-            'scores.*.appreciation' => 'required|integer|min:0|max:20',
-            'scores.*.leadership' => 'required|integer|min:0|max:20',
-            'scores.*.loyalty' => 'required|integer|min:0|max:20',
-            'scores.*.dedication' => 'required|integer|min:0|max:20',
-        ]);
-
+        $validated = $request->validated();
         $month = Carbon::parse($validated['month'])->startOfMonth();
         $canManageAll = Gate::allows('Recognition Everything');
 
         // Enforce submission window for TLs
-        if (!$this->service->withinRecognitionWindow() && !$canManageAll) {
+        if (!$this->windowService->isWithinWindow() && !$canManageAll) {
             toast('Submission window is closed. Recognitions are read-only now.', 'warning');
             return redirect()->route('administration.employee_recognition.index', ['month' => $month->format('Y-m-d')]);
         }
@@ -124,24 +119,26 @@ class EmployeeRecognitionController extends Controller
 
         foreach ($validated['scores'] as $employeeId => $scores) {
             $employee = User::findOrFail($employeeId);
-            $this->service->upsertEmployeeRecognition($user, $employee, $scores, $month);
+            $this->recognitionRepository->upsert($user, $employee, $scores, $month);
         }
 
         // After submission, lock the month and notify (direct submission)
-        $this->service->lockMonthForTeamLeader($user, $month);
-        $this->service->notifyEmployeesOfRecognition($user, $month);
+        $this->recognitionRepository->lockMonthForTeamLeader($user, $month);
+        $this->notificationService->notifyEmployeesOfRecognition($user, $month);
 
         toast('Monthly recognitions submitted and locked.', 'success');
         return redirect()->route('administration.employee_recognition.index', ['month' => $month->format('Y-m-d')]);
     }
 
-    // Leaderboards and analytics for TL
+    /**
+     * Leaderboards and analytics for TL
+     */
     public function leaderboard(Request $request)
     {
         $user = auth()->user();
         $month = $request->input('month') ? Carbon::parse($request->input('month'))->startOfMonth() : now()->startOfMonth();
         $badge = $request->input('badge');
-        $leaderboard = $this->service->monthlyLeaderboard($user, $month, $badge);
+        $leaderboard = $this->recognitionRepository->getMonthlyRecognitions($user, $month, $badge);
 
         // Provide badge options and per-row badge info to the view
         $badgeOptions = [
@@ -152,27 +149,20 @@ class EmployeeRecognitionController extends Controller
             'rising'   => '💪 Rising Star',
             'learner'  => '🌱 Learner',
         ];
+
+        // Generate badges for each row in the leaderboard
         $rowBadges = $leaderboard->mapWithKeys(function ($row) {
             $score = (int) $row->total_score;
-            $code = $this->service->badgeCodeForScore($score);
-            $label = $this->service->badgeLabelForScore($score);
-            $emoji = $this->service->badgeEmojiForScore($score);
-            $classMap = [
-                'platinum' => 'bg-dark',
-                'gold' => 'bg-warning',
-                'silver' => 'bg-secondary',
-                'bronze' => 'bg-brown',
-                'rising' => 'bg-info',
-                'learner' => 'bg-light text-dark',
-            ];
-            $class = $classMap[$code] ?? 'bg-secondary';
-            return [$row->id => compact('code', 'label', 'emoji', 'class')];
+            $badge = $this->badgeRepository->getBadgeForScore($score);
+            return [$row->id => $badge];
         });
 
         return view('administration.employee_recognition.leaderboard', compact('user', 'month', 'leaderboard', 'badge', 'badgeOptions', 'rowBadges'));
     }
 
-    // Employee self-view: see own monthly scores and trends
+    /**
+     * Employee self-view: see own monthly scores and trends
+     */
     public function myScores(Request $request)
     {
         $user = auth()->user();
@@ -187,75 +177,70 @@ class EmployeeRecognitionController extends Controller
         return view('administration.employee_recognition.my', compact('user', 'year', 'recognitions'));
     }
 
-    // Admin reports: top performers and team comparison for a month
+    /**
+     * Admin reports: top performers and team comparison for a month
+     */
     public function reports(Request $request)
     {
         if (!Gate::allows('User Read') && !Gate::allows('Recognition Everything')) {
             abort(403);
         }
+
         $month = $request->input('month') ? Carbon::parse($request->input('month'))->startOfMonth() : now()->startOfMonth();
         $badge = $request->input('badge');
         $teamLeaderId = $request->input('team_leader_id');
         $employeeId = $request->input('employee_id');
 
-        $topPerformers = $this->service->adminTopPerformersByMonth($month, $badge);
-        // Apply optional filters in-memory if provided
-        if ($teamLeaderId) {
-            $topPerformers = $topPerformers->where('team_leader_id', (int) $teamLeaderId);
-        }
-        if ($employeeId) {
-            $topPerformers = $topPerformers->where('employee_id', (int) $employeeId);
-        }
+        $topPerformers = $this->recognitionRepository->getTopPerformersByMonth($month, $badge, $teamLeaderId, $employeeId);
+        $teamComparison = $this->recognitionRepository->getTeamComparisonByMonth($month);
 
-        $teamComparison = $this->service->compareTeamsByMonth($month);
-
+        // Generate badges for top performers
         $topBadges = $topPerformers->mapWithKeys(function ($row) {
             $score = (int) $row->total_score;
-            $code = $this->service->badgeCodeForScore($score);
-            $label = $this->service->badgeLabelForScore($score);
-            $emoji = $this->service->badgeEmojiForScore($score);
-            $classMap = [
-                'platinum' => 'bg-dark',
-                'gold' => 'bg-warning',
-                'silver' => 'bg-secondary',
-                'bronze' => 'bg-brown',
-                'rising' => 'bg-info',
-                'learner' => 'bg-light text-dark',
-            ];
-            $class = $classMap[$code] ?? 'bg-secondary';
-            return [$row->id => compact('code', 'label', 'emoji', 'class')];
+            $badge = $this->badgeRepository->getBadgeForScore($score);
+            return [$row->id => $badge];
         });
 
         return view('administration.employee_recognition.reports', compact('month', 'topPerformers', 'teamComparison', 'badge', 'topBadges', 'teamLeaderId', 'employeeId'));
     }
 
-    // Admin: employee trend view
+    /**
+     * Admin: employee trend view
+     */
     public function employeeTrend(Request $request, User $user)
     {
         if (!Gate::allows('User Read') && auth()->id() !== $user->id) {
             abort(403);
         }
+
         $year = (int)($request->input('year') ?: now()->year);
-        $trend = $this->service->employeeTrend($user, $year);
+        $trend = $this->recognitionRepository->getEmployeeTrendByYear($user, $year);
+
         return view('administration.employee_recognition.employee_trend', compact('user', 'year', 'trend'));
     }
 
-    // Admin: browse recognitions across months with filters
+    /**
+     * Admin: browse recognitions across months with filters
+     */
     public function browse(Request $request)
     {
         if (!Gate::allows('Recognition Everything')) {
             abort(403);
         }
+
         $year = $request->integer('year');
         $month = $request->integer('month');
         $teamLeaderId = $request->integer('team_leader_id');
         $employeeId = $request->integer('employee_id');
 
-        $rows = $this->service->adminBrowseRecognitions($year, $month, $teamLeaderId, $employeeId);
+        $rows = $this->recognitionRepository->browse($year, $month, $teamLeaderId, $employeeId);
+
         return view('administration.employee_recognition.browse', compact('rows', 'year', 'month', 'teamLeaderId', 'employeeId'));
     }
 
-    // Team leader: history of recognitions given to team, by month
+    /**
+     * Team leader: history of recognitions given to team, by month
+     */
     public function teamHistory(Request $request)
     {
         $user = auth()->user();
