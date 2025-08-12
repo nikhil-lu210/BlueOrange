@@ -7,13 +7,11 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use App\Models\User\Employee\EmployeeRecognition;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Notification;
 
 class EmployeeRecognitionService
 {
-    // Default recognition window: 1st to 30th (inclusive)
-    public const WINDOW_START_DAY = 1;
-    public const WINDOW_END_DAY = 30;
-
     public function canTeamLeaderEvaluate(User $teamLeader, User $employee): bool
     {
         // Team leader can only evaluate their active team members
@@ -26,17 +24,23 @@ class EmployeeRecognitionService
     public function withinRecognitionWindow(Carbon $date = null): bool
     {
         $date = $date ?: now();
-        $day = (int)$date->day;
-        return $day >= static::WINDOW_START_DAY && $day <= static::WINDOW_END_DAY;
+        $day = (int) $date->day;
+
+        $start = (int) config('ers.recognition_window.start_day');
+        $end   = (int) config('ers.recognition_window.end_day');
+
+        return $day >= $start && $day <= $end;
     }
+
 
     public function upsertEmployeeRecognition(User $teamLeader, User $employee, array $scores, Carbon $month): EmployeeRecognition
     {
-        if (!$this->canTeamLeaderEvaluate($teamLeader, $employee)) {
+        $isAdmin = Gate::allows('Recognition Everything');
+        if (!$isAdmin && !$this->canTeamLeaderEvaluate($teamLeader, $employee)) {
             throw ValidationException::withMessages(['employee_id' => 'You can only recognize your own team members.']);
         }
-        if (!$this->withinRecognitionWindow()) {
-            throw ValidationException::withMessages(['month' => 'Recognitions are only allowed from 1st to 5th of each month.']);
+        if (!$isAdmin && !$this->withinRecognitionWindow()) {
+            throw ValidationException::withMessages(['month' => 'Recognitions are only allowed within the configured submission window.']);
         }
 
         $month = $month->copy()->startOfMonth();
@@ -71,6 +75,50 @@ class EmployeeRecognitionService
 
         // Badge is derived from total_score; computed dynamically (no persistence needed)
         return $recognition;
+    }
+
+    public function isMonthLocked(User $teamLeader, Carbon $month): bool
+    {
+        $month = $month->copy()->startOfMonth();
+        return EmployeeRecognition::where('team_leader_id', $teamLeader->id)
+            ->forMonth($month)
+            ->whereNotNull('locked_at')
+            ->exists();
+    }
+
+    public function adminBrowseRecognitions(?int $year = null, ?int $month = null, ?int $teamLeaderId = null, ?int $employeeId = null)
+    {
+        $q = EmployeeRecognition::with(['employee', 'teamLeader'])
+            ->when($year, fn($qq) => $qq->forYear($year))
+            ->when($month, function ($qq) use ($month) {
+                $start = Carbon::createFromDate(now()->year, 1, 1)->month((int)$month)->startOfMonth();
+                $qq->forMonth($start);
+            })
+            ->when($teamLeaderId, fn($qq) => $qq->where('team_leader_id', (int)$teamLeaderId))
+            ->when($employeeId, fn($qq) => $qq->where('employee_id', (int)$employeeId))
+            ->orderByDesc('month')
+            ->orderByDesc('total_score');
+        return $q->get();
+    }
+
+    public function notifyEmployeesOfRecognition(User $teamLeader, Carbon $month): void
+    {
+        $month = $month->copy()->startOfMonth();
+        $rows = EmployeeRecognition::with('employee')
+            ->where('team_leader_id', $teamLeader->id)
+            ->forMonth($month)
+            ->get();
+
+        // If an EmployeeRecognitionPublished notification exists, send it; otherwise no-op
+        $notificationClass = '\\App\\Notifications\\Administration\\Recognition\\EmployeeRecognitionPublished';
+        if (class_exists($notificationClass)) {
+            foreach ($rows as $row) {
+                $employee = $row->employee;
+                if ($employee) {
+                    $employee->notify(new $notificationClass($row));
+                }
+            }
+        }
     }
 
     public function lockMonthForTeamLeader(User $teamLeader, Carbon $month): void

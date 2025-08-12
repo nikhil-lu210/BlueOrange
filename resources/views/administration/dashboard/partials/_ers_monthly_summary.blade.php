@@ -6,7 +6,11 @@
                 <h5 class="mb-0">{{ __('Top Performers ('.now()->format('F Y').')') }}</h5>
             </div>
             <div class="card-body">
-                @if ($top10TeamRecognitions->isEmpty())
+                @php
+                    // allow either collection (team or global) to be used
+                    $ersTop10 = isset($top10TeamRecognitions) ? $top10TeamRecognitions : collect();
+                @endphp
+                @if ($ersTop10->isEmpty())
                     <div class="d-flex justify-content-center align-items-center" style="min-height: 60px;">
                         <div class="text-center">
                             <div class="fs-xl text-muted mb-3">{{ __('No data available.') }}</div>
@@ -17,7 +21,7 @@
                     </div>
                 @else
                     <div class="row">
-                        @foreach ($top10TeamRecognitions->chunk(5) as $column)
+                        @foreach ($ersTop10->chunk(5) as $column)
                             <div class="col-md-6">
                                 <div class="list-group">
                                     @foreach ($column as $recognition)

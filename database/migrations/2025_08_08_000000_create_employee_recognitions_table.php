@@ -38,6 +38,7 @@ return new class extends Migration {
 
             // Ensure only one recognition per employee per team leader per month
             $table->unique(['employee_id', 'team_leader_id', 'month'], 'uniq_employee_tl_month');
+            $table->unique(['team_leader_id', 'employee_id', 'month'], 'uniq_tl_employee_month');
 
             // Useful indexes
             $table->index(['team_leader_id', 'month'], 'idx_tl_month');

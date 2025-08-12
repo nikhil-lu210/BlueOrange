@@ -133,12 +133,25 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="mt-3 d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary" {{ $teamMembers->isEmpty() ? 'disabled' : '' }}>
-                                <span class="tf-icon ti ti-lock-check me-1"></span>
-                                {{ __('Save & Lock Month') }}
-                            </button>
-                        </div>
+                        @php
+                            // Determine if all team members have a locked recognition for this month
+                            $allRecognizedAndLocked = true;
+                            foreach ($teamMembers as $member) {
+                                $rec = $recognitions[$member->id] ?? null;
+                                if (!($rec && $rec->locked_at)) {
+                                    $allRecognizedAndLocked = false;
+                                    break;
+                                }
+                            }
+                        @endphp
+                        @if(!$allRecognizedAndLocked)
+                            <div class="mt-3 d-flex justify-content-end">
+                                <button type="submit" class="btn btn-primary" {{ $teamMembers->isEmpty() ? 'disabled' : '' }}>
+                                    <span class="tf-icon ti ti-lock-check me-1"></span>
+                                    {{ __('Save & Lock Month') }}
+                                </button>
+                            </div>
+                        @endif
                     </form>
                 </div>
             </div>

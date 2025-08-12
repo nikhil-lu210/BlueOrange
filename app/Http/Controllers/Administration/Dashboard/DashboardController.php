@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Administration\Dashboard;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Services\Administration\Dashboard\DashboardService;
 use App\Models\User\Employee\EmployeeRecognition;
+use App\Services\Administration\Dashboard\DashboardService;
+use Illuminate\Support\Facades\Gate;
 
 class DashboardController extends Controller
 {
@@ -46,10 +48,34 @@ class DashboardController extends Controller
         // ERS New Module: Monthly Recognitions quick widgets
         $isTeamLeader = $user->tl_employees()->wherePivot('is_active', true)->exists();
         $currentMonth = now()->startOfMonth();
-        $top10TeamRecognitions = $isTeamLeader ? ers_top_team_performers($user, $currentMonth, 10) : collect();
-        $teamLeaderHasMonthlyRecognition = $isTeamLeader ? EmployeeRecognition::where('team_leader_id', $user->id) ->whereDate('month', $currentMonth->format('Y-m-d')) ->exists() : false;
+        if (Gate::allows('Recognition Everything')) {
+            $top10TeamRecognitions = EmployeeRecognition::with(['employee.roles', 'employee.media', 'teamLeader'])
+                ->whereDate('month', $currentMonth->format('Y-m-d'))
+                ->orderByDesc('total_score')
+                ->take(10)
+                ->get();
+        } else {
+            $top10TeamRecognitions = $isTeamLeader ? ers_top_team_performers($user, $currentMonth, 10) : collect();
+        }
+
+        $teamLeaderHasMonthlyRecognition = $isTeamLeader ? EmployeeRecognition::where('team_leader_id', $user->id)
+            ->whereDate('month', $currentMonth->format('Y-m-d'))
+            ->exists() : false;
         $employeeCurrentOrLastMonthRecognition = ers_employee_running_or_last_month_recognition($user, $user->active_team_leader);
         $employeeRecognitionBadge = $employeeCurrentOrLastMonthRecognition ? ers_badge_for_score((int) $employeeCurrentOrLastMonthRecognition->total_score) : null;
+
+        // Missing recognitions for current month
+        $missingRecognitions = collect();
+        if ($isTeamLeader) {
+            $teamMemberIds = $user->tl_employees()->wherePivot('is_active', true)->pluck('users.id');
+            $recognizedIds = EmployeeRecognition::where('team_leader_id', $user->id)
+                ->whereDate('month', $currentMonth->format('Y-m-d'))
+                ->pluck('employee_id');
+            $missingIds = $teamMemberIds->diff($recognizedIds);
+            if ($missingIds->isNotEmpty()) {
+                $missingRecognitions = User::whereIn('id', $missingIds)->get();
+            }
+        }
 
         return view('administration.dashboard.index', compact([
             'user',
@@ -74,6 +100,7 @@ class DashboardController extends Controller
             'teamLeaderHasMonthlyRecognition',
             'employeeCurrentOrLastMonthRecognition',
             'employeeRecognitionBadge',
+            'missingRecognitions',
         ]));
     }
 }

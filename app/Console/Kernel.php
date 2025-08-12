@@ -16,6 +16,9 @@ class Kernel extends ConsoleKernel
 
         // Schedule to auto calculate monthly salary for all users on every months 1st date at 8:00 AM
         $schedule->command('salaries:calculate')->monthlyOn(1, '08:00')->timezone(config('app.timezone'));
+
+        // ERS: Send recognition reminders to team leaders during the submission window (1st, 3rd, 5th)
+        $schedule->command('send:recognition-reminder')->dailyAt(config('ers.reminder_time', '09:00'))->timezone(config('app.timezone'));
     }
 
     /**

@@ -117,14 +117,14 @@ if (!function_exists('ers_score_range_for_badge')) {
 
 if (!function_exists('ers_is_recognition_window_open')) {
     /**
-     * Check if recognition window is currently open according to service constants.
+     * Check if recognition window is currently open according to config.
      */
     function ers_is_recognition_window_open(?Carbon $date = null): bool
     {
         $date = $date ?: now();
         $day = (int) $date->day;
-        $start = EmployeeRecognitionService::WINDOW_START_DAY;
-        $end   = EmployeeRecognitionService::WINDOW_END_DAY;
+        $start = (int) config('ers.recognition_window.start_day');
+        $end   = (int) config('ers.recognition_window.end_day');
         return $day >= $start && $day <= $end;
     }
 }
