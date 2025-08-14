@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use App\Models\Education\EducationLevel\EducationLevel;
+use App\Models\Recognition\Recognition;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
@@ -345,5 +346,21 @@ trait UserRelations
     public function created_penalties(): HasMany
     {
         return $this->hasMany(Penalty::class, 'creator_id');
+    }
+
+    /**
+     * Get the received_recognitions associated with the user (recognitions received by this user).
+     */
+    public function received_recognitions(): HasMany
+    {
+        return $this->hasMany(Recognition::class, 'user_id');
+    }
+
+    /**
+     * Get the created_recognitions associated with the user (recognitions created by this user).
+     */
+    public function created_recognitions(): HasMany
+    {
+        return $this->hasMany(Recognition::class, 'recognizer_id');
     }
 }

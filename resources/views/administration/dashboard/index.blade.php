@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     {{-- FullCalendar --}}
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
-
 @endsection
 
 @section('custom_css')
@@ -194,6 +193,13 @@
     <li class="breadcrumb-item active">{{ __('Dashboard') }}</li>
 @endsection
 
+@section('breadcrumb_action')
+    <button class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#recognitionModal">
+        <i class="ti ti-badge me-1"></i>
+        {{ __('Submit Recognition') }}
+    </button>
+@endsection
+
 
 
 @section('content')
@@ -226,6 +232,8 @@
 @if ($showEmployeeInfoUpdateModal)
     @include('administration.dashboard.modals.employee_info_update_modal')
 @endif
+
+@include('administration.dashboard.modals.employee_recognition_modal')
 
 {{-- <!-- End row --> --}}
 @endsection
@@ -262,6 +270,15 @@
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
+    <script>
+        $(document).on('shown.bs.modal', function (e) {
+            $(e.target).find('.select2').select2({
+                dropdownParent: $(e.target),
+                width: '100%'
+            });
+        });
+    </script>
+
     <script>
         // ShowLiveTime
         $(document).ready(function() {
