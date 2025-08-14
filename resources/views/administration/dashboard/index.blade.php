@@ -181,6 +181,31 @@
             display: block !important;
         }
     </style>
+
+    {{-- Recogntion Card --}}
+    <style>
+        .recognition-card {
+            margin: auto;
+        }
+
+        .congrats-card {
+            position: relative;
+        }
+
+        .ribbon {
+            color: white;
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            display: inline-block;
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
 @endsection
 
 
@@ -194,7 +219,7 @@
 @endsection
 
 @section('breadcrumb_action')
-    @if (auth()->user()->tl_employees && auth()->user()->tl_employees->count() > 0)
+    @if ($canRecognize)
         <button class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#recognitionModal">
             <i class="ti ti-badge me-1"></i>
             {{ __('Submit Recognition') }}
@@ -210,6 +235,7 @@
 {{-- Birdthday Wish --}}
 @include('administration.dashboard.partials._birthday_wish')
 
+@include('administration.dashboard.partials._recognition_congratulation')
 
 {{-- Attendance Summary and Clockin-Clockout --}}
 @include('administration.dashboard.partials._attendance_summary')
@@ -235,7 +261,8 @@
     @include('administration.dashboard.modals.employee_info_update_modal')
 @endif
 
-@if (auth()->user()->tl_employees && auth()->user()->tl_employees->count() > 0)
+
+@if ($canRecognize)
     @include('administration.dashboard.modals.employee_recognition_modal')
 @endif
 
@@ -282,6 +309,15 @@
             });
         });
     </script>
+
+    @if($autoShowRecognitionModal)
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                let recognitionModal = new bootstrap.Modal(document.getElementById('recognitionModal'));
+                recognitionModal.show();
+            });
+        </script>
+    @endif
 
     <script>
         // ShowLiveTime

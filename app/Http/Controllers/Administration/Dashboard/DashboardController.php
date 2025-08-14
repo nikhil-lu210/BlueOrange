@@ -57,6 +57,11 @@ class DashboardController extends Controller
         $institutes = $this->dashboardService->getAllInstitutes();
         $educationLevels = $this->dashboardService->getAllEducationLevels();
 
+        $canRecognize = $this->dashboardService->canRecognize($user);
+        $autoShowRecognitionModal = $this->dashboardService->shouldAutoShowRecognitionModal($user);
+        $latestRecognition = $this->dashboardService->getLatestRecognitionForUser($user);
+
+        // dd($canRecognize, $autoShowRecognitionModal);
         return view('administration.dashboard.index', compact([
             'user',
             'wish',
@@ -74,6 +79,9 @@ class DashboardController extends Controller
             'groupedBloodGroups',
             'institutes',
             'educationLevels',
+            'canRecognize',
+            'autoShowRecognitionModal',
+            'latestRecognition',
         ]));
     }
 }

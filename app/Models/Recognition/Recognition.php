@@ -3,15 +3,18 @@
 namespace App\Models\Recognition;
 
 use App\Traits\HasCustomRouteId;
+use App\Observers\RecognitionObserver;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
 use Dyrynda\Database\Support\CascadeSoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use App\Models\Recognition\Mutators\RecognitionMutators;
 use App\Models\Recognition\Accessors\RecognitionAccessors;
 use App\Models\Recognition\Relations\RecognitionRelations;
 
+#[ObservedBy([RecognitionObserver::class])]
 class Recognition extends Model
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;

@@ -29,7 +29,25 @@ class RecognitionController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        $validated = $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'category' => 'required|string|in:' . implode(',', config('recognition.categories')),
+            'total_mark' => 'required|integer|min:' . config('recognition.marks.min') . '|max:' . config('recognition.marks.max'),
+            'comment' => 'required|string|max:1000',
+        ]);
+
+        $recognition = Recognition::create([
+            'user_id' => $validated['user_id'],
+            'category' => $validated['category'],
+            'total_mark' => $validated['total_mark'],
+            'comment' => $validated['comment'],
+            'recognizer_id' => auth()->id(),
+        ]);
+
+        // Observer will handle congratulation email
+
+        toast('Recognition submitted successfully', 'success');
+        return redirect()->back();
     }
 
     /**
