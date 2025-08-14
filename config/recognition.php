@@ -19,6 +19,9 @@ return [
         'Customer Focus',
     ],
 
+    // Recognition reminder threshold
+    'reminder_days' => 15,
+
     /*
     |--------------------------------------------------------------------------
     | Marks Range

@@ -9,13 +9,15 @@
                     <p class="text-muted text-capitalize">{{ __('Please Provide Recognition to your team\'s employee.') }}</p>
                 </div>
                 <!-- Employee Recognition form -->
-                <form method="post" action="#" class="row g-3" autocomplete="off">
+                <form method="post" action="{{ route('administration.recognition.store') }}" class="row g-3" autocomplete="off">
                     @csrf
                     <div class="mb-3 col-md-12">
                         <label for="user_id" class="form-label">{{ __('Employee') }} <strong class="text-danger">*</strong></label>
                         <select name="user_id" id="user_id" class="form-select select2 w-100 @error('user_id') is-invalid @enderror" data-style="btn-default" required>
                             <option value="" disabled selected>{{ __('Select Employee') }}</option>
-                            <option value="Unknown">{{ __('Don\'t Know (Unknown)') }}</option>
+                            @foreach (auth()->user()->tl_employees as $user)
+                                <option value="{{ $user->id }}">{{ $user->alias_name }}</option>
+                            @endforeach
                         </select>
                         @error('user_id')
                             <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>

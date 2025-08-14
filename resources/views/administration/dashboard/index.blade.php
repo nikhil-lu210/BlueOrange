@@ -194,10 +194,12 @@
 @endsection
 
 @section('breadcrumb_action')
-    <button class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#recognitionModal">
-        <i class="ti ti-badge me-1"></i>
-        {{ __('Submit Recognition') }}
-    </button>
+    @if (auth()->user()->tl_employees && auth()->user()->tl_employees->count() > 0)
+        <button class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#recognitionModal">
+            <i class="ti ti-badge me-1"></i>
+            {{ __('Submit Recognition') }}
+        </button>
+    @endif
 @endsection
 
 
@@ -233,7 +235,9 @@
     @include('administration.dashboard.modals.employee_info_update_modal')
 @endif
 
-@include('administration.dashboard.modals.employee_recognition_modal')
+@if (auth()->user()->tl_employees && auth()->user()->tl_employees->count() > 0)
+    @include('administration.dashboard.modals.employee_recognition_modal')
+@endif
 
 {{-- <!-- End row --> --}}
 @endsection
