@@ -12,9 +12,8 @@
                         </span>
                     @endif
                     <br>
-                    <div>
-                        <strong class="text-dark"><span id="employee-name">You</span></strong>
-                        <span class="text-muted"> received </span>
+                    <div class="text-capitalize">
+                        <span class="text-muted">You received recognition on </span>
                         <strong class="text-primary" id="recognition-category">{{ $latestRecognition->category }}</strong>
                         <span class="text-muted"> from </span>
                         <strong id="leader-name">{{ $latestRecognition->recognizer->alias_name }}</strong><br>
@@ -22,17 +21,12 @@
                     </div>
                 </div>
 
-                <!-- Comment -->
-                <p class="mb-2 text-muted" id="recognition-comment">
-                    {{ $latestRecognition->comment }}
-                </p>
-
                 <!-- Congrats Card -->
                 <div class="congrats-card p-2 rounded-3 text-center">
                     <div class="position-relative">
                         <img src="{{ asset('assets/img/custom_images/recognition_congrats.svg') }}" alt="Illustration" class="img-fluid rounded mb-3 pb-3" width="60%">
                         <div class="ribbon bg-primary mt-2">
-                            <span id="ribbon-text">{{ $latestRecognition->category }}</span>
+                            <span id="ribbon-text" title="{{ $latestRecognition->comment }}">{{ $latestRecognition->category }}</span>
                         </div>
                     </div>
                 </div>
