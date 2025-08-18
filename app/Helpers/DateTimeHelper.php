@@ -1,6 +1,7 @@
 <?php
 
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
 use App\Models\Holiday\Holiday;
 use App\Models\Weekend\Weekend;
 
@@ -447,6 +448,50 @@ if (!function_exists('total_time')) {
     }
 }
 
+
+if (!function_exists('show_leave')) {
+
+    /**
+     * Format a leave interval coming from either a CarbonInterval or an "hh:mm:ss" string.
+     * Returns "No Leave" when the interval represents zero time.
+     *
+     * @param  CarbonInterval|string|null  $interval
+     * @param  string  $zeroText
+     * @return string
+     */
+    function show_leave($interval, $zeroText = 'No Leave')
+    {
+        if ($interval instanceof CarbonInterval) {
+            $isZero = ($interval->years == 0
+                && $interval->months == 0
+                && $interval->weeks == 0
+                && $interval->days == 0
+                && $interval->hours == 0
+                && $interval->minutes == 0
+                && $interval->seconds == 0);
+
+            if ($isZero) {
+                return $zeroText;
+            }
+
+            return $interval->forHumans();
+        }
+
+        if (is_string($interval)) {
+            $parts = explode(':', $interval);
+            if (count($parts) === 3) {
+                [$h, $m, $s] = $parts;
+                if (((int) $h) === 0 && ((int) $m) === 0 && ((int) $s) === 0) {
+                    return $zeroText;
+                }
+            }
+
+            return $interval;
+        }
+
+        return $zeroText;
+    }
+}
 
 if (!function_exists('upcoming_birthday')) {
 

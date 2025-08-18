@@ -35,15 +35,15 @@
                         <tbody>
                             <tr>
                                 <th>Earned Leave</th>
-                                <td>{{ $user->available_leaves()->earned_leave }}</td>
+                                <td>{{ show_leave($user->available_leaves()->earned_leave) }}</td>
                             </tr>
                             <tr>
                                 <th>Sick Leave</th>
-                                <td>{{ $user->available_leaves()->sick_leave }}</td>
+                                <td>{{ show_leave($user->available_leaves()->sick_leave) }}</td>
                             </tr>
                             <tr>
                                 <th>Casual Leave</th>
-                                <td>{{ $user->available_leaves()->casual_leave }}</td>
+                                <td>{{ show_leave($user->available_leaves()->casual_leave) }}</td>
                             </tr>
                         </tbody>
                     @endif
@@ -86,15 +86,15 @@
                         <tbody>
                             <tr>
                                 <th>Earned Leave</th>
-                                <td>{{ $user->allowed_leave->earned_leave->forHumans() }}</td>
+                                <td>{{ show_leave($user->allowed_leave->earned_leave) }}</td>
                             </tr>
-                            <tr>
+                            <tr></tr>
                                 <th>Sick Leave</th>
-                                <td>{{ $user->allowed_leave->sick_leave->forHumans() }}</td>
+                                <td>{{ show_leave($user->allowed_leave->sick_leave) }}</td>
                             </tr>
                             <tr>
                                 <th>Casual Leave</th>
-                                <td>{{ $user->allowed_leave->casual_leave->forHumans() }}</td>
+                                <td>{{ show_leave($user->allowed_leave->casual_leave) }}</td>
                             </tr>
                         </tbody>
                     @endisset
