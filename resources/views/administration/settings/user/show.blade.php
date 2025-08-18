@@ -174,10 +174,12 @@
                                 @endif
                             @endcanany
                             @hasanyrole(['Developer', 'Super Admin'])
-                                <a href="{{ route('custom_auth.impersonate.login', ['user' => $user]) }}" class="btn btn-dark btn-sm waves-effect waves-light confirm-warning">
-                                    <i class="ti ti-lock me-1"></i>
-                                    Login As {{ $user->alias_name }}
-                                </a>
+                                @if (auth()->user()->id != $user->id)
+                                    <a href="{{ route('custom_auth.impersonate.login', ['user' => $user]) }}" class="btn btn-dark btn-sm waves-effect waves-light confirm-warning">
+                                        <i class="ti ti-lock me-1"></i>
+                                        Login As {{ $user->alias_name }}
+                                    </a>
+                                @endif
                             @endhasanyrole
                         </div>
                     </div>
@@ -225,6 +227,14 @@
                     <a class="nav-link {{ request()->is('settings/user/show/*/user_file*') ? 'active' : '' }}" href="{{ route('administration.settings.user.user_file.index', ['user' => $user]) }}">
                         <i class="ti-xs ti ti-calendar-x me-1"></i>
                         User Files
+                    </a>
+                </li>
+            @endcanany
+            @canany (['User Everything', 'Recognition Everything'])
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('settings/user/show/*/recognition*') ? 'active' : '' }}" href="{{ route('administration.settings.user.recognition.index', ['user' => $user]) }}">
+                        <i class="ti-xs ti ti-badge me-1"></i>
+                        {{ __('Recognitions') }}
                     </a>
                 </li>
             @endcanany

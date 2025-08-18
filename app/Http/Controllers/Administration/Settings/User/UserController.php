@@ -117,6 +117,18 @@ class UserController extends Controller
         return view('administration.settings.user.includes.user_files', compact(['user']));
     }
 
+
+    /**
+     * Display the user files list.
+     */
+    public function showRecognitions(User $user)
+    {
+        $user = $this->userService->getUser($user);
+        $user->load(['received_recognitions']);
+
+        return view('administration.settings.user.includes.recognition', compact(['user']));
+    }
+
     /**
      * Store the file.
      */
