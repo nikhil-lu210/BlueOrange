@@ -341,7 +341,9 @@ class DashboardService {
     public function canRecognize(User $user): bool
     {
         if (!$user->relationLoaded('tl_employees')) {
-            $user->load('tl_employees');
+            $user->load(['tl_employees' => function ($query) {
+                $query->where('is_active', true);
+            }]);
         }
 
         return $user->tl_employees->isNotEmpty();
