@@ -202,6 +202,9 @@
 {{-- Birdthday Wish --}}
 @include('administration.dashboard.partials._birthday_wish')
 
+{{-- Upcoming Birthdays --}}
+@include('administration.dashboard.partials._upcoming_birthdays')
+
 
 {{-- Attendance Summary and Clockin-Clockout --}}
 @include('administration.dashboard.partials._attendance_summary')

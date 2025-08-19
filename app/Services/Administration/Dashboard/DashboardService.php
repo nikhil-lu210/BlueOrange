@@ -331,4 +331,63 @@ class DashboardService
     {
         return EducationLevel::orderBy('title')->get();
     }
+
+    /**
+     * Get users with birthdays in the next given number of days.
+     * Attaches two dynamic properties on each user:
+     * - days_until_birthday
+     * - next_birthday_date
+     */
+    public function getUpcomingBirthdays(int $days = 15): Collection
+    {
+        $today = Carbon::today();
+
+        $users = User::with(['employee', 'media'])
+            ->where('status', 'Active')
+            ->whereNotIn('id', [1, 2])
+            ->whereHas('employee', function ($query) {
+                $query->whereNotNull('birth_date');
+            })
+            ->get();
+
+        $upcoming = $users->map(function ($user) use ($today) {
+            $birthDate = Carbon::parse(optional($user->employee)->birth_date);
+
+            if (!$birthDate) {
+                return null;
+            }
+
+            // Handle leap day birthdays gracefully on non-leap years (treat as Feb 28)
+            $birthMonth = $birthDate->month;
+            $birthDay = $birthDate->day;
+            if ($birthMonth === 2 && $birthDay === 29 && !Carbon::isLeapYear($today->year)) {
+                $birthDay = 28;
+            }
+
+            $nextBirthday = Carbon::create($today->year, $birthMonth, $birthDay);
+            if ($nextBirthday->isPast()) {
+                $targetYear = $today->year + 1;
+                if ($birthMonth === 2 && $birthDay === 29 && !Carbon::isLeapYear($targetYear)) {
+                    $nextBirthday = Carbon::create($targetYear, 2, 28);
+                } else {
+                    $nextBirthday = Carbon::create($targetYear, $birthMonth, $birthDay);
+                }
+            }
+
+            $daysRemaining = $today->diffInDays($nextBirthday, false);
+
+            // Attach computed properties for view usage
+            $user->days_until_birthday = $daysRemaining;
+            $user->next_birthday_date = $nextBirthday;
+
+            return $user;
+        })
+        ->filter(function ($user) use ($days) {
+            return $user && $user->days_until_birthday >= 0 && $user->days_until_birthday <= $days;
+        })
+        ->sortBy('days_until_birthday')
+        ->values();
+
+        return $upcoming;
+    }
 }
