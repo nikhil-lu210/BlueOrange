@@ -2,26 +2,29 @@
 
 namespace App\Services\Administration\Dashboard;
 
-use App\Enums\BloodGroup;
 use App\Models\User;
-use App\Models\Attendance\Attendance;
+use App\Enums\BloodGroup;
+use Illuminate\Support\Carbon;
 use App\Models\Leave\LeaveHistory;
+use Illuminate\Support\Collection;
+use App\Models\Attendance\Attendance;
+use App\Models\Recognition\Recognition;
 use App\Models\Education\Institute\Institute;
 use App\Models\Education\EducationLevel\EducationLevel;
 use App\Services\Administration\Attendance\AttendanceService;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
+use App\Services\Administration\Recognition\RecognitionService;
 
-class DashboardService
-{
+class DashboardService {
     protected $attendanceService;
+    protected $recognitionService;
 
     /**
      * Create a new service instance.
      */
-    public function __construct(AttendanceService $attendanceService)
+    public function __construct(AttendanceService $attendanceService, RecognitionService $recognitionService)
     {
         $this->attendanceService = $attendanceService;
+        $this->recognitionService = $recognitionService;
     }
 
     /**
@@ -330,6 +333,34 @@ class DashboardService
     public function getAllEducationLevels(): Collection
     {
         return EducationLevel::orderBy('title')->get();
+    }
+
+    /**
+     * Check if the team leader should see the recognition modal.
+     */
+    public function canRecognize(User $user): bool
+    {
+        if (!$user->relationLoaded('tl_employees')) {
+            $user->load('tl_employees');
+        }
+
+        return $user->tl_employees->isNotEmpty();
+    }
+
+    public function shouldAutoShowRecognitionModal(User $user, ?int $days = null): bool
+    {
+        return $this->canRecognize($user) && $this->recognitionService->needsReminder($user, $days);
+    }
+
+    /**
+     * Get the latest recognition for an employee (for congratulation card).
+     */
+    public function getLatestRecognitionForUser(User $user, int $days = 30)
+    {
+        return Recognition::where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subDays($days))
+            ->orderByDesc('created_at')
+            ->first();
     }
 
     /**
