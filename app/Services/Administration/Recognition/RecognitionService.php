@@ -16,13 +16,14 @@ class RecognitionService
     /**
      * Check if the team leader needs a recognition reminder.
      */
-    public function needsReminder(User $teamLeader): bool
+    public function needsReminder(User $teamLeader, ?int $days = null): bool
     {
         $lastRecognition = $teamLeader->created_recognitions()
             ->latest('created_at')
             ->first();
 
-        $days = config('recognition.reminder_days', 15);
+        // If not passed, fallback to config value
+        $days = $days ?? config('recognition.reminder_days', 15);
 
         if (!$lastRecognition) {
             return true;

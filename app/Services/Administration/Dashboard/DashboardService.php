@@ -347,17 +347,18 @@ class DashboardService {
         return $user->tl_employees->isNotEmpty();
     }
 
-    public function shouldAutoShowRecognitionModal(User $user): bool
+    public function shouldAutoShowRecognitionModal(User $user, ?int $days = null): bool
     {
-        return $this->canRecognize($user) && $this->recognitionService->needsReminder($user);
+        return $this->canRecognize($user) && $this->recognitionService->needsReminder($user, $days);
     }
 
     /**
      * Get the latest recognition for an employee (for congratulation card).
      */
-    public function getLatestRecognitionForUser(User $user)
+    public function getLatestRecognitionForUser(User $user, int $days = 30)
     {
         return Recognition::where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subDays($days))
             ->orderByDesc('created_at')
             ->first();
     }
