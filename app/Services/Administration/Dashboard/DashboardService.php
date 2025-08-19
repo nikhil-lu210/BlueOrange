@@ -340,7 +340,13 @@ class DashboardService {
      */
     public function canRecognize(User $user): bool
     {
-        if (!$user->relationLoaded('tl_employees')) {
+        // Check permission first
+        if (! $user->hasPermissionTo('Recognition Create')) {
+            return false;
+        }
+
+        // Ensure only active employees are considered
+        if (! $user->relationLoaded('tl_employees')) {
             $user->load(['tl_employees' => function ($query) {
                 $query->where('is_active', true);
             }]);
