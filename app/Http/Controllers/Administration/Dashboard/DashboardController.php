@@ -60,8 +60,8 @@ class DashboardController extends Controller
         $canRecognize = $this->dashboardService->canRecognize($user);
         $autoShowRecognitionModal = $this->dashboardService->shouldAutoShowRecognitionModal($user);
         $latestRecognition = $this->dashboardService->getLatestRecognitionForUser($user);
-
-        // dd($canRecognize, $autoShowRecognitionModal);
+        // Upcoming birthdays in next 30 days
+        $upcomingBirthdays = $this->dashboardService->getUpcomingBirthdays(30);
         return view('administration.dashboard.index', compact([
             'user',
             'wish',
@@ -82,6 +82,7 @@ class DashboardController extends Controller
             'canRecognize',
             'autoShowRecognitionModal',
             'latestRecognition',
+            'upcomingBirthdays',
         ]));
     }
 }
