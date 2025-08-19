@@ -100,45 +100,42 @@ if (!function_exists('show_user_name_and_avatar')) {
 
     /**
      * Display the user name, alias, avatar, and role in a consistent layout.
-     * This function assumes that user.employee, user.media, and user.roles are already eager loaded
-     * to prevent n+1 queries.
+     * Automatically loads relations if not eager loaded.
      *
      * @param  \App\Models\User  $user
      * @param  bool  $name   Whether to display the user's name.
      * @param  bool  $alias  Whether to display the user's alias name.
      * @param  bool  $avatar Whether to display the user's avatar.
      * @param  bool  $role   Whether to display the user's role.
-     * @return string  The HTML output for user name, alias, avatar, and role.
+     * @return string
      */
     function show_user_name_and_avatar($user, $name = true, $alias = true, $avatar = true, $role = true)
     {
-        // Check if user is valid
         if (!$user) {
             return '<div class="text-muted">User not found</div>';
         }
 
+        // Ensure relations are loaded (only if not already eager loaded)
+        $user->loadMissing(['employee', 'roles', 'media']);
+
+        // ---------------- AVATAR ----------------
         $avatarHtml = '';
         if ($avatar) {
-            // Use a static cache to prevent duplicate media queries for the same user
             static $mediaCache = [];
 
             if (isset($mediaCache[$user->id])) {
-                // Use cached avatar HTML
                 $avatarHtml = $mediaCache[$user->id];
             } else {
-                // Force a direct query to get the avatar media
                 $avatarMedia = $user->getMedia('avatar')->first();
 
                 if ($avatarMedia) {
-                    // Get the URL for the thumb conversion
                     $avatarUrl = $avatarMedia->getUrl('thumb');
-                    $avatarHtml = '<img src="' . $avatarUrl . '" alt="' . htmlspecialchars($user->name) . ' Avatar" class="rounded-circle">';
+                    $avatarHtml = '<img src="' . $avatarUrl . '" alt="' . e($user->name) . ' Avatar" class="rounded-circle">';
                 } else {
                     $initials = profile_name_pic($user);
                     $avatarHtml = '<span class="avatar-initial rounded-circle bg-label-hover-dark text-bold">' . $initials . '</span>';
                 }
 
-                // Cache the avatar HTML for this user
                 $mediaCache[$user->id] = $avatarHtml;
             }
 
@@ -152,25 +149,32 @@ if (!function_exists('show_user_name_and_avatar')) {
             </div>';
         }
 
+        // ---------------- NAME ----------------
         $nameHtml = '';
         if ($name) {
-            $nameHtml = '<small class="text-bold text-dark">' . htmlspecialchars($user->name) . '</small>';
+            $nameHtml = '<small class="text-bold text-dark">' . e($user->name) . '</small>';
         }
 
+        // ---------------- ALIAS ----------------
         $aliasNameHtml = '';
-        if ($alias && $user->relationLoaded('employee')) {
+        if ($alias) {
             $aliasName = $user->employee ? $user->employee->alias_name : '';
-            $aliasNameHtml = '<a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '" target="_blank" class="text-bold">' . htmlspecialchars($aliasName) . '</a>';
+            if ($aliasName) {
+                $aliasNameHtml = '<a href="' . route('administration.settings.user.show.profile', ['user' => $user]) . '" target="_blank" class="text-bold">' . e($aliasName) . '</a>';
+            }
         }
 
+        // ---------------- ROLE ----------------
         $roleHtml = '';
-        if ($role && $user->relationLoaded('roles')) {
+        if ($role) {
             $roleName = $user->roles->isNotEmpty() ? $user->roles->first()->name : '';
-            $roleHtml = '<small class="text-truncate text-muted">' . htmlspecialchars($roleName) . '</small>';
+            if ($roleName) {
+                $roleHtml = '<small class="text-truncate text-muted">' . e($roleName) . '</small>';
+            }
         }
 
-        // Construct the final HTML output
-        $html = '
+        // ---------------- FINAL ----------------
+        return '
         <div class="d-flex justify-content-start align-items-center user-name">
             ' . $avatarHtml . '
             <div class="d-flex flex-column">
@@ -179,10 +183,9 @@ if (!function_exists('show_user_name_and_avatar')) {
                 ' . $roleHtml . '
             </div>
         </div>';
-
-        return $html;
     }
 }
+
 
 
 

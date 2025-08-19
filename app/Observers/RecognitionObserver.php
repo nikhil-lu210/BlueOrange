@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Observers;
+
+use App\Models\Recognition\Recognition;
+use App\Services\Administration\Recognition\RecognitionService;
+use App\Models\User;
+
+class RecognitionObserver
+{
+    public function created(Recognition $recognition)
+    {
+        $service = new RecognitionService();
+        $employee = User::find($recognition->user_id);
+
+        $service->sendCongratulation($employee, $recognition);
+    }
+}

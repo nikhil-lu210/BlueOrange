@@ -42,7 +42,7 @@ class PermissionController extends Controller
         $permissionModuleId = $request->input('permission_module_id');
         $moduleName = PermissionModule::whereId($permissionModuleId)->value('name');
         
-        $actions = ['Create', 'Read', 'Update', 'Delete'];
+        $actions = ['Everything', 'Create', 'Read', 'Update', 'Delete'];
 
         try {
             foreach ($actions as $action) {
