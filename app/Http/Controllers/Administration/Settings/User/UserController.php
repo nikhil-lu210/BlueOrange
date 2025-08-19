@@ -239,6 +239,25 @@ class UserController extends Controller
     }
 
     /**
+     * Employee Avatar Update
+     */
+    public function updateAvatar(Request $request, User $user)
+    {
+        $request->validate([
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        try {
+            $this->userService->updateAvatar($user, $request->only('avatar'));
+
+            toast('Employee\'s Avatar Has Been Updated.', 'success');
+            return redirect()->back();
+        } catch (\Exception $e) {
+            return back()->withError($e->getMessage())->withInput();
+        }
+    }
+
+    /**
      * User Status Update
      */
     public function updateStatus(Request $request, User $user) {
