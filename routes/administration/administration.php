@@ -34,9 +34,6 @@ Route::prefix('')
             // Attendance
             include_once 'attendance/attendance.php';
 
-            // Employee Life Cycle
-            include_once 'life_cycle/lifeCycle.php';
-
             // Leave
             include_once 'leave/leave.php';
 
@@ -84,4 +81,7 @@ Route::prefix('')
 
             // event
             include_once 'event/event.php';
+            
+            // Employee Life Cycle
+            include_once 'life_cycle/lifeCycle.php';
         });
