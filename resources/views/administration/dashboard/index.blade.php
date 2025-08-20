@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     {{-- FullCalendar --}}
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
-
 @endsection
 
 @section('custom_css')
@@ -182,6 +181,31 @@
             display: block !important;
         }
     </style>
+
+    {{-- Recogntion Card --}}
+    <style>
+        .recognition-card {
+            margin: auto;
+        }
+
+        .congrats-card {
+            position: relative;
+        }
+
+        .ribbon {
+            color: white;
+            padding: 5px 15px;
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-radius: 20px;
+            display: inline-block;
+            position: absolute;
+            bottom: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+    </style>
 @endsection
 
 
@@ -194,6 +218,15 @@
     <li class="breadcrumb-item active">{{ __('Dashboard') }}</li>
 @endsection
 
+@section('breadcrumb_action')
+    @if ($canRecognize)
+        <button class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#recognitionModal">
+            <i class="ti ti-badge me-1"></i>
+            {{ __('Submit Recognition') }}
+        </button>
+    @endif
+@endsection
+
 
 
 @section('content')
@@ -202,6 +235,9 @@
 {{-- Birdthday Wish --}}
 @include('administration.dashboard.partials._birthday_wish')
 
+@include('administration.dashboard.partials._recognition_congratulation')
+{{-- Upcoming Birthdays --}}
+@include('administration.dashboard.partials._upcoming_birthdays')
 
 {{-- Attendance Summary and Clockin-Clockout --}}
 @include('administration.dashboard.partials._attendance_summary')
@@ -225,6 +261,11 @@
 {{-- Employee Info Update Modal --}}
 @if ($showEmployeeInfoUpdateModal)
     @include('administration.dashboard.modals.employee_info_update_modal')
+@endif
+
+
+@if ($canRecognize)
+    @include('administration.dashboard.modals.employee_recognition_modal')
 @endif
 
 {{-- <!-- End row --> --}}
@@ -262,6 +303,24 @@
 
 @section('custom_script')
     {{--  External Custom Javascript  --}}
+    <script>
+        $(document).on('shown.bs.modal', function (e) {
+            $(e.target).find('.select2').select2({
+                dropdownParent: $(e.target),
+                width: '100%'
+            });
+        });
+    </script>
+
+    @if($autoShowRecognitionModal)
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                let recognitionModal = new bootstrap.Modal(document.getElementById('recognitionModal'));
+                recognitionModal.show();
+            });
+        </script>
+    @endif
+
     <script>
         // ShowLiveTime
         $(document).ready(function() {

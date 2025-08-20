@@ -31,6 +31,8 @@ Route::prefix('user')->name('user.')->group(function () {
 
         Route::put('/status/update/{user}', 'updateStatus')->name('status.update')->can('User Update');
 
+        Route::put('/avatar/update/{user}', 'updateAvatar')->name('avatar.update')->can('User Update');
+
         Route::put('/password/update/{user}', 'updatePassword')->name('password.update')->can('User Update');
     });
 
@@ -53,4 +55,7 @@ Route::prefix('user')->name('user.')->group(function () {
 
     // user_file
     include_once 'user_file/user_file.php';
+
+    // recognition
+    include_once 'recognition/recognition.php';
 });

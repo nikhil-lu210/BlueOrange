@@ -331,6 +331,14 @@ class UserService
     }
 
 
+    public function updateAvatar(User $user, array $data) {
+        return DB::transaction(function () use ($user, $data) {
+            // Handle avatar update
+            $this->attachAvatar($user, $data['avatar'] ?? null);
+        });
+    }
+
+
     public function updateShift(EmployeeShift $shift, User $user, array $data) {
         return DB::transaction(function() use ($data, $shift, $user) {
             // Create the new shift

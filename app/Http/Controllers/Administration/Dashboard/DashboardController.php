@@ -57,6 +57,14 @@ class DashboardController extends Controller
         $institutes = $this->dashboardService->getAllInstitutes();
         $educationLevels = $this->dashboardService->getAllEducationLevels();
 
+        // Employee Recognition
+        $canRecognize = $this->dashboardService->canRecognize($user);
+        $autoShowRecognitionModal = $this->dashboardService->shouldAutoShowRecognitionModal($user, 15);
+        $latestRecognition = $this->dashboardService->getLatestRecognitionForUser($user, 30);
+
+        // Upcoming birthdays in next 30 days
+        $upcomingBirthdays = $this->dashboardService->getUpcomingBirthdays(30);
+
         return view('administration.dashboard.index', compact([
             'user',
             'wish',
@@ -74,6 +82,10 @@ class DashboardController extends Controller
             'groupedBloodGroups',
             'institutes',
             'educationLevels',
+            'canRecognize',
+            'autoShowRecognitionModal',
+            'latestRecognition',
+            'upcomingBirthdays',
         ]));
     }
 }

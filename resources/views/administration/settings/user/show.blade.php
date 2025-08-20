@@ -115,7 +115,11 @@
     <div class="col-md-12 mt-4">
         <div class="card mb-4">
             <div class="user-profile-header d-flex flex-column flex-sm-row text-sm-start text-center mb-4">
-                <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto">
+                <div class="flex-shrink-0 mt-n2 mx-sm-0 mx-auto" style="position: relative;">
+                    <button type="button" class="btn rounded-pill btn-icon btn-outline-primary bg-label-primary waves-effect" style="position: absolute; right: -10px; top: -10px;" data-bs-toggle="modal" data-bs-target="#updateAvatarModal">
+                        <span class="ti ti-camera-up"></span>
+                    </button>
+
                     @if ($user->hasMedia('avatar'))
                         <img src="{{ $user->getFirstMediaUrl('avatar', 'profile_view') }}" alt="{{ $user->name }} Avatar" class="d-block h-auto ms-0 ms-sm-4 rounded user-profile-img">
                     @else
@@ -173,10 +177,12 @@
                                 @endif
                             @endcanany
                             @hasanyrole(['Developer', 'Super Admin'])
-                                <a href="{{ route('custom_auth.impersonate.login', ['user' => $user]) }}" class="btn btn-dark btn-sm waves-effect waves-light confirm-warning">
-                                    <i class="ti ti-lock me-1"></i>
-                                    Login As {{ $user->alias_name }}
-                                </a>
+                                @if (auth()->user()->id != $user->id)
+                                    <a href="{{ route('custom_auth.impersonate.login', ['user' => $user]) }}" class="btn btn-dark btn-sm waves-effect waves-light confirm-warning">
+                                        <i class="ti ti-lock me-1"></i>
+                                        Login As {{ $user->alias_name }}
+                                    </a>
+                                @endif
                             @endhasanyrole
                         </div>
                     </div>
@@ -227,6 +233,14 @@
                     </a>
                 </li>
             @endcanany
+            @canany (['User Everything', 'Recognition Everything'])
+                <li class="nav-item">
+                    <a class="nav-link {{ request()->is('settings/user/show/*/recognition*') ? 'active' : '' }}" href="{{ route('administration.settings.user.recognition.index', ['user' => $user]) }}">
+                        <i class="ti-xs ti ti-badge me-1"></i>
+                        {{ __('Recognitions') }}
+                    </a>
+                </li>
+            @endcanany
         </ul>
     </div>
 </div>
@@ -240,6 +254,8 @@
 
 {{-- Modal for Shift Update --}}
 @canany(['User Create', 'User Update'])
+    @include('administration.settings.user.modals.user_avatar_update_modal')
+
     @include('administration.settings.user.modals.user_shift_update_modal')
 
     @include('administration.settings.user.modals.user_status_update_modal')

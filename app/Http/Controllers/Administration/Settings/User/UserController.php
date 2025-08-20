@@ -117,6 +117,18 @@ class UserController extends Controller
         return view('administration.settings.user.includes.user_files', compact(['user']));
     }
 
+
+    /**
+     * Display the user files list.
+     */
+    public function showRecognitions(User $user)
+    {
+        $user = $this->userService->getUser($user);
+        $user->load(['received_recognitions']);
+
+        return view('administration.settings.user.includes.recognition', compact(['user']));
+    }
+
     /**
      * Store the file.
      */
@@ -223,6 +235,25 @@ class UserController extends Controller
             toast('Employee\'s Shift Has Been Updated.','success');
             return redirect()->back();
         } catch (Exception $e) {
+            return back()->withError($e->getMessage())->withInput();
+        }
+    }
+
+    /**
+     * Employee Avatar Update
+     */
+    public function updateAvatar(Request $request, User $user)
+    {
+        $request->validate([
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+        ]);
+
+        try {
+            $this->userService->updateAvatar($user, $request->only('avatar'));
+
+            toast('Employee\'s Avatar Has Been Updated.', 'success');
+            return redirect()->back();
+        } catch (\Exception $e) {
             return back()->withError($e->getMessage())->withInput();
         }
     }

@@ -2,26 +2,29 @@
 
 namespace App\Services\Administration\Dashboard;
 
-use App\Enums\BloodGroup;
 use App\Models\User;
-use App\Models\Attendance\Attendance;
+use App\Enums\BloodGroup;
+use Illuminate\Support\Carbon;
 use App\Models\Leave\LeaveHistory;
+use Illuminate\Support\Collection;
+use App\Models\Attendance\Attendance;
+use App\Models\Recognition\Recognition;
 use App\Models\Education\Institute\Institute;
 use App\Models\Education\EducationLevel\EducationLevel;
 use App\Services\Administration\Attendance\AttendanceService;
-use Illuminate\Support\Carbon;
-use Illuminate\Support\Collection;
+use App\Services\Administration\Recognition\RecognitionService;
 
-class DashboardService
-{
+class DashboardService {
     protected $attendanceService;
+    protected $recognitionService;
 
     /**
      * Create a new service instance.
      */
-    public function __construct(AttendanceService $attendanceService)
+    public function __construct(AttendanceService $attendanceService, RecognitionService $recognitionService)
     {
         $this->attendanceService = $attendanceService;
+        $this->recognitionService = $recognitionService;
     }
 
     /**
@@ -330,5 +333,100 @@ class DashboardService
     public function getAllEducationLevels(): Collection
     {
         return EducationLevel::orderBy('title')->get();
+    }
+
+    /**
+     * Check if the team leader should see the recognition modal.
+     */
+    public function canRecognize(User $user): bool
+    {
+        // Check permission first
+        if (! $user->hasPermissionTo('Recognition Create')) {
+            return false;
+        }
+
+        // Ensure only active employees are considered
+        if (! $user->relationLoaded('tl_employees')) {
+            $user->load(['tl_employees' => function ($query) {
+                $query->where('is_active', true);
+            }]);
+        }
+
+        return $user->tl_employees->isNotEmpty();
+    }
+
+    public function shouldAutoShowRecognitionModal(User $user, ?int $days = null): bool
+    {
+        return $this->canRecognize($user) && $this->recognitionService->needsReminder($user, $days);
+    }
+
+    /**
+     * Get the latest recognition for an employee (for congratulation card).
+     */
+    public function getLatestRecognitionForUser(User $user, int $days = 30)
+    {
+        return Recognition::where('user_id', $user->id)
+            ->where('created_at', '>=', now()->subDays($days))
+            ->orderByDesc('created_at')
+            ->first();
+    }
+
+    /**
+     * Get users with birthdays in the next given number of days.
+     * Attaches two dynamic properties on each user:
+     * - days_until_birthday
+     * - next_birthday_date
+     */
+    public function getUpcomingBirthdays(int $days = 15): Collection
+    {
+        $today = Carbon::today();
+
+        $users = User::with(['employee', 'media'])
+            ->where('status', 'Active')
+            ->whereNotIn('id', [1, 2])
+            ->whereHas('employee', function ($query) {
+                $query->whereNotNull('birth_date');
+            })
+            ->get();
+
+        $upcoming = $users->map(function ($user) use ($today) {
+            $birthDate = Carbon::parse(optional($user->employee)->birth_date);
+
+            if (!$birthDate) {
+                return null;
+            }
+
+            // Handle leap day birthdays gracefully on non-leap years (treat as Feb 28)
+            $birthMonth = $birthDate->month;
+            $birthDay = $birthDate->day;
+            if ($birthMonth === 2 && $birthDay === 29 && !Carbon::isLeapYear($today->year)) {
+                $birthDay = 28;
+            }
+
+            $nextBirthday = Carbon::create($today->year, $birthMonth, $birthDay);
+            if ($nextBirthday->isPast()) {
+                $targetYear = $today->year + 1;
+                if ($birthMonth === 2 && $birthDay === 29 && !Carbon::isLeapYear($targetYear)) {
+                    $nextBirthday = Carbon::create($targetYear, 2, 28);
+                } else {
+                    $nextBirthday = Carbon::create($targetYear, $birthMonth, $birthDay);
+                }
+            }
+
+            $daysRemaining = $today->diffInDays($nextBirthday, false);
+
+            // Attach computed properties for view usage
+            $user->days_until_birthday = $daysRemaining;
+            $user->next_birthday_date = $nextBirthday;
+
+            return $user;
+        })
+        ->filter(function ($user) use ($days) {
+            return $user && $user->days_until_birthday >= 0 && $user->days_until_birthday <= $days;
+        })
+        ->sortBy('days_until_birthday')
+        ->values();
+
+        return $upcoming;
     }
 }

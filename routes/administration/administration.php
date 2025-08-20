@@ -79,6 +79,9 @@ Route::prefix('')
             // quiz
             include_once 'quiz/quiz.php';
 
+            // recognition
+            include_once 'recognition/recognition.php';
+
             // event
             include_once 'event/event.php';
         });
