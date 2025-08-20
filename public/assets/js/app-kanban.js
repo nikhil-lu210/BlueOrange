@@ -1,3 +1,4 @@
+
 /**
  * App Kanban - Optimized & Organized
  * - Modular utilities and API layer
@@ -135,6 +136,8 @@
 
   // Offcanvas
   const kanbanOffcanvas = kanbanSidebar ? new bootstrap.Offcanvas(kanbanSidebar) : null;
+  // Feature flag: temporarily disable opening sidebar on item click
+  const OPEN_SIDEBAR_ON_ITEM_CLICK = false;
 
   // -----------------------------
   // API Client
@@ -423,9 +426,16 @@
     const badge = safeAttr(el, 'data-badge');
     const badgeText = safeAttr(el, 'data-badge-text');
     const subTasks = safeAttr(el, 'data-sub_tasks') || safeAttr(el, 'data-sub-tasks') || '0';
+    const taskShowUrl = safeAttr(el, 'data-task-show-url', '#');
 
     const titleText = el.querySelector('.kanban-text')?.textContent || el.textContent || '';
-    const titleHTML = `<div class='kanban-text fw-medium mb-1'>${escapeHTML(titleText)}</div>`;
+    const titleHTML = `
+      <div class='kanban-text fw-medium mb-1'>
+        <a href="${taskShowUrl}" class="text-decoration-none" draggable="false">
+          ${escapeHTML(titleText)}
+        </a>
+      </div>
+    `;
 
     let html = '';
     if (badge && badgeText) html += renderHeader(badge, badgeText, subTasks, el);
@@ -468,43 +478,6 @@
   };
 
   // -----------------------------
-  // CSS Injection (Consider moving to stylesheet for production)
-  // -----------------------------
-  const customCSS = `
-    <style>
-      .kanban-item { background:#fff; border:1px solid rgba(67,89,113,0.1); border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all .2s ease; margin-bottom:12px; padding:16px; }
-      .kanban-item:hover { box-shadow:0 4px 12px rgba(0,0,0,0.1); transform: translateY(-1px); }
-      .kanban-board[data-id*="activated"] { background:rgba(255,62,29,0.05); border-left:3px solid #ff3e1d; }
-      .kanban-board[data-id*="running"] { background:rgba(13,110,253,0.05); border-left:3px solid #0d6efd; }
-      .kanban-board[data-id*="completed"] { background:rgba(25,135,84,0.05); border-left:3px solid #198754; }
-      .kanban-board[data-id*="cancelled"] { background:rgba(108,117,125,0.05); border-left:3px solid #6c757d; }
-      .kanban-board[data-id*="activated"] .kanban-item { border-left:2px solid rgba(255,62,29,0.3); }
-      .kanban-board[data-id*="running"] .kanban-item { border-left:2px solid rgba(13,110,253,0.3); }
-      .kanban-board[data-id*="completed"] .kanban-item { border-left:2px solid rgba(25,135,84,0.3); }
-      .kanban-board[data-id*="cancelled"] .kanban-item { border-left:2px solid rgba(108,117,125,0.3); opacity:.8; }
-      .task-creator small, .parent-task-info small { font-size: .7rem; }
-      .parent-task-info { background: rgba(13,110,253,.1); border-radius:4px; padding:4px 8px; }
-      .task-progress .progress { border-radius:2px; background-color: rgba(67,89,113,.1); }
-      .task-progress .progress-bar { transition: width .3s ease; }
-      .enhanced-footer { border-top:1px solid rgba(67,89,113,.05); margin-top:12px; padding-top:8px; }
-      .enhanced-footer small { font-size:.7rem; font-weight:500; }
-      .kanban-text { font-size:.875rem; line-height:1.3; color:#566a7f; }
-      .kanban-description p { color:#8592a3; }
-      .kanban-board { border-radius:8px; padding:16px 12px; }
-      .kanban-title-board { font-weight:600; color:#566a7f; margin-bottom:16px; font-size:1rem; }
-      .kanban-board[data-id*="activated"] .kanban-title-board { color:#ff3e1d; }
-      .kanban-board[data-id*="running"] .kanban-title-board { color:#0d6efd; }
-      .kanban-board[data-id*="completed"] .kanban-title-board { color:#198754; }
-      .kanban-board[data-id*="cancelled"] .kanban-title-board { color:#6c757d; }
-      .new-item-form { background:#f8f9fa; border-radius:8px; padding:12px; margin-bottom:12px; }
-      .new-item-form .form-control { border:1px solid #dee2e6; font-size:.875rem; }
-      .spinner-border-sm { width:.875rem; height:.875rem; }
-    </style>
-  `;
-
-  document.head.insertAdjacentHTML('beforeend', customCSS);
-
-  // -----------------------------
   // Load Boards
   // -----------------------------
   let boards;
@@ -540,6 +513,7 @@
     addItemButton: true,
 
     click: function (el) {
+      if (!OPEN_SIDEBAR_ON_ITEM_CLICK) return;
       if (!kanbanSidebar || !kanbanOffcanvas) return;
 
       const title = el.getAttribute('data-eid')
@@ -710,8 +684,24 @@
   // Event Delegation
   // -----------------------------
   // Stop opening offcanvas when interacting with the dropdown region
+  // Use capture phase to intercept before jKanban item click handler
+  document.addEventListener('click', function (e) {
+    if (e.target && e.target.closest('.kanban-tasks-item-dropdown')) {
+      e.stopPropagation();
+    }
+  }, true);
+  // Fallback bubbling stops
   on(document, 'click', '.kanban-tasks-item-dropdown', (e) => { e.stopPropagation(); });
   on(document, 'click', '.kanban-tasks-item-dropdown *', (e) => { e.stopPropagation(); });
+  // Allow anchor clicks inside title to navigate and not trigger item click
+  on(document, 'click', '.kanban-text a', (e, target) => { 
+    e.stopPropagation(); 
+    e.preventDefault();
+    const url = target.getAttribute('href');
+    if (url && url !== '#') {
+      window.location.href = url;
+    }
+  });
 
   // Delete task (existing + newly added)
   on(document, 'click', '.delete-task', async (e, target) => {

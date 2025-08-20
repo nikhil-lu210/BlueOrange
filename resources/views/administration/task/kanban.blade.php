@@ -20,7 +20,35 @@
 @endsection
 
 @section('custom_css')
-    
+    <style>
+      .kanban-item { background:#fff; border:1px solid rgba(67,89,113,0.1); border-radius:8px; box-shadow:0 1px 3px rgba(0,0,0,0.05); transition:all .2s ease; margin-bottom:12px; padding:16px; }
+      .kanban-item:hover { box-shadow:0 4px 12px rgba(0,0,0,0.1); transform: translateY(-1px); }
+      .kanban-board[data-id*="activated"] { background:rgba(255,62,29,0.05); border-left:3px solid #ff3e1d; }
+      .kanban-board[data-id*="running"] { background:rgba(13,110,253,0.05); border-left:3px solid #0d6efd; }
+      .kanban-board[data-id*="completed"] { background:rgba(25,135,84,0.05); border-left:3px solid #198754; }
+      .kanban-board[data-id*="cancelled"] { background:rgba(108,117,125,0.05); border-left:3px solid #6c757d; }
+      .kanban-board[data-id*="activated"] .kanban-item { border-left:2px solid rgba(255,62,29,0.3); }
+      .kanban-board[data-id*="running"] .kanban-item { border-left:2px solid rgba(13,110,253,0.3); }
+      .kanban-board[data-id*="completed"] .kanban-item { border-left:2px solid rgba(25,135,84,0.3); }
+      .kanban-board[data-id*="cancelled"] .kanban-item { border-left:2px solid rgba(108,117,125,0.3); opacity:.8; }
+      .task-creator small, .parent-task-info small { font-size: .7rem; }
+      .parent-task-info { background: rgba(13,110,253,.1); border-radius:4px; padding:4px 8px; }
+      .task-progress .progress { border-radius:2px; background-color: rgba(67,89,113,.1); }
+      .task-progress .progress-bar { transition: width .3s ease; }
+      .enhanced-footer { border-top:1px solid rgba(67,89,113,.05); margin-top:12px; padding-top:8px; }
+      .enhanced-footer small { font-size:.7rem; font-weight:500; }
+      .kanban-text { font-size:.875rem; line-height:1.3; color:#566a7f; }
+      .kanban-description p { color:#8592a3; }
+      .kanban-board { border-radius:8px; padding:16px 12px; }
+      .kanban-title-board { font-weight:600; color:#566a7f; margin-bottom:16px; font-size:1rem; }
+      .kanban-board[data-id*="activated"] .kanban-title-board { color:#ff3e1d; }
+      .kanban-board[data-id*="running"] .kanban-title-board { color:#0d6efd; }
+      .kanban-board[data-id*="completed"] .kanban-title-board { color:#198754; }
+      .kanban-board[data-id*="cancelled"] .kanban-title-board { color:#6c757d; }
+      .new-item-form { background:#f8f9fa; border-radius:8px; padding:12px; margin-bottom:12px; }
+      .new-item-form .form-control { border:1px solid #dee2e6; font-size:.875rem; }
+      .spinner-border-sm { width:.875rem; height:.875rem; }
+    </style>
 @endsection
 
 
@@ -40,23 +68,6 @@
 
 <div class="row">
     <div class="app-kanban">
-        <!-- Add new board -->
-        {{-- <div class="row">
-            <div class="col-12">
-            <form class="kanban-add-new-board">
-                <label class="kanban-add-board-btn" for="kanban-add-board-input">
-                <i class="ti ti-plus ti-xs"></i>
-                <span class="align-middle">Add new</span>
-                </label>
-                <input type="text" class="form-control w-px-250 kanban-add-board-input mb-2 d-none" placeholder="Add Board Title" id="kanban-add-board-input" required />
-                <div class="mb-3 kanban-add-board-input d-none">
-                <button class="btn btn-primary btn-sm me-2">Add</button>
-                <button type="button" class="btn btn-label-secondary btn-sm kanban-add-board-cancel-btn">Cancel</button>
-                </div>
-            </form>
-            </div>
-        </div> --}}
-
         <!-- Kanban Wrapper -->
         <div class="kanban-wrapper"></div>
 

@@ -91,7 +91,7 @@ class KanbanController extends Controller
         $assignedData = $this->formatAssignedUsers($task->users);
         
         // Format deadline
-        $deadline = $task->deadline ? Carbon::parse($task->deadline)->format('j F, Y') : null;
+        $deadline = $task->deadline ? show_date($task->deadline, 'd-m-Y') : null;
         
         // Base task data
         $taskData = [
