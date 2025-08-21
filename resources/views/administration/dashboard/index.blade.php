@@ -206,6 +206,75 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
     </style>
+    {{-- <style>
+        :root {
+            --recognition-from: #796ef0;
+            --recognition-to: #8a80f8;
+            --dashboard-primary: #796ef0;
+            --dashboard-secondary: hsl(210, 40%, 95%);
+        }
+
+        .bg-gradient-recognition {
+            background: linear-gradient(135deg, var(--recognition-from), var(--recognition-to));
+        }
+
+        .shadow-recognition {
+            box-shadow: 0 10px 30px -10px hsla(280, 100%, 60%, 0.3);
+        }
+
+        .bg-gradient-card {
+            background: linear-gradient(135deg, hsl(0, 0%, 100%), hsl(220, 13%, 97%));
+        }
+
+        .shadow-card {
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.1);
+        }
+
+        .shadow-hover:hover {
+            box-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-recognition {
+            background: linear-gradient(135deg, var(--recognition-from), var(--recognition-to));
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-recognition:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px -10px hsla(280, 100%, 60%, 0.3);
+            color: white;
+        }
+
+        .btn-dashboard {
+            background-color: var(--dashboard-primary);
+            border: none;
+            color: white;
+        }
+
+        .btn-dashboard:hover {
+            background-color: hsl(220, 100%, 55%);
+            color: white;
+        }
+
+        .icon-bg-white {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .icon-bg-primary {
+            background-color: hsla(220, 100%, 60%, 0.1);
+        }
+
+        .text-white-80 {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .badge-secondary {
+            background-color: var(--dashboard-secondary);
+            color: var(--dashboard-primary);
+        }
+    </style> --}}
 @endsection
 
 
@@ -220,7 +289,7 @@
 
 @section('breadcrumb_action')
     @if ($canRecognize)
-        <button class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#recognitionModal">
+        <button class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#recognizeCongratsModal">
             <i class="ti ti-badge me-1"></i>
             {{ __('Submit Recognition') }}
         </button>
@@ -230,45 +299,57 @@
 
 
 @section('content')
-{{-- <!-- Start row --> --}}
+    {{-- <!-- Start row --> --}}
 
-{{-- Birdthday Wish --}}
-@include('administration.dashboard.partials._birthday_wish')
+    {{-- Birdthday Wish --}}
+    @include('administration.dashboard.partials._birthday_wish')
 
-@include('administration.dashboard.partials._recognition_congratulation')
-{{-- Upcoming Birthdays --}}
-@include('administration.dashboard.partials._upcoming_birthdays')
+    @include('administration.dashboard.partials._recognition_congratulation')
 
-{{-- Attendance Summary and Clockin-Clockout --}}
-@include('administration.dashboard.partials._attendance_summary')
+    {{-- @include('administration.dashboard.partials._recognition_form') --}}
 
-{{-- Currently Working || On Leave Today || Absent Today --}}
-<div class="row mb-4">
-    @include('administration.dashboard.partials._currently_working')
+    @if ($autoShowRecognitionModal) 
+        @include('administration.dashboard.partials._recognition_urgent_prompt')
+    @endif
 
-    @include('administration.dashboard.partials._on_leave_today')
+    @if (!$autoShowRecognitionModal) 
+        @include('administration.dashboard.partials._recognition_default_prompt')
+    @endif
 
-    @include('administration.dashboard.partials._absent_today')
-</div>
+    {{-- Upcoming Birthdays --}}
+    @include('administration.dashboard.partials._upcoming_birthdays')
 
-{{-- Calendar --}}
-@include('administration.dashboard.partials._calendar')
+    {{-- Attendance Summary and Clockin-Clockout --}}
+    @include('administration.dashboard.partials._attendance_summary')
 
-{{-- Attendances for running month --}}
-@include('administration.dashboard.partials._running_month_attendance')
+    {{-- Currently Working || On Leave Today || Absent Today --}}
+    <div class="row mb-4">
+        @include('administration.dashboard.partials._currently_working')
+
+        @include('administration.dashboard.partials._on_leave_today')
+
+        @include('administration.dashboard.partials._absent_today')
+    </div>
+
+    {{-- Calendar --}}
+    @include('administration.dashboard.partials._calendar')
+
+    {{-- Attendances for running month --}}
+    @include('administration.dashboard.partials._running_month_attendance')
 
 
-{{-- Employee Info Update Modal --}}
-@if ($showEmployeeInfoUpdateModal)
-    @include('administration.dashboard.modals.employee_info_update_modal')
-@endif
+    {{-- Employee Info Update Modal --}}
+    @if ($showEmployeeInfoUpdateModal)
+        @include('administration.dashboard.modals.employee_info_update_modal')
+    @endif
 
 
-@if ($canRecognize)
-    @include('administration.dashboard.modals.employee_recognition_modal')
-@endif
+    @if ($canRecognize)
+        @include('administration.dashboard.modals.employee_recognition_modal')
+    @endif
 
-{{-- <!-- End row --> --}}
+    @include('administration.dashboard.modals.recognize_congrats_modal')
+    {{-- <!-- End row --> --}}
 @endsection
 
 
@@ -312,14 +393,14 @@
         });
     </script>
 
-    @if($autoShowRecognitionModal)
+    {{-- @if($autoShowRecognitionModal)
         <script>
             document.addEventListener("DOMContentLoaded", function() {
                 let recognitionModal = new bootstrap.Modal(document.getElementById('recognitionModal'));
                 recognitionModal.show();
             });
         </script>
-    @endif
+    @endif --}}
 
     <script>
         // ShowLiveTime
