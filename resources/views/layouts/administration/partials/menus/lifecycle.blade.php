@@ -1,25 +1,25 @@
 <!-- Task Management -->
-@canany(['Event Everything', 'Event Create', 'Event Read'])
-<li class="menu-item {{ request()->is('lifecycle*') ? 'active open' : '' }}">
+@canany(['LifeCycle Everything', 'LifeCycle Create', 'LifeCycle Read'])
+<li class="menu-item {{ request()->is('LifeCycle*') ? 'active open' : '' }}">
     <a href="javascript:void(0);" class="menu-link menu-toggle">
-        <i class="menu-icon tf-icons ti ti-calendar-event"></i>
-        <div data-i18n="Event">{{ __('Employee Lifecycle Management') }}</div>
+        <i class="menu-icon tf-icons ti ti-recycle"></i>
+        <div data-i18n="LifeCycle">{{ __('Employee LifeCycle Management') }}</div>
     </a>
     <ul class="menu-sub">
-        @canany(['Event Everything'])
+        @canany(['LifeCycle Everything'])
             <li class="menu-item {{ request()->is('lifecycle/all*') ? 'active' : '' }}">
                 <a href="{{ route('administration.lifecycle.index') }}" class="menu-link">{{ __('All LifeCycle') }}</a>
             </li>
         @endcanany
 
-        @can('Event Read')
+        @can('LifeCycle Read')
             <li class="menu-item {{ request()->is('lifecycle/my*') ? 'active' : '' }}">
-                <a href="{{ route('administration.lifecycle.my') }}" class="menu-link">{{ __('My Event') }}</a>
+                <a href="{{ route('administration.lifecycle.my') }}" class="menu-link">{{ __('My LifeCycle') }}</a>
             </li>
         @endcan
-        @can('Event Create')
+        @can('LifeCycle Create')
             <li class="menu-item {{ request()->is('lifecycle/create*') ? 'active' : '' }}">
-                <a href="{{ route('administration.lifecycle.create') }}" class="menu-link">{{ __('New event') }}</a>
+                <a href="{{ route('administration.lifecycle.create') }}" class="menu-link">{{ __('New LifeCycle') }}</a>
             </li>
         @endcan
     </ul>
