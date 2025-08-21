@@ -1,31 +1,14 @@
-/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --stop-when-empty && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:retry --quiet >> /home/staffi7/app.staff-india.com/storage/logs/queue-cron.log 2>&1
+To Run Queue Job:
+==================
+
+/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --once --tries=3 >> /home/staffi7/app.staff-india.com/storage/logs/queue-cron.log 2>&1
 
 
-
-/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --stop-when-empty && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:retry --verbose >> /home/staffi7/app.staff-india.com/storage/logs/queue-cron.log 2>&1
-
-
-
-/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --stop-when-empty && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:retry \
->> /home/staffi7/app.staff-india.com/storage/logs/queue-cron.log 2>&1
+To Run Task Reminder Notification:
+===================================
+/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/send-task-notifications.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan send:task-notifications >> /home/staffi7/app.staff-india.com/storage/logs/send-task-notifications.log 2>&1
 
 
-
-
-/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --stop-when-empty && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:retry --quiet >> /home/staffi7/app.staff-india.com/storage/logs/queue-cron.log 2>&1
-
-
-
-
-/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --once && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:retry \
->> /home/staffi7/app.staff-india.com/storage/logs/queue-cron.log 2>&1
-
-
-/usr/bin/flock -n /home/staffi7/staff-india.co.uk/blueorange/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:work --stop-when-empty && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:retry all
-
-
-/usr/bin/flock -n /home/staffi7/staff-india.co.uk/blueorange/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:work --once && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/staff-india.co.uk/blueorange/artisan queue:retry all
-
-
-
-/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --stop-when-empty && /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:retry --verbose >> /home/staffi7/app.staff-india.com/storage/logs/queue-cron.log 2>&1
+To Run Birthday Reminder Notification:
+===================================
+/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/send-birthday-emails.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan send:birthday-emails >> /home/staffi7/app.staff-india.com/storage/logs/send-birthday-emails.log 2>&1

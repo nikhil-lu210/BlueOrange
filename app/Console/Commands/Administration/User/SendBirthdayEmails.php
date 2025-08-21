@@ -48,7 +48,7 @@ class SendBirthdayEmails extends Command
         foreach ($employees as $employee) {
             // Send birthday wish to employee
             Mail::to($employee->official_email)->queue(new BirthdayWishMail($employee));
-            sleep(2); // Pause for 2 seconds to avoid hitting Mailtrap's rate limit
+            // sleep(2); // Pause for 2 seconds to avoid hitting Mailtrap's rate limit
             $this->info("Birthday Wishing email sent to {$employee->alias_name}.");
 
             // Check if user_interactions is empty before looping
@@ -56,7 +56,7 @@ class SendBirthdayEmails extends Command
                 foreach ($employee->user->user_interactions ?? collect([]) as $interaction) {
                     if ($interaction->employee) {
                         Mail::to($interaction->employee->official_email)->queue(new BirthdayNotifyInteractionsMail($employee, $interaction));
-                        sleep(2); // Pause for 2 seconds to avoid hitting Mailtrap's rate limit
+                        // sleep(2); // Pause for 2 seconds to avoid hitting Mailtrap's rate limit
                     }
                 }
             }

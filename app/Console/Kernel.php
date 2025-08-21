@@ -16,6 +16,9 @@ class Kernel extends ConsoleKernel
 
         // Schedule to auto calculate monthly salary for all users on every months 1st date at 8:00 AM
         $schedule->command('salaries:calculate')->monthlyOn(1, '08:00')->timezone(config('app.timezone'));
+
+        // Optional: schedule task notifications daily at 9:00 AM (kept here for reference)
+        // $schedule->command('send:task-notifications')->dailyAt('09:00')->timezone(config('app.timezone'));
     }
 
     /**
