@@ -29,12 +29,13 @@ class SendTaskNotifications extends Command
 		$today = Carbon::today();
 		$dueSoonDays = [5, 3, 1];
 
-		$tasks = Task::with(['creator', 'creator.employee', 'users', 'users.employee'])
+		// Process tasks in small batches to cap memory on shared hosting
+		Task::with(['creator', 'creator.employee', 'users', 'users.employee'])
 			->whereNull('deleted_at')
 			->whereIn('status', ['Running', 'Active'])
-			->get();
-
-		foreach ($tasks as $task) {
+			->orderBy('id')
+			->chunkById(250, function ($tasks) use ($today, $dueSoonDays) {
+				foreach ($tasks as $task) {
 			$assignees = $task->users;
 			if ($assignees->isEmpty()) {
 				continue;
@@ -115,7 +116,8 @@ class SendTaskNotifications extends Command
 					}
 				}
 			}
-		}
+				}
+			});
 
 		$this->info('Task notifications processed.');
 	}
