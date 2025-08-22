@@ -36,16 +36,16 @@ class SendBirthdayEmails extends Command
         $today = Carbon::now();
         $threeDaysFromNow = $today->copy()->addDays(3);
 
-        // Get employees whose birthday is today
-        $employees = Employee::whereMonth('birth_date', $today->month)
-                                ->whereDay('birth_date', $today->day)
-                                ->get();
-
-        if ($employees->isEmpty()) {
-            $this->info('No birthdays today.');
-        }
-
-        foreach ($employees as $employee) {
+        // Stream employees whose birthday is today to cap memory
+        $foundToday = false;
+        Employee::whereMonth('birth_date', $today->month)
+            ->whereDay('birth_date', $today->day)
+            ->orderBy('id')
+            ->chunkById(200, function ($employees) use (&$foundToday) {
+                if ($employees->isNotEmpty()) {
+                    $foundToday = true;
+                }
+                foreach ($employees as $employee) {
             // Send birthday wish to employee
             Mail::to($employee->official_email)->queue(new BirthdayWishMail($employee));
             // sleep(2); // Pause for 2 seconds to avoid hitting Mailtrap's rate limit
@@ -62,27 +62,43 @@ class SendBirthdayEmails extends Command
             }
 
             $this->info("Birthday emails sent to {$employee->alias_name}'s interactions.");
+                }
+            });
+
+        if (!$foundToday) {
+            $this->info('No birthdays today.');
         }
 
 
         // Check if any employee's birthday is in 3 days
-        $employeesInThreeDays = Employee::whereMonth('birth_date', $threeDaysFromNow->month)
-                                        ->whereDay('birth_date', $threeDaysFromNow->day)
-                                        ->get();
-
-        if ($employeesInThreeDays->isEmpty()) {
-            $this->info('No birthdays in 3 days.');
-        } else {
-            foreach ($employeesInThreeDays as $employee) {
-                $notifiableUsers = User::with('employee')->whereStatus('Active')->get();
-
-                foreach ($notifiableUsers as $notifiableUser) {
-                    if ($notifiableUser->hasAnyPermission(['User Everything', 'User Update'])) {
-                        Mail::to($notifiableUser->employee->official_email)->queue(new UpcomingBirthdayNotifyMail($employee, $notifiableUser));
-                        $this->info("Birthday notification sent to {$notifiableUser->employee->alias_name} for {$employee->alias_name}.");
-                    }
+        $hasUpcoming = false;
+        Employee::whereMonth('birth_date', $threeDaysFromNow->month)
+            ->whereDay('birth_date', $threeDaysFromNow->day)
+            ->orderBy('id')
+            ->chunkById(200, function ($employeesInThreeDays) use (&$hasUpcoming) {
+                if ($employeesInThreeDays->isNotEmpty()) {
+                    $hasUpcoming = true;
                 }
-            }
+                foreach ($employeesInThreeDays as $employee) {
+                    // Stream notifiable users as well
+                    User::with('employee')
+                        ->whereStatus('Active')
+                        ->orderBy('id')
+                        ->chunkById(500, function ($notifiableUsers) use ($employee) {
+                            foreach ($notifiableUsers as $notifiableUser) {
+                                if ($notifiableUser->hasAnyPermission(['User Everything', 'User Update'])) {
+                                    if ($notifiableUser->employee && $notifiableUser->employee->official_email) {
+                                        Mail::to($notifiableUser->employee->official_email)->queue(new UpcomingBirthdayNotifyMail($employee, $notifiableUser));
+                                        // Log to console for visibility
+                                    }
+                                }
+                            }
+                        });
+                }
+            });
+
+        if (!$hasUpcoming) {
+            $this->info('No birthdays in 3 days.');
         }
     }
 }

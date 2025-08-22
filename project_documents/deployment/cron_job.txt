@@ -4,6 +4,16 @@ To Run Queue Job:
 /usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/queue-worker.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan queue:work --once --tries=3 >> /home/staffi7/app.staff-india.com/storage/logs/queue-cron.log 2>&1
 
 
+To Run Kernel Schedule:
+========================
+
+/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/schedule-run.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan schedule:run >> /home/staffi7/app.staff-india.com/storage/logs/send-task-notifications.log 2>&1
+
+/opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan schedule:run >> /home/staffi7/app.staff-india.com/storage/logs/scheduler.log 2>&1
+
+
+
+
 To Run Task Reminder Notification:
 ===================================
 /usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/send-task-notifications.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan send:task-notifications >> /home/staffi7/app.staff-india.com/storage/logs/send-task-notifications.log 2>&1
