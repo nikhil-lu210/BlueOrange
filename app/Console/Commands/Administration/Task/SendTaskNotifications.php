@@ -36,86 +36,86 @@ class SendTaskNotifications extends Command
 			->orderBy('id')
 			->chunkById(250, function ($tasks) use ($today, $dueSoonDays) {
 				foreach ($tasks as $task) {
-			$assignees = $task->users;
-			if ($assignees->isEmpty()) {
-				continue;
-			}
+                    $assignees = $task->users;
+                    if ($assignees->isEmpty()) {
+                        continue;
+                    }
 
-			$assigneeProgress = $assignees->pluck('pivot.progress');
-			$allCompleted = $assigneeProgress->every(fn ($p) => (int)$p === 100);
+                    $assigneeProgress = $assignees->pluck('pivot.progress');
+                    $allCompleted = $assigneeProgress->every(fn ($p) => (int)$p === 100);
 
-			// 1) All assignees completed => notify creator once
-			if ($allCompleted) {
-				$this->notifyOnce(
-					collect([$task->creator])->filter(),
-					new TaskAllAssigneesCompletedNotification($task),
-					function ($user) use ($task) {
-						if ($user && $user->employee && $user->employee->official_email) {
-							Mail::to($user->employee->official_email)->queue(new AssigneesCompletedTaskMail($task, $user));
-						}
-					},
-					['kind' => 'all_assignees_completed', 'task_id' => $task->id]
-				);
-			}
+                    // 1) All assignees completed => notify creator once
+                    if ($allCompleted) {
+                        $this->notifyOnce(
+                            collect([$task->creator])->filter(),
+                            new TaskAllAssigneesCompletedNotification($task),
+                            function ($user) use ($task) {
+                                if ($user && $user->employee && $user->employee->official_email) {
+                                    Mail::to($user->employee->official_email)->queue(new AssigneesCompletedTaskMail($task, $user));
+                                }
+                            },
+                            ['kind' => 'all_assignees_completed', 'task_id' => $task->id]
+                        );
+                    }
 
-			// Prepare due/overdue windows
-			$deadline = $task->deadline ? Carbon::parse($task->deadline)->startOfDay() : null;
-			$hasIncompleteAssignees = $assigneeProgress->contains(fn ($p) => (int)$p < 100);
+                    // Prepare due/overdue windows
+                    $deadline = $task->deadline ? Carbon::parse($task->deadline)->startOfDay() : null;
+                    $hasIncompleteAssignees = $assigneeProgress->contains(fn ($p) => (int)$p < 100);
 
-			if ($deadline && $hasIncompleteAssignees) {
-				$daysDiff = $today->diffInDays($deadline, false); // negative if overdue
+                    if ($deadline && $hasIncompleteAssignees) {
+                        $daysDiff = $today->diffInDays($deadline, false); // negative if overdue
 
-				// 2) Due Soon (5/3/1 days exactly)
-				if (in_array($daysDiff, $dueSoonDays, true)) {
-					$notifiables = $this->dueTargetUsers($task);
-					$this->notifyOnce(
-						$notifiables,
-						new TaskDueSoonNotification($task, $daysDiff),
-						function ($user) use ($task, $daysDiff) {
-							if ($user && $user->employee && $user->employee->official_email) {
-								Mail::to($user->employee->official_email)->queue(new TaskDueSoonMail($task, $user, $daysDiff));
-							}
-						},
-						['kind' => 'due_soon', 'task_id' => $task->id, 'days_left' => $daysDiff]
-					);
-				}
+                        // 2) Due Soon (5/3/1 days exactly)
+                        if (in_array($daysDiff, $dueSoonDays, true)) {
+                            $notifiables = $this->dueTargetUsers($task);
+                            $this->notifyOnce(
+                                $notifiables,
+                                new TaskDueSoonNotification($task, $daysDiff),
+                                function ($user) use ($task, $daysDiff) {
+                                    if ($user && $user->employee && $user->employee->official_email) {
+                                        Mail::to($user->employee->official_email)->queue(new TaskDueSoonMail($task, $user, $daysDiff));
+                                    }
+                                },
+                                ['kind' => 'due_soon', 'task_id' => $task->id, 'days_left' => $daysDiff]
+                            );
+                        }
 
-				// 3) Overdue (deadline < today)
-				if ($daysDiff < 0) {
-					// Notify creator once
-					$creator = collect([$task->creator])->filter();
-					$this->notifyOnce(
-						$creator,
-						new TaskOverdueNotification($task),
-						function ($user) use ($task) {
-							if ($user && $user->employee && $user->employee->official_email) {
-								Mail::to($user->employee->official_email)->queue(new TaskOverdueMail($task, $user));
-							}
-						},
-						['kind' => 'overdue', 'task_id' => $task->id]
-					);
+                        // 3) Overdue (deadline < today)
+                        if ($daysDiff < 0) {
+                            // Notify creator once
+                            $creator = collect([$task->creator])->filter();
+                            $this->notifyOnce(
+                                $creator,
+                                new TaskOverdueNotification($task),
+                                function ($user) use ($task) {
+                                    if ($user && $user->employee && $user->employee->official_email) {
+                                        Mail::to($user->employee->official_email)->queue(new TaskOverdueMail($task, $user));
+                                    }
+                                },
+                                ['kind' => 'overdue', 'task_id' => $task->id]
+                            );
 
-					// Notify each incomplete assignee's active team leader
-					$incompleteAssignees = $task->users->filter(fn ($u) => (int)$u->pivot->progress < 100);
-					foreach ($incompleteAssignees as $assignee) {
-						$teamLeader = $assignee->active_team_leader;
-						if (!$teamLeader) {
-							continue;
-						}
+                            // Notify each incomplete assignee's active team leader
+                            $incompleteAssignees = $task->users->filter(fn ($u) => (int)$u->pivot->progress < 100);
+                            foreach ($incompleteAssignees as $assignee) {
+                                $teamLeader = $assignee->active_team_leader;
+                                if (!$teamLeader) {
+                                    continue;
+                                }
 
-						$this->notifyOnce(
-							collect([$teamLeader]),
-							new TaskOverdueTeamLeaderNotification($task, $assignee),
-							function ($user) use ($task, $assignee) {
-								if ($user && $user->employee && $user->employee->official_email) {
-									Mail::to($user->employee->official_email)->queue(new TaskOverdueTeamLeaderMail($task, $user, $assignee));
-								}
-							},
-							['kind' => 'overdue_tl', 'task_id' => $task->id, 'assignee_id' => $assignee->id]
-						);
-					}
-				}
-			}
+                                $this->notifyOnce(
+                                    collect([$teamLeader]),
+                                    new TaskOverdueTeamLeaderNotification($task, $assignee),
+                                    function ($user) use ($task, $assignee) {
+                                        if ($user && $user->employee && $user->employee->official_email) {
+                                            Mail::to($user->employee->official_email)->queue(new TaskOverdueTeamLeaderMail($task, $user, $assignee));
+                                        }
+                                    },
+                                    ['kind' => 'overdue_tl', 'task_id' => $task->id, 'assignee_id' => $assignee->id]
+                                );
+                            }
+                        }
+                    }
 				}
 			});
 
