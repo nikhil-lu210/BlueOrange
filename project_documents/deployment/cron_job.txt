@@ -7,7 +7,7 @@ To Run Queue Job:
 To Run Kernel Schedule:
 ========================
 
-/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/schedule-run.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan schedule:run >> /home/staffi7/app.staff-india.com/storage/logs/send-task-notifications.log 2>&1
+/usr/bin/flock -n /home/staffi7/app.staff-india.com/temp_files/schedule-run.lock /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan schedule:run >> /home/staffi7/app.staff-india.com/storage/logs/scheduler.log 2>&1
 
 /opt/cpanel/ea-php82/root/usr/bin/php /home/staffi7/app.staff-india.com/artisan schedule:run >> /home/staffi7/app.staff-india.com/storage/logs/scheduler.log 2>&1
 

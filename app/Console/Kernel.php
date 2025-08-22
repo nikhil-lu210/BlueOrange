@@ -21,19 +21,22 @@ class Kernel extends ConsoleKernel
         $schedule->command('send:task-notifications --no-ansi --quiet')
                 ->dailyAt('02:00')
                 ->timezone(config('app.timezone'))
-                ->withoutOverlapping();
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/send-task-notifications.log'));
 
         // Schedule to send birthday emails daily at 4:00 AM
         $schedule->command('send:birthday-emails --no-ansi --quiet')
                 ->dailyAt('04:00')
                 ->timezone(config('app.timezone'))
-                ->withoutOverlapping();
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/send-birthday-emails.log'));
 
         // Clear logs every week on Friday at 6:00 AM
         $schedule->command('clear:logs --no-ansi --quiet')
                 ->weeklyOn(5, '06:00')
                 ->timezone(config('app.timezone'))
-                ->withoutOverlapping();
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/clear-logs.log'));
     }
 
     /**
