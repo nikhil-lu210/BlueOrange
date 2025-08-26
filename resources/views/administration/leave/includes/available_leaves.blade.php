@@ -1,5 +1,12 @@
 @php
-    $user = $leaveHistory->user;
+    // Handle both original way (with $leaveHistory) and new way (with $summary)
+    if (isset($summary)) {
+        $user = $user ?? $leaveHistory->user;
+        $leaveData = $summary;
+    } else {
+        $user = $leaveHistory->user;
+        $leaveData = $user->available_leaves();
+    }
 @endphp
 <div class="card mb-4">
     <div class="card-body">
@@ -14,15 +21,33 @@
             <tbody>
                 <tr>
                     <th>Earned Leave</th>
-                    <td>{{ show_leave($user->available_leaves()->earned_leave) }}</td>
+                    <td>
+                        @if (isset($summary))
+                            {{ $summary['earned_leave']['available'] }}
+                        @else
+                            {{ show_leave($leaveData->earned_leave) }}
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <th>Sick Leave</th>
-                    <td>{{ show_leave($user->available_leaves()->sick_leave) }}</td>
+                    <td>
+                        @if (isset($summary))
+                            {{ $summary['sick_leave']['available'] }}
+                        @else
+                            {{ show_leave($leaveData->sick_leave) }}
+                        @endif
+                    </td>
                 </tr>
                 <tr>
                     <th>Casual Leave</th>
-                    <td>{{ show_leave($user->available_leaves()->casual_leave) }}</td>
+                    <td>
+                        @if (isset($summary))
+                            {{ $summary['casual_leave']['available'] }}
+                        @else
+                            {{ show_leave($leaveData->casual_leave) }}
+                        @endif
+                    </td>
                 </tr>
             </tbody>
         </table>

@@ -27,14 +27,27 @@ trait LeaveAvailableMutators
     {
         $this->attributes['for_year'] = is_numeric($value) ? $value : Carbon::parse($value)->format('Y');
     }
-    
+
     /**
      * Helper method to convert time (CarbonInterval or string) to hh:mm:ss format
      */
     private function convertToTimeString($value): string
     {
+        // Handle negative values by setting to 00:00:00
+        if (is_numeric($value) && $value < 0) {
+            return '00:00:00';
+        }
+
         // If the value is already a CarbonInterval, format without cascading to avoid reducing large hour counts
         if ($value instanceof CarbonInterval) {
+            $totalSeconds = $value->total('seconds');
+            if ($totalSeconds < 0) {
+                return '00:00:00';
+            }
+            // Handle very small values (less than 1 second) as 00:00:00
+            if ($totalSeconds < 1) {
+                return '00:00:00';
+            }
             return sprintf('%02d:%02d:%02d', $value->hours + ($value->days * 24), $value->minutes, $value->seconds);
         }
 
@@ -43,14 +56,27 @@ trait LeaveAvailableMutators
             return $value;
         }
 
+        // Handle negative time strings (e.g., "-11:00:00")
+        if (preg_match('/^-\d{2,}:\d{2}:\d{2}$/', $value)) {
+            return '00:00:00';
+        }
+
         try {
             // Attempt to parse the value as a standard interval string if not in hh:mm:ss
             $interval = CarbonInterval::fromString($value);
+            $totalSeconds = $interval->total('seconds');
+            if ($totalSeconds < 0) {
+                return '00:00:00';
+            }
             return sprintf('%02d:%02d:%02d', $interval->hours + ($interval->days * 24), $interval->minutes, $interval->seconds);
         } catch (Exception $e) {
-            dd('Error from LeaveAvailableMutators: '. $e->getMessage());
-            // Return original if unprocessable
-            return $value;
+            // Log error instead of dd() to prevent breaking the application
+            \Log::error('LeaveAvailableMutators Error: ' . $e->getMessage(), [
+                'value' => $value,
+                'trace' => $e->getTraceAsString()
+            ]);
+            // Return 00:00:00 for invalid values
+            return '00:00:00';
         }
     }
 }

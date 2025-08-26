@@ -2,81 +2,52 @@
 
 namespace App\Services\Administration\Leave;
 
-use App\Mail\Administration\Leave\LeaveRequestStatusUpdateMail;
-use App\Mail\Administration\Leave\NewLeaveRequestMail;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
-use Illuminate\Http\Request;
 use App\Models\Leave\LeaveHistory;
-use Illuminate\Support\Facades\DB;
 use App\Models\Leave\LeaveAvailable;
-use App\Notifications\Administration\Leave\LeaveRequestUpdateNotification;
+use App\Models\Leave\LeaveAllowed;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Database\Eloquent\Builder;
+use App\Mail\Administration\Leave\NewLeaveRequestMail;
+use App\Mail\Administration\Leave\LeaveRequestStatusUpdateMail;
 use App\Notifications\Administration\Leave\LeaveStoreNotification;
+use App\Notifications\Administration\Leave\LeaveRequestUpdateNotification;
 
 class LeaveHistoryService
 {
     /**
-     * Build the query for retrieving daily breaks.
+     * Get leave history records with filtering.
      *
      * @param Request $request
-     * @param int|null $userId
-     * @return Builder
+     * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function getLeavesQuery($request, int $userId = null): Builder
+    public function getLeaveHistories(Request $request)
     {
         $query = LeaveHistory::with([
-            'user' => function($query) {
-                $query->select('id', 'userid', 'name')
-                      ->with(['media', 'roles']);
-            }
-        ])
-        ->select([
-            'id',
-            'user_id',
-            'date',
-            'total_leave',
-            'type',
-            'status',
-            'created_at'
-        ])
-        ->orderByDesc('date')
-        ->orderBy('created_at');
+            'user.employee',
+            'user.media',
+            'user.roles',
+            'files',
+            'reviewer',
+            'reviewer.employee',
+            'leave_allowed'
+        ]);
 
-        // Apply user ID filter if provided
-        if ($userId) {
-            $query->whereUserId($userId);
+        // Apply user filter if specified
+        if ($request->has('user_id') && !is_null($request->user_id)) {
+            $query->where('user_id', $request->user_id);
         }
 
-        // Apply user ID filter if request user_id provided
-        if ($request->user_id) {
-            $query->whereUserId($request->user_id);
+        // Apply date range filter if specified
+        if ($request->has('date_from') && !is_null($request->date_from)) {
+            $query->where('date', '>=', $request->date_from);
         }
 
-        // If a team leader ID is provided, filter employees under them
-        if ($request->team_leader_id) {
-            $teamLeader = User::find($request->team_leader_id);
-            if ($teamLeader) {
-                $employeeIds = $teamLeader->tl_employees->pluck('id');
-                $query->whereIn('user_id', $employeeIds);
-            }
-        }
-
-        // Handle month/year filtering
-        if ($request->has('leave_month_year') && !is_null($request->leave_month_year)) {
-            $monthYear = Carbon::parse($request->leave_month_year);
-            $query->whereYear('date', $monthYear->year)
-                ->whereMonth('date', $monthYear->month);
-        } else {
-            // Default to current month if no specific filter is applied
-            if (!$request->has('filter_leaves')) {
-                $query->whereBetween('date', [
-                    Carbon::now()->startOfMonth()->format('Y-m-d'),
-                    Carbon::now()->endOfMonth()->format('Y-m-d')
-                ]);
-            }
+        if ($request->has('date_to') && !is_null($request->date_to)) {
+            $query->where('date', '<=', $request->date_to);
         }
 
         // Apply type filter if specified
@@ -140,6 +111,8 @@ class LeaveHistoryService
     }
 
 
+
+
     /**
      * Approve a leave request and update the leave balance.
      *
@@ -155,18 +128,17 @@ class LeaveHistoryService
                 $user = $leaveHistory->user;
                 $forYear = Carbon::parse($leaveHistory->date)->year;
 
-                // Retrieve or create leave_available for the specified year
-                $leaveAvailable = LeaveAvailable::firstOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'for_year' => $forYear
-                    ],
-                    [
-                        'earned_leave' => $leaveHistory->leave_allowed->earned_leave,
-                        'casual_leave' => $leaveHistory->leave_allowed->casual_leave,
-                        'sick_leave' => $leaveHistory->leave_allowed->sick_leave,
-                    ]
-                );
+                // Get the active leave allowed record
+                $activeLeaveAllowed = $this->getActiveLeaveAllowed($user);
+                if (!$activeLeaveAllowed) {
+                    throw new Exception('No active leave allowed record found for the user.');
+                }
+
+                // Get or create leave available record for the year
+                $leaveAvailable = $this->getOrCreateLeaveAvailable($user, $forYear, $activeLeaveAllowed);
+
+                // Validate leave balance before approval
+                $this->validateLeaveBalance($leaveAvailable, $leaveHistory);
 
                 // Calculate the leave taken in seconds
                 $leaveTakenInSeconds = $leaveHistory->total_leave->total('seconds');
@@ -193,6 +165,82 @@ class LeaveHistoryService
             });
         } catch (Exception $e) {
             throw new Exception('Failed to approve leave: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Get the active leave allowed record for a user.
+     *
+     * @param User $user
+     * @return LeaveAllowed|null
+     */
+    private function getActiveLeaveAllowed(User $user): ?LeaveAllowed
+    {
+        return $user->leave_alloweds()
+            ->where('is_active', true)
+            ->first();
+    }
+
+    /**
+     * Get or create leave available record for a user and year.
+     *
+     * @param User $user
+     * @param int $forYear
+     * @param LeaveAllowed $activeLeaveAllowed
+     * @return LeaveAvailable
+     */
+    private function getOrCreateLeaveAvailable(User $user, int $forYear, LeaveAllowed $activeLeaveAllowed): LeaveAvailable
+    {
+        $leaveAvailable = LeaveAvailable::where('user_id', $user->id)
+            ->where('for_year', $forYear)
+            ->first();
+
+        if (!$leaveAvailable) {
+            // Create new leave available record with initial balances from active leave allowed
+            $leaveAvailable = LeaveAvailable::create([
+                'user_id' => $user->id,
+                'for_year' => $forYear,
+                'earned_leave' => $activeLeaveAllowed->earned_leave,
+                'casual_leave' => $activeLeaveAllowed->casual_leave,
+                'sick_leave' => $activeLeaveAllowed->sick_leave,
+            ]);
+        }
+
+        return $leaveAvailable;
+    }
+
+    /**
+     * Validate leave balance before approval.
+     *
+     * @param LeaveAvailable $leaveAvailable
+     * @param LeaveHistory $leaveHistory
+     * @return void
+     * @throws Exception
+     */
+    private function validateLeaveBalance(LeaveAvailable $leaveAvailable, LeaveHistory $leaveHistory): void
+    {
+        $leaveTakenInSeconds = $leaveHistory->total_leave->total('seconds');
+        $currentBalanceInSeconds = 0;
+
+        switch ($leaveHistory->type) {
+            case 'Earned':
+                $currentBalanceInSeconds = $leaveAvailable->earned_leave->total('seconds');
+                break;
+            case 'Casual':
+                $currentBalanceInSeconds = $leaveAvailable->casual_leave->total('seconds');
+                break;
+            case 'Sick':
+                $currentBalanceInSeconds = $leaveAvailable->sick_leave->total('seconds');
+                break;
+            default:
+                throw new Exception('Invalid leave type.');
+        }
+
+        if ($currentBalanceInSeconds < $leaveTakenInSeconds) {
+            $leaveType = strtolower($leaveHistory->type);
+            throw new Exception("Insufficient {$leaveType} leave balance. Available: " .
+                $this->formatLeaveTime($currentBalanceInSeconds) .
+                ", Requested: " . $this->formatLeaveTime($leaveTakenInSeconds));
         }
     }
 
@@ -240,6 +288,31 @@ class LeaveHistoryService
         }
     }
 
+    /**
+     * Reject a leave request.
+     *
+     * @param Request $request
+     * @param LeaveHistory $leaveHistory
+     * @return void
+     */
+    public function reject(Request $request, LeaveHistory $leaveHistory): void
+    {
+        DB::transaction(function () use ($request, $leaveHistory) {
+            // Update leave history rejection status and details
+            $leaveHistory->update([
+                'status' => 'Rejected',
+                'reviewed_by' => auth()->id(),
+                'reviewed_at' => Carbon::now(),
+                'reviewer_note' => $request->reviewer_note,
+            ]);
+
+            // Send Notification to Leave Applier
+            $leaveHistory->user->notify(new LeaveRequestUpdateNotification($leaveHistory, auth()->user()));
+
+            // Send Mail to the Leave Applier by Queue
+            Mail::to($leaveHistory->user->employee->official_email)->queue(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
+        });
+    }
 
     /**
      * Cancel an approved leave request and update the leave balance.
@@ -324,6 +397,77 @@ class LeaveHistoryService
         }
     }
 
+    /**
+     * Sync leave available balances for a user.
+     * This method can be used to recalculate and sync leave balances.
+     *
+     * @param User $user
+     * @param int|null $year
+     * @return void
+     */
+    public function syncLeaveBalances(User $user, int $year = null): void
+    {
+        $year = $year ?: now()->year;
+
+        DB::transaction(function () use ($user, $year) {
+            // Get active leave allowed
+            $activeLeaveAllowed = $this->getActiveLeaveAllowed($user);
+            if (!$activeLeaveAllowed) {
+                throw new Exception('No active leave allowed record found for the user.');
+            }
+
+            // Get or create leave available
+            $leaveAvailable = $this->getOrCreateLeaveAvailable($user, $year, $activeLeaveAllowed);
+
+            // Calculate total leave taken based on leave_allowed_id and year
+            $totalLeaveTaken = $this->calculateTotalLeaveTaken($user, $activeLeaveAllowed->id, $year);
+
+            // Update leave available with correct balances (prevent negative values)
+            $earnedBalance = max(0, $activeLeaveAllowed->earned_leave->total('seconds') - $totalLeaveTaken['earned']);
+            $casualBalance = max(0, $activeLeaveAllowed->casual_leave->total('seconds') - $totalLeaveTaken['casual']);
+            $sickBalance = max(0, $activeLeaveAllowed->sick_leave->total('seconds') - $totalLeaveTaken['sick']);
+
+            $leaveAvailable->earned_leave = $this->formatLeaveTime($earnedBalance);
+            $leaveAvailable->casual_leave = $this->formatLeaveTime($casualBalance);
+            $leaveAvailable->sick_leave = $this->formatLeaveTime($sickBalance);
+
+            $leaveAvailable->save();
+        });
+    }
+
+    /**
+     * Calculate total leave taken for a user based on leave_allowed_id and year.
+     *
+     * @param User $user
+     * @param int $leaveAllowedId
+     * @param int $year
+     * @return array
+     */
+    private function calculateTotalLeaveTaken(User $user, int $leaveAllowedId, int $year): array
+    {
+        $approvedLeaves = $user->leave_histories()
+            ->where('status', 'Approved')
+            ->where('leave_allowed_id', $leaveAllowedId)
+            ->whereYear('date', $year)
+            ->get();
+
+        $totalTaken = [
+            'earned' => 0,
+            'casual' => 0,
+            'sick' => 0
+        ];
+
+        foreach ($approvedLeaves as $leave) {
+            $seconds = $leave->total_leave->total('seconds');
+            $type = strtolower($leave->type);
+
+            if (isset($totalTaken[$type])) {
+                $totalTaken[$type] += $seconds;
+            }
+        }
+
+        return $totalTaken;
+    }
 
     /**
      * Format leave time from seconds to HH:MM:SS.
@@ -333,6 +477,11 @@ class LeaveHistoryService
      */
     private function formatLeaveTime(int $totalSeconds): string
     {
+        // Handle very small values (less than 1 second) as 00:00:00
+        if ($totalSeconds < 1) {
+            return '00:00:00';
+        }
+
         $hours = floor($totalSeconds / 3600);
         $minutes = floor(($totalSeconds % 3600) / 60);
         $seconds = $totalSeconds % 60;
