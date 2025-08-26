@@ -44,10 +44,12 @@ class RecognitionController extends Controller
             'recognizer_id' => auth()->id(),
         ]);
 
-        // Observer will handle congratulation email
-
-        toast('Recognition submitted successfully', 'success');
-        return redirect()->back();
+        // return success JSON
+        return response()->json([
+            'success' => true,
+            'message' => 'Recognition submitted successfully',
+            'data' => $recognition
+        ]);
     }
 
     /**
