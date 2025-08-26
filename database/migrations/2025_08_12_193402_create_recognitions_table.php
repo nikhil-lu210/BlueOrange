@@ -19,7 +19,7 @@ return new class extends Migration
 
             $table->foreignId('user_id')->constrained()->onDelete('cascade')->onUpdate('cascade');
             $table->string('category');
-            $table->mediumInteger('total_mark');
+            $table->integer('total_mark');
             $table->text('comment');
             $table->foreignId('recognizer_id')->constrained('users')->onDelete('cascade');
 
