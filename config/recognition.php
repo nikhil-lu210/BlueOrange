@@ -31,7 +31,7 @@ return [
     */
     'marks' => [
         'min' => 1,
-        'max' => 20,
+        'max' => 5000,
         'step' => 1 // step for slider/dropdown (1 = all integers)
     ],
 ];
