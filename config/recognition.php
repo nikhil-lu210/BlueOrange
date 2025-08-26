@@ -10,6 +10,11 @@ return [
     | You can add/remove categories here without touching the database.
     */
     'categories' => [
+        'Behaviour',
+        'Appreciation',
+        'Leadership',
+        'Loyalty',
+        'Dedication',
         'Teamwork',
         'Innovation',
         'Leadership',
