@@ -127,6 +127,7 @@ class LeaveHistoryService
             DB::transaction(function () use ($request, $leaveHistory) {
                 $user = $leaveHistory->user;
                 $forYear = Carbon::parse($leaveHistory->date)->year;
+                $type = $request->type ?? $leaveHistory->type;
 
                 // Get the active leave allowed record
                 $activeLeaveAllowed = $this->getActiveLeaveAllowed($user);
@@ -138,23 +139,24 @@ class LeaveHistoryService
                 $leaveAvailable = $this->getOrCreateLeaveAvailable($user, $forYear, $activeLeaveAllowed);
 
                 // Validate leave balance before approval
-                $this->validateLeaveBalance($leaveAvailable, $leaveHistory);
+                $this->validateLeaveBalance($leaveAvailable, $leaveHistory, $type);
 
                 // Calculate the leave taken in seconds
                 $leaveTakenInSeconds = $leaveHistory->total_leave->total('seconds');
 
                 // Update leave balance based on leave type
-                $this->updateLeaveBalance($leaveAvailable, $leaveHistory->type, $leaveTakenInSeconds);
+                $this->updateLeaveBalance($leaveAvailable, $type, $leaveTakenInSeconds);
 
                 // Save the updated leave available values
                 $leaveAvailable->save();
 
                 // Update leave history approval status and details
                 $leaveHistory->update([
+                    'type' => $type,
                     'status' => 'Approved',
                     'reviewed_by' => auth()->id(),
                     'reviewed_at' => Carbon::now(),
-                    'is_paid_leave' => $request->input('is_paid_leave') === 'Paid',
+                    'is_paid_leave' => $request->input('is_paid_leave') === 'Paid' || $type === 'Earned',
                 ]);
 
                 // Send Notification to Leave Applier
@@ -217,12 +219,12 @@ class LeaveHistoryService
      * @return void
      * @throws Exception
      */
-    private function validateLeaveBalance(LeaveAvailable $leaveAvailable, LeaveHistory $leaveHistory): void
+    private function validateLeaveBalance(LeaveAvailable $leaveAvailable, LeaveHistory $leaveHistory, $type): void
     {
         $leaveTakenInSeconds = $leaveHistory->total_leave->total('seconds');
         $currentBalanceInSeconds = 0;
 
-        switch ($leaveHistory->type) {
+        switch ($type) {
             case 'Earned':
                 $currentBalanceInSeconds = $leaveAvailable->earned_leave->total('seconds');
                 break;
