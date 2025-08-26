@@ -69,7 +69,7 @@ trait LeaveAllowedMutators
         // Assume $value is already in 'mm-dd' format, so just assign it directly.
         $this->attributes['implemented_to'] = $value;
     }
-    
+
     /**
      * Helper method to convert time (CarbonInterval or string) to hh:mm:ss format
      */
@@ -77,6 +77,11 @@ trait LeaveAllowedMutators
     {
         // If the value is already a CarbonInterval, format without cascading to avoid reducing large hour counts
         if ($value instanceof CarbonInterval) {
+            $totalSeconds = $value->total('seconds');
+            // Handle very small values (less than 1 second) as 00:00:00
+            if ($totalSeconds < 1) {
+                return '00:00:00';
+            }
             return sprintf('%02d:%02d:%02d', $value->hours + ($value->days * 24), $value->minutes, $value->seconds);
         }
 
@@ -88,6 +93,11 @@ trait LeaveAllowedMutators
         try {
             // Attempt to parse the value as a standard interval string if not in hh:mm:ss
             $interval = CarbonInterval::fromString($value);
+            $totalSeconds = $interval->total('seconds');
+            // Handle very small values (less than 1 second) as 00:00:00
+            if ($totalSeconds < 1) {
+                return '00:00:00';
+            }
             return sprintf('%02d:%02d:%02d', $interval->hours + ($interval->days * 24), $interval->minutes, $interval->seconds);
         } catch (Exception $e) {
             // dd('Error from LeaveAllowedMutators: '. $e->getMessage());

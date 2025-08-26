@@ -14,6 +14,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\Administration\Leave\LeaveExport;
 use App\Services\Administration\Leave\LeaveExportService;
 use App\Services\Administration\Leave\LeaveHistoryService;
+use App\Services\Administration\Leave\LeaveValidationService;
 use App\Mail\Administration\Leave\LeaveRequestStatusUpdateMail;
 use App\Http\Requests\Administration\Leave\LeaveApprovalRequest;
 use App\Http\Requests\Administration\Leave\LeaveHistoryStoreRequest;
@@ -22,10 +23,12 @@ use App\Notifications\Administration\Leave\LeaveRequestUpdateNotification;
 class LeaveHistoryController extends Controller
 {
     protected $leaveHistoryService;
+    protected $leaveValidationService;
 
-    public function __construct(LeaveHistoryService $leaveHistoryService)
+    public function __construct(LeaveHistoryService $leaveHistoryService, LeaveValidationService $leaveValidationService)
     {
         $this->leaveHistoryService = $leaveHistoryService;
+        $this->leaveValidationService = $leaveValidationService;
     }
 
     /**
@@ -48,17 +51,8 @@ class LeaveHistoryController extends Controller
             ->select(['id', 'name'])
             ->get();
 
-        // Optimize leaves query with necessary relationships
-        $leaves = $this->leaveHistoryService->getLeavesQuery($request)
-            ->with([
-                'user.employee',
-                'user.media',
-                'user.roles',
-                'files',
-                'reviewer',
-                'reviewer.employee',
-                'leave_allowed'
-            ])
+        // Get leave histories
+        $leaves = $this->leaveHistoryService->getLeaveHistories($request)
             ->whereIn('user_id', $userIds)
             ->get();
 
@@ -70,7 +64,10 @@ class LeaveHistoryController extends Controller
      */
     public function my(Request $request)
     {
-        $leaves = $this->leaveHistoryService->getLeavesQuery($request, auth()->user()->id)->get();
+        // Auto-sync leave balances for the current user and year
+        $this->autoSyncLeaveBalances();
+
+        $leaves = $this->leaveHistoryService->getLeaveHistories($request)->where('user_id', auth()->user()->id)->get();
 
         return view('administration.leave.my', compact(['leaves']));
     }
@@ -80,6 +77,9 @@ class LeaveHistoryController extends Controller
      */
     public function create()
     {
+        // Auto-sync leave balances for the current user and year
+        $this->autoSyncLeaveBalances();
+
         $oldLeaveDaysCount = count(old('leave_days.date', []));
         return view('administration.leave.create', compact('oldLeaveDaysCount'));
     }
@@ -106,6 +106,9 @@ class LeaveHistoryController extends Controller
      */
     public function show(LeaveHistory $leaveHistory)
     {
+        // Auto-sync leave balances for the leave owner and year
+        $this->autoSyncLeaveBalances($leaveHistory->user_id, Carbon::parse($leaveHistory->date)->year);
+
         $leaveHistory->load([
             'user.employee',
             'user.media',
@@ -118,6 +121,8 @@ class LeaveHistoryController extends Controller
 
         return view('administration.leave.show', compact(['leaveHistory']));
     }
+
+
 
     /**
      * Update the specified resource in storage.
@@ -177,6 +182,28 @@ class LeaveHistoryController extends Controller
         return redirect()->back();
     }
 
+
+    /**
+     * Auto-sync leave balances for a user and year.
+     * If not provided, defaults to the authenticated user and current year.
+     */
+    private function autoSyncLeaveBalances(?int $userId = null, ?int $year = null): void
+    {
+        try {
+            $userId = $userId ?? auth()->id();
+            $year   = $year ?? now()->year;
+
+            \Artisan::call('leave:sync-balances', [
+                '--user-id' => $userId,
+                '--year'    => $year,
+            ]);
+
+            toast('Leave Balances Synced Successfully for the year ' . $year . ' for ' . show_employee_data($userId, 'alias_name'), 'success');
+        } catch (\Exception $e) {
+            dd('Failed to auto-sync leave balances. Error: ' . $e->getMessage());
+            toast('Failed to auto-sync leave balances. Error: ' . $e->getMessage(), 'error');
+        }
+    }
 
 
     /**

@@ -54,7 +54,7 @@
                                 Approve
                             </button>
                             <button type="button" data-bs-toggle="modal" data-bs-target="#rejectLeaveModal" class="btn btn-sm btn-danger">
-                                <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                                <span class="tf-icon ti ti-x ti-xs me-1"></span>
                                 Reject
                             </button>
                         </div>
@@ -132,6 +132,8 @@
                 enableTime: true,
                 noCalendar: true,
             });
+
+
         });
     </script>
 
