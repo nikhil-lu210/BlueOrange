@@ -97,12 +97,12 @@
                         <div class="col-md-3 mb-3">
                             <label for="quantity" class="form-label">{{ __('Select Quantity') }} <strong class="text-danger">*</strong></label>
                             <select name="quantity" id="quantity" class="form-select bootstrap-select w-100 @error('quantity') is-invalid @enderror"  data-style="btn-default" required>
-                                <option value="" {{ is_null(request()->quantity) ? 'selected' : '' }}>Select Quantity</option>
-                                <option value="1" {{ request()->quantity == '1' ? 'selected' : '' }}>1</option>
-                                <option value="2" {{ request()->quantity == '2' ? 'selected' : '' }}>2</option>
-                                <option value="3" {{ request()->quantity == '3' ? 'selected' : '' }}>3</option>
-                                <option value="4" {{ request()->quantity == '4' ? 'selected' : '' }}>4</option>
-                                <option value="5" {{ request()->quantity == '5' ? 'selected' : '' }}>5</option>
+                                <option value="" {{ is_null(old('quantity', request()->quantity)) ? 'selected' : '' }}>Select Quantity</option>
+                                <option value="1" {{ old('quantity', request()->quantity) == '1' ? 'selected' : '' }}>1</option>
+                                <option value="2" {{ old('quantity', request()->quantity) == '2' ? 'selected' : '' }}>2</option>
+                                <option value="3" {{ old('quantity', request()->quantity) == '3' ? 'selected' : '' }}>3</option>
+                                <option value="4" {{ old('quantity', request()->quantity) == '4' ? 'selected' : '' }}>4</option>
+                                <option value="5" {{ old('quantity', request()->quantity) == '5' ? 'selected' : '' }}>5</option>
                             </select>
                             @error('quantity')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -153,13 +153,13 @@
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <div class="form-check form-check-primary">
-                                    <input class="form-check-input" type="checkbox" value="1" id="common_files" name="common_files" checked>
+                                    <input class="form-check-input" type="checkbox" value="1" id="common_files" name="common_files" {{ old('common_files', true) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="common_files">Common File(s)</label>
                                 </div>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <div class="form-check form-check-primary">
-                                    <input class="form-check-input" type="checkbox" value="1" id="common_description" name="common_description" checked>
+                                    <input class="form-check-input" type="checkbox" value="1" id="common_description" name="common_description" {{ old('common_description', true) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="common_description">Common Description</label>
                                 </div>
                             </div>
@@ -327,12 +327,12 @@
                         </div>
                         <div class="row">
                             <div class="col-md-8 mb-3">
-                                <label for="unique_number_${itemNumber}" class="form-label">Unique Number</label>
-                                <input type="text" id="unique_number_${itemNumber}" name="items[${itemNumber}][unique_number]" placeholder="Ex: SMMONITOR${String(itemNumber).padStart(4, '0')}" class="form-control" />
+                                <label for="unique_number_${itemNumber}" class="form-label">Unique Number <strong class="text-danger">*</strong></label>
+                                <input type="text" id="unique_number_${itemNumber}" name="items[${itemNumber}][unique_number]" placeholder="Ex: SMMONITOR${String(itemNumber).padStart(4, '0')}" class="form-control" required/>
                             </div>
                             <div class="col-md-4 mb-3">
-                                <label for="price_${itemNumber}" class="form-label">Price</label>
-                                <input type="number" min="0" step="0.01" id="price_${itemNumber}" name="items[${itemNumber}][price]" placeholder="Ex: 12500" class="form-control" />
+                                <label for="price_${itemNumber}" class="form-label">Price <strong class="text-danger">*</strong></label>
+                                <input type="number" min="0" step="0.01" id="price_${itemNumber}" name="items[${itemNumber}][price]" placeholder="Ex: 12500" class="form-control" required/>
                             </div>
                             <div class="col-md-12 mb-3 individual-files-section" style="display: none;">
                                 <label for="files_${itemNumber}" class="form-label">{{ __('Individual Inventory Files') }}</label>
@@ -374,6 +374,82 @@
 
             // Initialize on page load
             generateInventoryItems();
+
+            // Restore old input values if validation failed
+            restoreOldInputValues();
         });
+
+        // Function to restore old input values
+        function restoreOldInputValues() {
+            // Restore category selection
+            @if(old('category_id'))
+                $('#category_id').val('{{ old('category_id') }}').trigger('change');
+            @endif
+
+            // Restore usage purpose selection
+            @if(old('usage_for'))
+                $('#usage_for').val('{{ old('usage_for') }}').trigger('change');
+            @endif
+
+            // Restore inventory items with old values
+            @if(old('items'))
+                var oldItems = @json(old('items'));
+                restoreInventoryItems(oldItems);
+            @endif
+        }
+
+        // Function to restore inventory items with old values
+        function restoreInventoryItems(oldItems) {
+            var container = $('#inventoryItemsContainer');
+            container.empty();
+
+            if (oldItems && Object.keys(oldItems).length > 0) {
+                Object.keys(oldItems).forEach(function(itemIndex) {
+                    var itemData = oldItems[itemIndex];
+                    var itemHtml = createInventoryItemHtmlWithValues(parseInt(itemIndex), itemData);
+                    container.append(itemHtml);
+                });
+                updateInventoryItems();
+            }
+        }
+
+        // Create HTML for inventory item with old values
+        function createInventoryItemHtmlWithValues(itemNumber, itemData) {
+            var uniqueNumberValue = itemData.unique_number || '';
+            var priceValue = itemData.price || '';
+            var descriptionValue = itemData.description || '';
+
+            var itemHtml = `
+                <div class="inventory-item" data-item="${itemNumber}">
+                    <div class="inventory-item-header">
+                        <h6 class="mb-0">
+                            <i class="ti ti-hash me-1"></i>
+                            Inventory ${String(itemNumber).padStart(2, '0')}
+                        </h6>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8 mb-3">
+                            <label for="unique_number_${itemNumber}" class="form-label">Unique Number</label>
+                            <input type="text" id="unique_number_${itemNumber}" name="items[${itemNumber}][unique_number]" value="${uniqueNumberValue}" placeholder="Ex: SMMONITOR${String(itemNumber).padStart(4, '0')}" class="form-control" />
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="price_${itemNumber}" class="form-label">Price</label>
+                            <input type="number" min="0" step="0.01" id="price_${itemNumber}" name="items[${itemNumber}][price]" value="${priceValue}" placeholder="Ex: 12500" class="form-control" />
+                        </div>
+                        <div class="col-md-12 mb-3 individual-files-section" style="display: none;">
+                            <label for="files_${itemNumber}" class="form-label">{{ __('Individual Inventory Files') }}</label>
+                            <input type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" id="files_${itemNumber}" name="items[${itemNumber}][files][]" class="form-control" multiple/>
+                            <small class="text-muted">Individual files for this inventory item</small>
+                        </div>
+                        <div class="col-md-12 mb-3 individual-description-section" style="display: none;">
+                            <label for="description_${itemNumber}" class="form-label">{{ __('Individual Description') }}</label>
+                            <textarea name="items[${itemNumber}][description]" id="description_${itemNumber}" class="form-control" rows="3" placeholder="Ex: This is a description specific to this inventory item">${descriptionValue}</textarea>
+                            <small class="text-muted">Individual description for this inventory item</small>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return itemHtml;
+        }
     </script>
 @endsection

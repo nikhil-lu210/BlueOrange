@@ -2,13 +2,23 @@
 
 namespace App\Http\Controllers\Administration\Inventory;
 
+use Exception;
 use Illuminate\Http\Request;
 use App\Models\Inventory\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\InventoryCategory;
+use App\Http\Requests\Administration\Inventory\InventoryStoreRequest;
+use App\Services\Administration\Inventory\InventoryService;
 
 class InventoryController extends Controller
 {
+    protected $inventoryService;
+
+    public function __construct(InventoryService $inventoryService)
+    {
+        $this->inventoryService = $inventoryService;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -40,9 +50,17 @@ class InventoryController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(InventoryStoreRequest $request)
     {
-        //
+        try {
+            $this->inventoryService->storeInventory($request);
+
+            toast('Inventory items created successfully.', 'success');
+            return redirect()->route('administration.inventory.index');
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
     }
 
     /**
