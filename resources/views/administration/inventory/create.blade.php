@@ -21,11 +21,42 @@
             border-left: 3px solid #7367f0;
             padding-left: 15px;
             margin-bottom: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
         }
 
         .inventory-section h6 {
             font-weight: 600;
             margin-bottom: 15px;
+            color: #7367f0;
+        }
+
+        .common-fields {
+            transition: all 0.3s ease;
+        }
+
+        .common-fields.hidden {
+            display: none;
+        }
+
+        .inventory-item {
+            border: 1px solid #e0e0e0;
+            border-left: 3px solid #7367f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .inventory-item-header {
+            margin-bottom: 15px;
+        }
+
+        .form-check-input:checked {
+            background-color: #7367f0;
+            border-color: #7367f0;
         }
     </style>
 @endsection
@@ -57,7 +88,7 @@
                     @csrf
                     <div class="row">
                         <div class="col-md-9 mb-3">
-                            <label for="name" class="form-label">inventory Name <strong class="text-danger">*</strong></label>
+                            <label for="name" class="form-label">Inventory Name <strong class="text-danger">*</strong></label>
                             <input type="text" id="name" name="name" value="{{ old('name', request()->name) }}" placeholder="Ex: Samsung 22 Inch Monitor" class="form-control @error('name') is-invalid @enderror" />
                             @error('name')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -111,72 +142,49 @@
                         </div>
                     </div>
 
-                    <div class="row mb-3">
+                    <!-- Common Fields Section -->
+                    <div class="row mb-3 common-fields" id="commonFieldsSection">
+                        <div class="col-12">
+                            <h6 class="text-primary mb-3">
+                                <i class="ti ti-settings me-1"></i>
+                                Common Settings
+                            </h6>
+                        </div>
                         <div class="row">
                             <div class="col-md-3 mb-3">
                                 <div class="form-check form-check-primary">
-                                    <input class="form-check-input" type="checkbox" value="" id="common_files" checked>
+                                    <input class="form-check-input" type="checkbox" value="1" id="common_files" name="common_files" checked>
                                     <label class="form-check-label" for="common_files">Common File(s)</label>
                                 </div>
                             </div>
                             <div class="col-md-3 mb-3">
                                 <div class="form-check form-check-primary">
-                                    <input class="form-check-input" type="checkbox" value="" id="common_description" checked>
+                                    <input class="form-check-input" type="checkbox" value="1" id="common_description" name="common_description" checked>
                                     <label class="form-check-label" for="common_description">Common Description</label>
                                 </div>
                             </div>
                         </div>
-                        <div class="mb-3 col-md-12"> {{-- This Will be hidden if common files is unchecked --}}
-                            <label for="files[]" class="form-label">{{ __('Inventory Files') }}</label>
-                            <input type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" id="files[]" name="files[]" value="{{ old('files[]') }}" placeholder="{{ __('Inventory Files') }}" class="form-control @error('files[]') is-invalid @enderror" multiple/>
-                            @error('files[]')
+                        <div class="mb-3 col-md-12" id="commonFilesSection"> {{-- This Will be hidden if common files is unchecked --}}
+                            <label for="common_files_input" class="form-label">{{ __('Common Inventory Files') }}</label>
+                            <input type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" id="common_files_input" name="common_files[]" value="{{ old('common_files[]') }}" placeholder="{{ __('Inventory Files') }}" class="form-control @error('common_files[]') is-invalid @enderror" multiple/>
+                            <small class="text-muted">These files will be applied to all inventory items</small>
+                            @error('common_files[]')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        <div class="mb-3 col-md-12"> {{-- This Will be hidden if common description is unchecked --}}
-                            <label for="description" class="form-label">{{ __('Description') }}</label>
-                            <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="3" placeholder="Ex: This is a description of the inventory">{{ old('description', request()->description) }}</textarea>
-                            @error('description')
+                        <div class="mb-3 col-md-12" id="commonDescriptionSection"> {{-- This Will be hidden if common description is unchecked --}}
+                            <label for="common_description_input" class="form-label">{{ __('Common Description') }}</label>
+                            <textarea name="common_description_input" id="common_description_input" class="form-control @error('common_description_input') is-invalid @enderror" rows="3" placeholder="Ex: This is a common description for all inventory items">{{ old('common_description_input', request()->common_description_input) }}</textarea>
+                            <small class="text-muted">This description will be applied to all inventory items</small>
+                            @error('common_description_input')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                     </div>
 
-                    <div class="row mb-3 inventory-section">  {{-- This will be visible depends on the quantity --}}
-                        <div class="col-12">
-                            <h6 class="text-primary mb-3">
-                                <i class="ti ti-hash me-1"></i>
-                                Inventory 01
-                            </h6>
-                        </div>
-                        <div class="mb-3 col-md-8">
-                            <label for="unique_number" class="form-label">Unique Number</label>
-                            <input type="text" id="unique_number" name="unique_number" value="{{ old('unique_number', request()->unique_number) }}" placeholder="Ex: SMMONITOR0001" class="form-control @error('unique_number') is-invalid @enderror" />
-                            @error('unique_number')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-4">
-                            <label for="price" class="form-label">Price</label>
-                            <input type="number" min="0" step="0.01" id="price" name="price" value="{{ old('price', request()->price) }}" placeholder="Ex: 12500" class="form-control @error('price') is-invalid @enderror" />
-                            @error('price')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-12"> {{-- This Will be hidden if common files is checked --}}
-                            <label for="files[]" class="form-label">{{ __('Inventory Files') }}</label>
-                            <input type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" id="files[]" name="files[]" value="{{ old('files[]') }}" placeholder="{{ __('Inventory Files') }}" class="form-control @error('files[]') is-invalid @enderror" multiple/>
-                            @error('files[]')
-                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-12"> {{-- This Will be hidden if common description is checked --}}
-                            <label for="description" class="form-label">{{ __('Description') }}</label>
-                            <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror" rows="3" placeholder="Ex: This is a description of the inventory">{{ old('description', request()->description) }}</textarea>
-                            @error('description')
-                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
+                    <!-- Dynamic Inventory Items Section -->
+                    <div id="inventoryItemsContainer">
+                        <!-- Inventory items will be generated here dynamically -->
                     </div>
 
                     <!-- Submit Buttons -->
@@ -203,10 +211,10 @@
 @section('custom_script')
     {{--  External Custom Javascript  --}}
     <script>
-        // Select2 with tagging functionality for categories
         $(document).ready(function() {
+            // Initialize Bootstrap Select
             $('.bootstrap-select').each(function() {
-                if (!$(this).data('bs.select')) { // Check if it's already initialized
+                if (!$(this).data('bs.select')) {
                     $(this).selectpicker();
                 }
             });
@@ -214,7 +222,7 @@
             // Initialize Select2 with tagging for categories
             $('#category_id').select2({
                 tags: true,
-                tokenSeparators: [], // Remove space and comma separators
+                tokenSeparators: [],
                 createTag: function (params) {
                     var term = $.trim(params.term);
                     if (term === '') {
@@ -235,7 +243,6 @@
                     return $result;
                 },
                 insertTag: function (data, tag) {
-                    // Only insert if user explicitly selects the tag
                     data.push(tag);
                 }
             });
@@ -243,7 +250,7 @@
             // Initialize Select2 with tagging for purposes
             $('#usage_for').select2({
                 tags: true,
-                tokenSeparators: [], // Remove space and comma separators
+                tokenSeparators: [],
                 createTag: function (params) {
                     var term = $.trim(params.term);
                     if (term === '') {
@@ -264,10 +271,109 @@
                     return $result;
                 },
                 insertTag: function (data, tag) {
-                    // Only insert if user explicitly selects the tag
                     data.push(tag);
                 }
             });
+
+            // Handle quantity change
+            $('#quantity').on('change', function() {
+                generateInventoryItems();
+            });
+
+            // Handle common files checkbox
+            $('#common_files').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#commonFilesSection').show();
+                } else {
+                    $('#commonFilesSection').hide();
+                }
+                updateInventoryItems();
+            });
+
+            // Handle common description checkbox
+            $('#common_description').on('change', function() {
+                if ($(this).is(':checked')) {
+                    $('#commonDescriptionSection').show();
+                } else {
+                    $('#commonDescriptionSection').hide();
+                }
+                updateInventoryItems();
+            });
+
+            // Generate inventory items based on quantity
+            function generateInventoryItems() {
+                var quantity = parseInt($('#quantity').val()) || 0;
+                var container = $('#inventoryItemsContainer');
+                container.empty();
+
+                if (quantity > 0) {
+                    for (var i = 1; i <= quantity; i++) {
+                        var itemHtml = createInventoryItemHtml(i);
+                        container.append(itemHtml);
+                    }
+                    updateInventoryItems();
+                }
+            }
+
+            // Create HTML for a single inventory item
+            function createInventoryItemHtml(itemNumber) {
+                var itemHtml = `
+                    <div class="inventory-item" data-item="${itemNumber}">
+                        <div class="inventory-item-header">
+                            <h6 class="mb-0">
+                                <i class="ti ti-hash me-1"></i>
+                                Inventory ${String(itemNumber).padStart(2, '0')}
+                            </h6>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label for="unique_number_${itemNumber}" class="form-label">Unique Number</label>
+                                <input type="text" id="unique_number_${itemNumber}" name="items[${itemNumber}][unique_number]" placeholder="Ex: SMMONITOR${String(itemNumber).padStart(4, '0')}" class="form-control" />
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="price_${itemNumber}" class="form-label">Price</label>
+                                <input type="number" min="0" step="0.01" id="price_${itemNumber}" name="items[${itemNumber}][price]" placeholder="Ex: 12500" class="form-control" />
+                            </div>
+                            <div class="col-md-12 mb-3 individual-files-section" style="display: none;">
+                                <label for="files_${itemNumber}" class="form-label">{{ __('Individual Inventory Files') }}</label>
+                                <input type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" id="files_${itemNumber}" name="items[${itemNumber}][files][]" class="form-control" multiple/>
+                                <small class="text-muted">Individual files for this inventory item</small>
+                            </div>
+                            <div class="col-md-12 mb-3 individual-description-section" style="display: none;">
+                                <label for="description_${itemNumber}" class="form-label">{{ __('Individual Description') }}</label>
+                                <textarea name="items[${itemNumber}][description]" id="description_${itemNumber}" class="form-control" rows="3" placeholder="Ex: This is a description specific to this inventory item"></textarea>
+                                <small class="text-muted">Individual description for this inventory item</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                return itemHtml;
+            }
+
+            // Update inventory items based on common settings
+            function updateInventoryItems() {
+                var commonFiles = $('#common_files').is(':checked');
+                var commonDescription = $('#common_description').is(':checked');
+
+                $('.individual-files-section').each(function() {
+                    if (commonFiles) {
+                        $(this).hide();
+                    } else {
+                        $(this).show();
+                    }
+                });
+
+                $('.individual-description-section').each(function() {
+                    if (commonDescription) {
+                        $(this).hide();
+                    } else {
+                        $(this).show();
+                    }
+                });
+            }
+
+            // Initialize on page load
+            generateInventoryItems();
         });
     </script>
 @endsection
