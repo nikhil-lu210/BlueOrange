@@ -28,14 +28,12 @@ class InventoryCategory extends Model
 
     protected $casts = [
         'name' => 'string',
-        'type' => 'string',
         'description' => 'string',
         'creator_id' => 'integer',
     ];
 
     protected $fillable = [
         'name',
-        'type',
         'description',
         'creator_id',
     ];

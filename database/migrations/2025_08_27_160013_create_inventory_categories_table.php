@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
 
             $table->string('name')->unique();
-            $table->string('type');
             $table->string('description')->nullable();
 
             $table->foreignId('creator_id')

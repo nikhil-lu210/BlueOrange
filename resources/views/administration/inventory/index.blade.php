@@ -4,7 +4,7 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('All Penalties'))
+@section('page_title', __('All Inventories'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -21,14 +21,14 @@
 @endsection
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All Penalties') }}</b>
+    <b class="text-uppercase">{{ __('All Inventories') }}</b>
 @endsection
 
 @section('breadcrumb')
     <li class="breadcrumb-item">
         <a href="{{ route('administration.dashboard.index') }}">{{ __('Dashboard') }}</a>
     </li>
-    <li class="breadcrumb-item active">{{ __('All Penalties') }}</li>
+    <li class="breadcrumb-item active">{{ __('All Inventories') }}</li>
 @endsection
 
 @section('content')
@@ -36,10 +36,10 @@
 <!-- Basic Bootstrap Table -->
 <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-        <h5 class="mb-0">{{ __('All Penalties') }}</h5>
-        @canany(['Penalty Everything', 'Penalty Create'])
-            <a href="{{ route('administration.penalty.create') }}" class="btn btn-primary btn-sm">
-                <i class="ti ti-plus me-1"></i>{{ __('Add Penalty') }}
+        <h5 class="mb-0">{{ __('All Inventories') }}</h5>
+        @canany(['Inventory Everything', 'Inventory Create'])
+            <a href="{{ route('administration.inventory.create') }}" class="btn btn-primary btn-sm">
+                <i class="ti ti-plus me-1"></i>{{ __('Store Inventory') }}
             </a>
         @endcanany
     </div>
@@ -50,39 +50,39 @@
                 <thead>
                     <tr>
                         <th>{{ __('SL') }}</th>
-                        <th>{{ __('Employee') }}</th>
-                        <th>{{ __('Type') }}</th>
-                        <th>{{ __('Penalty Time') }}</th>
-                        <th>{{ __('Attendance Date') }}</th>
+                        <th>{{ __('Name') }}</th>
+                        <th>{{ __('Category') }}</th>
+                        <th>{{ __('Price') }}</th>
+                        <th>{{ __('Status') }}</th>
                         <th class="text-center">{{ __('Actions') }}</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($penalties as $penalty)
+                    @forelse($inventories as $key => $inventory)
                         <tr>
-                            <td>{{ $loop->iteration }}</td>
+                            <td>#{{ serial($inventories, $key) }}</td>
                             <td>
-                                {!! show_user_name_and_avatar($penalty->user, role: null) !!}
+                                <b class="text-dark">{{ $inventory->name }}</b>
                             </td>
                             <td>
-                                <span class="text-bold text-danger">{{ $penalty->type }}</span>
+                                <span>{{ $inventory->category->name }}</span>
                             </td>
                             <td>
-                                <span class="fw-medium">{{ $penalty->total_time_formatted }}</span>
+                                <span class="fw-medium">{{ $inventory->price }}</span>
                             </td>
                             <td>
-                                <a href="{{ route('administration.attendance.show', ['attendance' => $penalty->attendance]) }}" target="_blank">
-                                    {{ show_date($penalty->attendance->clock_in) }}
-                                </a>
+                                <span class="badge bg-{{ $inventory->status === 'Available' ? 'success' : 'danger' }}">
+                                    {{ $inventory->status }}
+                                </span>
                             </td>
                             <td class="text-center">
-                                @canany(['Penalty Everything', 'Penalty Delete'])
-                                    <a href="{{ route('administration.penalty.destroy', ['penalty' => $penalty]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Penalty?">
+                                @canany(['Inventory Everything', 'Inventory Delete'])
+                                    <a href="{{ route('administration.inventory.destroy', ['inventory' => $inventory]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete inventory?">
                                         <i class="ti ti-trash"></i>
                                     </a>
                                 @endcanany
-                                @canany(['Penalty Everything', 'Penalty Read'])
-                                    <a href="{{ route('administration.penalty.show', $penalty) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                @canany(['Inventory Everything', 'Inventory Read'])
+                                    <a href="{{ route('administration.inventory.show', $inventory) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
                                         <i class="ti ti-info-hexagon"></i>
                                     </a>
                                 @endcanany
@@ -90,7 +90,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center">{{ __('No penalties found') }}</td>
+                            <td colspan="6" class="text-center">{{ __('No Inventories found') }}</td>
                         </tr>
                     @endforelse
                 </tbody>

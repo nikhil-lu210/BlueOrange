@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers\Administration\Inventory;
 
-use App\Http\Controllers\Controller;
-use App\Models\Inventory\Inventory;
 use Illuminate\Http\Request;
+use App\Models\Inventory\Inventory;
+use App\Http\Controllers\Controller;
+use App\Models\Inventory\InventoryCategory;
 
 class InventoryController extends Controller
 {
@@ -21,7 +22,8 @@ class InventoryController extends Controller
      */
     public function index()
     {
-        return view('administration.inventory.index');
+        $inventories = Inventory::with('category')->get();
+        return view('administration.inventory.index', compact('inventories'));
     }
 
     /**
@@ -29,7 +31,10 @@ class InventoryController extends Controller
      */
     public function create()
     {
-        return view('administration.inventory.create');
+        $categories = InventoryCategory::select(['id', 'name'])->get();
+        $purposes = Inventory::query()->distinct()->pluck('usage_for')->toArray();
+
+        return view('administration.inventory.create', compact('categories', 'purposes'));
     }
 
     /**
