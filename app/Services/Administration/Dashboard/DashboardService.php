@@ -363,7 +363,7 @@ class DashboardService {
     /**
      * Get the latest recognition for an employee (for congratulation card).
      */
-    public function getLatestRecognitionForUser(User $user, int $days = 30)
+    public function getLatestRecognitionForUser(User $user, int $days = 15)
     {
         return Recognition::where('user_id', $user->id)
             ->where('created_at', '>=', now()->subDays($days))
