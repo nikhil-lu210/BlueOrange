@@ -77,24 +77,24 @@
 
 @section('content')
 
-<div class="row justify-content-center">
-    <div class="col-md-10">
-        <div class="card">
-            <div class="card-header">
-                <h5 class="mb-0">{{ __('Store New Inventory') }}</h5>
-            </div>
-            <div class="card-body inventory-form">
-                <form action="{{ route('administration.inventory.store') }}" method="POST" enctype="multipart/form-data" id="inventoryForm" autocomplete="off">
-                    @csrf
+<form action="{{ route('administration.inventory.store') }}" method="POST" enctype="multipart/form-data" id="inventoryForm" autocomplete="off">
+    @csrf
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ __('Store New Inventory') }}</h5>
+                </div>
+                <div class="card-body inventory-form">
                     <div class="row">
-                        <div class="col-md-9 mb-3">
+                        <div class="col-md-7 mb-3">
                             <label for="name" class="form-label">Inventory Name <strong class="text-danger">*</strong></label>
                             <input type="text" id="name" name="name" value="{{ old('name', request()->name) }}" placeholder="Ex: Samsung 22 Inch Monitor" class="form-control @error('name') is-invalid @enderror" />
                             @error('name')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        <div class="col-md-3 mb-3">
+                        <div class="col-md-5 mb-3">
                             <label for="quantity" class="form-label">{{ __('Select Quantity') }} <strong class="text-danger">*</strong></label>
                             <select name="quantity" id="quantity" class="form-select bootstrap-select w-100 @error('quantity') is-invalid @enderror"  data-style="btn-default" required>
                                 <option value="" {{ is_null(old('quantity', request()->quantity)) ? 'selected' : '' }}>Select Quantity</option>
@@ -151,13 +151,13 @@
                             </h6>
                         </div>
                         <div class="row">
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <div class="form-check form-check-primary">
                                     <input class="form-check-input" type="checkbox" value="1" id="common_files" name="common_files" {{ old('common_files', true) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="common_files">Common File(s)</label>
                                 </div>
                             </div>
-                            <div class="col-md-3 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <div class="form-check form-check-primary">
                                     <input class="form-check-input" type="checkbox" value="1" id="common_description" name="common_description" {{ old('common_description', true) ? 'checked' : '' }}>
                                     <label class="form-check-label" for="common_description">Common Description</label>
@@ -181,7 +181,17 @@
                             @enderror
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
 
+        <div class="col-md-5 d-none" id="inventoryItemSection">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">{{ __('Inventory Items') }}</h5>
+                </div>
+
+                <div class="card-body">
                     <!-- Dynamic Inventory Items Section -->
                     <div id="inventoryItemsContainer">
                         <!-- Inventory items will be generated here dynamically -->
@@ -193,11 +203,11 @@
                             <i class="ti ti-upload me-1"></i>{{ __('Store Inventory') }}
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</form>
 
 @endsection
 
@@ -306,12 +316,24 @@
                 var container = $('#inventoryItemsContainer');
                 container.empty();
 
+                // Call show/hide logic after generating items
+                showHideInventorySection(quantity);
+
                 if (quantity > 0) {
                     for (var i = 1; i <= quantity; i++) {
                         var itemHtml = createInventoryItemHtml(i);
                         container.append(itemHtml);
                     }
                     updateInventoryItems();
+                }
+            }
+
+            // Show-Hide Inventory Item Section
+            function showHideInventorySection(quantity) {
+                if (quantity > 0) {
+                    $('#inventoryItemSection').removeClass('d-none');
+                } else {
+                    $('#inventoryItemSection').addClass('d-none');
                 }
             }
 
