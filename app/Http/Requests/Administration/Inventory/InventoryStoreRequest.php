@@ -29,7 +29,7 @@ class InventoryStoreRequest extends FormRequest
             'usage_for' => 'required|string|max:255',
             'common_files' => 'nullable',
             'common_description' => 'nullable',
-            'common_files.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120',
+            'common_files.*' => 'nullable|file|mimes:image|max:5120',
             'common_description_input' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
         ];
@@ -39,7 +39,7 @@ class InventoryStoreRequest extends FormRequest
             foreach ($this->input('items') as $index => $item) {
                 $rules["items.{$index}.unique_number"] = 'nullable|string|max:255';
                 $rules["items.{$index}.price"] = 'nullable|numeric|min:0|max:999999.99';
-                $rules["items.{$index}.files.*"] = 'nullable|file|mimes:jpg,jpeg,png,pdf,doc,docx|max:5120';
+                $rules["items.{$index}.files.*"] = 'nullable|file|mimes:image|max:5120';
                 $rules["items.{$index}.description"] = 'nullable|string|max:1000';
             }
         }
@@ -67,7 +67,7 @@ class InventoryStoreRequest extends FormRequest
             'usage_for.required' => 'Usage purpose is required.',
             'usage_for.max' => 'Usage purpose cannot exceed 255 characters.',
             'common_files.*.file' => 'Common files must be valid files.',
-            'common_files.*.mimes' => 'Common files must be jpg, jpeg, png, pdf, doc, or docx files.',
+            'common_files.*.image' => 'Common files must be a valid image (jpg, jpeg, png, gif, bmp, svg, or webp).',
             'common_files.*.max' => 'Common files cannot exceed 5MB.',
             'common_description_input.max' => 'Common description cannot exceed 1000 characters.',
             'items.required' => 'At least one inventory item is required.',

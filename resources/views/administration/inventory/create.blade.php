@@ -166,8 +166,8 @@
                         </div>
                         <div class="mb-3 col-md-12" id="commonFilesSection"> {{-- This Will be hidden if common files is unchecked --}}
                             <label for="common_files_input" class="form-label">{{ __('Common Inventory Files') }}</label>
-                            <input type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" id="common_files_input" name="common_files[]" value="{{ old('common_files[]') }}" placeholder="{{ __('Inventory Files') }}" class="form-control @error('common_files[]') is-invalid @enderror" multiple/>
-                            <small class="text-muted">These files will be applied to all inventory items</small>
+                            <input type="file" accept="image/*" id="common_files_input" name="common_files[]" value="{{ old('common_files[]') }}" placeholder="{{ __('Inventory Files') }}" class="form-control @error('common_files[]') is-invalid @enderror" multiple/>
+                            <small class="text-muted">These files will be applied to all inventory items. Upload <b>Image Files</b> only.</small>
                             @error('common_files[]')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
@@ -358,8 +358,8 @@
                             </div>
                             <div class="col-md-12 mb-3 individual-files-section" style="display: none;">
                                 <label for="files_${itemNumber}" class="form-label">{{ __('Individual Inventory Files') }}</label>
-                                <input type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" id="files_${itemNumber}" name="items[${itemNumber}][files][]" class="form-control" multiple/>
-                                <small class="text-muted">Individual files for this inventory item</small>
+                                <input type="file" accept="image/*" id="files_${itemNumber}" name="items[${itemNumber}][files][]" class="form-control" multiple/>
+                                <small class="text-muted">Individual <b>Image Files</b> for this inventory item</small>
                             </div>
                             <div class="col-md-12 mb-3 individual-description-section" style="display: none;">
                                 <label for="description_${itemNumber}" class="form-label">{{ __('Individual Description') }}</label>
@@ -460,8 +460,8 @@
                         </div>
                         <div class="col-md-12 mb-3 individual-files-section" style="display: none;">
                             <label for="files_${itemNumber}" class="form-label">{{ __('Individual Inventory Files') }}</label>
-                            <input type="file" accept=".jpg,.jpeg,.png,.pdf,.doc,.docx" id="files_${itemNumber}" name="items[${itemNumber}][files][]" class="form-control" multiple/>
-                            <small class="text-muted">Individual files for this inventory item</small>
+                            <input type="file" accept="image/*" id="files_${itemNumber}" name="items[${itemNumber}][files][]" class="form-control" multiple/>
+                            <small class="text-muted">Upload individual <b>Image Files</b> for this inventory item</small>
                         </div>
                         <div class="col-md-12 mb-3 individual-description-section" style="display: none;">
                             <label for="description_${itemNumber}" class="form-label">{{ __('Individual Description') }}</label>
