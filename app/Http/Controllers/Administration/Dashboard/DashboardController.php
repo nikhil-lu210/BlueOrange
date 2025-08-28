@@ -60,7 +60,7 @@ class DashboardController extends Controller
         // Employee Recognition
         $canRecognize = $this->dashboardService->canRecognize($user);
         $autoShowRecognitionModal = $this->dashboardService->shouldAutoShowRecognitionModal($user, 15);
-        $latestRecognition = $this->dashboardService->getLatestRecognitionForUser($user, 30);
+        $latestRecognition = $this->dashboardService->getLatestRecognitionForUser($user, 15);
 
         // Upcoming birthdays in next 30 days
         $upcomingBirthdays = $this->dashboardService->getUpcomingBirthdays(30);
