@@ -12,7 +12,7 @@ use App\Models\Inventory\InventoryCategory;
 class InventoryService
 {
     /**
-     * Store inventory items with files and descriptions
+     * Store multiple inventory items with files and descriptions
      *
      * @param Request $request
      * @return void
@@ -21,42 +21,26 @@ class InventoryService
     public function storeInventory(Request $request): void
     {
         DB::transaction(function () use ($request) {
-            // Handle category creation if it's a new category
-            $categoryId = $this->handleCategoryCreation($request);
-
-            // Get common settings
-            $commonSettings = $this->getCommonSettings($request);
-
-            // Store common files once if needed
-            $commonFilePaths = [];
-            if ($commonSettings['common_files'] && $request->hasFile('common_files')) {
-                $commonFilePaths = $this->storeCommonFilesOnce($request);
-            }
-
-            // Create inventory items based on quantity
-            $items = $request->input('items', []);
-
-            foreach ($items as $itemIndex => $itemData) {
-                $this->createInventoryItem($request, $categoryId, $commonSettings, $itemIndex, $itemData, $commonFilePaths);
-            }
+            $categoryId = $this->resolveCategoryId($request);
+            $formSettings = $this->extractFormSettings($request);
+            $commonFiles = $this->processCommonFilesIfNeeded($request, $formSettings);
+            
+            $this->createInventoryItems($request, $categoryId, $formSettings, $commonFiles);
         });
     }
 
     /**
-     * Handle category creation if it's a new category
+     * Resolve category ID (create new category if needed)
      *
      * @param Request $request
      * @return int
      */
-    private function handleCategoryCreation(Request $request): int
+    private function resolveCategoryId(Request $request): int
     {
         $categoryId = $request->category_id;
 
-        if ($request->has('category_name') && !empty($request->category_name)) {
-            $category = InventoryCategory::create([
-                'name' => $request->category_name,
-                'creator_id' => auth()->id(),
-            ]);
+        if ($this->isNewCategory($request)) {
+            $category = $this->createNewCategory($request);
             $categoryId = $category->id;
         }
 
@@ -64,82 +48,187 @@ class InventoryService
     }
 
     /**
-     * Get common settings from request
+     * Check if request contains a new category
+     *
+     * @param Request $request
+     * @return bool
+     */
+    private function isNewCategory(Request $request): bool
+    {
+        return $request->has('category_name') && !empty($request->category_name);
+    }
+
+    /**
+     * Create a new inventory category
+     *
+     * @param Request $request
+     * @return InventoryCategory
+     */
+    private function createNewCategory(Request $request): InventoryCategory
+    {
+        return InventoryCategory::create([
+            'name' => $request->category_name,
+            'creator_id' => auth()->id(),
+        ]);
+    }
+
+    /**
+     * Extract form settings from request
      *
      * @param Request $request
      * @return array
      */
-    private function getCommonSettings(Request $request): array
+    private function extractFormSettings(Request $request): array
     {
-        // Fix checkbox detection - check if common_files exists in request
-        $commonFiles = $request->has('common_files');
-
-        // Fix: Properly detect common_description checkbox
-        // When checkbox is unchecked, it's not sent in request at all
-        // So if it exists in request, it's checked; if not, it's unchecked
-        $commonDescription = $request->has('common_description');
-
         return [
-            'common_files' => $commonFiles,
-            'common_description' => $commonDescription,
+            'use_common_files' => $request->has('common_files'),
+            'use_common_description' => $request->has('common_description'),
             'common_description_text' => $request->input('common_description_input'),
         ];
     }
 
     /**
-     * Store common files once and return file paths
+     * Process common files if needed and return file data
+     *
+     * @param Request $request
+     * @param array $formSettings
+     * @return array
+     */
+    private function processCommonFilesIfNeeded(Request $request, array $formSettings): array
+    {
+        if (!$formSettings['use_common_files'] || !$request->hasFile('common_files')) {
+            return [];
+        }
+
+        return $this->storeCommonFiles($request);
+    }
+
+    /**
+     * Store common files once and return file metadata
      *
      * @param Request $request
      * @return array
      */
-    private function storeCommonFilesOnce(Request $request): array
+    private function storeCommonFiles(Request $request): array
     {
-        $commonFilePaths = [];
-        $commonFilesArray = $request->file('common_files');
+        $fileMetadata = [];
+        $uploadedFiles = $request->file('common_files');
 
-        if (is_array($commonFilesArray)) {
-            foreach ($commonFilesArray as $file) {
-                if ($file && $file->isValid()) {
-                    try {
-                        // Store file in a common directory
-                        $directory = 'inventory/common_files';
-                        $path = $file->store($directory);
+        if (!is_array($uploadedFiles)) {
+            return $fileMetadata;
+        }
 
-                        $commonFilePaths[] = [
-                            'file_name' => $file->getClientOriginalName(),
-                            'file_path' => $path,
-                            'mime_type' => $file->getMimeType(),
-                            'file_size' => $file->getSize(),
-                            'original_name' => $file->getClientOriginalName(),
-                        ];
-                    } catch (Exception $e) {
-                        throw new Exception('Common file upload error: ' . $e->getMessage());
-                    }
-                }
+        foreach ($uploadedFiles as $file) {
+            if ($this->isValidFile($file)) {
+                $fileMetadata[] = $this->storeSingleFile($file);
             }
         }
 
-        return $commonFilePaths;
+        return $fileMetadata;
     }
 
     /**
-     * Create a single inventory item with files and description
+     * Check if file is valid
+     *
+     * @param mixed $file
+     * @return bool
+     */
+    private function isValidFile($file): bool
+    {
+        return $file && $file->isValid();
+    }
+
+    /**
+     * Store a single file and return its metadata
+     *
+     * @param mixed $file
+     * @return array
+     * @throws Exception
+     */
+    private function storeSingleFile($file): array
+    {
+        try {
+            $directory = 'inventory/common_files';
+            $path = $file->store($directory);
+
+            return [
+                'file_name' => $file->getClientOriginalName(),
+                'file_path' => $path,
+                'mime_type' => $file->getMimeType(),
+                'file_size' => $file->getSize(),
+                'original_name' => $file->getClientOriginalName(),
+            ];
+        } catch (Exception $e) {
+            throw new Exception('File upload error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Create all inventory items
      *
      * @param Request $request
      * @param int $categoryId
-     * @param array $commonSettings
-     * @param int $itemIndex
-     * @param array $itemData
-     * @param array $commonFilePaths
+     * @param array $formSettings
+     * @param array $commonFiles
      * @return void
      */
-    private function createInventoryItem(Request $request, int $categoryId, array $commonSettings, int $itemIndex, array $itemData, array $commonFilePaths = []): void
+    private function createInventoryItems(Request $request, int $categoryId, array $formSettings, array $commonFiles): void
     {
-        // Determine description based on common description setting
-        $description = $this->getItemDescription($commonSettings, $itemData);
+        $items = $request->input('items', []);
 
-        // Create inventory record
-        $inventory = Inventory::create([
+        foreach ($items as $itemIndex => $itemData) {
+            $this->createSingleInventoryItem($request, $categoryId, $formSettings, $itemIndex, $itemData, $commonFiles);
+        }
+    }
+
+    /**
+     * Create a single inventory item
+     *
+     * @param Request $request
+     * @param int $categoryId
+     * @param array $formSettings
+     * @param int $itemIndex
+     * @param array $itemData
+     * @param array $commonFiles
+     * @return void
+     */
+    private function createSingleInventoryItem(Request $request, int $categoryId, array $formSettings, int $itemIndex, array $itemData, array $commonFiles): void
+    {
+        $description = $this->determineItemDescription($formSettings, $itemData);
+        
+        $inventory = $this->createInventoryRecord($request, $categoryId, $itemData, $description);
+        
+        $this->handleItemFiles($inventory, $formSettings, $itemData, $commonFiles);
+    }
+
+    /**
+     * Determine the appropriate description for an inventory item
+     *
+     * @param array $formSettings
+     * @param array $itemData
+     * @return string|null
+     */
+    private function determineItemDescription(array $formSettings, array $itemData): ?string
+    {
+        if ($formSettings['use_common_description']) {
+            return $formSettings['common_description_text'];
+        }
+
+        return $itemData['description'] ?? null;
+    }
+
+    /**
+     * Create inventory database record
+     *
+     * @param Request $request
+     * @param int $categoryId
+     * @param array $itemData
+     * @param string|null $description
+     * @return Inventory
+     */
+    private function createInventoryRecord(Request $request, int $categoryId, array $itemData, ?string $description): Inventory
+    {
+        return Inventory::create([
             'category_id' => $categoryId,
             'creator_id' => auth()->id(),
             'name' => $request->name,
@@ -149,79 +238,50 @@ class InventoryService
             'usage_for' => $request->usage_for,
             'status' => 'Available',
         ]);
-
-        // Handle file uploads
-        $this->handleFileUploads($request, $inventory, $commonSettings, $itemIndex, $itemData, $commonFilePaths);
     }
 
     /**
-     * Get the appropriate description for an inventory item
-     *
-     * @param array $commonSettings
-     * @param array $itemData
-     * @return string|null
-     */
-    private function getItemDescription(array $commonSettings, array $itemData): ?string
-    {
-        if ($commonSettings['common_description']) {
-            return $commonSettings['common_description_text'];
-        }
-
-        // Fix: Return individual description when common description is unchecked
-        $individualDescription = $itemData['description'] ?? null;
-
-        return $individualDescription;
-    }
-
-    /**
-     * Handle file uploads for inventory item
-     *
-     * @param Request $request
-     * @param Inventory $inventory
-     * @param array $commonSettings
-     * @param int $itemIndex
-     * @param array $itemData
-     * @param array $commonFilePaths
-     * @return void
-     */
-    private function handleFileUploads(Request $request, Inventory $inventory, array $commonSettings, int $itemIndex, array $itemData, array $commonFilePaths = []): void
-    {
-        // Handle common files (create file media records with existing file paths)
-        if ($commonSettings['common_files'] && !empty($commonFilePaths)) {
-            $this->createCommonFileRecords($inventory, $commonFilePaths);
-        }
-
-        // Handle individual files
-        if (!$commonSettings['common_files'] && isset($itemData['files']) && is_array($itemData['files'])) {
-            $this->uploadIndividualFiles($itemData['files'], $inventory, 'inventory/' . $inventory->id);
-        }
-    }
-
-    /**
-     * Create file media records for common files (using existing file paths)
+     * Handle file processing for inventory item
      *
      * @param Inventory $inventory
-     * @param array $commonFilePaths
+     * @param array $formSettings
+     * @param array $itemData
+     * @param array $commonFiles
      * @return void
      */
-    private function createCommonFileRecords(Inventory $inventory, array $commonFilePaths): void
+    private function handleItemFiles(Inventory $inventory, array $formSettings, array $itemData, array $commonFiles): void
     {
-        foreach ($commonFilePaths as $fileData) {
-            try {
-                // Create a new file media record with the existing file path
-                $fileMedia = new FileMedia([
-                    'file_name' => $fileData['file_name'],
-                    'file_path' => $fileData['file_path'], // Same path as stored file
-                    'mime_type' => $fileData['mime_type'],
-                    'file_size' => $fileData['file_size'],
-                    'original_name' => $fileData['original_name'],
-                    'note' => 'Common inventory files',
-                ]);
+        if ($formSettings['use_common_files'] && !empty($commonFiles)) {
+            $this->linkCommonFilesToInventory($inventory, $commonFiles);
+        }
 
-                $inventory->files()->save($fileMedia);
-            } catch (Exception $e) {
-                throw new Exception('Common file record creation error: ' . $e->getMessage());
-            }
+        if (!$formSettings['use_common_files'] && $this->hasIndividualFiles($itemData)) {
+            $this->uploadIndividualFiles($itemData['files'], $inventory);
+        }
+    }
+
+    /**
+     * Check if item has individual files
+     *
+     * @param array $itemData
+     * @return bool
+     */
+    private function hasIndividualFiles(array $itemData): bool
+    {
+        return isset($itemData['files']) && is_array($itemData['files']);
+    }
+
+    /**
+     * Link common files to inventory item (create file media records)
+     *
+     * @param Inventory $inventory
+     * @param array $commonFiles
+     * @return void
+     */
+    private function linkCommonFilesToInventory(Inventory $inventory, array $commonFiles): void
+    {
+        foreach ($commonFiles as $fileData) {
+            $this->createFileMediaRecord($inventory, $fileData, 'Common inventory files');
         }
     }
 
@@ -230,19 +290,47 @@ class InventoryService
      *
      * @param array $files
      * @param Inventory $inventory
-     * @param string $directory
      * @return void
      */
-    private function uploadIndividualFiles(array $files, Inventory $inventory, string $directory): void
+    private function uploadIndividualFiles(array $files, Inventory $inventory): void
     {
+        $directory = 'inventory/' . $inventory->id;
+
         foreach ($files as $file) {
-            if ($file && $file->isValid()) {
+            if ($this->isValidFile($file)) {
                 try {
                     store_file_media($file, $inventory, $directory, 'Individual inventory files');
                 } catch (Exception $e) {
                     throw new Exception('Individual file upload error: ' . $e->getMessage());
                 }
             }
+        }
+    }
+
+    /**
+     * Create a file media record
+     *
+     * @param Inventory $inventory
+     * @param array $fileData
+     * @param string $note
+     * @return void
+     * @throws Exception
+     */
+    private function createFileMediaRecord(Inventory $inventory, array $fileData, string $note): void
+    {
+        try {
+            $fileMedia = new FileMedia([
+                'file_name' => $fileData['file_name'],
+                'file_path' => $fileData['file_path'],
+                'mime_type' => $fileData['mime_type'],
+                'file_size' => $fileData['file_size'],
+                'original_name' => $fileData['original_name'],
+                'note' => $note,
+            ]);
+
+            $inventory->files()->save($fileMedia);
+        } catch (Exception $e) {
+            throw new Exception('File media record creation error: ' . $e->getMessage());
         }
     }
 }
