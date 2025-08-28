@@ -1,7 +1,7 @@
 <!-- Default Recognition Prompt -->
 <div class="row mb-4">
     <div class="col-md-12">
-        <div class="card bg-gradient-card border-bottom-primary" id="defaultPrompt">
+        <div class="card border-bottom-primary" id="defaultPrompt">
             <div class="card-body p-4">
                 <div class="d-flex align-items-center justify-content-between">
                     <div class="d-flex align-items-center">
