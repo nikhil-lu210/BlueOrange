@@ -25,7 +25,9 @@ class Inventory extends Model
     // Accessors & Mutators
     use InventoryAccessors, InventoryMutators;
 
-    protected $cascadeDeletes = [];
+    protected $cascadeDeletes = [
+        'files',
+    ];
 
     protected $casts = [
         'office_inventory_code' => 'string',

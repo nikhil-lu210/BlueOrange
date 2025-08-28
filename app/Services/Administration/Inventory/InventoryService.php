@@ -461,19 +461,36 @@ class InventoryService
     public function deleteInventory(Inventory $inventory): void
     {
         DB::transaction(function () use ($inventory) {
-            // Delete associated files from storage
+            // Load files
+            $inventory->load('files');
+
             foreach ($inventory->files as $file) {
                 try {
-                    if (Storage::exists($file->file_path)) {
-                        Storage::delete($file->file_path);
+                    $isCommon = $file->note === 'Common inventory files';
+
+                    // For common files, check if other inventories still use it
+                    if ($isCommon) {
+                        $otherInventoriesUsingFile = $file->inventories()
+                            ->where('inventories.id', '!=', $inventory->id)
+                            ->exists();
+                        if ($otherInventoriesUsingFile) {
+                            continue; // skip deletion
+                        }
                     }
-                } catch (Exception $e) {
-                    // Log error but continue with deletion
-                    \Log::error('Error deleting file: ' . $e->getMessage());
+
+                    // Determine disk
+                    $disk = Storage::disk('public')->exists($file->file_path) ? 'public' : 'local';
+
+                    // Delete file from public disk if exists
+                    if (Storage::disk($disk)->exists($file->file_path)) {
+                        Storage::disk($disk)->delete($file->file_path);
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Error deleting inventory file: ' . $e->getMessage());
                 }
             }
 
-            // Delete the inventory (this will cascade delete file media records)
+            // Delete the inventory (will also delete file_media records via relationship if cascading)
             $inventory->delete();
         });
     }

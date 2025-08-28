@@ -66,17 +66,25 @@
     @csrf
     @method('PUT')
     <div class="row justify-content-center">
-        <div class="col-md-12">
+        <div class="col-md-8">
             <div class="card">
                 <div class="card-header">
                     <h5 class="mb-0">{{ __('Edit Inventory') }}: {{ $inventory->name }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-8 mb-3">
                             <label for="name" class="form-label">Inventory Name <strong class="text-danger">*</strong></label>
                             <input type="text" id="name" name="name" value="{{ old('name', $inventory->name) }}" placeholder="Ex: Samsung 22 Inch Monitor" class="form-control @error('name') is-invalid @enderror" />
                             @error('name')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label for="price" class="form-label">Price</label>
+                            <input type="number" min="0" step="0.01" id="price" name="price" value="{{ old('price', $inventory->price) }}" placeholder="Ex: 12500" class="form-control @error('price') is-invalid @enderror" />
+                            @error('price')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
@@ -98,22 +106,6 @@
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="unique_number" class="form-label">Unique Number</label>
-                            <input type="text" id="unique_number" name="unique_number" value="{{ old('unique_number', $inventory->unique_number) }}" placeholder="Ex: SMMONITOR001" class="form-control @error('unique_number') is-invalid @enderror" />
-                            @error('unique_number')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="price" class="form-label">Price</label>
-                            <input type="number" min="0" step="0.01" id="price" name="price" value="{{ old('price', $inventory->price) }}" placeholder="Ex: 12500" class="form-control @error('price') is-invalid @enderror" />
-                            @error('price')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
                             <label for="usage_for" class="form-label">{{ __('Usage Purpose') }} <strong class="text-danger">*</strong></label>
                             <select name="usage_for" id="usage_for" class="form-select select2-tags @error('usage_for') is-invalid @enderror" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new Purpose" required>
                                 <option value="">{{ __('Select Usage Purpose') }}</option>
@@ -129,7 +121,15 @@
                             @enderror
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-7 mb-3">
+                            <label for="unique_number" class="form-label">Unique Number</label>
+                            <input type="text" id="unique_number" name="unique_number" value="{{ old('unique_number', $inventory->unique_number) }}" placeholder="Ex: SMMONITOR001" class="form-control @error('unique_number') is-invalid @enderror" />
+                            @error('unique_number')
+                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                            @enderror
+                        </div>
+
+                        <div class="col-md-5 mb-3">
                             <label for="status" class="form-label">Status <strong class="text-danger">*</strong></label>
                             <select name="status" id="status" class="form-select bootstrap-select w-100 @error('status') is-invalid @enderror" data-style="btn-default" required>
                                 <option value="" {{ is_null(old('status', $inventory->status)) ? 'selected' : '' }}>Select Status</option>
@@ -155,26 +155,36 @@
                         @if($inventory->files->count() > 0)
                             <div class="col-md-12 mb-3">
                                 <label class="form-label">Existing Files</label>
-                                <div class="row">
-                                    @foreach($inventory->files as $file)
-                                        <div class="col-md-3 mb-2">
-                                            <div class="file-item">
-                                                @if(in_array($file->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']))
-                                                    <img src="{{ file_media_download($file) }}" alt="{{ $file->original_name }}" class="file-preview">
-                                                @else
-                                                    <i class="ti ti-file-download fs-3 text-primary"></i>
-                                                @endif
-                                                <div class="file-info">
-                                                    <div class="file-name">{{ Str::limit($file->original_name, 20) }}</div>
-                                                    <div class="file-size">{{ get_file_media_size($file) }}</div>
-                                                </div>
-                                                <a href="{{ file_media_destroy($file) }}" class="btn btn-sm btn-danger confirm-danger" title="Delete File">
-                                                    <i class="ti ti-trash"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Preview</th>
+                                            <th>File Name</th>
+                                            <th>Size</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($inventory->files as $file)
+                                            <tr>
+                                                <td class="align-middle">
+                                                    @if(in_array($file->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']))
+                                                        <img src="{{ file_media_download($file) }}" alt="{{ $file->original_name }}" class="img-thumbnail" style="max-width: 80px;">
+                                                    @else
+                                                        <i class="ti ti-file-download fs-3 text-primary"></i>
+                                                    @endif
+                                                </td>
+                                                <td class="align-middle">{{ $file->original_name }}</td>
+                                                <td class="align-middle">{{ get_file_media_size($file) }}</td>
+                                                <td class="align-middle">
+                                                    <a href="{{ file_media_destroy($file) }}" class="btn btn-sm btn-danger confirm-danger" title="Delete File">
+                                                        <i class="ti ti-trash"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
                             </div>
                         @endif
 
@@ -190,15 +200,15 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="ti ti-check me-1"></i>
-                                {{ __('Update Inventory') }}
-                            </button>
+                        <div class="col-md-12 d-flex justify-content-end gap-2">
                             <a href="{{ route('administration.inventory.show', ['inventory' => $inventory]) }}" class="btn btn-secondary">
                                 <i class="ti ti-arrow-left me-1"></i>
                                 {{ __('Cancel') }}
                             </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="ti ti-check me-1"></i>
+                                {{ __('Update Inventory') }}
+                            </button>
                         </div>
                     </div>
                 </div>

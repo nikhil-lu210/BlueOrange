@@ -23,14 +23,6 @@ class InventoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function inventoryCategory()
-    {
-        //
-    }
-
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $inventories = Inventory::with('category')->get();

@@ -14,20 +14,10 @@ Route::prefix('inventory')
             Route::get('/all', 'index')->name('index')->can('Inventory Everything');
             Route::get('/create', 'create')->name('create')->can('Inventory Create');
             Route::post('/store', 'store')->name('store')->can('Inventory Create');
-            Route::get('/show/{inventory}', 'show')->name('show')->can('Inventory Read');
-            Route::get('/edit/{inventory}', 'edit')->name('edit')->can('Inventory Update');
+            Route::get('/all/{inventory}/show', 'show')->name('show')->can('Inventory Read');
+            Route::get('/all/{inventory}/edit', 'edit')->name('edit')->can('Inventory Update');
             Route::put('/update/{inventory}', 'update')->name('update')->can('Inventory Update');
             Route::put('/status/update/{inventory}', 'statusUpdate')->name('status.update')->can('Inventory Update');
             Route::get('/destroy/{inventory}', 'destroy')->name('destroy')->can('Inventory Delete');
         });
-
-    // Inventory Category
-    Route::prefix('category')
-    ->name('category.')
-    ->group(function () {
-        Route::controller(InventoryController::class)
-            ->group(function () {
-                Route::get('/all', 'inventoryCategory')->name('index');
-            });
-    });
 });
