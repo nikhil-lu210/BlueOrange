@@ -28,7 +28,7 @@
 
                 <!-- Title Section -->
                 <div class="text-center mb-2">
-                    <h3 class="role-title mb-2">Congratulations Max</h3>
+                    <h3 class="role-title mb-2">Congratulations To Sara</h3>
                     <p class="recognized-by">
                         <span class="fw-normal">Recognised by:</span> 
                         <span class="fw-semibold">Ross</span>
@@ -52,7 +52,7 @@
                     <div class="quote-icon mb-2 text-center">
                         <i class="fas fa-quote-left"></i>
                     </div>
-                    <blockquote class="fs-6 fst-italic text-dark fw-medium text-center mb-3" style="line-height: 1.4;">
+                    <blockquote class="fs-6 fst-italic fw-medium text-center mb-3" style="line-height: 1.4; color:#242121">
                         "You are a fantastic team player who consistently goes above and beyond to support your colleagues and contribute to our collective success."
                     </blockquote>
                     <div class="quote-icon text-center">
