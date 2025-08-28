@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
 
+            $table->string('office_inventory_code')->unique();
+
             $table->foreignId('category_id')
                     ->constrained('inventory_categories')
                     ->onDelete('cascade')

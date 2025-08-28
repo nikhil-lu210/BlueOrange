@@ -5,6 +5,7 @@ namespace App\Services\Administration\Inventory;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use App\Models\FileMedia\FileMedia;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\InventoryCategory;
@@ -24,7 +25,7 @@ class InventoryService
             $categoryId = $this->resolveCategoryId($request);
             $formSettings = $this->extractFormSettings($request);
             $commonFiles = $this->processCommonFilesIfNeeded($request, $formSettings);
-            
+
             $this->createInventoryItems($request, $categoryId, $formSettings, $commonFiles);
         });
     }
@@ -195,9 +196,9 @@ class InventoryService
     private function createSingleInventoryItem(Request $request, int $categoryId, array $formSettings, int $itemIndex, array $itemData, array $commonFiles): void
     {
         $description = $this->determineItemDescription($formSettings, $itemData);
-        
+
         $inventory = $this->createInventoryRecord($request, $categoryId, $itemData, $description);
-        
+
         $this->handleItemFiles($inventory, $formSettings, $itemData, $commonFiles);
     }
 
@@ -332,5 +333,148 @@ class InventoryService
         } catch (Exception $e) {
             throw new Exception('File media record creation error: ' . $e->getMessage());
         }
+    }
+
+    /**
+     * Update a single inventory item
+     *
+     * @param Request $request
+     * @param Inventory $inventory
+     * @return void
+     * @throws Exception
+     */
+    public function updateInventory(Request $request, Inventory $inventory): void
+    {
+        DB::transaction(function () use ($request, $inventory) {
+            $categoryId = $this->resolveCategoryIdForUpdate($request);
+            $usageFor = $this->resolveUsageFor($request);
+
+            $this->updateInventoryRecord($inventory, $request, $categoryId, $usageFor);
+            $this->handleNewFileUploads($request, $inventory);
+        });
+    }
+
+    /**
+     * Resolve category ID for update (create new category if needed)
+     *
+     * @param Request $request
+     * @return int
+     */
+    private function resolveCategoryIdForUpdate(Request $request): int
+    {
+        $categoryId = $request->category_id;
+
+        if ($this->isNewCategory($request)) {
+            $category = $this->createNewCategory($request);
+            $categoryId = $category->id;
+        }
+
+        return $categoryId;
+    }
+
+    /**
+     * Resolve usage purpose (handle new purpose creation)
+     *
+     * @param Request $request
+     * @return string
+     */
+    private function resolveUsageFor(Request $request): string
+    {
+        $usageFor = $request->usage_for;
+
+        // If usage_for starts with 'new:', it's a new purpose
+        if (str_starts_with($usageFor, 'new:')) {
+            return substr($usageFor, 4); // Remove 'new:' prefix
+        }
+
+        return $usageFor;
+    }
+
+    /**
+     * Update inventory database record
+     *
+     * @param Inventory $inventory
+     * @param Request $request
+     * @param int $categoryId
+     * @param string $usageFor
+     * @return void
+     */
+    private function updateInventoryRecord(Inventory $inventory, Request $request, int $categoryId, string $usageFor): void
+    {
+        $inventory->update([
+            'category_id' => $categoryId,
+            'name' => $request->name,
+            'unique_number' => $request->unique_number,
+            'price' => $request->price,
+            'description' => $request->description,
+            'usage_for' => $usageFor,
+            'status' => $request->status,
+        ]);
+    }
+
+    /**
+     * Handle new file uploads for inventory
+     *
+     * @param Request $request
+     * @param Inventory $inventory
+     * @return void
+     */
+    private function handleNewFileUploads(Request $request, Inventory $inventory): void
+    {
+        if ($request->hasFile('files')) {
+            $directory = 'inventory/' . $inventory->id;
+            $uploadedFiles = $request->file('files');
+
+            if (is_array($uploadedFiles)) {
+                foreach ($uploadedFiles as $file) {
+                    if ($this->isValidFile($file)) {
+                        try {
+                            store_file_media($file, $inventory, $directory, 'Inventory files');
+                        } catch (Exception $e) {
+                            throw new Exception('File upload error: ' . $e->getMessage());
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Update inventory status
+     *
+     * @param Inventory $inventory
+     * @param string $status
+     * @return void
+     */
+    public function updateInventoryStatus(Inventory $inventory, string $status): void
+    {
+        $inventory->update(['status' => $status]);
+    }
+
+    /**
+     * Delete inventory and its associated files
+     *
+     * @param Inventory $inventory
+     * @return void
+     * @throws Exception
+     */
+    public function deleteInventory(Inventory $inventory): void
+    {
+        DB::transaction(function () use ($inventory) {
+            // Delete associated files from storage
+            foreach ($inventory->files as $file) {
+                try {
+                    if (Storage::exists($file->file_path)) {
+                        Storage::delete($file->file_path);
+                    }
+                } catch (Exception $e) {
+                    // Log error but continue with deletion
+                    \Log::error('Error deleting file: ' . $e->getMessage());
+                }
+            }
+
+            // Delete the inventory (this will cascade delete file media records)
+            $inventory->delete();
+        });
     }
 }

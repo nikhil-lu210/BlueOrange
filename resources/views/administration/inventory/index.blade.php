@@ -49,9 +49,9 @@
             <table class="table data-table table-bordered">
                 <thead>
                     <tr>
-                        <th>{{ __('SL') }}</th>
+                        <th>{{ __('Office Inventory Code (OIC)') }}</th>
                         <th>{{ __('Name') }}</th>
-                        <th>{{ __('Category') }}</th>
+                        <th>{{ __('Category & Purpose') }}</th>
                         <th>{{ __('Price') }}</th>
                         <th>{{ __('Status') }}</th>
                         <th class="text-center">{{ __('Actions') }}</th>
@@ -60,18 +60,24 @@
                 <tbody>
                     @forelse($inventories as $key => $inventory)
                         <tr>
-                            <td>#{{ serial($inventories, $key) }}</td>
+                            <td>
+                                <span class="fw-medium text-dark">{{ $inventory->oic }}</span>
+                                <br>
+                                <small class="text-muted">{{ $inventory->unique_number }}</small>
+                            </td>
                             <td>
                                 <b class="text-dark">{{ $inventory->name }}</b>
                             </td>
                             <td>
-                                <span>{{ $inventory->category->name }}</span>
+                                <span class="fw-medium">{{ $inventory->category->name }}</span>
+                                <br>
+                                <small class="text-muted">{{ $inventory->usage_for }}</small>
                             </td>
                             <td>
                                 <span class="fw-medium">{{ $inventory->price }}</span>
                             </td>
                             <td>
-                                <span class="badge bg-{{ $inventory->status === 'Available' ? 'success' : 'danger' }}">
+                                <span class="{{ $inventory->status_badge }}">
                                     {{ $inventory->status }}
                                 </span>
                             </td>

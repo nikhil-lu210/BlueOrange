@@ -15,6 +15,9 @@ Route::prefix('inventory')
             Route::get('/create', 'create')->name('create')->can('Inventory Create');
             Route::post('/store', 'store')->name('store')->can('Inventory Create');
             Route::get('/show/{inventory}', 'show')->name('show')->can('Inventory Read');
+            Route::get('/edit/{inventory}', 'edit')->name('edit')->can('Inventory Update');
+            Route::put('/update/{inventory}', 'update')->name('update')->can('Inventory Update');
+            Route::put('/status/update/{inventory}', 'statusUpdate')->name('status.update')->can('Inventory Update');
             Route::get('/destroy/{inventory}', 'destroy')->name('destroy')->can('Inventory Delete');
         });
 

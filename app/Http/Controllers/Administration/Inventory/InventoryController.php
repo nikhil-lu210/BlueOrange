@@ -8,6 +8,7 @@ use App\Models\Inventory\Inventory;
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\InventoryCategory;
 use App\Http\Requests\Administration\Inventory\InventoryStoreRequest;
+use App\Http\Requests\Administration\Inventory\InventoryUpdateRequest;
 use App\Services\Administration\Inventory\InventoryService;
 
 class InventoryController extends Controller
@@ -76,15 +77,46 @@ class InventoryController extends Controller
      */
     public function edit(Inventory $inventory)
     {
-        //
+        $categories = InventoryCategory::select(['id', 'name'])->get();
+        $purposes = Inventory::query()->distinct()->pluck('usage_for')->toArray();
+
+        return view('administration.inventory.edit', compact('inventory', 'categories', 'purposes'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Inventory $inventory)
+    public function update(InventoryUpdateRequest $request, Inventory $inventory)
     {
-        //
+        try {
+            $this->inventoryService->updateInventory($request, $inventory);
+
+            toast('Inventory updated successfully.', 'success');
+            return redirect()->route('administration.inventory.show', ['inventory' => $inventory]);
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back()->withInput();
+        }
+    }
+
+    /**
+     * Update inventory status.
+     */
+    public function statusUpdate(Request $request, Inventory $inventory)
+    {
+        try {
+            $request->validate([
+                'status' => 'required|in:Available,In Use,Out of Service,Damaged'
+            ]);
+
+            $this->inventoryService->updateInventoryStatus($inventory, $request->status);
+
+            toast('Inventory status updated successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
 
     /**
@@ -92,6 +124,14 @@ class InventoryController extends Controller
      */
     public function destroy(Inventory $inventory)
     {
-        //
+        try {
+            $this->inventoryService->deleteInventory($inventory);
+
+            toast('Inventory deleted successfully.', 'success');
+            return redirect()->route('administration.inventory.index');
+        } catch (Exception $e) {
+            alert('Oops! Error.', $e->getMessage(), 'error');
+            return redirect()->back();
+        }
     }
 }

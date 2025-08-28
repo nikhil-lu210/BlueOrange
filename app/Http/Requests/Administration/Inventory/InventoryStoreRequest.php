@@ -29,7 +29,7 @@ class InventoryStoreRequest extends FormRequest
             'usage_for' => 'required|string|max:255',
             'common_files' => 'nullable',
             'common_description' => 'nullable',
-            'common_files.*' => 'nullable|file|mimes:image|max:5120',
+            'common_files.*' => 'nullable|file|mimes:jpg,jpeg,png,gif,bmp,svg,webp|max:5120',
             'common_description_input' => 'nullable|string|max:1000',
             'items' => 'required|array|min:1',
         ];
@@ -39,7 +39,7 @@ class InventoryStoreRequest extends FormRequest
             foreach ($this->input('items') as $index => $item) {
                 $rules["items.{$index}.unique_number"] = 'nullable|string|max:255';
                 $rules["items.{$index}.price"] = 'nullable|numeric|min:0|max:999999.99';
-                $rules["items.{$index}.files.*"] = 'nullable|file|mimes:image|max:5120';
+                $rules["items.{$index}.files.*"] = 'nullable|file|mimes:jpg,jpeg,png,gif,bmp,svg,webp|max:5120';
                 $rules["items.{$index}.description"] = 'nullable|string|max:1000';
             }
         }
