@@ -123,362 +123,362 @@
                 </div>
                 <div class="collapse {{ $hasFilters ? '' : 'show' }}" id="filterCollapse">
                     <div class="card-body">
-                    <!-- Basic User Information -->
-                    <div class="row mb-3 filter-section">
-                        <div class="col-12">
-                            <h6 class="text-primary mb-3">
-                                <i class="ti ti-user me-1"></i>
-                                Basic User Information
-                            </h6>
+                        <!-- Basic User Information -->
+                        <div class="row mb-3 filter-section">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="ti ti-user me-1"></i>
+                                    Basic User Information
+                                </h6>
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="userid" class="form-label">User ID</label>
+                                <input type="text" id="userid" name="userid" value="{{ old('userid', request()->userid) }}" placeholder="Search by User ID" class="form-control @error('userid') is-invalid @enderror" />
+                                @error('userid')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" id="name" name="name" value="{{ old('name', request()->name) }}" placeholder="Search by Name" class="form-control @error('name') is-invalid @enderror" />
+                                @error('name')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" id="email" name="email" value="{{ old('email', request()->email) }}" placeholder="Search by Email" class="form-control @error('email') is-invalid @enderror" />
+                                @error('email')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select name="status" id="status" class="form-select bootstrap-select w-100 @error('status') is-invalid @enderror" data-style="btn-default">
+                                    <option value="">Select Status</option>
+                                    @foreach ($statuses as $statusOption)
+                                        <option value="{{ $statusOption }}" {{ request()->status == $statusOption ? 'selected' : '' }}>
+                                            {{ $statusOption }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('status')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="userid" class="form-label">User ID</label>
-                            <input type="text" id="userid" name="userid" value="{{ old('userid', request()->userid) }}" placeholder="Search by User ID" class="form-control @error('userid') is-invalid @enderror" />
-                            @error('userid')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="name" class="form-label">Name</label>
-                            <input type="text" id="name" name="name" value="{{ old('name', request()->name) }}" placeholder="Search by Name" class="form-control @error('name') is-invalid @enderror" />
-                            @error('name')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" id="email" name="email" value="{{ old('email', request()->email) }}" placeholder="Search by Email" class="form-control @error('email') is-invalid @enderror" />
-                            @error('email')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="status" class="form-label">Status</label>
-                            <select name="status" id="status" class="form-select bootstrap-select w-100 @error('status') is-invalid @enderror" data-style="btn-default">
-                                <option value="">Select Status</option>
-                                @foreach ($statuses as $statusOption)
-                                    <option value="{{ $statusOption }}" {{ request()->status == $statusOption ? 'selected' : '' }}>
-                                        {{ $statusOption }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('status')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <!-- Role & Team Information -->
-                    <div class="row mb-3 filter-section">
-                        <div class="col-12">
-                            <h6 class="text-primary mb-3">
-                                <i class="ti ti-users me-1"></i>
-                                Role & Team Information
-                            </h6>
+                        <!-- Role & Team Information -->
+                        <div class="row mb-3 filter-section">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="ti ti-users me-1"></i>
+                                    Role & Team Information
+                                </h6>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label for="role_id" class="form-label">Role</label>
+                                <select name="role_id" id="role_id" class="select2 form-select @error('role_id') is-invalid @enderror" data-allow-clear="true">
+                                    <option value="">Select Role</option>
+                                    @foreach ($roles as $role)
+                                        <option value="{{ $role->id }}" {{ $role->id == request()->role_id ? 'selected' : '' }}>
+                                            {{ $role->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('role_id')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label for="team_leader_id" class="form-label">Team Leader</label>
+                                <select name="team_leader_id" id="team_leader_id" class="select2 form-select @error('team_leader_id') is-invalid @enderror" data-allow-clear="true">
+                                    <option value="">Select Team Leader</option>
+                                    @foreach ($teamLeaders as $leader)
+                                        <option value="{{ $leader->id }}" {{ $leader->id == request()->team_leader_id ? 'selected' : '' }}>
+                                            {{ get_employee_name($leader) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('team_leader_id')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="role_id" class="form-label">Role</label>
-                            <select name="role_id" id="role_id" class="select2 form-select @error('role_id') is-invalid @enderror" data-allow-clear="true">
-                                <option value="">Select Role</option>
-                                @foreach ($roles as $role)
-                                    <option value="{{ $role->id }}" {{ $role->id == request()->role_id ? 'selected' : '' }}>
-                                        {{ $role->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('role_id')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="team_leader_id" class="form-label">Team Leader</label>
-                            <select name="team_leader_id" id="team_leader_id" class="select2 form-select @error('team_leader_id') is-invalid @enderror" data-allow-clear="true">
-                                <option value="">Select Team Leader</option>
-                                @foreach ($teamLeaders as $leader)
-                                    <option value="{{ $leader->id }}" {{ $leader->id == request()->team_leader_id ? 'selected' : '' }}>
-                                        {{ get_employee_name($leader) }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('team_leader_id')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <!-- Employee Personal Information -->
-                    <div class="row mb-3 filter-section">
-                        <div class="col-12">
-                            <h6 class="text-primary mb-3">
-                                <i class="ti ti-id me-1"></i>
-                                Employee Personal Information
-                            </h6>
+                        <!-- Employee Personal Information -->
+                        <div class="row mb-3 filter-section">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="ti ti-id me-1"></i>
+                                    Employee Personal Information
+                                </h6>
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="alias_name" class="form-label">Alias Name</label>
+                                <input type="text" id="alias_name" name="alias_name" value="{{ old('alias_name', request()->alias_name) }}" placeholder="Search by Alias Name" class="form-control @error('alias_name') is-invalid @enderror" />
+                                @error('alias_name')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="gender" class="form-label">Gender</label>
+                                <select name="gender" id="gender" class="form-select bootstrap-select w-100 @error('gender') is-invalid @enderror" data-style="btn-default">
+                                    <option value="">Select Gender</option>
+                                    @foreach ($genders as $genderOption)
+                                        <option value="{{ $genderOption }}" {{ request()->gender == $genderOption ? 'selected' : '' }}>
+                                            {{ $genderOption }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('gender')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="blood_group" class="form-label">Blood Group</label>
+                                <select name="blood_group" id="blood_group" class="form-select bootstrap-select w-100 @error('blood_group') is-invalid @enderror" data-style="btn-default">
+                                    <option value="">Select Blood Group</option>
+                                    @foreach ($bloodGroups as $bloodGroup)
+                                        @php
+                                            $value = is_object($bloodGroup) ? $bloodGroup->value : $bloodGroup;
+                                        @endphp
+                                        <option value="{{ $value }}" {{ request()->blood_group === $value ? 'selected' : '' }}>
+                                            {{ $value }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('blood_group')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="religion_id" class="form-label">Religion</label>
+                                <select name="religion_id" id="religion_id" class="select2 form-select @error('religion_id') is-invalid @enderror" data-allow-clear="true">
+                                    <option value="">Select Religion</option>
+                                    @foreach ($religions as $religion)
+                                        <option value="{{ $religion->id }}" {{ $religion->id == request()->religion_id ? 'selected' : '' }}>
+                                            {{ $religion->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('religion_id')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="alias_name" class="form-label">Alias Name</label>
-                            <input type="text" id="alias_name" name="alias_name" value="{{ old('alias_name', request()->alias_name) }}" placeholder="Search by Alias Name" class="form-control @error('alias_name') is-invalid @enderror" />
-                            @error('alias_name')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="gender" class="form-label">Gender</label>
-                            <select name="gender" id="gender" class="form-select bootstrap-select w-100 @error('gender') is-invalid @enderror" data-style="btn-default">
-                                <option value="">Select Gender</option>
-                                @foreach ($genders as $genderOption)
-                                    <option value="{{ $genderOption }}" {{ request()->gender == $genderOption ? 'selected' : '' }}>
-                                        {{ $genderOption }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('gender')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="blood_group" class="form-label">Blood Group</label>
-                            <select name="blood_group" id="blood_group" class="form-select bootstrap-select w-100 @error('blood_group') is-invalid @enderror" data-style="btn-default">
-                                <option value="">Select Blood Group</option>
-                                @foreach ($bloodGroups as $bloodGroup)
-                                    @php
-                                        $value = is_object($bloodGroup) ? $bloodGroup->value : $bloodGroup;
-                                    @endphp
-                                    <option value="{{ $value }}" {{ request()->blood_group === $value ? 'selected' : '' }}>
-                                        {{ $value }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('blood_group')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="religion_id" class="form-label">Religion</label>
-                            <select name="religion_id" id="religion_id" class="select2 form-select @error('religion_id') is-invalid @enderror" data-allow-clear="true">
-                                <option value="">Select Religion</option>
-                                @foreach ($religions as $religion)
-                                    <option value="{{ $religion->id }}" {{ $religion->id == request()->religion_id ? 'selected' : '' }}>
-                                        {{ $religion->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('religion_id')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <!-- Date Filters -->
-                    <div class="row mb-3 filter-section">
-                        <div class="col-12">
-                            <h6 class="text-primary mb-3">
-                                <i class="ti ti-calendar me-1"></i>
-                                Date Filters
-                            </h6>
+                        <!-- Date Filters -->
+                        <div class="row mb-3 filter-section">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="ti ti-calendar me-1"></i>
+                                    Date Filters
+                                </h6>
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="joining_date_from" class="form-label">Joining Date From</label>
+                                <input type="text" id="joining_date_from" name="joining_date_from" value="{{ old('joining_date_from', request()->joining_date_from) }}" class="form-control date-picker @error('joining_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                @error('joining_date_from')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="joining_date_to" class="form-label">Joining Date To</label>
+                                <input type="text" id="joining_date_to" name="joining_date_to" value="{{ old('joining_date_to', request()->joining_date_to) }}" class="form-control date-picker @error('joining_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                @error('joining_date_to')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="birth_date_from" class="form-label">Birth Date From</label>
+                                <input type="text" id="birth_date_from" name="birth_date_from" value="{{ old('birth_date_from', request()->birth_date_from) }}" class="form-control date-picker @error('birth_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                @error('birth_date_from')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="birth_date_to" class="form-label">Birth Date To</label>
+                                <input type="text" id="birth_date_to" name="birth_date_to" value="{{ old('birth_date_to', request()->birth_date_to) }}" class="form-control date-picker @error('birth_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                @error('birth_date_to')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="joining_date_from" class="form-label">Joining Date From</label>
-                            <input type="text" id="joining_date_from" name="joining_date_from" value="{{ old('joining_date_from', request()->joining_date_from) }}" class="form-control date-picker @error('joining_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
-                            @error('joining_date_from')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="joining_date_to" class="form-label">Joining Date To</label>
-                            <input type="text" id="joining_date_to" name="joining_date_to" value="{{ old('joining_date_to', request()->joining_date_to) }}" class="form-control date-picker @error('joining_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
-                            @error('joining_date_to')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="birth_date_from" class="form-label">Birth Date From</label>
-                            <input type="text" id="birth_date_from" name="birth_date_from" value="{{ old('birth_date_from', request()->birth_date_from) }}" class="form-control date-picker @error('birth_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
-                            @error('birth_date_from')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="birth_date_to" class="form-label">Birth Date To</label>
-                            <input type="text" id="birth_date_to" name="birth_date_to" value="{{ old('birth_date_to', request()->birth_date_to) }}" class="form-control date-picker @error('birth_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
-                            @error('birth_date_to')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <!-- Academic Information -->
-                    <div class="row mb-3 filter-section">
-                        <div class="col-12">
-                            <h6 class="text-primary mb-3">
-                                <i class="ti ti-school me-1"></i>
-                                Academic Information
-                            </h6>
+                        <!-- Academic Information -->
+                        <div class="row mb-3 filter-section">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="ti ti-school me-1"></i>
+                                    Academic Information
+                                </h6>
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <label for="institute_id" class="form-label">Institute</label>
+                                <select name="institute_id" id="institute_id" class="select2 form-select @error('institute_id') is-invalid @enderror" data-allow-clear="true">
+                                    <option value="">Select Institute</option>
+                                    @foreach ($institutes as $institute)
+                                        <option value="{{ $institute->id }}" {{ $institute->id == request()->institute_id ? 'selected' : '' }}>
+                                            {{ $institute->name }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('institute_id')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-4">
+                                <label for="education_level_id" class="form-label">Education Level</label>
+                                <select name="education_level_id" id="education_level_id" class="select2 form-select @error('education_level_id') is-invalid @enderror" data-allow-clear="true">
+                                    <option value="">Select Education Level</option>
+                                    @foreach ($educationLevels as $educationLevel)
+                                        <option value="{{ $educationLevel->id }}" {{ $educationLevel->id == request()->education_level_id ? 'selected' : '' }}>
+                                            {{ $educationLevel->title }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('education_level_id')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-2">
+                                <label for="passing_year_from" class="form-label">Passing Year From</label>
+                                <input type="number" id="passing_year_from" name="passing_year_from" value="{{ old('passing_year_from', request()->passing_year_from) }}" placeholder="2020" min="1950" max="{{ date('Y') }}" class="form-control @error('passing_year_from') is-invalid @enderror" />
+                                @error('passing_year_from')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-2">
+                                <label for="passing_year_to" class="form-label">Passing Year To</label>
+                                <input type="number" id="passing_year_to" name="passing_year_to" value="{{ old('passing_year_to', request()->passing_year_to) }}" placeholder="2024" min="1950" max="{{ date('Y') }}" class="form-control @error('passing_year_to') is-invalid @enderror" />
+                                @error('passing_year_to')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="mb-3 col-md-4">
-                            <label for="institute_id" class="form-label">Institute</label>
-                            <select name="institute_id" id="institute_id" class="select2 form-select @error('institute_id') is-invalid @enderror" data-allow-clear="true">
-                                <option value="">Select Institute</option>
-                                @foreach ($institutes as $institute)
-                                    <option value="{{ $institute->id }}" {{ $institute->id == request()->institute_id ? 'selected' : '' }}>
-                                        {{ $institute->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('institute_id')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-4">
-                            <label for="education_level_id" class="form-label">Education Level</label>
-                            <select name="education_level_id" id="education_level_id" class="select2 form-select @error('education_level_id') is-invalid @enderror" data-allow-clear="true">
-                                <option value="">Select Education Level</option>
-                                @foreach ($educationLevels as $educationLevel)
-                                    <option value="{{ $educationLevel->id }}" {{ $educationLevel->id == request()->education_level_id ? 'selected' : '' }}>
-                                        {{ $educationLevel->title }}
-                                    </option>
-                                @endforeach
-                            </select>
-                            @error('education_level_id')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-2">
-                            <label for="passing_year_from" class="form-label">Passing Year From</label>
-                            <input type="number" id="passing_year_from" name="passing_year_from" value="{{ old('passing_year_from', request()->passing_year_from) }}" placeholder="2020" min="1950" max="{{ date('Y') }}" class="form-control @error('passing_year_from') is-invalid @enderror" />
-                            @error('passing_year_from')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-2">
-                            <label for="passing_year_to" class="form-label">Passing Year To</label>
-                            <input type="number" id="passing_year_to" name="passing_year_to" value="{{ old('passing_year_to', request()->passing_year_to) }}" placeholder="2024" min="1950" max="{{ date('Y') }}" class="form-control @error('passing_year_to') is-invalid @enderror" />
-                            @error('passing_year_to')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <!-- Contact Information -->
-                    <div class="row mb-3 filter-section">
-                        <div class="col-12">
-                            <h6 class="text-primary mb-3">
-                                <i class="ti ti-phone me-1"></i>
-                                Contact Information
-                            </h6>
+                        <!-- Contact Information -->
+                        <div class="row mb-3 filter-section">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="ti ti-phone me-1"></i>
+                                    Contact Information
+                                </h6>
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="personal_email" class="form-label">Personal Email</label>
+                                <input type="email" id="personal_email" name="personal_email" value="{{ old('personal_email', request()->personal_email) }}" placeholder="Search by Personal Email" class="form-control @error('personal_email') is-invalid @enderror" />
+                                @error('personal_email')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="official_email" class="form-label">Official Email</label>
+                                <input type="email" id="official_email" name="official_email" value="{{ old('official_email', request()->official_email) }}" placeholder="Search by Official Email" class="form-control @error('official_email') is-invalid @enderror" />
+                                @error('official_email')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="personal_contact_no" class="form-label">Personal Contact</label>
+                                <input type="text" id="personal_contact_no" name="personal_contact_no" value="{{ old('personal_contact_no', request()->personal_contact_no) }}" placeholder="Search by Personal Contact" class="form-control @error('personal_contact_no') is-invalid @enderror" />
+                                @error('personal_contact_no')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="official_contact_no" class="form-label">Official Contact</label>
+                                <input type="text" id="official_contact_no" name="official_contact_no" value="{{ old('official_contact_no', request()->official_contact_no) }}" placeholder="Search by Official Contact" class="form-control @error('official_contact_no') is-invalid @enderror" />
+                                @error('official_contact_no')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="personal_email" class="form-label">Personal Email</label>
-                            <input type="email" id="personal_email" name="personal_email" value="{{ old('personal_email', request()->personal_email) }}" placeholder="Search by Personal Email" class="form-control @error('personal_email') is-invalid @enderror" />
-                            @error('personal_email')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="official_email" class="form-label">Official Email</label>
-                            <input type="email" id="official_email" name="official_email" value="{{ old('official_email', request()->official_email) }}" placeholder="Search by Official Email" class="form-control @error('official_email') is-invalid @enderror" />
-                            @error('official_email')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="personal_contact_no" class="form-label">Personal Contact</label>
-                            <input type="text" id="personal_contact_no" name="personal_contact_no" value="{{ old('personal_contact_no', request()->personal_contact_no) }}" placeholder="Search by Personal Contact" class="form-control @error('personal_contact_no') is-invalid @enderror" />
-                            @error('personal_contact_no')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="official_contact_no" class="form-label">Official Contact</label>
-                            <input type="text" id="official_contact_no" name="official_contact_no" value="{{ old('official_contact_no', request()->official_contact_no) }}" placeholder="Search by Official Contact" class="form-control @error('official_contact_no') is-invalid @enderror" />
-                            @error('official_contact_no')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <!-- Shift Information -->
-                    <div class="row mb-3 filter-section">
-                        <div class="col-12">
-                            <h6 class="text-primary mb-3">
-                                <i class="ti ti-clock me-1"></i>
-                                Shift Information
-                            </h6>
+                        <!-- Shift Information -->
+                        <div class="row mb-3 filter-section">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="ti ti-clock me-1"></i>
+                                    Shift Information
+                                </h6>
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label for="start_time" class="form-label">Shift Start Time</label>
+                                <input type="text" id="start_time" name="start_time" value="{{ old('start_time', request()->start_time) }}" placeholder="HH:MM" class="form-control time-picker @error('start_time') is-invalid @enderror" />
+                                @error('start_time')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-6">
+                                <label for="end_time" class="form-label">Shift End Time</label>
+                                <input type="text" id="end_time" name="end_time" value="{{ old('end_time', request()->end_time) }}" placeholder="HH:MM" class="form-control time-picker @error('end_time') is-invalid @enderror" />
+                                @error('end_time')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="start_time" class="form-label">Shift Start Time</label>
-                            <input type="text" id="start_time" name="start_time" value="{{ old('start_time', request()->start_time) }}" placeholder="HH:MM" class="form-control time-picker @error('start_time') is-invalid @enderror" />
-                            @error('start_time')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-6">
-                            <label for="end_time" class="form-label">Shift End Time</label>
-                            <input type="text" id="end_time" name="end_time" value="{{ old('end_time', request()->end_time) }}" placeholder="HH:MM" class="form-control time-picker @error('end_time') is-invalid @enderror" />
-                            @error('end_time')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <!-- System Date Filters -->
-                    <div class="row mb-3 filter-section">
-                        <div class="col-12">
-                            <h6 class="text-primary mb-3">
-                                <i class="ti ti-database me-1"></i>
-                                System Date Filters
-                            </h6>
+                        <!-- System Date Filters -->
+                        <div class="row mb-3 filter-section">
+                            <div class="col-12">
+                                <h6 class="text-primary mb-3">
+                                    <i class="ti ti-database me-1"></i>
+                                    System Date Filters
+                                </h6>
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="created_from" class="form-label">Created From</label>
+                                <input type="text" id="created_from" name="created_from" value="{{ old('created_from', request()->created_from) }}" class="form-control date-picker @error('created_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                @error('created_from')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="created_to" class="form-label">Created To</label>
+                                <input type="text" id="created_to" name="created_to" value="{{ old('created_to', request()->created_to) }}" class="form-control date-picker @error('created_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                @error('created_to')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="updated_from" class="form-label">Updated From</label>
+                                <input type="text" id="updated_from" name="updated_from" value="{{ old('updated_from', request()->updated_from) }}" class="form-control date-picker @error('updated_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                @error('updated_from')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+                            <div class="mb-3 col-md-3">
+                                <label for="updated_to" class="form-label">Updated To</label>
+                                <input type="text" id="updated_to" name="updated_to" value="{{ old('updated_to', request()->updated_to) }}" class="form-control date-picker @error('updated_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                @error('updated_to')
+                                    <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
                         </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="created_from" class="form-label">Created From</label>
-                            <input type="text" id="created_from" name="created_from" value="{{ old('created_from', request()->created_from) }}" class="form-control date-picker @error('created_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
-                            @error('created_from')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="created_to" class="form-label">Created To</label>
-                            <input type="text" id="created_to" name="created_to" value="{{ old('created_to', request()->created_to) }}" class="form-control date-picker @error('created_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
-                            @error('created_to')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="updated_from" class="form-label">Updated From</label>
-                            <input type="text" id="updated_from" name="updated_from" value="{{ old('updated_from', request()->updated_from) }}" class="form-control date-picker @error('updated_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
-                            @error('updated_from')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                        <div class="mb-3 col-md-3">
-                            <label for="updated_to" class="form-label">Updated To</label>
-                            <input type="text" id="updated_to" name="updated_to" value="{{ old('updated_to', request()->updated_to) }}" class="form-control date-picker @error('updated_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
-                            @error('updated_to')
-                                <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
-                    </div>
 
-                    <!-- Action Buttons -->
-                    <div class="row">
-                        <div class="col-md-12 text-end">
-                            @php
-                                $hasFilters = collect(request()->all())->filter(function($value, $key) {
-                                    return !empty($value) && $key !== '_token';
-                                })->isNotEmpty();
-                            @endphp
+                        <!-- Action Buttons -->
+                        <div class="row">
+                            <div class="col-md-12 text-end">
+                                @php
+                                    $hasFilters = collect(request()->all())->filter(function($value, $key) {
+                                        return !empty($value) && $key !== '_token';
+                                    })->isNotEmpty();
+                                @endphp
 
-                            @if ($hasFilters)
-                                <a href="{{ route('administration.settings.user.advance_filter.index') }}" class="btn btn-danger me-2">
-                                    <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
-                                    Reset All Filters
-                                </a>
-                            @endif
-                            <button type="submit" class="btn btn-primary">
-                                <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                                Apply Filters
-                            </button>
+                                @if ($hasFilters)
+                                    <a href="{{ route('administration.settings.user.advance_filter.index') }}" class="btn btn-danger me-2">
+                                        <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
+                                        Reset All Filters
+                                    </a>
+                                @endif
+                                <button type="submit" class="btn btn-primary">
+                                    <span class="tf-icon ti ti-filter ti-xs me-1"></span>
+                                    Apply Filters
+                                </button>
+                            </div>
                         </div>
-                    </div>
                     </div> <!-- End collapse -->
                 </div>
             </div>

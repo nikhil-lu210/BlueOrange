@@ -49,6 +49,8 @@
 
         @include('layouts.administration.partials.menus.vault')
 
+        @include('layouts.administration.partials.menus.inventory')
+
         <!-- Settings -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">{{ __('Settings') }}</span>
