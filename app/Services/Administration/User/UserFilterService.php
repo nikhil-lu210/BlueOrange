@@ -104,12 +104,35 @@ class UserFilterService
     public function hasAnyFilters(Request $request): bool
     {
         $filterFields = [
-            'userid', 'name', 'email', 'status', 'team_leader_id', 'role_id',
-            'alias_name', 'joining_date_from', 'joining_date_to', 'birth_date_from', 'birth_date_to',
-            'gender', 'blood_group', 'religion_id', 'institute_id', 'education_level_id',
-            'passing_year_from', 'passing_year_to', 'start_time', 'end_time',
-            'created_from', 'created_to', 'updated_from', 'updated_to',
-            'personal_email', 'official_email', 'personal_contact_no', 'official_contact_no'
+            'userid',
+            'name',
+            'email',
+            'status',
+            'team_leader_id',
+            'role_id',
+            'alias_name',
+            'joining_date_from',
+            'joining_date_to',
+            'birth_date_from',
+            'birth_date_to',
+            'birthday_month',
+            'gender',
+            'blood_group',
+            'religion_id',
+            'institute_id',
+            'education_level_id',
+            'passing_year_from',
+            'passing_year_to',
+            'start_time',
+            'end_time',
+            'created_from',
+            'created_to',
+            'updated_from',
+            'updated_to',
+            'personal_email',
+            'official_email',
+            'personal_contact_no',
+            'official_contact_no'
         ];
 
         foreach ($filterFields as $field) {
@@ -211,6 +234,15 @@ class UserFilterService
 
             if ($request->filled('birth_date_to')) {
                 $employeeQuery->whereDate('birth_date', '<=', $request->birth_date_to);
+            }
+
+            // Birthday month filter
+            if ($request->filled('birthday_month')) {
+                // Convert month name (e.g. "October") to number (10)
+                $monthNumber = date('n', strtotime($request->birthday_month));
+                if ($monthNumber) {
+                    $employeeQuery->whereMonth('birth_date', $monthNumber);
+                }
             }
 
             // Gender filter
