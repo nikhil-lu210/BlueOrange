@@ -78,4 +78,7 @@ Route::prefix('')
 
             // recognition
             include_once 'recognition/recognition.php';
+
+            // inventory
+            include_once 'inventory/inventory.php';
         });

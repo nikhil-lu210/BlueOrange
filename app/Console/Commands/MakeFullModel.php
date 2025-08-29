@@ -35,6 +35,13 @@ class MakeFullModel extends Command
         $tableName = Str::plural(Str::snake($name)); // Converts "Ticket" to "tickets"
         $this->call('make:migration', ['name' => "create_{$tableName}_table"]);
 
+        // Create Observer
+        $this->call('make:observer', [
+            'name' => "Administration/{$name}/{$name}Observer",
+            '--model' => "{$name}/{$name}",
+        ]);
+
+
         $this->info("Full model structure for {$name} created successfully!");
     }
 
@@ -51,7 +58,10 @@ class MakeFullModel extends Command
         use App\Models\\{$name}\Accessors\\{$name}Accessors;
         use App\Models\\{$name}\Relations\\{$name}Relations;
         use Illuminate\Database\Eloquent\Factories\HasFactory;
+        use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+        use App\Observers\Administration\\{$name}\\{$name}Observer;
 
+        #[ObservedBy([{$name}Observer::class])]
         class {$name} extends Model
         {
             use HasFactory, SoftDeletes;
