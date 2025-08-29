@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\FileMedia\FileMedia;
 use App\Models\Inventory\Inventory;
 use App\Models\Inventory\InventoryCategory;
+use Spatie\Permission\Models\Role;
 
 class InventoryService
 {
@@ -493,5 +494,90 @@ class InventoryService
             // Delete the inventory (will also delete file_media records via relationship if cascading)
             $inventory->delete();
         });
+    }
+
+    /**
+     * Get filtered inventory query with relationships
+     *
+     * @param Request $request
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function getFilteredInventoryQuery(Request $request)
+    {
+        $query = Inventory::with(['category', 'creator.employee'])
+            ->orderByDesc('created_at');
+
+        $this->applyFilters($query, $request);
+
+        return $query;
+    }
+
+    /**
+     * Get categories for filter dropdown
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getCategoriesForFilter()
+    {
+        return InventoryCategory::select(['id', 'name'])->get();
+    }
+
+    /**
+     * Get unique usage purposes for filter dropdown
+     *
+     * @return array
+     */
+    public function getPurposesForFilter(): array
+    {
+        return Inventory::query()->distinct()->pluck('usage_for')->filter()->toArray();
+    }
+
+    /**
+     * Get roles with users who have Inventory Create permission
+     *
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    public function getRolesWithInventoryCreators()
+    {
+        return Role::select(['id', 'name'])
+            ->with([
+                'users' => function ($user) {
+                    $user->with(['employee'])->permission('Inventory Create')
+                        ->select(['id', 'name'])
+                        ->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active');
+                }
+            ])
+            ->whereHas('users', function ($user) {
+                $user->permission('Inventory Create');
+            })
+            ->distinct()
+            ->get();
+    }
+
+    /**
+     * Apply filters to inventory query
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param Request $request
+     * @return void
+     */
+    private function applyFilters($query, Request $request): void
+    {
+        if ($request->has('category_id') && !is_null($request->category_id)) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        if ($request->has('usage_for') && !is_null($request->usage_for)) {
+            $query->where('usage_for', $request->usage_for);
+        }
+
+        if ($request->has('status') && !is_null($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('creator_id') && !is_null($request->creator_id)) {
+            $query->where('creator_id', $request->creator_id);
+        }
     }
 }
