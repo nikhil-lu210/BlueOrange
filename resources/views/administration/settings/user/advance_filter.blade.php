@@ -75,6 +75,11 @@
     .btn-link:focus {
         box-shadow: none;
     }
+
+    .input-group-text {
+        border-right: none !important;
+        border-left: none !important;
+    }
     </style>
 @endsection
 
@@ -276,32 +281,43 @@
                                     Date Filters
                                 </h6>
                             </div>
-                            <div class="mb-3 col-md-3">
-                                <label for="joining_date_from" class="form-label">Joining Date From</label>
-                                <input type="text" id="joining_date_from" name="joining_date_from" value="{{ old('joining_date_from', request()->joining_date_from) }}" class="form-control date-picker @error('joining_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                            <div class="mb-3 col-md-5">
+                                <label for="joining_date_from" class="form-label">Joining Date Range</label>
+                                <div class="input-group">
+                                    <input type="text" id="joining_date_from" name="joining_date_from" value="{{ old('joining_date_from', request()->joining_date_from) }}" class="form-control date-picker @error('joining_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                    <span class="input-group-text">to</span>
+                                    <input type="text" id="joining_date_to" name="joining_date_to" value="{{ old('joining_date_to', request()->joining_date_to) }}" class="form-control date-picker @error('joining_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                </div>
+
                                 @error('joining_date_from')
                                     <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                                 @enderror
-                            </div>
-                            <div class="mb-3 col-md-3">
-                                <label for="joining_date_to" class="form-label">Joining Date To</label>
-                                <input type="text" id="joining_date_to" name="joining_date_to" value="{{ old('joining_date_to', request()->joining_date_to) }}" class="form-control date-picker @error('joining_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                                 @error('joining_date_to')
                                     <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                                 @enderror
                             </div>
-                            <div class="mb-3 col-md-3">
-                                <label for="birth_date_from" class="form-label">Birth Date From</label>
-                                <input type="text" id="birth_date_from" name="birth_date_from" value="{{ old('birth_date_from', request()->birth_date_from) }}" class="form-control date-picker @error('birth_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+
+                            <div class="mb-3 col-md-5">
+                                <label for="birth_date_from" class="form-label">Birth Date Range</label>
+                                <div class="input-group">
+                                    <input type="text" id="birth_date_from" name="birth_date_from" value="{{ old('birth_date_from', request()->birth_date_from) }}" class="form-control date-picker @error('birth_date_from') is-invalid @enderror" placeholder="YYYY-MM-DD" />
+                                    <span class="input-group-text">to</span>
+                                    <input type="text" id="birth_date_to" name="birth_date_to" value="{{ old('birth_date_to', request()->birth_date_to) }}" class="form-control date-picker @error('birth_date_to') is-invalid @enderror"placeholder="YYYY-MM-DD" />
+                                </div>
+
                                 @error('birth_date_from')
                                     <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                                 @enderror
-                            </div>
-                            <div class="mb-3 col-md-3">
-                                <label for="birth_date_to" class="form-label">Birth Date To</label>
-                                <input type="text" id="birth_date_to" name="birth_date_to" value="{{ old('birth_date_to', request()->birth_date_to) }}" class="form-control date-picker @error('birth_date_to') is-invalid @enderror" placeholder="YYYY-MM-DD" />
                                 @error('birth_date_to')
                                     <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
+                                @enderror
+                            </div>
+
+                            <div class="mb-3 col-md-2">
+                                <label class="form-label">{{ __('Birthday Month') }}</label>
+                                <input type="text" name="birthday_month" value="{{ old('birthday_month', request()->birthday_month) }}" class="form-control month-picker" placeholder="MM" tabindex="-1"/>
+                                @error('birthday_month')
+                                    <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
@@ -684,6 +700,14 @@
         $(document).ready(function() {
             $('.date-picker').datepicker({
                 format: 'yyyy-mm-dd',
+                todayHighlight: true,
+                autoclose: true,
+                orientation: 'auto right'
+            });
+
+            $('.month-picker').datepicker({
+                format: 'MM',         // Display format to show numeric month (01-12)
+                minViewMode: 'months',     // Only allow month selection
                 todayHighlight: true,
                 autoclose: true,
                 orientation: 'auto right'
