@@ -23,10 +23,17 @@ class InventoryController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $inventories = Inventory::with('category')->get();
-        return view('administration.inventory.index', compact('inventories'));
+        // Get filter data from service
+        $categories = $this->inventoryService->getCategoriesForFilter();
+        $purposes = $this->inventoryService->getPurposesForFilter();
+        $roles = $this->inventoryService->getRolesWithInventoryCreators();
+
+        // Get filtered inventories from service
+        $inventories = $this->inventoryService->getFilteredInventoryQuery($request)->get();
+
+        return view('administration.inventory.index', compact('inventories', 'categories', 'purposes', 'roles'));
     }
 
     /**
