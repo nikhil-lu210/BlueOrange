@@ -10,6 +10,8 @@ use App\Models\Inventory\InventoryCategory;
 use App\Http\Requests\Administration\Inventory\InventoryStoreRequest;
 use App\Http\Requests\Administration\Inventory\InventoryUpdateRequest;
 use App\Services\Administration\Inventory\InventoryService;
+use App\Exports\Administration\Inventory\InventoryExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class InventoryController extends Controller
 {
@@ -133,4 +135,24 @@ class InventoryController extends Controller
             return redirect()->back();
         }
     }
+
+    /**
+     * Export inventories to Excel/CSV
+     */
+    public function export(Request $request)
+    {
+        try {
+            // Get filtered inventories from service
+            $inventories = $this->inventoryService->getFilteredInventoryQuery($request)->get();
+
+            $fileName = 'inventories_' . now()->format('Y-m-d_H-i-s') . '.xlsx';
+
+            return Excel::download(new InventoryExport($inventories), $fileName);
+
+        } catch (Exception $e) {
+            alert('Export Failed', 'An error occurred during export: ' . $e->getMessage(), 'error');
+            return redirect()->back();
+        }
+    }
+
 }

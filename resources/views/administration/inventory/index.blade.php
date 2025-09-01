@@ -32,9 +32,7 @@
 @endsection
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">
-        <a href="{{ route('administration.dashboard.index') }}">{{ __('Dashboard') }}</a>
-    </li>
+    <li class="breadcrumb-item">{{ __('Inventory') }}</li>
     <li class="breadcrumb-item active">{{ __('All Inventories') }}</li>
 @endsection
 
@@ -51,9 +49,19 @@
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">{{ __('All Inventories') }}</h5>
                 @canany(['Inventory Everything', 'Inventory Create'])
-                    <a href="{{ route('administration.inventory.create') }}" class="btn btn-primary btn-sm">
-                        <i class="ti ti-plus me-1"></i>{{ __('Store Inventory') }}
-                    </a>
+                    <div class="d-flex gap-2">
+                        @if ($inventories->count() > 0)
+                            <a href="{{ route('administration.inventory.export', [
+                                'category_id' => request('category_id'),
+                                'usage_for' => request('usage_for'),
+                                'status' => request('status'),
+                                'creator_id' => request('creator_id')
+                            ]) }}" target="_blank" class="btn btn-sm btn-dark">
+                                <span class="tf-icon ti ti-download me-1"></span>
+                                {{ __('Download') }}
+                            </a>
+                        @endif
+                    </div>
                 @endcanany
             </div>
 
@@ -62,6 +70,7 @@
                     <table class="table data-table table-bordered">
                         <thead>
                             <tr>
+                                <th>#Sl.</th>
                                 <th>{{ __('Office Inventory Code (OIC)') }}</th>
                                 <th>{{ __('Name') }}</th>
                                 <th>{{ __('Category & Purpose') }}</th>
@@ -73,6 +82,7 @@
                         <tbody>
                             @forelse($inventories as $key => $inventory)
                                 <tr>
+                                    <td>#{{ serial($inventories, $key) }}</td>
                                     <td>
                                         <span class="fw-medium text-dark">{{ $inventory->oic }}</span>
                                         <br>
@@ -120,6 +130,8 @@
     </div>
 </div>
 <!-- End Row -->
+
+
 
 @endsection
 

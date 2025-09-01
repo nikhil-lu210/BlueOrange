@@ -16,6 +16,11 @@
                     <a href="{{ route('administration.inventory.create') }}" class="menu-link">{{ __('Store Inventory') }}</a>
                 </li>
             @endcanany
+            @canany(['Inventory Everything', 'Inventory Create'])
+                <li class="menu-item {{ request()->is('inventory/import*') ? 'active' : '' }}">
+                    <a href="{{ route('administration.inventory.import.index') }}" class="menu-link">{{ __('Import Inventory') }}</a>
+                </li>
+            @endcanany
         </ul>
     </li>
 @endcanany
