@@ -574,6 +574,8 @@ class InventoryService
 
         if ($request->has('status') && !is_null($request->status)) {
             $query->where('status', $request->status);
+        } else {
+            $query->where('status', 'Available');
         }
 
         if ($request->has('creator_id') && !is_null($request->creator_id)) {
