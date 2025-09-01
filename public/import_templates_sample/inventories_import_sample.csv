@@ -1,0 +1,10 @@
+category,name,unique_number,price,description,usage_for,status,quantity
+"SSD Hard Drive","Samsung 256gb",,3000,,"Server Room Inventory",Available,1
+"Monitor","Dell 1908wfpt",MNT-1,5000,"Dell 1908wfpt","Server Room Inventory",Available,2
+"Desktop HDD","Toshiba 1tb Desktop HDD",,3000,"Toshiba MGO3A200 1TB Desktop HDD","Server Room Inventory",Available,1
+"VGA Cable","VGA Cable",,300,"5 VGA Cables","Server Room Inventory",Available,5
+"Power Cable","Power cable",,200,"5 power cable","Server Room Inventory",Available,5
+"Laptop","HP 2710p","LP-21,35,12",10000,"LP-03 - DDR2, Slot 2, 2+4=6GB ram, Intel Core 2 Duo, 1.20GHz, 80GB hdd, 14.0"" display","Existing Used Items",Available,4
+"Switch","3 Com Superstack3 3C16593B","SW-1,5,10",3000,"24 port, Layer 2","Existing Used Items",Available,3
+"UPS","Power Plus (1) UPS problem","UPS-3,6",2500,"650 VA ","Existing Used Items",Available,2
+"Vacuum Cleaner","Vacuum Cleaner ",,1500,"A 12 volt adapter is needed to make it work.","Store Room Inventory",Damaged,1

@@ -51,11 +51,12 @@
 @endsection
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">
-        <a href="{{ route('administration.dashboard.index') }}">{{ __('Dashboard') }}</a>
-    </li>
+    <li class="breadcrumb-item">{{ __('Inventory') }}</li>
     <li class="breadcrumb-item">
         <a href="{{ route('administration.inventory.index') }}">{{ __('All Inventories') }}</a>
+    </li>
+    <li class="breadcrumb-item">
+        <a href="{{ route('administration.inventory.show', ['inventory' => $inventory]) }}">{{ __('Inventory Details') }}</a>
     </li>
     <li class="breadcrumb-item active">{{ __('Edit Inventory') }}</li>
 @endsection
