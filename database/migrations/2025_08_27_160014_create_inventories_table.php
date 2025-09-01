@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('unique_number')->nullable();
             $table->float('price');
-            $table->string('description')->nullable();
+            $table->text('description')->nullable();
             $table->string('usage_for')->nullable();
             $table->enum('status', ['Available', 'In Use', 'Out of Service', 'Damaged'])->default('Available');
 
