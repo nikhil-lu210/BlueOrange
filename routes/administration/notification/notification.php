@@ -12,6 +12,7 @@ Route::controller(NotificationController::class)->prefix('notification')->name('
 
     Route::get('/mark-as-read-and-redirect/{notification_id}', 'markAsReadAndRedirect')->name('mark_as_read_and_redirect');
     Route::get('/mark-as-read/{notification_id}', 'markAsRead')->name('mark_as_read');
+    Route::get('/mark-recognize-as-read', 'markRecognizeAsRead')->name('mark_recognize_as_read');  
     Route::get('/mark-all-as-read', 'markAllAsRead')->name('mark_all_as_read');
 
     Route::get('/delete/{notification_id}', 'destroy')->name('destroy');
