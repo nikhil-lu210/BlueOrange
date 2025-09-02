@@ -1,6 +1,115 @@
 
 /* Employee Recognition Modal Styles - slider flow */
+/* Recognition Carousel Container */
+.recognition-carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
 
+.recognition-slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+}
+
+.recognition-slide {
+    flex: 0 0 100%;
+    min-height: 500px;
+}
+
+/* Carousel Controls */
+.carousel-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.carousel-btn {
+    background: linear-gradient(135deg, #8e84f2, #b2acf6);
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(142, 132, 242, 0.4);
+}
+
+.carousel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Carousel Indicators */
+.carousel-indicators {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(142, 132, 242, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator.active {
+    background: #8e84f2;
+    transform: scale(1.2);
+}
+
+/* Progress Counter */
+.progress-counter {
+    background: rgba(142, 132, 242, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: #8e84f2;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Auto-play Controls */
+.autoplay-controls {
+    position: absolute;
+    top: 15px;
+    right: 60px;
+    z-index: 25;
+}
+
+.autoplay-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(142, 132, 242, 0.3);
+    border-radius: 25px;
+    padding: 0.4rem 0.8rem;
+    color: #8e84f2;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoplay-btn:hover {
+    background: rgba(142, 132, 242, 0.1);
+}
+
+.autoplay-btn.playing {
+    background: #8e84f2;
+    color: white;
+}
 .recognize_modal_form_body {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 15px;
@@ -474,7 +583,6 @@ button[disabled]:hover {
     perspective: 1000px;
     width: 100%;
     height: 200px;
-    margin-top: -10%;
     margin-bottom: 1rem;
     position: relative;
 }
@@ -486,6 +594,10 @@ button[disabled]:hover {
     transform-style: preserve-3d;
     transition: transform 0.8s ease-in-out;
     animation: flipAnimation 0.8s ease-in-out 2s forwards;
+}
+
+.flip-card.animate {
+    animation: flipAnimation 0.8s ease-in-out 1s forwards;
 }
 
 @keyframes flipAnimation {
@@ -660,7 +772,6 @@ button[disabled]:hover {
     border-left: 4px solid #8e84f2;
     margin: 1rem 0;
     position: relative;
-    overflow: hidden;
     cursor: pointer;
     transition: all 0.4s ease;
 }

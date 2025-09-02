@@ -55,39 +55,7 @@ function createConfetti() {
     }, 5000);
 }
 
-// Modal event handlers
-
-document
-    .getElementById('recognizeCongratsModal')
-    .addEventListener('show.bs.modal', function () {
-        const flipCard = this.querySelector('.flip-card');
-
-        // Reset flip animation
-        flipCard.style.animation = 'none';
-        flipCard.offsetHeight; // Trigger reflow
-        flipCard.style.animation = 'flipAnimation 0.5s ease-in-out 1s forwards';
-
-        // Start confetti after a short delay
-        setTimeout(() => {
-            createConfetti();
-        }, 300);
-    });
-
-// Reset card position when modal is closed
-
-document
-    .getElementById('recognizeCongratsModal')
-    .addEventListener('hidden.bs.modal', function () {
-        const flipCard = this.querySelector('.flip-card');
-        const confettiContainer = document.getElementById('confettiContainer');
-
-        // Reset flip card
-        flipCard.style.animation = 'none';
-        flipCard.style.transform = 'rotateY(0deg)';
-
-        // Clear any remaining confetti
-        confettiContainer.innerHTML = '';
-    });
+// Modal event handlers will be managed by MultiRecognitionCarousel class
 
 // External Custom Javascript
 
@@ -504,5 +472,182 @@ if (document.querySelector('.birthday-wish-container')) {
     document.addEventListener('DOMContentLoaded', function () {
         document.getElementById('userNextBtn')?.classList.add('opacity-50');
         document.getElementById('categoryNextBtn')?.classList.add('opacity-50');
+    });
+})();
+
+// Multi-User Recognition Carousel Logic
+(function () {
+    class MultiRecognitionCarousel {
+        constructor() {
+            this.currentSlide = 0;
+            this.autoPlayInterval = null;
+            this.isAutoPlaying = false;
+            this.slideShowDuration = 3000; // 3 seconds per slide
+
+            this.initializeElements();
+            if (!this.slidesContainer) return;
+            this.totalSlides = this.slidesContainer.children.length;
+            this.setupEventListeners();
+            this.generateIndicators();
+            this.updateDisplay();
+        }
+
+        initializeElements() {
+            this.modal = document.getElementById('recognizeCongratsModal');
+            this.slidesContainer = document.getElementById('recognitionSlides');
+            this.prevBtn = document.getElementById('prevBtn');
+            this.nextBtn = document.getElementById('nextBtn');
+            this.indicators = document.getElementById('indicators');
+            this.progressCounter = document.getElementById('progressCounter');
+            this.confettiContainer = document.getElementById('confettiContainer');
+
+            // Fix avatar clipping: hide horizontally (for slider) but allow vertical overflow
+            const carousel = this.modal?.querySelector('.recognition-carousel');
+            if (carousel) {
+                carousel.style.overflowX = 'hidden';
+                carousel.style.overflowY = 'visible';
+                carousel.style.position = 'relative';
+                carousel.style.width = '100%';
+            }
+        }
+
+        setupEventListeners() {
+            this.prevBtn?.addEventListener('click', () => this.previousSlide());
+            this.nextBtn?.addEventListener('click', () => this.nextSlide());
+
+            this.modal.addEventListener('show.bs.modal', () => this.onModalShow());
+            this.modal.addEventListener('hidden.bs.modal', () => this.onModalHide());
+        }
+
+        generateIndicators() {
+            if (!this.indicators) return;
+            this.indicators.innerHTML = '';
+            for (let i = 0; i < this.totalSlides; i++) {
+                const indicator = document.createElement('div');
+                indicator.classList.add('indicator');
+                if (i === 0) indicator.classList.add('active');
+                indicator.addEventListener('click', () => this.goToSlide(i));
+                this.indicators.appendChild(indicator);
+            }
+        }
+
+        updateDisplay() {
+            // Update slide position
+            const translateX = -this.currentSlide * 100;
+            this.slidesContainer.style.transform = `translateX(${translateX}%)`;
+
+            // Update indicators
+            const indicatorElements = this.indicators?.querySelectorAll('.indicator') || [];
+            indicatorElements.forEach((indicator, index) => {
+                indicator.classList.toggle('active', index === this.currentSlide);
+            });
+
+            // Update progress counter
+            if (this.progressCounter) {
+                this.progressCounter.textContent = `${this.currentSlide + 1} of ${this.totalSlides}`;
+            }
+
+            // Update navigation buttons
+            if (this.prevBtn) this.prevBtn.disabled = this.currentSlide === 0;
+            if (this.nextBtn) this.nextBtn.disabled = this.currentSlide === this.totalSlides - 1;
+
+            // Reset and animate current slide
+            this.resetCurrentSlideAnimation();
+
+            // Trigger confetti for each slide
+            setTimeout(() => {
+                if (typeof createConfetti === 'function') {
+                    createConfetti();
+                }
+            }, 300);
+        }
+
+        goToSlide(index) {
+            this.currentSlide = index;
+            this.updateDisplay();
+        }
+
+        nextSlide() {
+            if (this.currentSlide < this.totalSlides - 1) {
+                this.currentSlide++;
+                this.updateDisplay();
+            } else if (this.isAutoPlaying) {
+                // Loop back to first slide in autoplay
+                this.currentSlide = 0;
+                this.updateDisplay();
+            }
+        }
+
+        previousSlide() {
+            if (this.currentSlide > 0) {
+                this.currentSlide--;
+                this.updateDisplay();
+            }
+        }
+
+        toggleAutoPlay() {
+            if (this.isAutoPlaying) {
+                this.stopAutoPlay();
+            } else {
+                this.startAutoPlay();
+            }
+        }
+
+        startAutoPlay() {
+            this.isAutoPlaying = true;
+            
+            this.autoPlayInterval = setInterval(() => this.nextSlide(), this.slideShowDuration);
+        }
+
+        stopAutoPlay() {
+            this.isAutoPlaying = false;
+            
+            if (this.autoPlayInterval) {
+                clearInterval(this.autoPlayInterval);
+                this.autoPlayInterval = null;
+            }
+        }
+
+        resetCurrentSlideAnimation() {
+            const currentSlideElement = this.slidesContainer.children[this.currentSlide];
+            const flipCard = currentSlideElement?.querySelector('.flip-card');
+            if (!flipCard) return;
+
+            // Reset flip animation using a dedicated class
+            flipCard.classList.remove('animate');
+            flipCard.style.transform = 'rotateY(0deg)';
+            // Force reflow to restart animation
+            void flipCard.offsetWidth;
+            setTimeout(() => {
+                flipCard.classList.add('animate');
+            }, 1000);
+        }
+
+        onModalShow() {
+            this.currentSlide = 0;
+            this.updateDisplay();
+            // Ensure overflow settings in case stylesheets override them
+            const carousel = this.modal?.querySelector('.recognition-carousel');
+            if (carousel) {
+                carousel.style.overflowX = 'hidden';
+                carousel.style.overflowY = 'visible';
+            }
+            // Start autoplay automatically
+            this.startAutoPlay();
+        }
+
+        onModalHide() {
+            this.stopAutoPlay();
+            if (this.confettiContainer) this.confettiContainer.innerHTML = '';
+            this.currentSlide = 0;
+        }
+    }
+
+    // Initialize when the page loads if the multi-user carousel exists
+    document.addEventListener('DOMContentLoaded', () => {
+        const hasMultiCarousel = document.querySelector('#recognizeCongratsModal .recognition-slides');
+        if (hasMultiCarousel) {
+            window.multiRecognitionCarousel = new MultiRecognitionCarousel();
+        }
     });
 })();
