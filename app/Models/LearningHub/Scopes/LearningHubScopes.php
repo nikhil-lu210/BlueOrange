@@ -4,6 +4,7 @@ namespace App\Models\LearningHub\Scopes;
 
 use Illuminate\Database\Eloquent\Builder;
 use Carbon\Carbon;
+use App\Models\User;
 
 trait LearningHubScopes
 {
@@ -44,9 +45,10 @@ trait LearningHubScopes
      */
     public function scopeByUserInteractions(Builder $query, $userId): Builder
     {
-        return $query->whereHas('creator.user_interactions', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        });
+        $user = User::find($userId);
+        $interactingUserIds = $user->user_interactions->pluck('id')->toArray();
+        
+        return $query->whereIn('creator_id', $interactingUserIds);
     }
 
     /**

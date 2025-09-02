@@ -108,11 +108,14 @@ class LearningHub extends Model
      */
     public static function getRolesForRecipients()
     {
+        $authUser = auth()->user();
+        $interactingUserIds = $authUser->user_interactions->pluck('id')->toArray();
+        
         return Role::with([
-            'users' => function ($query) {
-                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->orderBy('name', 'asc');
+            'users' => function ($query) use ($interactingUserIds) {
+                $query->whereIn('id', $interactingUserIds)
+                    ->whereStatus('Active')
+                    ->orderBy('name', 'asc');
             }
         ])->get();
     }
