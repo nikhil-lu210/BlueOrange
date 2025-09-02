@@ -81,4 +81,7 @@ Route::prefix('')
 
             // inventory
             include_once 'inventory/inventory.php';
+
+            // learning_hub
+            include_once 'learning_hub/learning_hub.php';
         });
