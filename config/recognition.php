@@ -10,18 +10,13 @@ return [
     | You can add/remove categories here without touching the database.
     */
     'categories' => [
-        'Behaviour',
+        'Behavior',
         'Appreciation',
         'Leadership',
         'Loyalty',
         'Dedication',
         'Teamwork',
-        'Innovation',
-        'Leadership',
-        'Problem Solving',
-        'Creativity',
-        'Punctuality',
-        'Customer Focus',
+        'Innovation'
     ],
 
     // Recognition reminder threshold
