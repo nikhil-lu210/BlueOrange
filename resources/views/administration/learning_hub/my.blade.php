@@ -71,22 +71,17 @@
                                     <td>
                                         <b>{{ $learning_topic->title }}</b>
                                         <br>
-                                        @if (!is_null($learning_topic->recipients))
+                                        @if ($learning_topic->recipients->isNotEmpty())
                                             <small class="text-primary text-bold cursor-pointer text-left" title="
-                                                @foreach ($learning_topic->recipients as $index => $recipient)
-                                                    @if ($index < 9)
-                                                        <small>{{ show_employee_data($recipient, 'alias_name') }}</small>
-                                                        <br>
-                                                    @elseif ($index == 9)
-                                                        @php
-                                                            $remainingCount = count($learning_topic->recipients) - 9;
-                                                        @endphp
-                                                        {{ $remainingCount }} More
-                                                        @break
-                                                    @endif
+                                                @foreach ($learning_topic->recipients->take(9) as $recipient)
+                                                    <small>{{ $recipient->employee->alias_name ?? $recipient->name }}</small>
+                                                    <br>
                                                 @endforeach
+                                                @if ($learning_topic->recipients->count() > 9)
+                                                    {{ $learning_topic->recipients->count() - 9 }} More
+                                                @endif
                                             ">
-                                                {{ count($learning_topic->recipients) }} Recipients
+                                                {{ $learning_topic->recipients->count() }} Recipients
                                             </small>
                                         @else
                                             <small class="text-muted">All Recipients</small>

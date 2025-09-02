@@ -83,10 +83,13 @@ class LearningHubObserver
     {
         // Check if recipients is null or empty array
         if (is_null($learningHub->recipients) || empty($learningHub->recipients)) {
-            // If no recipients specified, notify all users except the creator
+            // If no recipients specified, notify only users who interact with the creator
             return User::with(['employee'])
                 ->select(['id', 'name', 'email'])
                 ->where('id', '!=', $learningHub->creator_id)
+                ->whereHas('user_interactions', function($query) use ($learningHub) {
+                    $query->where('user_id', $learningHub->creator_id);
+                })
                 ->get();
         } else {
             // Handle both array of IDs and array of User objects
