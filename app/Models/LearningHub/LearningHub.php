@@ -16,7 +16,7 @@ use App\Models\LearningHub\Accessors\LearningHubAccessors;
 use App\Models\LearningHub\Relations\LearningHubRelations;
 use App\Observers\Administration\LearningHub\LearningHubObserver;
 
-#[ObservedBy([LearningHubObserver::class])]
+#[ObservedBy(LearningHubObserver::class)]
 class LearningHub extends Model
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;

@@ -145,14 +145,16 @@
                 fullEditor.root.innerHTML = {!! json_encode(old('description')) !!};
             @endif
 
-            $('#learningHubForm').on('submit', function() {
+                        $('#learningHubForm').on('submit', function() {
                 $('#description-input').val(fullEditor.root.innerHTML);
 
                 // Ensure selectAllValues is removed from recipients before submission
                 var recipientsSelect = $('#recipients');
                 var selectedValues = recipientsSelect.val() || [];
+
                 if (selectedValues.includes('selectAllValues')) {
-                    recipientsSelect.val(selectedValues.filter(val => val !== 'selectAllValues'));
+                    selectedValues = selectedValues.filter(val => val !== 'selectAllValues');
+                    recipientsSelect.val(selectedValues);
                 }
             });
         });

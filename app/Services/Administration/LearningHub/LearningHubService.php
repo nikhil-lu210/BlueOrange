@@ -40,6 +40,11 @@ class LearningHubService
             // Notifications and emails will be handled by the observer
         });
 
+        // Load the creator relationship for the observer
+        if ($learningTopic) {
+            $learningTopic->load('creator');
+        }
+
         if (!$learningTopic) {
             throw new Exception('Failed to create learning topic');
         }
@@ -98,7 +103,7 @@ class LearningHubService
      * @param array|null $recipients
      * @return array|null
      */
-    private function processRecipients(?array $recipients): ?array
+        private function processRecipients(?array $recipients): ?array
     {
         if (!$recipients) {
             return null;
