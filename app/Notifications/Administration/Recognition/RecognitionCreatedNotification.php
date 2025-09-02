@@ -50,9 +50,10 @@ class RecognitionCreatedNotification extends Notification
         $url = URL::route('administration.dashboard.index');
         // Recognition for specific employee
         $title = 'User Recognition';
-        $message = $this->recognition->user->alias_name .' got recognition from '. $this->recognition->recognizer->alias_name;
+        $message = $this->recognition->user->alias_name .' got recognition from '. $this->recognition->recognizer->alias_name .' for '.$this->recognition->category.' category.';
         
         return [
+            'recognition' => $this->recognition,
             'url' => $url,
             'icon'   => 'badge',
             'title' => $title,
