@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     {{-- FullCalendar --}}
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
+    
     <link rel="stylesheet" href="{{ asset('assets/css/custom_css/dashboard/index.css') }}" />
 @endsection
 
@@ -102,7 +103,9 @@
         @include('administration.dashboard.modals.employee_recognition_modal_form')
     @endif
 
-    @include('administration.dashboard.modals.recognize_congrats_modal')
+    {{-- Recognition Congratulation Modal --}}
+    @include('administration.dashboard.modals.recognize_congrats_modal_multi_users')
+
     {{-- <!-- End row --> --}}
 @endsection
 
@@ -132,7 +135,7 @@
 
 @section('custom_script')
     {{--  External js  --}}
-
+    
     <script>
         /* Dashboard Calendar Configuration
         Configuration object for the dashboard calendar */
@@ -144,150 +147,6 @@
             currentUserId: {{ Auth::id() }}
         };
   
-        document.addEventListener("DOMContentLoaded", function () {
-            const modalEl = document.getElementById('recognizeCongratsModal');
-            if (!modalEl) return;
-
-            const recognitionQueue = [];
-            let isShowingRecognition = false;
-
-            const sessionSeenRecognition = new Set();
-
-            function populateModalFromNotification(notification) {
-                try {
-                    const data = notification.data || {};
-
-                    // Prefer structured fields when available
-                    const recognizedName = data?.recognized?.name || null;
-                    const recognizerName = data?.recognizer?.name || null;
-                    const avatarUrl = data?.recognized?.avatar || null;
-                    const category = data?.category || null;
-                    const points = typeof data?.points !== 'undefined' ? data.points : null;
-                    const comment = data?.comment || null;
-
-                    // Fallback to parsing legacy message if structured fields are absent
-                    let fallbackRecognized = null, fallbackRecognizer = null;
-                    if (!recognizedName || !recognizerName) {
-                        const msg = data.message || '';
-                        const token = ' got recognition from ';
-                        const idx = msg.indexOf(token);
-                        if (idx !== -1) {
-                            fallbackRecognized = msg.substring(0, idx).trim();
-                            fallbackRecognizer = msg.substring(idx + token.length).trim();
-                        }
-                    }
-
-                    // Title: "Congratulations To <Name>"
-                    const titleEl = modalEl.querySelector('.role-title');
-                    const nameToUse = recognizedName || fallbackRecognized;
-                    if (titleEl && nameToUse) {
-                        titleEl.textContent = 'Congratulations To ' + nameToUse;
-                    }
-
-                    // Recognized by: <Recognizer>
-                    const byEl = modalEl.querySelector('.recognized-by .fw-semibold');
-                    const recognizerToUse = recognizerName || fallbackRecognizer;
-                    if (byEl && recognizerToUse) {
-                        byEl.textContent = recognizerToUse;
-                    }
-
-                    // Avatar
-                    const avatarEl = modalEl.querySelector('.profile-circle img');
-                    if (avatarEl && avatarUrl) {
-                        avatarEl.src = avatarUrl;
-                    }
-
-                    // Category + Icon
-                    const catSpan = modalEl.querySelector('.award-details .award-badge span');
-                    const catIcon = modalEl.querySelector('.award-details .award-badge i');
-                    if (catSpan && category) {
-                        catSpan.textContent = category;
-                    }
-                    if (catIcon && category) {
-                        catIcon.className = categoryIconClass(category);
-                    }
-
-                    // Points
-                    const pointsSpan = modalEl.querySelector('.award-details .points-badge span');
-                    if (pointsSpan && points !== null) {
-                        pointsSpan.textContent = `${points} Points`;
-                    }
-
-                    // Comment/Quote
-                    const quoteEl = modalEl.querySelector('.quote-section blockquote');
-                    if (quoteEl && comment) {
-                        quoteEl.textContent = comment;
-                    }
-                } catch (e) {
-                    // Fail silently; modal has sensible defaults
-                }
-            }
-
-            function categoryIconClass(category) {
-                const c = (category || '').toLowerCase();
-                // Map common categories to icons (Font Awesome). Adjust as needed.
-                if (c.includes('leader')) return 'fas fa-user-tie';
-                if (c.includes('team')) return 'fas fa-people-group';
-                if (c.includes('innov')) return 'fas fa-lightbulb';
-                if (c.includes('excel')) return 'fas fa-star';
-                if (c.includes('help') || c.includes('support')) return 'fas fa-hand-holding-heart';
-                if (c.includes('quality')) return 'fas fa-check-circle';
-                if (c.includes('impact')) return 'fas fa-bullseye';
-                return 'fas fa-heart';
-            }
-
-            function showNextRecognition() {
-                if (isShowingRecognition) return;
-                const next = recognitionQueue.shift();
-                if (!next) return;
-
-                isShowingRecognition = true;
-                populateModalFromNotification(next);
-
-                const bsModal = new bootstrap.Modal(modalEl);
-                $(modalEl).off('hidden.bs.modal').on('hidden.bs.modal', function () {
-                    if (typeof markNotificationReadUrl !== 'undefined') {
-                        $.get(markNotificationReadUrl + next.id)
-                        .always(function () {
-                            isShowingRecognition = false;
-                            showNextRecognition();
-                        });
-                    } else {
-                        isShowingRecognition = false;
-                        showNextRecognition();
-                    }
-                });
-
-                bsModal.show();
-            }
-
-            function fetchRecognitionNotifications() {
-                if (typeof unreadNotificationsUrl === 'undefined') return;
-                $.get(unreadNotificationsUrl, function (list) {
-                    if (!Array.isArray(list)) return;
-                    list.forEach(function (n) {
-                        const isRecognition = n && n.data && (n.data.type === 'recognition' || (n.data.icon === 'badge' && n.data.title === 'User Recognition'));
-                        if (isRecognition && !sessionSeenRecognition.has(n.id)) {
-                            sessionSeenRecognition.add(n.id);
-                            recognitionQueue.push(n);
-                        }
-                    });
-                    if (recognitionQueue.length > 0) {
-                        showNextRecognition();
-                    }
-                });
-            }
-
-            // Initial fetch and then periodically/when visible
-            fetchRecognitionNotifications();
-            document.addEventListener('visibilitychange', function () {
-                if (document.visibilityState === 'visible') {
-                    fetchRecognitionNotifications();
-                }
-            });
-            setInterval(fetchRecognitionNotifications, 60000);
-        });
-
         @if ($showEmployeeInfoUpdateModal)
             
             $(document).ready(function () {
@@ -364,6 +223,14 @@
                 });
             });
             
+        @endif
+
+        @if ($recognitionData)
+            
+            $(document).ready(function () {
+                // Show the modal
+                $('#recognizeCongratsModal').modal('show');
+            });
         @endif
     </script>
 
