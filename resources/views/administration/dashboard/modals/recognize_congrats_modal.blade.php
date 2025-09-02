@@ -5,7 +5,7 @@
             <!-- Confetti Container -->
             <div class="confetti-container" id="confettiContainer"></div>
 
-            <button type="button" class="btn-close btn-pinned" data-bs-dismiss="modal" aria-label="Close"></button>
+            <a href="{{ route('administration.notification.mark_as_read_and_redirect', ['notification_id' => $recognitionCongratulationData['notification_id']]) }}" class="btn-close btn-pinned" ></a>
 
             <div class="modal-body">
                 <!-- Flip Animation Container -->
@@ -20,7 +20,7 @@
                         <!-- Back Side - Profile Icon -->
                         <div class="flip-back">
                             <div class="profile-circle">
-                                <img class="rounded-circle" src="{{ asset('assets/img/avatars/2.png') }}" alt="User Avater" width="170">
+                                <img class="rounded-circle" src="{{ $recognitionCongratulationData['avatar_url'] }}" alt="User Avatar" width="170" height="170">
                             </div>
                         </div>
                     </div>
@@ -28,10 +28,10 @@
 
                 <!-- Title Section -->
                 <div class="text-center mb-2">
-                    <h3 class="role-title mb-2">Congratulations To Sara</h3>
+                    <h3 class="role-title mb-2">Congratulations To {{ $recognitionCongratulationData['employee_name'] }}</h3>
                     <p class="recognized-by">
-                        <span class="fw-normal">Recognised by:</span> 
-                        <span class="fw-semibold">Ross</span>
+                        <span class="fw-normal">Recognised by: {{ $recognitionCongratulationData['recognizer_name'] }}</span> 
+                        <span class="fw-semibold"></span>
                     </p>
                 </div>
 
@@ -39,11 +39,11 @@
                 <div class="award-details">
                     <div class="award-badge">
                         <i class="fas fa-heart"></i>
-                        <span>Leadership</span>
+                        <span>{{ $recognitionCongratulationData['category'] }}</span>
                     </div>
                     <div class="award-badge points-badge">
                         <i class="fas fa-coins"></i>
-                        <span>1500 Points</span>
+                        <span>{{ $recognitionCongratulationData['total_mark'] }}</span>
                     </div>
                 </div>
 
@@ -53,7 +53,7 @@
                         <i class="fas fa-quote-left"></i>
                     </div>
                     <blockquote class="fs-6 fst-italic fw-medium text-center mb-3" style="line-height: 1.4; color:#242121">
-                        "You are a fantastic team player who consistently goes above and beyond to support your colleagues and contribute to our collective success."
+                        {!! $recognitionCongratulationData['comment'] !!}
                     </blockquote>
                     <div class="quote-icon text-center">
                         <i class="fas fa-quote-right"></i>
