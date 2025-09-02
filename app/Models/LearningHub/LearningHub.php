@@ -3,6 +3,7 @@
 namespace App\Models\LearningHub;
 
 use App\Traits\HasCustomRouteId;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -92,5 +93,27 @@ class LearningHub extends Model
             $this->read_by_at = $reads; // Mutator handles JSON
             $this->save();
         }
+    }
+
+    /**
+     * Check if user can delete this topic
+     */
+    public function canDelete($userId): bool
+    {
+        return $this->creator_id === $userId;
+    }
+
+    /**
+     * Get roles for recipient selection
+     */
+    public static function getRolesForRecipients()
+    {
+        return Role::with([
+            'users' => function ($query) {
+                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
+                        ->whereStatus('Active')
+                        ->orderBy('name', 'asc');
+            }
+        ])->get();
     }
 }

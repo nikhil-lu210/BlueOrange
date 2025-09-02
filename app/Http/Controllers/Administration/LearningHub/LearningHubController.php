@@ -3,16 +3,12 @@
 namespace App\Http\Controllers\Administration\LearningHub;
 
 use Exception;
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Mail;
 use App\Models\LearningHub\LearningHub;
+use App\Services\Administration\LearningHub\LearningHubService;
 use App\Http\Requests\Administration\LearningHub\LearningTopicStoreRequest;
 use App\Http\Requests\Administration\LearningHub\LearningTopicUpdateRequest;
-use App\Services\Administration\LearningHub\LearningHubService;
 
 class LearningHubController extends Controller
 {
@@ -28,48 +24,29 @@ class LearningHubController extends Controller
      */
     public function index(Request $request)
     {
-        $query = LearningHub::with(['creator']);
+        $learning_topics = LearningHub::query()
+            ->withCreatorDetails()
+            ->byCreator($request->creator_id)
+            ->byMonthYear($request->created_month_year)
+            ->latest()
+            ->get();
 
-        // Filter by creator
-        if ($request->filled('creator_id')) {
-            $query->where('creator_id', $request->creator_id);
-        }
-
-        // Filter by month/year
-        if ($request->filled('created_month_year')) {
-            $monthYear = \Carbon\Carbon::parse($request->created_month_year);
-            $query->whereYear('created_at', $monthYear->year)
-                  ->whereMonth('created_at', $monthYear->month);
-        }
-
-        $learning_topics = $query->latest()->get();
-
-        // Get roles for filter dropdown
-        $roles = Role::with([
-            'users' => function ($query) {
-                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->orderBy('name', 'asc');
-            }
-        ])->get();
+        $roles = LearningHub::getRolesForRecipients();
 
         return view('administration.learning_hub.index', compact('learning_topics', 'roles'));
     }
 
     /**
-     * Display a listing of the resource.
+     * Display user's learning topics.
      */
     public function my()
     {
-        $learning_topics = LearningHub::with([
-            'creator.employee',
-            'creator.media',
-            'creator.roles'
-        ])->get()->filter(function ($hub) {
-            return $hub->isAuthorized();
-        });
-        // dd($learning_topics);
-        return view('administration.learning_hub.my', compact(['learning_topics']));
+        $learning_topics = LearningHub::query()
+            ->withCreatorDetails()
+            ->get()
+            ->filter(fn($hub) => $hub->isAuthorized());
+
+        return view('administration.learning_hub.my', compact('learning_topics'));
     }
 
     /**
@@ -77,15 +54,9 @@ class LearningHubController extends Controller
      */
     public function create()
     {
-        $roles = Role::with([
-            'users' => function ($query) {
-                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->orderBy('name', 'asc');
-            }
-        ])->get();
+        $roles = LearningHub::getRolesForRecipients();
 
-        return view('administration.learning_hub.create', compact(['roles']));
+        return view('administration.learning_hub.create', compact('roles'));
     }
 
     /**
@@ -94,19 +65,13 @@ class LearningHubController extends Controller
     public function store(LearningTopicStoreRequest $request)
     {
         try {
-            $data = $request->validated();
-
-            // Add files to data if present
-            if ($request->hasFile('files')) {
-                $data['files'] = $request->file('files');
-            }
-
+            $data = $this->prepareData($request);
             $this->learningHubService->createLearningTopic($data);
 
             toast('Learning Topic assigned successfully.', 'success');
             return redirect()->route('administration.learning_hub.index');
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'An error occurred while creating the learning topic: ' . $e->getMessage());
+            return $this->handleError($e, 'creating');
         }
     }
 
@@ -125,15 +90,9 @@ class LearningHubController extends Controller
      */
     public function edit(LearningHub $learning_topic)
     {
-        $roles = Role::with([
-            'users' => function ($query) {
-                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->orderBy('name', 'asc');
-            }
-        ])->get();
+        $roles = LearningHub::getRolesForRecipients();
 
-        return view('administration.learning_hub.edit', compact(['learning_topic', 'roles']));
+        return view('administration.learning_hub.edit', compact('learning_topic', 'roles'));
     }
 
     /**
@@ -142,19 +101,13 @@ class LearningHubController extends Controller
     public function update(LearningTopicUpdateRequest $request, LearningHub $learning_topic)
     {
         try {
-            $data = $request->validated();
-
-            // Add files to data if present
-            if ($request->hasFile('edit_files')) {
-                $data['files'] = $request->file('edit_files');
-            }
-
+            $data = $this->prepareData($request, 'edit_files');
             $this->learningHubService->updateLearningTopic($learning_topic, $data);
 
             toast('Learning Topic updated successfully.', 'success');
             return redirect()->route('administration.learning_hub.show', $learning_topic);
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'An error occurred while updating the learning topic: ' . $e->getMessage());
+            return $this->handleError($e, 'updating');
         }
     }
 
@@ -164,8 +117,7 @@ class LearningHubController extends Controller
     public function destroy(LearningHub $learning_topic)
     {
         try {
-            // Check if user is the creator
-            if ($learning_topic->creator_id !== auth()->id()) {
+            if (!$learning_topic->canDelete(auth()->id())) {
                 return redirect()->back()->with('error', 'You can only delete your own learning topics.');
             }
 
@@ -174,7 +126,31 @@ class LearningHubController extends Controller
             toast('Learning Topic deleted successfully.', 'success');
             return redirect()->route('administration.learning_hub.index');
         } catch (Exception $e) {
-            return redirect()->back()->with('error', 'An error occurred while deleting the learning topic: ' . $e->getMessage());
+            return $this->handleError($e, 'deleting');
         }
+    }
+
+    /**
+     * Prepare data for service methods
+     */
+    private function prepareData(Request $request, string $fileKey = 'files'): array
+    {
+        $data = $request->validated();
+
+        if ($request->hasFile($fileKey)) {
+            $data['files'] = $request->file($fileKey);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Handle errors consistently
+     */
+    private function handleError(Exception $e, string $action): \Illuminate\Http\RedirectResponse
+    {
+        return redirect()->back()
+            ->withInput()
+            ->with('error', "An error occurred while {$action} the learning topic: " . $e->getMessage());
     }
 }
