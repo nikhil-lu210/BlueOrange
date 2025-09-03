@@ -5,12 +5,14 @@ namespace App\Services\Administration\Leave;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
-use App\Models\Leave\LeaveHistory;
-use App\Models\Leave\LeaveAvailable;
-use App\Models\Leave\LeaveAllowed;
 use Illuminate\Http\Request;
+use App\Models\Leave\LeaveAllowed;
+use App\Models\Leave\LeaveHistory;
 use Illuminate\Support\Facades\DB;
+use App\Models\Leave\LeaveAvailable;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use App\Mail\Administration\Leave\NewLeaveRequestMail;
 use App\Mail\Administration\Leave\LeaveRequestStatusUpdateMail;
 use App\Notifications\Administration\Leave\LeaveStoreNotification;
@@ -97,8 +99,18 @@ class LeaveHistoryService
      */
     public function store(User $user, array $data): void
     {
-        // dd(isset($data['files']), !empty($data['files']));
+        // Log the start of leave request creation
+        Log::info('Starting leave request creation', [
+            'user_id' => $user->id,
+            'leave_type' => $data['type'],
+            'dates_count' => count($data['leave_days']['date']),
+            'has_files' => isset($data['files']) && !empty($data['files']),
+            'ip_address' => request()->ip()
+        ]);
+
         DB::transaction(function () use ($user, $data) {
+            $createdLeaves = [];
+
             foreach ($data['leave_days']['date'] as $index => $date) {
                 // Format total_leave to hh:mm:ss
                 $totalLeave = sprintf(
@@ -108,6 +120,15 @@ class LeaveHistoryService
                     $data['total_leave']['sec'][$index] ?? 0
                 );
 
+                // Additional validation before creating
+                if (!$user->allowed_leave) {
+                    throw new Exception('User does not have an active leave policy assigned.');
+                }
+
+                if (!$user->active_team_leader) {
+                    throw new Exception('User does not have an active team leader for leave approval.');
+                }
+
                 // Create leave history entry for each date
                 $leaveHistory = $user->leave_histories()->create([
                     'leave_allowed_id' => $user->allowed_leave->id,
@@ -116,6 +137,8 @@ class LeaveHistoryService
                     'type' => $data['type'],
                     'reason' => $data['reason']
                 ]);
+
+                $createdLeaves[] = $leaveHistory->id;
 
                 // Check and store associated files if provided in the 'files' key
                 if (isset($data['files']) && !empty($data['files'])) {
@@ -130,7 +153,25 @@ class LeaveHistoryService
 
                 // Send Mail to the Team Leader
                 Mail::to($user->active_team_leader->employee->official_email)->send(new NewLeaveRequestMail($leaveHistory, $user->active_team_leader));
+
+                // Log individual leave creation
+                Log::info('Leave request created', [
+                    'leave_id' => $leaveHistory->id,
+                    'user_id' => $user->id,
+                    'date' => $date,
+                    'total_leave' => $totalLeave,
+                    'type' => $data['type'],
+                    'team_leader_id' => $user->active_team_leader->id
+                ]);
             }
+
+            // Log successful completion
+            Log::info('Leave request creation completed successfully', [
+                'user_id' => $user->id,
+                'created_leaves' => $createdLeaves,
+                'total_count' => count($createdLeaves)
+            ]);
+
         }, 5);
     }
 
@@ -153,10 +194,19 @@ class LeaveHistoryService
                 $forYear = Carbon::parse($leaveHistory->date)->year;
                 $type = $request->type ?? $leaveHistory->type;
 
+                // Check if the leave request is for an old allowed leave
+                if ($leaveHistory->leave_allowed->is_active == false) {
+                    throw ValidationException::withMessages([
+                        'leave_policy' => 'This leave request is for an old allowed leave. Ask the user to create a new leave request.',
+                    ]);
+                }
+
                 // Get the active leave allowed record
                 $activeLeaveAllowed = $this->getActiveLeaveAllowed($user);
                 if (!$activeLeaveAllowed) {
-                    throw new Exception('No active leave allowed record found for the user.');
+                    throw ValidationException::withMessages([
+                        'leave_policy' => 'No active leave allowed record found for the user.',
+                    ]);
                 }
 
                 // Get or create leave available record for the year
@@ -190,7 +240,9 @@ class LeaveHistoryService
                 Mail::to($leaveHistory->user->employee->official_email)->queue(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
             });
         } catch (Exception $e) {
-            throw new Exception('Failed to approve leave: ' . $e->getMessage());
+            throw ValidationException::withMessages([
+                'leave_policy' => 'Failed to approve leave: ' . $e->getMessage(),
+            ]);
         }
     }
 
