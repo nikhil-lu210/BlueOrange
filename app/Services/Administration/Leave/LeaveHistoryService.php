@@ -5,12 +5,13 @@ namespace App\Services\Administration\Leave;
 use Exception;
 use Carbon\Carbon;
 use App\Models\User;
-use App\Models\Leave\LeaveHistory;
-use App\Models\Leave\LeaveAvailable;
-use App\Models\Leave\LeaveAllowed;
 use Illuminate\Http\Request;
+use App\Models\Leave\LeaveAllowed;
+use App\Models\Leave\LeaveHistory;
 use Illuminate\Support\Facades\DB;
+use App\Models\Leave\LeaveAvailable;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Validation\ValidationException;
 use App\Mail\Administration\Leave\NewLeaveRequestMail;
 use App\Mail\Administration\Leave\LeaveRequestStatusUpdateMail;
 use App\Notifications\Administration\Leave\LeaveStoreNotification;
@@ -156,7 +157,9 @@ class LeaveHistoryService
                 // Get the active leave allowed record
                 $activeLeaveAllowed = $this->getActiveLeaveAllowed($user);
                 if (!$activeLeaveAllowed) {
-                    throw new Exception('No active leave allowed record found for the user.');
+                    throw ValidationException::withMessages([
+                        'leave_policy' => 'No active leave allowed record found for the user.',
+                    ]);
                 }
 
                 // Get or create leave available record for the year
@@ -190,7 +193,9 @@ class LeaveHistoryService
                 Mail::to($leaveHistory->user->employee->official_email)->queue(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
             });
         } catch (Exception $e) {
-            throw new Exception('Failed to approve leave: ' . $e->getMessage());
+            throw ValidationException::withMessages([
+                'leave_policy' => 'Failed to approve leave: ' . $e->getMessage(),
+            ]);
         }
     }
 
