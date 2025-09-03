@@ -377,7 +377,7 @@
                 let balanceElement = $('.balance-display-' + selectedType.toLowerCase());
                 if (balanceElement.length === 0) {
                     // Create balance display if it doesn't exist
-                    let balanceHtml = `<div class="alert alert-info balance-display-${selectedType.toLowerCase()} mt-2">
+                    let balanceHtml = `<div class="alert alert-primary balance-display-${selectedType.toLowerCase()} mt-2">
                         <strong>Balance Check:</strong><br>
                         Available: <span class="available-balance">${formatTime(availableSeconds)}</span><br>
                         Requested: <span class="requested-balance">${formatTime(totalRequestedSeconds)}</span><br>

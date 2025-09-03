@@ -194,6 +194,13 @@ class LeaveHistoryService
                 $forYear = Carbon::parse($leaveHistory->date)->year;
                 $type = $request->type ?? $leaveHistory->type;
 
+                // Check if the leave request is for an old allowed leave
+                if ($leaveHistory->leave_allowed->is_active == false) {
+                    throw ValidationException::withMessages([
+                        'leave_policy' => 'This leave request is for an old allowed leave. Ask the user to create a new leave request.',
+                    ]);
+                }
+
                 // Get the active leave allowed record
                 $activeLeaveAllowed = $this->getActiveLeaveAllowed($user);
                 if (!$activeLeaveAllowed) {

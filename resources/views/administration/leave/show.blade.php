@@ -40,19 +40,34 @@
 @section('content')
 
 <!-- Start row -->
+@if ($leaveHistory->status === 'Pending' && $leaveHistory->leave_allowed->is_active == false)
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="alert alert-danger text-center" role="alert">
+                <i class="ti ti-bell-ringing mr-3" style="margin-top: -3px;"></i>
+                {{ __('You need to reject this Leave Request as this is from an Old Allowed Leave. Ask the user to create a new Leave Request.') }}
+            </div>
+        </div>
+    </div>
+@endif
+
 <div class="row justify-content-center">
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0"><a href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $leaveHistory->user]) }}" target="_blank" class="text-bold">{{ $leaveHistory->user->alias_name }}</a> Leave History's Details</h5>
+                <h5 class="mb-0">
+                    <a href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $leaveHistory->user]) }}" target="_blank" class="text-bold">{{ $leaveHistory->user->alias_name }}</a> Leave History's Details
+                </h5>
 
                 @canany(['Leave History Update', 'Leave History Delete'])
                     @if ($leaveHistory->status === 'Pending')
                         <div class="card-header-elements ms-auto">
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#approveLeaveModal" class="btn btn-sm btn-success">
-                                <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                                Approve
-                            </button>
+                            @if ($leaveHistory->leave_allowed->is_active == true)
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#approveLeaveModal" class="btn btn-sm btn-success">
+                                    <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                                    Approve
+                                </button>
+                            @endif
                             <button type="button" data-bs-toggle="modal" data-bs-target="#rejectLeaveModal" class="btn btn-sm btn-danger">
                                 <span class="tf-icon ti ti-x ti-xs me-1"></span>
                                 Reject

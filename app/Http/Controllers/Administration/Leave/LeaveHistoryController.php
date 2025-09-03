@@ -183,25 +183,9 @@ class LeaveHistoryController extends Controller
         try {
             $this->leaveHistoryService->approve($request, $leaveHistory);
 
-            // Log approval
-            Log::info('Leave request approved', [
-                'approver_id' => auth()->id(),
-                'leave_id' => $leaveHistory->id,
-                'user_id' => $leaveHistory->user_id,
-                'leave_type' => $request->input('type', $leaveHistory->type),
-                'ip_address' => request()->ip()
-            ]);
-
             toast('Leave request approved and leave balance updated successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
-            Log::error('Leave approval failed', [
-                'approver_id' => auth()->id(),
-                'leave_id' => $leaveHistory->id,
-                'error' => $e->getMessage(),
-                'ip_address' => request()->ip()
-            ]);
-
             return redirect()->back()->withErrors([
                 'approval' => 'Failed to approve leave: ' . $e->getMessage()
             ]);
