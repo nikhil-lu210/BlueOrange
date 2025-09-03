@@ -53,7 +53,7 @@
 <!-- Start row -->
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <form action="{{ route('administration.attendance.issue.index') }}" method="get" autocomplete="off">
+        <form action="{{ route('administration.attendance.issue.my') }}" method="get" autocomplete="off">
             <div class="card mb-4">
                 <div class="card-body">
                     <div class="row">
