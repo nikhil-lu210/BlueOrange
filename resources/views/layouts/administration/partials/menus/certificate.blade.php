@@ -25,8 +25,8 @@
     </li>
 @elsecan(['Certificate Read'])
     <li class="menu-item {{ request()->is('certificate/my*') ? 'active' : '' }}">
-        <a href="{{ route('administration.penalty.my') }}" class="menu-link">
-            <i class="menu-icon tf-icons ti ti-gavel"></i>
+        <a href="{{ route('administration.certificate.my') }}" class="menu-link">
+            <i class="menu-icon tf-icons ti ti-certificate"></i>
             <div data-i18n="My Certificates">{{ __('My Certificates') }}</div>
         </a>
     </li>
