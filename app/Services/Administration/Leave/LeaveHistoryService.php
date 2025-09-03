@@ -36,12 +36,36 @@ class LeaveHistoryService
             'leave_allowed'
         ]);
 
+        // Apply team leader filter if specified
+        if ($request->has('team_leader_id') && !is_null($request->team_leader_id)) {
+            $teamLeader = User::find($request->team_leader_id);
+            if ($teamLeader && method_exists($teamLeader, 'tl_employees')) {
+                $employeeIds = $teamLeader->tl_employees->pluck('id');
+                $query->whereIn('user_id', $employeeIds);
+            }
+        }
+
         // Apply user filter if specified
         if ($request->has('user_id') && !is_null($request->user_id)) {
             $query->where('user_id', $request->user_id);
         }
 
-        // Apply date range filter if specified
+        // Apply month/year filter if specified
+        if ($request->has('leave_month_year') && !is_null($request->leave_month_year)) {
+            $monthYear = Carbon::parse($request->leave_month_year);
+            $query->whereYear('date', $monthYear->year)
+                ->whereMonth('date', $monthYear->month);
+        } else {
+            // Default to current month if no specific filter is applied
+            if (!$request->has('filter_leaves')) {
+                $query->whereBetween('date', [
+                    Carbon::now()->startOfMonth()->format('Y-m-d'),
+                    Carbon::now()->endOfMonth()->format('Y-m-d')
+                ]);
+            }
+        }
+
+        // Apply date range filter if specified (for backward compatibility)
         if ($request->has('date_from') && !is_null($request->date_from)) {
             $query->where('date', '>=', $request->date_from);
         }

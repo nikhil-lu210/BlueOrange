@@ -96,21 +96,43 @@ class AttendanceIssueController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function my()
+    public function my(Request $request)
     {
         $startOfMonth = now()->startOfMonth()->format('Y-m-d'); // First day of the current month
         $today = now()->format('Y-m-d'); // Today's date
 
-        $issues = AttendanceIssue::with([
+        $query = AttendanceIssue::with([
                                         'user:id,userid,name',
                                         'user.media',
                                         'user.employee',
                                         'user.roles',
                                     ])->whereUserId(auth()->user()->id)
-                                ->whereBetween('clock_in_date', [$startOfMonth, $today])
-                                ->orderByDesc('clock_in_date')
-                                ->get();
-        // dd($issues);
+                                    ->orderByDesc('clock_in_date');
+
+        // Handle month/year filtering
+        if ($request->has('issue_month_year') && !is_null($request->issue_month_year)) {
+            $monthYear = Carbon::parse($request->issue_month_year);
+            $query->whereYear('clock_in_date', $monthYear->year)
+                ->whereMonth('clock_in_date', $monthYear->month);
+        } else {
+            // Default to current month if no specific filter is applied
+            if (!$request->has('filter_issues')) {
+                $query->whereBetween('clock_in_date', [$startOfMonth, $today]);
+            }
+        }
+
+        // Apply type filter if specified
+        if ($request->has('type') && !is_null($request->type)) {
+            $query->where('type', $request->type);
+        }
+
+        // Apply status filter if specified
+        if ($request->has('status') && !is_null($request->status)) {
+            $query->where('status', $request->status);
+        }
+
+        $issues = $query->get();
+
         return view('administration.attendance.issue.my', compact(['issues']));
     }
 
