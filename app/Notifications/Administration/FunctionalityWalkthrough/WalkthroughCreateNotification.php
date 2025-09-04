@@ -3,26 +3,22 @@
 namespace App\Notifications\Administration\FunctionalityWalkthrough;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Notifications\Notification;
-use App\Models\FunctionalityWalkthrough\FunctionalityWalkthrough;
-use App\Models\User;
 
-class WalkthroughCreateNotification extends Notification implements ShouldQueue
+class WalkthroughCreateNotification extends Notification
 {
     use Queueable;
 
-    protected $walkthrough;
-    protected $creator;
+    protected $walkthrough, $authUser;
 
     /**
      * Create a new notification instance.
      */
-    public function __construct(FunctionalityWalkthrough $walkthrough, User $creator)
+    public function __construct($walkthrough, $authUser)
     {
         $this->walkthrough = $walkthrough;
-        $this->creator = $creator;
+        $this->authUser = $authUser;
     }
 
     /**
@@ -36,35 +32,18 @@ class WalkthroughCreateNotification extends Notification implements ShouldQueue
     }
 
     /**
-     * Get the mail representation of the notification.
-     */
-    public function toMail(object $notifiable): MailMessage
-    {
-        return (new MailMessage)
-                    ->subject('New Functionality Walkthrough: ' . $this->walkthrough->title)
-                    ->greeting('Hello ' . $notifiable->name . '!')
-                    ->line('A new functionality walkthrough has been created by ' . $this->creator->name . '.')
-                    ->line('Walkthrough: ' . $this->walkthrough->title)
-                    ->action('View Walkthrough', route('administration.functionality_walkthrough.show', $this->walkthrough))
-                    ->line('Thank you for using our application!');
-    }
-
-    /**
      * Get the array representation of the notification.
      *
      * @return array<string, mixed>
      */
     public function toArray(object $notifiable): array
     {
+        $url = URL::route('administration.functionality_walkthrough.show', ['functionalityWalkthrough' => $this->walkthrough]);
         return [
-            'title' => 'New Functionality Walkthrough',
-            'message' => 'A new functionality walkthrough "' . $this->walkthrough->title . '" has been created by ' . $this->creator->name . '.',
-            'type' => 'walkthrough_created',
-            'walkthrough_id' => $this->walkthrough->id,
-            'creator_id' => $this->creator->id,
-            'creator_name' => $this->creator->name,
-            'walkthrough_title' => $this->walkthrough->title,
-            'url' => route('administration.functionality_walkthrough.show', $this->walkthrough),
+            'url'   => $url,
+            'icon'   => 'list-numbers',
+            'title'   => 'New Functionality Walkthrough Available',
+            'message'     => 'A New Functionality Walkthrough Has Been Created By '. ($this->authUser->employee->alias_name ?? $this->authUser->name),
         ];
     }
 }
