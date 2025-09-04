@@ -72,7 +72,7 @@
                     <div class="row justify-content-center">
                         <div class="mb-3 col-md-9">
                             <label class="form-label">Expense Reason <strong class="text-danger">*</strong></label>
-                            <input type="text" name="title" value="{{ old('title') }}" class="form-control" placeholder="Ex: Sold Old Gadgets" required/>
+                            <input type="text" name="title" value="{{ old('title') }}" class="form-control" placeholder="Ex: Purchase Old Gadgets" required/>
                             @error('title')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror

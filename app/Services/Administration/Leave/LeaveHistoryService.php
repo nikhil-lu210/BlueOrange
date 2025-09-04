@@ -99,15 +99,6 @@ class LeaveHistoryService
      */
     public function store(User $user, array $data): void
     {
-        // Log the start of leave request creation
-        Log::info('Starting leave request creation', [
-            'user_id' => $user->id,
-            'leave_type' => $data['type'],
-            'dates_count' => count($data['leave_days']['date']),
-            'has_files' => isset($data['files']) && !empty($data['files']),
-            'ip_address' => request()->ip()
-        ]);
-
         DB::transaction(function () use ($user, $data) {
             $createdLeaves = [];
 
@@ -153,25 +144,7 @@ class LeaveHistoryService
 
                 // Send Mail to the Team Leader
                 Mail::to($user->active_team_leader->employee->official_email)->send(new NewLeaveRequestMail($leaveHistory, $user->active_team_leader));
-
-                // Log individual leave creation
-                Log::info('Leave request created', [
-                    'leave_id' => $leaveHistory->id,
-                    'user_id' => $user->id,
-                    'date' => $date,
-                    'total_leave' => $totalLeave,
-                    'type' => $data['type'],
-                    'team_leader_id' => $user->active_team_leader->id
-                ]);
             }
-
-            // Log successful completion
-            Log::info('Leave request creation completed successfully', [
-                'user_id' => $user->id,
-                'created_leaves' => $createdLeaves,
-                'total_count' => count($createdLeaves)
-            ]);
-
         }, 5);
     }
 

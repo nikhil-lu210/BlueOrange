@@ -1,19 +1,26 @@
-<x-mail::message>
-# New Learning Topic Available
+@extends('layouts.email.app')
 
-Hello {{ $user->name }},
 
-A new learning topic has been created by {{ $data->creator->employee->alias_name ?? $data->creator->name }}.
+@section('email_title')
+    <span style="text-align: center;">New Learning Topic: {{ $data->title }}</span>
+@endsection
 
-**Topic:** {{ $data->title }}
 
-**Description:**
-{{ $data->description }}
-
-<x-mail::button :url="route('administration.learning_hub.show', ['learning_topic' => $data])">
-View Learning Topic
-</x-mail::button>
-
-Thanks,<br>
-{{ config('app.name') }}
-</x-mail::message>
+@section('content')
+<!-- Start Content -->
+<div>
+    Hello {{ $user->alias_name }},
+    <br>
+    A new learning topic has been created by <b>{{ $data->creator->employee->alias_name ?? $data->creator->name }}</b>.
+    <br>
+    <br>
+    <b>Topic:</b> {{ $data->title }}
+    <br>
+    <br>
+    Learning Topic Link:
+    <a href="{{ route('administration.learning_hub.show', ['learning_topic' => $data]) }}">
+        <strong>View Learning Topic</strong>
+    </a>.
+</div>
+<!-- End Content -->
+@endsection
