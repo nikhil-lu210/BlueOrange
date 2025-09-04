@@ -90,7 +90,10 @@ class OverviewController extends Controller
 
         return view('administration.lifecycle.index', compact('stats', 'recentActivity'));
     }
-
+    
+    /**
+     * Display the onboarding view.
+     */
     public function onboarding()
     {
         return view('administration.lifecycle.onboarding');
