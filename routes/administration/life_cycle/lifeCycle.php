@@ -8,6 +8,7 @@ use App\Http\Controllers\Administration\LifeCycle\OverviewController;
 ===============================================*/
 Route::controller(OverviewController::class)->prefix('lifecycle')->name('lifecycle.')->group(function () {
     Route::get('/all', 'index')->name('index')->can('LifeCycle Everything');
+    Route::get('/onboarding', 'onboarding')->name('onboarding')->can('LifeCycle Read');
     Route::get('/my', 'my')->name('my')->can('LifeCycle Read');
     Route::get('/create', 'create')->name('create')->can('LifeCycle Create');
     Route::post('/store', 'store')->name('store')->can('LifeCycle Create');
