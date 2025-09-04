@@ -25,8 +25,6 @@
         border-bottom: 1px solid #dee2e6;
     }
     .step-number {
-        background-color: #007bff;
-        color: white;
         border-radius: 50%;
         width: 35px;
         height: 35px;
@@ -34,7 +32,7 @@
         align-items: center;
         justify-content: center;
         font-weight: bold;
-        margin-right: 15px;
+        margin-right: 5px;
     }
     .step-content {
         padding: 20px;
@@ -90,18 +88,9 @@
                 <!-- Walkthrough Info -->
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <div class="d-flex align-items-center mb-3">
-                            @if($walkthrough->creator->media->isNotEmpty())
-                                <img src="{{ $walkthrough->creator->media->first()->getUrl('thumb') }}" alt="Avatar" class="rounded-circle me-3" width="50" height="50">
-                            @else
-                                <div class="avatar-initial rounded-circle bg-label-primary me-3" style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
-                                    {{ substr($walkthrough->creator->name, 0, 1) }}
-                                </div>
-                            @endif
-                            <div>
-                                <h6 class="mb-0">{{ get_employee_name($walkthrough->creator) }}</h6>
-                                <small class="text-muted">Created by</small>
-                            </div>
+                        <h6>Created By:</h6>
+                        <div class="d-flex align-items-center">
+                            {!! show_user_name_and_avatar($walkthrough->creator, name: null) !!}
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -116,12 +105,9 @@
                 <!-- Assigned Roles -->
                 <div class="mb-4">
                     <h6>Assigned Roles:</h6>
-                    @if($walkthrough->assigned_roles)
-                        @php
-                            $roleNames = \Spatie\Permission\Models\Role::whereIn('id', $walkthrough->assigned_roles)->pluck('name')->toArray();
-                        @endphp
-                        @foreach($roleNames as $roleName)
-                            <span class="badge bg-label-primary me-2 mb-2">{{ $roleName }}</span>
+                    @if($walkthrough->assigned_roles->isNotEmpty())
+                        @foreach($walkthrough->assigned_roles as $role)
+                            <span class="badge bg-label-primary me-2 mb-2">{{ $role->name }}</span>
                         @endforeach
                     @else
                         <span class="badge bg-label-success">All Users</span>
@@ -158,8 +144,11 @@
                         <div class="step-card">
                             <div class="step-header">
                                 <div class="d-flex align-items-center">
-                                    <div class="step-number">{{ $index + 1 }}</div>
-                                    <h6 class="mb-0">{{ $step->step_title }}</h6>
+                                    <div class="step-number bg-label-primary border-primary">{{ $index + 1 }}</div>
+                                    <h6 class="mb-0">
+                                        <span class="text-dark text-bold">Step {{ $index + 1 }}:</span> 
+                                        {{ $step->step_title }}
+                                    </h6>
                                 </div>
                             </div>
                             <div class="step-content">

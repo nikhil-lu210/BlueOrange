@@ -106,17 +106,4 @@ class FunctionalityWalkthrough extends Model
         }
     }
 
-    /**
-     * Get roles for recipients (similar to LearningHub implementation)
-     */
-    public static function getRolesForRecipients()
-    {
-        return \Spatie\Permission\Models\Role::with([
-            'users' => function ($query) {
-                $query->whereIn('id', auth()->user()->user_interactions->pluck('id'))
-                        ->whereStatus('Active')
-                        ->orderBy('name', 'asc');
-            }
-        ])->get();
-    }
 }

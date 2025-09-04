@@ -88,13 +88,9 @@
                             <select name="assigned_roles[]" id="assigned_roles" class="select2 form-select @error('assigned_roles') is-invalid @enderror" data-allow-clear="true" multiple autofocus>
                                 <option value="selectAllValues">Select All</option>
                                 @foreach ($roles as $role)
-                                    <optgroup label="{{ $role->name }}">
-                                        @foreach ($role->users as $user)
-                                            <option value="{{ $user->id }}" {{ in_array($user->id, old('assigned_roles', [])) ? 'selected' : '' }}>
-                                                {{ get_employee_name($user) }}
-                                            </option>
-                                        @endforeach
-                                    </optgroup>
+                                    <option value="{{ $role->id }}" {{ in_array($role->id, old('assigned_roles', [])) ? 'selected' : '' }}>
+                                        {{ $role->name }}
+                                    </option>
                                 @endforeach
                             </select>
                             <small><b class="text-primary">Note:</b> If the walkthrough is for all users, then don't select any roles.</small>
@@ -185,6 +181,15 @@
                         $(`#step-${stepIndex} .step-description-input`).val(editor.root.innerHTML);
                     }
                 });
+
+                // Ensure selectAllValues is removed from assigned_roles before submission
+                var assignedRolesSelect = $('#assigned_roles');
+                var selectedValues = assignedRolesSelect.val() || [];
+
+                if (selectedValues.includes('selectAllValues')) {
+                    selectedValues = selectedValues.filter(val => val !== 'selectAllValues');
+                    assignedRolesSelect.val(selectedValues);
+                }
             });
         });
 
@@ -192,12 +197,12 @@
             stepCounter++;
             const stepHtml = `
                 <div class="step-container" id="step-${stepCounter}">
-                    <div class="step-header">
+                    <div class="d-flex justify-content-between align-items-center step-header">
                         <div class="d-flex align-items-center">
                             <div class="step-number">${stepCounter}</div>
                             <h6 class="mb-0">Step ${stepCounter}</h6>
                         </div>
-                        <button type="button" class="btn btn-sm btn-outline-danger removeStep" data-step-index="${stepCounter}">
+                        <button type="button" class="btn btn-sm btn-icon btn-danger removeStep" data-step-index="${stepCounter}" title="Remove Step ${stepCounter}">
                             <i class="ti ti-trash"></i>
                         </button>
                     </div>

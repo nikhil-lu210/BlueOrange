@@ -2,12 +2,16 @@
 
 @section('meta_tags')
     {{--  External META's  --}}
+
 @endsection
 
 @section('page_title', __('My Functionality Walkthroughs'))
 
 @section('css_links')
     {{--  External CSS  --}}
+    <!-- DataTables css -->
+    <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
 @endsection
 
 @section('custom_css')
@@ -17,128 +21,104 @@
     </style>
 @endsection
 
+
 @section('page_name')
     <b class="text-uppercase">{{ __('My Functionality Walkthroughs') }}</b>
 @endsection
 
+
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Functionality Walkthroughs') }}</li>
+    <li class="breadcrumb-item">{{ __('Functionality Walkthrough') }}</li>
     <li class="breadcrumb-item active">{{ __('My Walkthroughs') }}</li>
 @endsection
 
+
 @section('content')
 
-<!-- Start row -->
 <div class="row">
-    <div class="col-12">
+    <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">My Functionality Walkthroughs</h5>
 
                 <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.functionality_walkthrough.create') }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-plus ti-xs me-1"></span>
-                        Create New Walkthrough
-                    </a>
                     <a href="{{ route('administration.functionality_walkthrough.index') }}" class="btn btn-sm btn-outline-primary">
-                        <span class="tf-icon ti ti-eye ti-xs me-1"></span>
+                        <span class="tf-icon ti ti-list ti-xs me-1"></span>
                         All Walkthroughs
                     </a>
+                    @can ('Functionality Walkthrough Create')
+                        <a href="{{ route('administration.functionality_walkthrough.create') }}" class="btn btn-sm btn-primary">
+                            <span class="tf-icon ti ti-plus ti-xs me-1"></span>
+                            Create Walkthrough
+                        </a>
+                    @endcan
                 </div>
             </div>
             <div class="card-body">
-                <!-- Walkthroughs Table -->
-                <div class="table-responsive">
-                    <table class="table table-striped">
+                <div class="table-responsive-md table-responsive-sm w-100">
+                    <table class="table data-table table-bordered">
                         <thead>
                             <tr>
-                                <th>Title</th>
+                                <th>Sl.</th>
+                                <th>Created At</th>
+                                <th>Walkthrough</th>
                                 <th>Creator</th>
-                                <th>Assigned Roles</th>
-                                <th>Steps</th>
-                                <th>Created</th>
-                                <th>Actions</th>
+                                <th class="text-center">Action</th>
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($walkthroughs as $walkthrough)
+                            @foreach ($walkthroughs as $key => $walkthrough)
                                 <tr>
+                                    <th>#{{ serial($walkthroughs, $key) }}</th>
                                     <td>
-                                        <strong>{{ $walkthrough->title }}</strong>
+                                        <b>{{ show_date($walkthrough->created_at) }}</b>
+                                        <br>
+                                        <span>
+                                            at
+                                            <b>{{ show_time($walkthrough->created_at) }}</b>
+                                        </span>
                                     </td>
                                     <td>
-                                        <div class="d-flex align-items-center">
-                                            @if($walkthrough->creator->media->isNotEmpty())
-                                                <img src="{{ $walkthrough->creator->media->first()->getUrl('thumb') }}" alt="Avatar" class="rounded-circle me-2" width="32" height="32">
-                                            @else
-                                                <div class="avatar-initial rounded-circle bg-label-primary me-2" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                                    {{ substr($walkthrough->creator->name, 0, 1) }}
-                                                </div>
-                                            @endif
-                                            <div>
-                                                <h6 class="mb-0">{{ get_employee_name($walkthrough->creator) }}</h6>
-                                                <small class="text-muted">{{ $walkthrough->creator->email }}</small>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        @if($walkthrough->assigned_roles)
-                                            @php
-                                                $roleNames = \Spatie\Permission\Models\Role::whereIn('id', $walkthrough->assigned_roles)->pluck('name')->toArray();
-                                            @endphp
-                                            @foreach($roleNames as $roleName)
-                                                <span class="badge bg-label-primary me-1">{{ $roleName }}</span>
-                                            @endforeach
+                                        <b>{{ $walkthrough->title }}</b>
+                                        <br>
+                                        @if ($walkthrough->assigned_roles->isNotEmpty())
+                                            <small class="text-primary text-bold cursor-pointer text-left" title="
+                                                @foreach ($walkthrough->assigned_roles->take(9) as $role)
+                                                    <small>{{ $role->name }}</small>
+                                                    <br>
+                                                @endforeach
+                                                @if ($walkthrough->assigned_roles->count() > 9)
+                                                    {{ $walkthrough->assigned_roles->count() - 9 }} More
+                                                @endif
+                                            ">
+                                                {{ $walkthrough->assigned_roles->count() }} Roles
+                                            </small>
                                         @else
-                                            <span class="badge bg-label-success">All Users</span>
+                                            <small class="text-muted">All Users</small>
                                         @endif
                                     </td>
                                     <td>
-                                        <span class="badge bg-label-info">{{ $walkthrough->steps->count() }} steps</span>
+                                        {!! show_user_name_and_avatar($walkthrough->creator, name: null) !!}
                                     </td>
-                                    <td>
-                                        <small>{{ $walkthrough->created_at->format('M j, Y g:i A') }}</small>
-                                    </td>
-                                    <td>
-                                        <div class="dropdown">
-                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
-                                                <i class="ti ti-dots-vertical"></i>
-                                            </button>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="{{ route('administration.functionality_walkthrough.show', $walkthrough) }}">
-                                                    <i class="ti ti-eye me-1"></i> View
-                                                </a>
-                                                @can('Functionality Walkthrough Update')
-                                                    @if($walkthrough->creator_id == auth()->id() || auth()->user()->hasPermissionTo('Functionality Walkthrough Everything'))
-                                                        <a class="dropdown-item" href="{{ route('administration.functionality_walkthrough.edit', $walkthrough) }}">
-                                                            <i class="ti ti-pencil me-1"></i> Edit
-                                                        </a>
-                                                    @endif
-                                                @endcan
-                                                @can('Functionality Walkthrough Delete')
-                                                    @if($walkthrough->creator_id == auth()->id() || auth()->user()->hasPermissionTo('Functionality Walkthrough Everything'))
-                                                        <a class="dropdown-item text-danger" href="{{ route('administration.functionality_walkthrough.destroy', $walkthrough) }}" onclick="return confirm('Are you sure you want to delete this walkthrough?')">
-                                                            <i class="ti ti-trash me-1"></i> Delete
-                                                        </a>
-                                                    @endif
-                                                @endcan
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center py-4">
-                                        <div class="text-muted">
-                                            <i class="ti ti-file-text ti-3x mb-3"></i>
-                                            <p>No functionality walkthroughs assigned to you.</p>
-                                            <a href="{{ route('administration.functionality_walkthrough.create') }}" class="btn btn-primary">
-                                                Create Your First Walkthrough
+                                    <td class="text-center">
+                                        @can ('Functionality Walkthrough Delete')
+                                            <a href="{{ route('administration.functionality_walkthrough.destroy', ['functionalityWalkthrough' => $walkthrough]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Delete Walkthrough?">
+                                                <i class="text-white ti ti-trash"></i>
                                             </a>
-                                        </div>
+                                        @endcan
+                                        @can ('Functionality Walkthrough Update')
+                                            <a href="{{ route('administration.functionality_walkthrough.edit', ['functionalityWalkthrough' => $walkthrough]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Walkthrough?">
+                                                <i class="text-white ti ti-pencil"></i>
+                                            </a>
+                                        @endcan
+                                        @can ('Functionality Walkthrough Read')
+                                            <a href="{{ route('administration.functionality_walkthrough.show', ['functionalityWalkthrough' => $walkthrough]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                                <i class="text-white ti ti-info-hexagon"></i>
+                                            </a>
+                                        @endcan
                                     </td>
                                 </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -150,8 +130,13 @@
 
 @endsection
 
+
 @section('script_links')
     {{--  External Javascript Links --}}
+    <!-- Datatable js -->
+    <script src="{{ asset('assets/js/custom_js/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/datatables/datatable.js') }}"></script>
 @endsection
 
 @section('custom_script')
