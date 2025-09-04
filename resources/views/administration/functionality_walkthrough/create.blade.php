@@ -26,7 +26,7 @@
     }
     .step-header {
         display: flex;
-        justify-content: between;
+        justify-content: space-between;
         align-items: center;
         margin-bottom: 15px;
     }
@@ -51,7 +51,7 @@
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Functionality Walkthroughs') }}</li>
-    <li class="breadcrumb-item active">{{ __('Create New Walkthrough') }}</li>
+    <li class="breadcrumb-item active">{{ __('Create Walkthrough') }}</li>
 @endsection
 
 @section('content')
@@ -65,7 +65,7 @@
 
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.functionality_walkthrough.index') }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-circle ti-xs me-1"></span>
+                        <span class="tf-icon ti ti-list ti-xs me-1"></span>
                         All Walkthroughs
                     </a>
                 </div>
@@ -82,7 +82,7 @@
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-
+                        
                         <div class="mb-3 col-md-12">
                             <label for="assigned_roles" class="form-label">Select Assigned Roles</label>
                             <select name="assigned_roles[]" id="assigned_roles" class="select2 form-select @error('assigned_roles') is-invalid @enderror" data-allow-clear="true" multiple autofocus>
@@ -99,7 +99,6 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-
                     </div>
 
                     <!-- Steps Section -->
@@ -112,7 +111,7 @@
                         </div>
 
                         <div id="stepsContainer">
-                            <!-- Steps will be added here dynamically -->
+                            <!-- Steps will be added here -->
                         </div>
 
                         @error('steps')
@@ -121,7 +120,7 @@
                     </div>
 
                     <div class="mt-2 float-end">
-                        <a href="{{ route('administration.functionality_walkthrough.create') }}" class="btn btn-outline-danger me-2 confirm-danger">Reset Form</a>
+                        <a href="{{ route('administration.functionality_walkthrough.index') }}" class="btn btn-outline-secondary me-2">Cancel</a>
                         <button type="submit" class="btn btn-primary">Create Walkthrough</button>
                     </div>
                 </form>
@@ -150,9 +149,6 @@
         let editors = {};
 
         $(document).ready(function () {
-            // Add first step
-            addStep();
-
             // Add step button click
             $('#addStep').click(function() {
                 addStep();
@@ -186,7 +182,7 @@
             });
         });
 
-        function addStep() {
+        function addStep(title = '', description = '') {
             stepCounter++;
             const stepHtml = `
                 <div class="step-container" id="step-${stepCounter}">
@@ -203,13 +199,13 @@
                     <div class="row">
                         <div class="mb-3 col-md-12">
                             <label for="steps[${stepCounter}][step_title]" class="form-label">Step Title <strong class="text-danger">*</strong></label>
-                            <input type="text" name="steps[${stepCounter}][step_title]" class="form-control" placeholder="Enter step title" required>
+                            <input type="text" name="steps[${stepCounter}][step_title]" class="form-control" placeholder="Enter step title" value="${title}" required>
                         </div>
 
                         <div class="mb-3 col-md-12">
                             <label class="form-label">Step Description <strong class="text-danger">*</strong></label>
                             <div name="steps[${stepCounter}][step_description]" id="step-editor-${stepCounter}" class="step-editor"></div>
-                            <textarea class="d-none step-description-input" name="steps[${stepCounter}][step_description]"></textarea>
+                            <textarea class="d-none step-description-input" name="steps[${stepCounter}][step_description]">${description}</textarea>
                         </div>
 
                         <div class="mb-3 col-md-12">
@@ -223,10 +219,10 @@
             $('#stepsContainer').append(stepHtml);
 
             // Initialize Quill editor for this step
-            initializeEditor(stepCounter);
+            initializeEditor(stepCounter, description);
         }
 
-        function initializeEditor(stepIndex) {
+        function initializeEditor(stepIndex, content = '') {
             const fullToolbar = [
                 [{ font: [] }, { size: [] }],
                 ["bold", "italic", "underline", "strike"],
@@ -245,6 +241,11 @@
                 },
                 theme: "snow",
             });
+
+            // Set content if provided
+            if (content) {
+                editor.root.innerHTML = content;
+            }
 
             editors[stepIndex] = editor;
         }

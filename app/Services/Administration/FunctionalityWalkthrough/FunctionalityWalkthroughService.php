@@ -72,12 +72,9 @@ class FunctionalityWalkthroughService
                 'assigned_roles' => $assignedRoles,
             ]);
 
-            // Delete existing steps
-            $walkthrough->steps()->delete();
-
-            // Create updated steps
+            // Update steps
             if (isset($data['steps']) && is_array($data['steps'])) {
-                $this->createSteps($walkthrough, $data['steps']);
+                $this->updateSteps($walkthrough, $data['steps']);
             }
         });
 
@@ -195,6 +192,66 @@ class FunctionalityWalkthroughService
         }
     }
 
+    /**
+     * Update steps for walkthrough
+     *
+     * @param FunctionalityWalkthrough $walkthrough
+     * @param array $stepsData
+     * @return void
+     */
+    private function updateSteps(FunctionalityWalkthrough $walkthrough, array $stepsData): void
+    {
+        $existingStepIds = [];
+        
+        foreach ($stepsData as $index => $step) {
+            if (!empty($step['step_title']) && !empty($step['step_description'])) {
+                $stepOrder = $index + 1;
+                
+                if (isset($step['id'])) {
+                    // Update existing step
+                    $walkthroughStep = $walkthrough->steps()->find($step['id']);
+                    if ($walkthroughStep) {
+                        $walkthroughStep->update([
+                            'step_title' => $step['step_title'],
+                            'step_description' => $step['step_description'],
+                            'step_order' => $stepOrder,
+                        ]);
+                        
+                        $existingStepIds[] = $walkthroughStep->id;
+                        
+                        // Handle file deletions
+                        if (isset($step['delete_files']) && is_array($step['delete_files'])) {
+                            $this->deleteStepFiles($walkthroughStep, $step['delete_files']);
+                        }
+                        
+                        // Upload new step files
+                        if (isset($step['files']) && is_array($step['files'])) {
+                            $this->uploadStepFiles($walkthroughStep, $step['files']);
+                        }
+                    }
+                } else {
+                    // Create new step
+                    $walkthroughStep = FunctionalityWalkthroughStep::create([
+                        'walkthrough_id' => $walkthrough->id,
+                        'step_title' => $step['step_title'],
+                        'step_description' => $step['step_description'],
+                        'step_order' => $stepOrder,
+                    ]);
+                    
+                    $existingStepIds[] = $walkthroughStep->id;
+                    
+                    // Upload step files
+                    if (isset($step['files']) && is_array($step['files'])) {
+                        $this->uploadStepFiles($walkthroughStep, $step['files']);
+                    }
+                }
+            }
+        }
+        
+        // Delete steps that are no longer in the form
+        $walkthrough->steps()->whereNotIn('id', $existingStepIds)->delete();
+    }
+
 
     /**
      * Upload files for walkthrough step
@@ -208,6 +265,28 @@ class FunctionalityWalkthroughService
         foreach ($files as $file) {
             $directory = 'walkthrough_steps/' . $step->id;
             store_file_media($file, $step, $directory);
+        }
+    }
+
+    /**
+     * Delete files for walkthrough step
+     *
+     * @param FunctionalityWalkthroughStep $step
+     * @param array $fileIds
+     * @return void
+     */
+    private function deleteStepFiles(FunctionalityWalkthroughStep $step, array $fileIds): void
+    {
+        foreach ($fileIds as $fileId) {
+            $file = $step->files()->find($fileId);
+            if ($file) {
+                // Delete the file from storage
+                if (file_exists(public_path($file->file_path))) {
+                    unlink(public_path($file->file_path));
+                }
+                // Delete the database record
+                $file->delete();
+            }
         }
     }
 

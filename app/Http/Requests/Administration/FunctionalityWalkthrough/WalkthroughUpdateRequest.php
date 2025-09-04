@@ -28,8 +28,11 @@ class WalkthroughUpdateRequest extends FormRequest
             'steps' => 'required|array|min:1',
             'steps.*.step_title' => 'required|string|max:255',
             'steps.*.step_description' => 'required|string',
+            'steps.*.id' => 'nullable|exists:functionality_walkthrough_steps,id',
             'steps.*.files' => 'nullable|array',
             'steps.*.files.*' => 'file|max:10240', // 10MB max
+            'steps.*.delete_files' => 'nullable|array',
+            'steps.*.delete_files.*' => 'exists:file_media,id',
         ];
     }
 

@@ -26,7 +26,7 @@
     }
     .step-header {
         display: flex;
-        justify-content: between;
+        justify-content: space-between;
         align-items: center;
         margin-bottom: 15px;
     }
@@ -45,11 +45,36 @@
     .existing-file {
         display: flex;
         align-items: center;
+        justify-content: space-between;
         padding: 8px;
         border: 1px solid #dee2e6;
         border-radius: 5px;
         margin-bottom: 5px;
         background-color: white;
+    }
+    .file-info {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+    }
+    .file-icon {
+        margin-right: 10px;
+        color: #007bff;
+    }
+    .file-details {
+        flex-grow: 1;
+    }
+    .file-name {
+        font-weight: 500;
+        margin-bottom: 2px;
+    }
+    .file-size {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+    .file-actions {
+        display: flex;
+        gap: 5px;
     }
     </style>
 @endsection
@@ -157,6 +182,21 @@
     <script>
         let stepCounter = 0;
         let editors = {};
+        let existingSteps = {!! json_encode($walkthrough->steps->map(function($step) {
+            return [
+                'id' => $step->id,
+                'title' => $step->step_title,
+                'description' => $step->step_description,
+                'files' => $step->files->map(function($file) {
+                    return [
+                        'id' => $file->id,
+                        'name' => $file->file_name,
+                        'size' => $file->file_size,
+                        'url' => $file->file_path
+                    ];
+                })
+            ];
+        })) !!};
 
         $(document).ready(function () {
             // Load existing steps
@@ -172,6 +212,13 @@
                 const stepIndex = $(this).data('step-index');
                 $(`#step-${stepIndex}`).remove();
                 updateStepNumbers();
+            });
+
+            // Remove existing file
+            $(document).on('click', '.remove-existing-file', function() {
+                const fileId = $(this).data('file-id');
+                const stepIndex = $(this).data('step-index');
+                removeExistingFile(fileId, stepIndex);
             });
 
             // Form submit
@@ -196,41 +243,75 @@
         });
 
         function loadExistingSteps() {
-            @foreach($walkthrough->steps as $index => $step)
-                addStep('{{ $step->step_title }}', `{!! $step->step_description !!}`, {{ $step->files->count() > 0 ? 'true' : 'false' }});
-            @endforeach
+            existingSteps.forEach((step, index) => {
+                addStep(step.title, step.description, step.files, step.id);
+            });
         }
 
-        function addStep(title = '', description = '', hasFiles = false) {
+        function addStep(title = '', description = '', files = [], stepId = null) {
             stepCounter++;
+            const stepIndex = stepCounter;
+            
+            // Create existing files HTML
+            let existingFilesHtml = '';
+            if (files && files.length > 0) {
+                existingFilesHtml = '<div class="mb-3"><label class="form-label">Existing Files</label>';
+                files.forEach(file => {
+                    existingFilesHtml += `
+                        <div class="existing-file">
+                            <div class="file-info">
+                                <i class="ti ti-file file-icon"></i>
+                                <div class="file-details">
+                                    <div class="file-name">${file.name}</div>
+                                    <div class="file-size">${formatFileSize(file.size)}</div>
+                                </div>
+                            </div>
+                            <div class="file-actions">
+                                <a href="${file.url}" class="btn btn-sm btn-outline-primary" target="_blank" title="Download">
+                                    <i class="ti ti-download"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger remove-existing-file" 
+                                        data-file-id="${file.id}" data-step-index="${stepIndex}" title="Remove">
+                                    <i class="ti ti-trash"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+                existingFilesHtml += '</div>';
+            }
+
             const stepHtml = `
-                <div class="step-container" id="step-${stepCounter}">
+                <div class="step-container" id="step-${stepIndex}">
                     <div class="d-flex justify-content-between align-items-center step-header">
                         <div class="d-flex align-items-center">
-                            <div class="step-number">${stepCounter}</div>
-                            <h6 class="mb-0">Step ${stepCounter}</h6>
+                            <div class="step-number">${stepIndex}</div>
+                            <h6 class="mb-0">Step ${stepIndex}</h6>
                         </div>
-                        <button type="button" class="btn btn-sm btn-icon btn-danger removeStep" data-step-index="${stepCounter}" title="Remove Step ${stepCounter}">
+                        <button type="button" class="btn btn-sm btn-icon btn-danger removeStep" data-step-index="${stepIndex}" title="Remove Step ${stepIndex}">
                             <i class="ti ti-trash"></i>
                         </button>
                     </div>
 
                     <div class="row">
                         <div class="mb-3 col-md-12">
-                            <label for="steps[${stepCounter}][step_title]" class="form-label">Step Title <strong class="text-danger">*</strong></label>
-                            <input type="text" name="steps[${stepCounter}][step_title]" class="form-control" placeholder="Enter step title" value="${title}" required>
+                            <label for="steps[${stepIndex}][step_title]" class="form-label">Step Title <strong class="text-danger">*</strong></label>
+                            <input type="text" name="steps[${stepIndex}][step_title]" class="form-control" placeholder="Enter step title" value="${title}" required>
+                            ${stepId ? `<input type="hidden" name="steps[${stepIndex}][id]" value="${stepId}">` : ''}
                         </div>
 
                         <div class="mb-3 col-md-12">
                             <label class="form-label">Step Description <strong class="text-danger">*</strong></label>
-                            <div name="steps[${stepCounter}][step_description]" id="step-editor-${stepCounter}" class="step-editor"></div>
-                            <textarea class="d-none step-description-input" name="steps[${stepCounter}][step_description]">${description}</textarea>
+                            <div name="steps[${stepIndex}][step_description]" id="step-editor-${stepIndex}" class="step-editor"></div>
+                            <textarea class="d-none step-description-input" name="steps[${stepIndex}][step_description]">${description}</textarea>
                         </div>
 
+                        ${existingFilesHtml}
+
                         <div class="mb-3 col-md-12">
-                            <label for="steps[${stepCounter}][files][]" class="form-label">Step Files</label>
-                            <input type="file" name="steps[${stepCounter}][files][]" class="form-control" multiple>
-                            ${hasFiles ? '<small class="text-muted">Note: Existing files will be replaced with new ones.</small>' : ''}
+                            <label for="steps[${stepIndex}][files][]" class="form-label">Add New Files</label>
+                            <input type="file" name="steps[${stepIndex}][files][]" class="form-control" multiple>
+                            <small class="text-muted">Select files to add to this step. Existing files will be preserved unless removed above.</small>
                         </div>
                     </div>
                 </div>
@@ -239,7 +320,7 @@
             $('#stepsContainer').append(stepHtml);
 
             // Initialize Quill editor for this step
-            initializeEditor(stepCounter, description);
+            initializeEditor(stepIndex, description);
         }
 
         function initializeEditor(stepIndex, content = '') {
@@ -270,13 +351,39 @@
             editors[stepIndex] = editor;
         }
 
+        function removeExistingFile(fileId, stepIndex) {
+            // Add hidden input to mark file for deletion
+            const deleteInput = `<input type="hidden" name="steps[${stepIndex}][delete_files][]" value="${fileId}">`;
+            $(`#step-${stepIndex}`).append(deleteInput);
+            
+            // Remove the file from UI
+            $(`[data-file-id="${fileId}"]`).closest('.existing-file').remove();
+        }
+
         function updateStepNumbers() {
             $('.step-container').each(function(index) {
                 const stepNumber = index + 1;
                 $(this).find('.step-number').text(stepNumber);
                 $(this).find('h6').text(`Step ${stepNumber}`);
                 $(this).attr('id', `step-${stepNumber}`);
+                
+                // Update all input names and IDs
+                $(this).find('input, textarea, select').each(function() {
+                    const name = $(this).attr('name');
+                    if (name && name.includes('[')) {
+                        const newName = name.replace(/steps\[\d+\]/, `steps[${stepNumber}]`);
+                        $(this).attr('name', newName);
+                    }
+                });
             });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
     </script>
 @endsection
