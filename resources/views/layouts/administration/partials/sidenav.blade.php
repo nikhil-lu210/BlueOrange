@@ -43,6 +43,8 @@
             <span class="menu-header-text">{{ __('Administration') }}</span>
         </li>
 
+        @include('layouts.administration.partials.menus.functionality_walkthrough')
+
         @include('layouts.administration.partials.menus.certificate')
 
         @include('layouts.administration.partials.menus.penalty')
