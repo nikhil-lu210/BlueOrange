@@ -8,6 +8,9 @@
 
 @section('css_links')
     {{--  External CSS  --}}
+
+    {{-- Lightbox CSS --}}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/css/lightbox.min.css" integrity="sha512-ZKX+BvQihRJPA8CROKBhDNvoc2aDMOdAlcm7TUQY+35XYtrd3yh95QOOhsPDQY9QnKE0Wqag9y38OIgEvb88cA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 @endsection
 
 @section('custom_css')
@@ -54,24 +57,37 @@
             border: 2px solid rgba(255,255,255,0.3);
             box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
-        .file-item {
-            display: flex;
-            align-items: center;
-            padding: 15px;
-            border: 1px solid #e3e6f0;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            background-color: #f8f9fc;
-            transition: all 0.3s ease;
+        /* File Attachment Styles */
+        .custom-image-container,
+        .file-thumbnail-container {
+            transition: all 0.2s ease;
+            border-radius: 4px;
+            overflow: hidden;
         }
-        .file-item:hover {
-            background-color: #e3e6f0;
-            border-color: #5a6acf;
+
+        .custom-image-container:hover,
+        .file-thumbnail-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
         }
-        .file-icon {
-            margin-right: 12px;
-            font-size: 24px;
-            color: #5a6acf;
+
+        .custom-image-container img {
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .file-thumbnail-container {
+            padding: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            text-align: center;
+            min-width: 80px;
+        }
+
+        .file-thumbnail-container:hover {
+            background-color: rgba(115, 103, 240, 0.1);
+            border-color: #7367f0;
         }
         
         .step-description {
@@ -177,7 +193,7 @@
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h6 class="mb-0"><i class="ti ti-list-numbers me-2"></i>Walkthrough Steps</h6>
                     <div class="d-flex gap-2">
-                        <button type="button" class="btn btn-sm btn-outline-primary" id="prevStep" disabled>
+                        <button type="button" class="btn btn-sm btn-primary" id="prevStep" disabled>
                             <i class="ti ti-chevron-left me-1"></i>Previous
                         </button>
                         <button type="button" class="btn btn-sm btn-primary" id="nextStep">
@@ -190,7 +206,7 @@
                         <ul class="nav nav-tabs flex-column flex-shrink-0" role="tablist" style="width: 250px; min-width: 250px; margin-left: auto;">
                             @foreach($walkthrough->steps as $index => $step)
                                 <li class="nav-item">
-                                    <button type="button" class="nav-link {{ $index === 0 ? 'active' : '' }}" 
+                                    <button type="button" class="nav-link {{ $index === 0 ? 'active bg-label-primary' : '' }}" 
                                             role="tab" data-bs-toggle="tab" 
                                             data-bs-target="#navs-left-step-{{ $index + 1 }}" 
                                             aria-controls="navs-left-step-{{ $index + 1 }}" 
@@ -211,37 +227,51 @@
                             @foreach($walkthrough->steps as $index => $step)
                                 <div class="tab-pane fade {{ $index === 0 ? 'show active' : '' }}" 
                                      id="navs-left-step-{{ $index + 1 }}">
-                                    <div class="p-4 pt-0">
-                                        <div class="d-flex align-items-center mb-4">
-                                            <div class="step-number bg-primary text-white me-3">{{ $index + 1 }}</div>
-                                            <div>
-                                                <h5 class="mb-1">{{ $step->step_title }}</h5>
-                                                <small class="text-muted">Step {{ $index + 1 }} of {{ $walkthrough->steps->count() }}</small>
+                                    <div class="pt-0">
+                                        <div class="p-4 pb-0 pt-0">
+                                            <div class="d-flex align-items-center mb-4">
+                                                <div class="step-number bg-primary text-white me-3">{{ $index + 1 }}</div>
+                                                <div>
+                                                    <h5 class="mb-1">{{ $step->step_title }}</h5>
+                                                    <small class="text-muted">Step {{ $index + 1 }} of {{ $walkthrough->steps->count() }}</small>
+                                                </div>
                                             </div>
-                                        </div>
-                                        
-                                        <div class="step-description mb-4">
-                                            {!! $step->step_description !!}
+                                            
+                                            <div class="step-description mb-1">
+                                                {!! $step->step_description !!}
+                                            </div>
                                         </div>
 
                                         @if($step->files->isNotEmpty())
-                                            <div class="mt-4">
+                                            <hr>
+                                            <div class="mt-0 p-4 pt-1 pb-0">
                                                 <h6 class="mb-3"><i class="ti ti-files me-2"></i>Step Files ({{ $step->files->count() }})</h6>
                                                 <div class="row">
-                                                    @foreach($step->files as $file)
-                                                        <div class="col-md-6 mb-3">
-                                                            <div class="file-item">
-                                                                <i class="ti ti-file file-icon"></i>
-                                                                <div class="flex-grow-1">
-                                                                    <div class="fw-medium">{{ $file->file_name }}</div>
-                                                                    <small class="text-muted">{{ get_file_media_size($file) }}</small>
-                                                                </div>
-                                                                <a href="{{ file_media_download($file) }}" class="btn btn-sm btn-outline-primary" data-bs-toggle="tooltip" title="Download File">
-                                                                    <i class="ti ti-download"></i>
-                                                                </a>
-                                                            </div>
+                                                    <div class="col-md-12">
+                                                        <div class="d-flex flex-wrap gap-2 mb-3">
+                                                            @foreach ($step->files as $stepFile)
+                                                                @if (in_array($stepFile->mime_type, ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']))
+                                                                    <div class="custom-image-container" title="Click to view {{ $stepFile->original_name }}">
+                                                                        <a href="{{ file_media_download($stepFile) }}" data-lightbox="custom-images-{{ $step->id }}" data-title="{{ $stepFile->original_name }}">
+                                                                            <img src="{{ file_media_download($stepFile) }}" alt="{{ $stepFile->original_name }}" class="img-fluid img-thumbnail" style="width: 150px; height: 100px; object-fit: cover;">
+                                                                        </a>
+                                                                    </div>
+                                                                @else
+                                                                    <div class="file-thumbnail-container" title="Click to Download {{ $stepFile->original_name }}">
+                                                                        <a href="{{ file_media_download($stepFile) }}" target="_blank" class="text-decoration-none">
+                                                                            <div class="d-flex flex-column align-items-center">
+                                                                                <i class="ti ti-file-download fs-2 mb-2 text-primary"></i>
+                                                                                <span class="file-name text-center small fw-medium">
+                                                                                    {{ show_content($stepFile->original_name, 15) }}
+                                                                                </span>
+                                                                                <small class="text-muted">{{ strtoupper(pathinfo($stepFile->original_name, PATHINFO_EXTENSION)) }}</small>
+                                                                            </div>
+                                                                        </a>
+                                                                    </div>
+                                                                @endif
+                                                            @endforeach
                                                         </div>
-                                                    @endforeach
+                                                    </div>
                                                 </div>
                                             </div>
                                         @endif
@@ -269,6 +299,8 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
+    {{-- Lightbox JS --}}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.4/js/lightbox.min.js" integrity="sha512-Ixzuzfxv1EqafeQlTCufWfaC6ful6WFqIz4G+dWvK0beHw0NVJwvCKSgafpy5gwNqKmgUfIBraVwkKI+Cz0SEQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 @endsection
 
 @section('custom_script')
@@ -288,16 +320,16 @@
                 
                 // Update previous button
                 if (currentStepIndex === 0) {
-                    prevBtn.prop('disabled', true).addClass('disabled');
+                    prevBtn.prop('disabled', true).addClass('disabled cursor-not-allowed btn-label-primary');
                 } else {
-                    prevBtn.prop('disabled', false).removeClass('disabled');
+                    prevBtn.prop('disabled', false).removeClass('disabled cursor-not-allowed btn-label-primary');
                 }
                 
                 // Update next button
                 if (currentStepIndex === totalSteps - 1) {
-                    nextBtn.prop('disabled', true).addClass('disabled');
+                    nextBtn.prop('disabled', true).addClass('disabled cursor-not-allowed btn-label-primary');
                 } else {
-                    nextBtn.prop('disabled', false).removeClass('disabled');
+                    nextBtn.prop('disabled', false).removeClass('disabled cursor-not-allowed btn-label-primary');
                 }
             }
             
@@ -307,11 +339,11 @@
                     currentStepIndex = stepIndex;
                     
                     // Remove active class from all tabs
-                    $('.nav-link').removeClass('active');
+                    $('.nav-link').removeClass('active bg-label-primary');
                     $('.tab-pane').removeClass('show active');
                     
                     // Add active class to current step
-                    $(`.nav-link[data-step-index="${stepIndex}"]`).addClass('active');
+                    $(`.nav-link[data-step-index="${stepIndex}"]`).addClass('active bg-label-primary');
                     $(`#navs-left-step-${stepIndex + 1}`).addClass('show active');
                     
                     // Update navigation buttons
