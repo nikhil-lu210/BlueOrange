@@ -91,6 +91,10 @@ class OverviewController extends Controller
         return view('administration.lifecycle.index', compact('stats', 'recentActivity'));
     }
 
+    public function onboarding()
+    {
+        return view('administration.lifecycle.onboarding');
+    }
     /**
      * Show the form for creating a new resource.
      */
