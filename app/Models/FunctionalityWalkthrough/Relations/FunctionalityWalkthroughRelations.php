@@ -20,11 +20,4 @@ trait FunctionalityWalkthroughRelations
         return $this->hasMany(\App\Models\FunctionalityWalkthrough\FunctionalityWalkthroughStep::class, 'walkthrough_id')->orderBy('step_order');
     }
 
-    /**
-     * Get the files for the walkthrough.
-     */
-    public function files()
-    {
-        return $this->morphMany(\App\Models\FileMedia\FileMedia::class, 'fileable');
-    }
 }

@@ -91,18 +91,10 @@ trait FunctionalityWalkthroughScopes
     }
 
     /**
-     * Scope to include files
-     */
-    public function scopeWithFiles(Builder $query): Builder
-    {
-        return $query->with('files');
-    }
-
-    /**
      * Scope to include all relationships
      */
     public function scopeWithAllRelations(Builder $query): Builder
     {
-        return $query->withCreatorDetails()->withSteps()->withFiles();
+        return $query->withCreatorDetails()->withSteps();
     }
 }

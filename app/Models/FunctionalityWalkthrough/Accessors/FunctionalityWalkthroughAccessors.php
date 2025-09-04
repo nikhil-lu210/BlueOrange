@@ -51,21 +51,6 @@ trait FunctionalityWalkthroughAccessors
         return $this->steps->count();
     }
 
-    /**
-     * Get the files count
-     */
-    public function getFilesCountAttribute(): int
-    {
-        return $this->files->count();
-    }
-
-    /**
-     * Check if walkthrough has files
-     */
-    public function getHasFilesAttribute(): bool
-    {
-        return $this->files_count > 0;
-    }
 
     /**
      * Check if walkthrough has steps

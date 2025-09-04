@@ -100,13 +100,6 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3 col-md-12">
-                            <label for="files[]" class="form-label">{{ __('Walkthrough Files') }}</label>
-                            <input type="file" id="files[]" name="files[]" value="{{ old('files[]') }}" placeholder="{{ __('Walkthrough Files') }}" class="form-control @error('files[]') is-invalid @enderror" multiple/>
-                            @error('files[]')
-                                <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
-                            @enderror
-                        </div>
                     </div>
 
                     <!-- Steps Section -->

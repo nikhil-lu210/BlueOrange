@@ -37,10 +37,6 @@ class FunctionalityWalkthroughService
                 $this->createSteps($walkthrough, $data['steps']);
             }
 
-            // Store walkthrough files
-            if (isset($data['files']) && is_array($data['files'])) {
-                $this->uploadFiles($walkthrough, $data['files']);
-            }
 
             // Notifications and emails will be handled by the observer
         });
@@ -157,7 +153,6 @@ class FunctionalityWalkthroughService
         return $walkthrough->load([
             'creator.employee',
             'creator.media',
-            'files',
             'steps.files'
         ]);
     }
@@ -200,20 +195,6 @@ class FunctionalityWalkthroughService
         }
     }
 
-    /**
-     * Upload files for walkthrough
-     *
-     * @param FunctionalityWalkthrough $walkthrough
-     * @param array $files
-     * @return void
-     */
-    private function uploadFiles(FunctionalityWalkthrough $walkthrough, array $files): void
-    {
-        foreach ($files as $file) {
-            $directory = 'functionality_walkthroughs/' . $walkthrough->id;
-            store_file_media($file, $walkthrough, $directory);
-        }
-    }
 
     /**
      * Upload files for walkthrough step

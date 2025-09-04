@@ -30,8 +30,6 @@ class WalkthroughStoreRequest extends FormRequest
             'steps.*.step_description' => 'required|string',
             'steps.*.files' => 'nullable|array',
             'steps.*.files.*' => 'file|max:10240', // 10MB max
-            'files' => 'nullable|array',
-            'files.*' => 'file|max:10240', // 10MB max
         ];
     }
 
@@ -52,8 +50,6 @@ class WalkthroughStoreRequest extends FormRequest
             'steps.*.step_description.required' => 'Each step must have a description.',
             'steps.*.files.*.file' => 'Each file must be a valid file.',
             'steps.*.files.*.max' => 'Each file may not be greater than 10MB.',
-            'files.*.file' => 'Each file must be a valid file.',
-            'files.*.max' => 'Each file may not be greater than 10MB.',
         ];
     }
 }
