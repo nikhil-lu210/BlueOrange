@@ -122,7 +122,14 @@
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Functionality Walkthroughs') }}</li>
-    <li class="breadcrumb-item active">{{ $walkthrough->title }}</li>
+    <li class="breadcrumb-item">
+        @canany (['Functionality Walkthrough Everything', 'Functionality Walkthrough Create', 'Functionality Walkthrough Update', 'Functionality Walkthrough Delete']) 
+            <a href="{{ route('administration.functionality_walkthrough.index') }}">{{ __('All Walkthroughs') }}</a>
+        @elsecanany (['Functionality Walkthrough Read']) 
+            <a href="{{ route('administration.functionality_walkthrough.my') }}">{{ __('My Walkthroughs') }}</a>
+        @endcanany
+    </li>
+    <li class="breadcrumb-item active">{{ __('Details') }}</li>
 @endsection
 
 @section('content')
@@ -168,9 +175,6 @@
                             @endif
                         </div>
                         <div class="d-flex gap-2">
-                            <a href="{{ route('administration.functionality_walkthrough.index') }}" class="btn btn-outline-primary btn-icon rounded-pill" data-bs-toggle="tooltip" title="All Walkthroughs">
-                                <i class="ti ti-list"></i>
-                            </a>
                             @can ('Functionality Walkthrough Update')
                                 <a href="{{ route('administration.functionality_walkthrough.edit', ['functionalityWalkthrough' => $walkthrough]) }}" class="btn btn-primary btn-icon rounded-pill" data-bs-toggle="tooltip" title="Edit Walkthrough">
                                     <i class="ti ti-pencil"></i>
@@ -216,7 +220,7 @@
                                             <div class="step-number-small bg-primary text-white me-2">{{ $index + 1 }}</div>
                                             <div class="text-start">
                                                 <div class="fw-medium">Step {{ $index + 1 }}</div>
-                                                <small class="text-muted">{{ Str::limit($step->step_title, 25) }}</small>
+                                                <small class="text-muted">{{ show_content($step->step_title, 25) }}</small>
                                             </div>
                                         </div>
                                     </button>
