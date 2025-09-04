@@ -28,9 +28,9 @@
 
         @include('layouts.administration.partials.menus.daily_work_update')
 
-        @include('layouts.administration.partials.menus.task')
-
         @include('layouts.administration.partials.menus.event')
+
+        @include('layouts.administration.partials.menus.task')
 
         @include('layouts.administration.partials.menus.leave')
 
