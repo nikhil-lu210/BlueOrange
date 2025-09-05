@@ -197,6 +197,12 @@ class WorkScheduleService
             $query->forUser($userFilter);
         }
 
+        // Order by employee alias_name
+        $query->join('users', 'work_schedules.user_id', '=', 'users.id')
+              ->join('employees', 'users.id', '=', 'employees.user_id')
+              ->orderBy('employees.alias_name', 'ASC')
+              ->select('work_schedules.*');
+
         $schedules = $query->get()->groupBy('user_id');
 
         $reportData = [];
