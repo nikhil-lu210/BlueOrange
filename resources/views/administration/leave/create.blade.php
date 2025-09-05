@@ -408,18 +408,6 @@
                             return false;
                         }
                         dates.push(date);
-
-                        // Check if date is in the past
-                        if (new Date(date) < new Date().setHours(0,0,0,0)) {
-                            $(this).addClass('is-invalid');
-                            if (!$(this).next('.invalid-feedback').length) {
-                                $(this).after('<div class="invalid-feedback">Leave date cannot be in the past.</div>');
-                            }
-                            hasValidationError = true;
-                        } else {
-                            $(this).removeClass('is-invalid');
-                            $(this).next('.invalid-feedback').remove();
-                        }
                     }
                 });
 
