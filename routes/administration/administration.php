@@ -87,4 +87,7 @@ Route::prefix('')
 
             // functionality_walkthrough
             include_once 'functionality_walkthrough/functionality_walkthrough.php';
+
+            // work_schedule
+            include_once 'work_schedule.php';
         });
