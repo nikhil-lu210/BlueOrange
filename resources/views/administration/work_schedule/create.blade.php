@@ -375,9 +375,8 @@
                             $('#shift-total-time').text(response.shift.total_time);
                             $('#shift-info').show();
 
-                            // Set time constraints
-                            $('.work-start-time').attr('min', response.shift.start_time);
-                            $('.work-end-time').attr('max', response.shift.end_time);
+                            // Set time constraints (handle overnight shifts)
+                            setTimeConstraints(response.shift.start_time, response.shift.end_time);
                         } else {
                             alert(response.message);
                             $('#shift-info').hide();
@@ -481,8 +480,7 @@
 
                 // Set time constraints for new item
                 if (currentShiftInfo) {
-                    $(`input[name="work_items[${workItemIndex}][start_time]"]`).attr('min', currentShiftInfo.start_time);
-                    $(`input[name="work_items[${workItemIndex}][end_time]"]`).attr('max', currentShiftInfo.end_time);
+                    setTimeConstraintsForElement(`input[name="work_items[${workItemIndex}][start_time]"]`, `input[name="work_items[${workItemIndex}][end_time]"]`, currentShiftInfo.start_time, currentShiftInfo.end_time);
                 }
 
                 // Set required attribute for new item
@@ -535,8 +533,7 @@
 
                 // Set time constraints for new item
                 if (currentShiftInfo) {
-                    $(`input[name="weekday_work_items[${weekday}][${index}][start_time]"]`).attr('min', currentShiftInfo.start_time);
-                    $(`input[name="weekday_work_items[${weekday}][${index}][end_time]"]`).attr('max', currentShiftInfo.end_time);
+                    setTimeConstraintsForElement(`input[name="weekday_work_items[${weekday}][${index}][start_time]"]`, `input[name="weekday_work_items[${weekday}][${index}][end_time]"]`, currentShiftInfo.start_time, currentShiftInfo.end_time);
                 }
 
                 // Set required attribute for new item
@@ -706,6 +703,22 @@
         function timeToMinutes(timeString) {
             const [hours, minutes] = timeString.split(':').map(Number);
             return hours * 60 + minutes;
+        }
+
+        // Function to set time constraints for all work items (handles overnight shifts)
+        function setTimeConstraints(shiftStartTime, shiftEndTime) {
+            // Remove min/max attributes from all time inputs to avoid HTML5 validation issues with overnight shifts
+            $('.work-start-time, .work-end-time').removeAttr('min').removeAttr('max');
+            
+            // For overnight shifts, we'll rely on our custom validation instead of HTML5 validation
+            // This prevents the "Value must be X or later" error for overnight shifts
+        }
+
+        // Function to set time constraints for specific elements
+        function setTimeConstraintsForElement(startTimeSelector, endTimeSelector, shiftStartTime, shiftEndTime) {
+            // Remove min/max attributes to avoid HTML5 validation issues with overnight shifts
+            $(startTimeSelector).removeAttr('min');
+            $(endTimeSelector).removeAttr('max');
         }
     </script>
 @endsection

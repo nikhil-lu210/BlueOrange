@@ -263,22 +263,42 @@ class WorkScheduleService
             // Check if work item is overnight
             $isOvernightWork = $endTime->lt($startTime);
             
+            // Create copies for duration calculation
+            $startTimeForDuration = $startTime->copy();
+            $endTimeForDuration = $endTime->copy();
+            
             if ($isOvernightWork) {
                 // For overnight work items, add 24 hours to end time for calculation
-                $endTime->addDay();
+                $endTimeForDuration->addDay();
             }
 
-            // Validate against shift times
-            $shiftStartForComparison = $shiftStartTime->copy();
-            $shiftEndForComparison = $shiftEndTime->copy();
+            // Validate against shift times (handle overnight shifts properly)
+            $shiftStartOriginal = Carbon::createFromFormat('H:i:s', $employeeShift->start_time);
+            $shiftEndOriginal = Carbon::createFromFormat('H:i:s', $employeeShift->end_time);
             
             if ($isOvernightShift) {
-                // Reset shift end time for comparison
-                $shiftEndForComparison = Carbon::createFromFormat('H:i:s', $employeeShift->end_time)->addDay();
-            }
-            
-            if ($startTime->lt($shiftStartForComparison) || $endTime->gt($shiftEndForComparison)) {
-                throw new Exception('Work time must be within shift time range.');
+                // For overnight shifts, work items must be within the shift range
+                // Shift: 23:00-07:00, valid work items: 23:00-01:00, 01:00-07:00, etc.
+                
+                if ($isOvernightWork) {
+                    // For overnight work items, both start and end should be within shift range
+                    // Start should be >= shift start, End should be <= shift end
+                    if ($startTime->lt($shiftStartOriginal) || $endTime->gt($shiftEndOriginal)) {
+                        throw new Exception('Work time must be within shift time range.');
+                    }
+                } else {
+                    // For regular work items in overnight shift (e.g., 02:00-07:00 in 23:00-07:00 shift)
+                    // The work item is on the "next day" part of the overnight shift
+                    // Start should be <= shift end, End should be <= shift end
+                    if ($startTime->gt($shiftEndOriginal) || $endTime->gt($shiftEndOriginal)) {
+                        throw new Exception('Work time must be within shift time range.');
+                    }
+                }
+            } else {
+                // For regular shifts, standard validation
+                if ($startTime->lt($shiftStartOriginal) || $endTime->gt($shiftEndOriginal)) {
+                    throw new Exception('Work time must be within shift time range.');
+                }
             }
 
             // Store original times for overlap checking
@@ -293,7 +313,7 @@ class WorkScheduleService
             }
 
             $timeRanges[] = ['start' => $originalStart, 'end' => $originalEnd];
-            $totalWorkMinutes += $endTime->diffInMinutes($startTime);
+            $totalWorkMinutes += $endTimeForDuration->diffInMinutes($startTimeForDuration);
         }
 
         // Validate total work time doesn't exceed shift time
