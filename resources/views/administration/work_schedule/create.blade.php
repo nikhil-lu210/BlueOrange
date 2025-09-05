@@ -37,6 +37,10 @@
         padding: 15px;
         margin-bottom: 20px;
     }
+    .custom-option-basic .custom-option-content {
+        padding: 0.5em;
+        padding-left: 2.5em;
+    }
     </style>
 @endsection
 
@@ -86,13 +90,15 @@
                         </div>
                         <div class="mb-3 col-md-8">
                             <label class="form-label">{{ __('Select Weekdays') }} <strong class="text-danger">*</strong></label>
-                            <div class="row">
+                            <div class="row g-2">
                                 @foreach ($availableWeekdays as $weekday)
-                                    <div class="col-md-2 mt-2 mb-1">
-                                        <div class="form-check">
-                                            <input class="form-check-input weekday-checkbox" type="checkbox" name="weekdays[]" value="{{ $weekday }}" id="weekday_{{ $loop->index }}" {{ in_array($weekday, old('weekdays', [])) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="weekday_{{ $loop->index }}">
-                                                {{ $weekday }}
+                                    <div class="col text-center">
+                                        <div class="form-check custom-option custom-option-basic">
+                                            <label class="form-check-label custom-option-content" for="weekday_{{ $loop->index }}">
+                                                <input name="weekdays[]" class="form-check-input weekday-checkbox" type="checkbox" value="{{ $weekday }}" id="weekday_{{ $loop->index }}" {{ in_array($weekday, old('weekdays', [])) ? 'checked' : '' }}>
+                                                <span class="custom-option-header pb-0">
+                                                    <span class="h6 mb-0">{{ $weekday }}</span>
+                                                </span>
                                             </label>
                                         </div>
                                     </div>
@@ -589,8 +595,10 @@
                             errors.push(`Work item ${index + 1} is incomplete`);
                         }
 
-                        if (startTime && endTime && startTime >= endTime) {
-                            errors.push(`Work item ${index + 1}: End time must be after start time`);
+                        if (startTime && endTime) {
+                            if (!isValidTimeRange(startTime, endTime)) {
+                                errors.push(`Work item ${index + 1}: End time must be after start time`);
+                            }
                         }
                     });
                 } else {
@@ -614,8 +622,10 @@
                                 errors.push(`${weekday} - Work item ${index + 1} is incomplete`);
                             }
 
-                            if (startTime && endTime && startTime >= endTime) {
-                                errors.push(`${weekday} - Work item ${index + 1}: End time must be after start time`);
+                            if (startTime && endTime) {
+                                if (!isValidTimeRange(startTime, endTime)) {
+                                    errors.push(`${weekday} - Work item ${index + 1}: End time must be after start time`);
+                                }
                             }
                         });
                     });
@@ -671,5 +681,31 @@
                 weekdayWorkItemIndexes['{{ $weekday }}'] = $(`.work-items-for-weekday[data-weekday="{{ $weekday }}"] .work-item-row`).length - 1;
             @endforeach
         });
+
+        // Function to validate time range (handles overnight shifts)
+        function isValidTimeRange(startTime, endTime) {
+            if (!startTime || !endTime) return false;
+            
+            // Convert time strings to minutes for easier comparison
+            const startMinutes = timeToMinutes(startTime);
+            const endMinutes = timeToMinutes(endTime);
+            
+            // Check if this is an overnight shift (end time is "before" start time)
+            if (endMinutes <= startMinutes) {
+                // For overnight shifts, add 24 hours (1440 minutes) to end time
+                const overnightEndMinutes = endMinutes + 1440;
+                // Check if the overnight duration is reasonable (not more than 24 hours)
+                return (overnightEndMinutes - startMinutes) <= 1440;
+            }
+            
+            // For regular shifts, end time should be after start time
+            return endMinutes > startMinutes;
+        }
+
+        // Function to convert time string (HH:MM) to minutes
+        function timeToMinutes(timeString) {
+            const [hours, minutes] = timeString.split(':').map(Number);
+            return hours * 60 + minutes;
+        }
     </script>
 @endsection

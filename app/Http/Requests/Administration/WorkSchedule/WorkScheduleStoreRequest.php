@@ -41,7 +41,7 @@ class WorkScheduleStoreRequest extends FormRequest
             if ($this->has('work_items') && is_array($this->input('work_items'))) {
                 foreach ($this->input('work_items') as $index => $item) {
                     $rules["work_items.{$index}.start_time"] = 'required|date_format:H:i';
-                    $rules["work_items.{$index}.end_time"] = 'required|date_format:H:i|after:work_items.{$index}.start_time';
+                    $rules["work_items.{$index}.end_time"] = 'required|date_format:H:i';
                     $rules["work_items.{$index}.work_type"] = 'required|in:' . implode(',', WorkScheduleItem::getWorkTypes());
                     $rules["work_items.{$index}.work_title"] = 'required|string|max:255';
                 }
@@ -56,7 +56,7 @@ class WorkScheduleStoreRequest extends FormRequest
                 if ($this->has("weekday_work_items.{$weekday}")) {
                     foreach ($this->input("weekday_work_items.{$weekday}") as $index => $item) {
                         $rules["weekday_work_items.{$weekday}.{$index}.start_time"] = 'required|date_format:H:i';
-                        $rules["weekday_work_items.{$weekday}.{$index}.end_time"] = 'required|date_format:H:i|after:weekday_work_items.{$weekday}.{$index}.start_time';
+                        $rules["weekday_work_items.{$weekday}.{$index}.end_time"] = 'required|date_format:H:i';
                         $rules["weekday_work_items.{$weekday}.{$index}.work_type"] = 'required|in:' . implode(',', WorkScheduleItem::getWorkTypes());
                         $rules["weekday_work_items.{$weekday}.{$index}.work_title"] = 'required|string|max:255';
                     }
@@ -90,7 +90,75 @@ class WorkScheduleStoreRequest extends FormRequest
                     }
                 }
             }
+            
+            // Custom validation for overnight shifts
+            $this->validateOvernightShifts($validator);
         });
+    }
+
+    /**
+     * Validate that work items are within shift time constraints
+     */
+    private function validateOvernightShifts($validator)
+    {
+        $sameScheduleForAll = $this->has('same_schedule_for_all') && $this->input('same_schedule_for_all');
+        
+        if ($sameScheduleForAll) {
+            // Validate common work items
+            if ($this->has('work_items') && is_array($this->input('work_items'))) {
+                foreach ($this->input('work_items') as $index => $item) {
+                    if (!empty($item['start_time']) && !empty($item['end_time'])) {
+                        $this->validateWorkItemTimes($validator, "work_items.{$index}", $item['start_time'], $item['end_time']);
+                    }
+                }
+            }
+        } else {
+            // Validate individual weekday work items
+            $selectedWeekdays = $this->input('weekdays', []);
+            foreach ($selectedWeekdays as $weekday) {
+                if ($this->has("weekday_work_items.{$weekday}") && is_array($this->input("weekday_work_items.{$weekday}"))) {
+                    foreach ($this->input("weekday_work_items.{$weekday}") as $index => $item) {
+                        if (!empty($item['start_time']) && !empty($item['end_time'])) {
+                            $this->validateWorkItemTimes($validator, "weekday_work_items.{$weekday}.{$index}", $item['start_time'], $item['end_time']);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Validate individual work item times
+     */
+    private function validateWorkItemTimes($validator, $fieldPrefix, $startTime, $endTime)
+    {
+        try {
+            $start = \Carbon\Carbon::createFromFormat('H:i', $startTime);
+            $end = \Carbon\Carbon::createFromFormat('H:i', $endTime);
+            
+            if (!$start || !$end) {
+                return; // Let the date_format validation handle this
+            }
+            
+            // Check if this is an overnight shift (end time is "before" start time)
+            $isOvernight = $end->lt($start);
+            
+            if ($isOvernight) {
+                // For overnight shifts, add 24 hours to end time for comparison
+                $end->addDay();
+            }
+            
+            // Check if end time is after start time
+            if ($end->lte($start)) {
+                $validator->errors()->add(
+                    "{$fieldPrefix}.end_time",
+                    'End time must be after start time. For overnight shifts, ensure the work item spans correctly across midnight.'
+                );
+            }
+            
+        } catch (\Exception $e) {
+            // Let the date_format validation handle invalid formats
+        }
     }
 
     /**

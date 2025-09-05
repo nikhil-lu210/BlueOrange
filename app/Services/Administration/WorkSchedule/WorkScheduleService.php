@@ -242,6 +242,15 @@ class WorkScheduleService
     {
         $shiftStartTime = Carbon::createFromFormat('H:i:s', $employeeShift->start_time);
         $shiftEndTime = Carbon::createFromFormat('H:i:s', $employeeShift->end_time);
+        
+        // Check if shift is overnight (end time is "before" start time)
+        $isOvernightShift = $shiftEndTime->lt($shiftStartTime);
+        
+        if ($isOvernightShift) {
+            // For overnight shifts, add 24 hours to end time for calculation
+            $shiftEndTime->addDay();
+        }
+        
         $shiftTotalMinutes = $shiftEndTime->diffInMinutes($shiftStartTime);
 
         $totalWorkMinutes = 0;
@@ -251,27 +260,74 @@ class WorkScheduleService
             $startTime = Carbon::createFromFormat('H:i', $item['start_time']);
             $endTime = Carbon::createFromFormat('H:i', $item['end_time']);
 
+            // Check if work item is overnight
+            $isOvernightWork = $endTime->lt($startTime);
+            
+            if ($isOvernightWork) {
+                // For overnight work items, add 24 hours to end time for calculation
+                $endTime->addDay();
+            }
+
             // Validate against shift times
-            if ($startTime->lt($shiftStartTime) || $endTime->gt($shiftEndTime)) {
+            $shiftStartForComparison = $shiftStartTime->copy();
+            $shiftEndForComparison = $shiftEndTime->copy();
+            
+            if ($isOvernightShift) {
+                // Reset shift end time for comparison
+                $shiftEndForComparison = Carbon::createFromFormat('H:i:s', $employeeShift->end_time)->addDay();
+            }
+            
+            if ($startTime->lt($shiftStartForComparison) || $endTime->gt($shiftEndForComparison)) {
                 throw new Exception('Work time must be within shift time range.');
             }
 
+            // Store original times for overlap checking
+            $originalStart = Carbon::createFromFormat('H:i', $item['start_time']);
+            $originalEnd = Carbon::createFromFormat('H:i', $item['end_time']);
+            
             // Check for overlapping times
             foreach ($timeRanges as $range) {
-                if (($startTime->gte($range['start']) && $startTime->lt($range['end'])) ||
-                    ($endTime->gt($range['start']) && $endTime->lte($range['end'])) ||
-                    ($startTime->lte($range['start']) && $endTime->gte($range['end']))) {
+                if ($this->timeRangesOverlap(['start' => $originalStart, 'end' => $originalEnd], $range)) {
                     throw new Exception('Work time ranges cannot overlap.');
                 }
             }
 
-            $timeRanges[] = ['start' => $startTime, 'end' => $endTime];
+            $timeRanges[] = ['start' => $originalStart, 'end' => $originalEnd];
             $totalWorkMinutes += $endTime->diffInMinutes($startTime);
         }
 
         // Validate total work time doesn't exceed shift time
         if ($totalWorkMinutes > $shiftTotalMinutes) {
             throw new Exception('Total work time cannot exceed shift total time.');
+        }
+    }
+
+    /**
+     * Check if two time ranges overlap (handling overnight shifts)
+     */
+    private function timeRangesOverlap(array $range1, array $range2): bool
+    {
+        $start1 = $range1['start'];
+        $end1 = $range1['end'];
+        $start2 = $range2['start'];
+        $end2 = $range2['end'];
+        
+        // Check if either range is overnight
+        $isOvernight1 = $end1->lt($start1);
+        $isOvernight2 = $end2->lt($start2);
+        
+        if ($isOvernight1 && $isOvernight2) {
+            // Both are overnight - they overlap if they share any time
+            return true; // For simplicity, consider all overnight ranges as potentially overlapping
+        } elseif ($isOvernight1) {
+            // Range 1 is overnight, range 2 is not
+            return $start2->lt($end1) || $end2->gt($start1);
+        } elseif ($isOvernight2) {
+            // Range 2 is overnight, range 1 is not
+            return $start1->lt($end2) || $end1->gt($start2);
+        } else {
+            // Neither is overnight - standard overlap check
+            return $start1->lt($end2) && $end1->gt($start2);
         }
     }
 
@@ -318,9 +374,15 @@ class WorkScheduleService
             // Handle different time formats
             $start = Carbon::createFromFormat('H:i', $startTime);
             $end = Carbon::createFromFormat('H:i', $endTime);
-
+            
             if (!$start || !$end) {
                 throw new Exception("Invalid time format: start='{$startTime}', end='{$endTime}'");
+            }
+
+            // Check if this is an overnight shift (end time is "before" start time)
+            if ($end->lt($start)) {
+                // For overnight shifts, add 24 hours to end time for calculation
+                $end->addDay();
             }
 
             return $end->diffInMinutes($start);
