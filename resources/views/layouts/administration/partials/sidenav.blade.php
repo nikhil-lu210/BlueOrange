@@ -55,6 +55,8 @@
 
         @include('layouts.administration.partials.menus.inventory')
 
+        @include('layouts.administration.partials.menus.work_schedule')
+
         <!-- Settings -->
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">{{ __('Settings') }}</span>

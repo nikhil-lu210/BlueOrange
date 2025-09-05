@@ -400,14 +400,48 @@
                 let duplicateFound = false;
                 let hasValidationError = false;
 
+                let selectedType = $('input[name="type"]:checked').val();
+                let today = new Date();
+                today.setHours(0, 0, 0, 0); // Set time to midnight
+
+                // For Earned leave, min date is 3 days from today + 1
+                let minEarnedDate = new Date(today);
+                if (selectedType === 'Earned') {
+                    minEarnedDate.setDate(minEarnedDate.getDate() + 3 + 1); // leave allowed after 3 days
+                }
+
                 $('.leave-day-row input[name^="leave_days[date]"]').each(function() {
-                    let date = $(this).val();
-                    if (date) {
-                        if (dates.includes(date)) {
+                    let dateStr = $(this).val();
+                    if (dateStr) {
+                        let inputDate = new Date(dateStr);
+
+                        // Check for duplicates
+                        if (dates.includes(dateStr)) {
                             duplicateFound = true;
-                            return false;
+                            $(this).addClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+                            $(this).after('<div class="invalid-feedback">Duplicate leave date.</div>');
+                            hasValidationError = true;
+                            return false; // stop checking further
                         }
-                        dates.push(date);
+                        dates.push(dateStr);
+
+                        // Validation
+                        if (inputDate < today || (selectedType === 'Earned' && inputDate <= minEarnedDate)) {
+                            $(this).addClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+
+                            if (inputDate < today) {
+                                $(this).after('<div class="invalid-feedback">Leave date cannot be in the past.</div>');
+                            } else if (selectedType === 'Earned' && inputDate <= minEarnedDate) {
+                                $(this).after('<div class="invalid-feedback">For Earned leave, date must be after 3 days from today.</div>');
+                            }
+
+                            hasValidationError = true;
+                        } else {
+                            $(this).removeClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+                        }
                     }
                 });
 
