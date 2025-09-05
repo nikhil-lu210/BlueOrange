@@ -38,7 +38,7 @@ class LeaveHistoryStoreRequest extends FormRequest
             'reason' => ['required', 'string', 'min:10', 'max:1000'],
             'is_paid_leave' => ['nullable', 'boolean'],
             'leave_days.date' => ['required', 'array', 'min:1'],
-            'leave_days.date.*' => ['date', 'after_or_equal:today'],
+            'leave_days.date.*' => ['date'],
             'total_leave.hour' => ['required', 'array'],
             'total_leave.hour.*' => ['integer', 'min:0', 'max:8'],
             'total_leave.min' => ['required', 'array'],

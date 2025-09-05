@@ -126,24 +126,9 @@ class LeaveHistoryController extends Controller
 
             $this->leaveHistoryService->store($user, $request->validated());
 
-            // Log successful submission
-            Log::info('Leave request submitted', [
-                'user_id' => $user->id,
-                'leave_type' => $request->input('type'),
-                'dates' => $request->input('leave_days.date'),
-                'ip_address' => request()->ip()
-            ]);
-
             toast('Leave Application Submitted Successfully.', 'success');
             return redirect()->route('administration.leave.history.my');
         } catch (Exception $e) {
-            // Log error
-            Log::error('Leave request submission failed', [
-                'user_id' => auth()->id(),
-                'error' => $e->getMessage(),
-                'ip_address' => request()->ip()
-            ]);
-
             return redirect()->back()->withErrors([
                 'submission' => 'Failed to submit leave request: ' . $e->getMessage()
             ]);
@@ -218,25 +203,9 @@ class LeaveHistoryController extends Controller
             // Send Mail to the Leave Applier
             Mail::to($leaveHistory->user->employee->official_email)->queue(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
 
-            // Log rejection
-            Log::info('Leave request rejected', [
-                'rejector_id' => auth()->id(),
-                'leave_id' => $leaveHistory->id,
-                'user_id' => $leaveHistory->user_id,
-                'reason' => $request->reviewer_note,
-                'ip_address' => request()->ip()
-            ]);
-
             toast('Leave request rejected successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
-            Log::error('Leave rejection failed', [
-                'rejector_id' => auth()->id(),
-                'leave_id' => $leaveHistory->id,
-                'error' => $e->getMessage(),
-                'ip_address' => request()->ip()
-            ]);
-
             return redirect()->back()->withErrors([
                 'rejection' => 'Failed to reject leave: ' . $e->getMessage()
             ]);
@@ -257,24 +226,9 @@ class LeaveHistoryController extends Controller
         try {
             $this->leaveHistoryService->cancel($request, $leaveHistory);
 
-            // Log cancellation
-            Log::info('Leave request canceled', [
-                'user_id' => auth()->id(),
-                'leave_id' => $leaveHistory->id,
-                'reason' => $request->reviewer_note,
-                'ip_address' => request()->ip()
-            ]);
-
             toast('Leave request has been Canceled Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
-            Log::error('Leave cancellation failed', [
-                'user_id' => auth()->id(),
-                'leave_id' => $leaveHistory->id,
-                'error' => $e->getMessage(),
-                'ip_address' => request()->ip()
-            ]);
-
             return redirect()->back()->withErrors([
                 'cancellation' => 'Failed to cancel leave: ' . $e->getMessage()
             ]);
@@ -299,7 +253,7 @@ class LeaveHistoryController extends Controller
 
             toast('Leave Balances Synced Successfully for the year ' . $year . ' for ' . show_employee_data($userId, 'alias_name'), 'success');
         } catch (\Exception $e) {
-            dd('Failed to auto-sync leave balances. Error: ' . $e->getMessage());
+            // dd('Failed to auto-sync leave balances. Error: ' . $e->getMessage());
             toast('Failed to auto-sync leave balances. Error: ' . $e->getMessage(), 'error');
         }
     }
@@ -320,23 +274,9 @@ class LeaveHistoryController extends Controller
                 return redirect()->back();
             }
 
-            // Log export
-            Log::info('Leave data exported', [
-                'user_id' => auth()->id(),
-                'export_count' => count($exportData['leaves'] ?? []),
-                'filename' => $exportData['fileName'],
-                'ip_address' => request()->ip()
-            ]);
-
             // Return the Excel download with the appropriate filename
             return Excel::download(new LeaveExport($exportData['leaves']), $exportData['fileName']);
         } catch (Exception $e) {
-            Log::error('Leave export failed', [
-                'user_id' => auth()->id(),
-                'error' => $e->getMessage(),
-                'ip_address' => request()->ip()
-            ]);
-
             alert('Oops! Error.', $e->getMessage(), 'error');
             return redirect()->back();
         }
