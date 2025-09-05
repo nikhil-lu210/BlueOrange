@@ -15,89 +15,138 @@
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
-    /* Custom CSS Here */
+    /* Gantt Chart Styles */
     .gantt-chart {
         background-color: #f8f9fa;
         border: 1px solid #e9ecef;
         border-radius: 8px;
         padding: 20px;
         margin-top: 20px;
+        overflow-x: auto;
     }
+    
     .gantt-header {
         display: flex;
         background-color: #e9ecef;
         border-radius: 4px;
         margin-bottom: 10px;
-        overflow-x: auto;
+        min-width: 800px;
     }
+    
     .gantt-employee-column {
+        flex: 0 0 200px;
         min-width: 200px;
-        padding: 10px;
+        padding: 15px;
         border-right: 1px solid #dee2e6;
         background-color: #f8f9fa;
         font-weight: bold;
+        color: #495057;
     }
+    
     .gantt-time-column {
-        min-width: 60px;
+        flex: 1;
+        min-width: 35px;
         padding: 10px 5px;
         text-align: center;
         border-right: 1px solid #dee2e6;
         font-size: 0.8rem;
+        font-weight: 500;
+        color: #495057;
+        background-color: #f8f9fa;
     }
+    
     .gantt-row {
         display: flex;
         border-bottom: 1px solid #e9ecef;
         min-height: 50px;
         align-items: center;
+        min-width: 800px;
     }
+    
     .gantt-employee-cell {
+        flex: 0 0 200px;
         min-width: 200px;
-        padding: 10px;
+        padding: 15px;
         border-right: 1px solid #dee2e6;
         background-color: white;
+        font-weight: 500;
+        color: #212529;
     }
+    
     .gantt-time-cell {
-        min-width: 60px;
+        flex: 1;
+        min-width: 35px;
         height: 50px;
         border-right: 1px solid #e9ecef;
         position: relative;
         background-color: white;
-    }
-    .gantt-bar {
-        position: absolute;
-        top: 10px;
-        height: 30px;
-        border-radius: 4px;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: white;
-        font-size: 0.7rem;
-        font-weight: bold;
-        cursor: pointer;
         transition: opacity 0.2s;
+        cursor: pointer;
+        font-size: 0.75rem;
     }
-    .gantt-bar:hover {
+    
+    .gantt-time-cell:hover {
         opacity: 0.8;
     }
-    .work-type-client { background-color: #28a745; }
-    .work-type-internal { background-color: #007bff; }
-    .work-type-bench { background-color: #ffc107; color: #212529; }
+    
+    /* Clean colored cells without text */
+    .gantt-time-cell.bg-warning {
+        opacity: 0.9;
+    }
+    
+    .gantt-time-cell.bg-success,
+    .gantt-time-cell.bg-primary,
+    .gantt-time-cell.bg-secondary {
+        opacity: 0.9;
+    }
+    
+    /* Work Type Colors - Using Bootstrap classes */
+    /* Bootstrap classes: bg-success, bg-warning, bg-primary, bg-secondary */
+    
+    /* Legend */
     .legend {
         display: flex;
         justify-content: center;
         gap: 20px;
         margin-bottom: 20px;
     }
+    
     .legend-item {
         display: flex;
         align-items: center;
         gap: 5px;
     }
+    
     .legend-color {
         width: 20px;
         height: 20px;
         border-radius: 4px;
+    }
+    
+    /* Weekday Navigation */
+    .weekday-nav {
+        margin-bottom: 20px;
+    }
+    
+    .weekday-nav .nav-link {
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        margin-right: 5px;
+        border-radius: 4px;
+    }
+    
+    .weekday-nav .nav-link.active {
+        background-color: #007bff;
+        border-color: #007bff;
+        color: white;
+    }
+    
+    .weekday-nav .nav-link:hover {
+        background-color: #e9ecef;
+        border-color: #dee2e6;
     }
     </style>
 @endsection
@@ -113,21 +162,12 @@
 
 @section('content')
 
-<!-- Start row -->
+<!-- Filter Section -->
 <div class="row">
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-body">
                 <div class="row">
-                    <div class="mb-3 col-md-6">
-                        <label for="weekday_filter" class="form-label">Filter by Weekday</label>
-                        <select name="weekday_filter" id="weekday_filter" class="form-select">
-                            <option value="">All Weekdays</option>
-                            @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $weekday)
-                                <option value="{{ $weekday }}" {{ request()->weekday_filter == $weekday ? 'selected' : '' }}>{{ $weekday }}</option>
-                            @endforeach
-                        </select>
-                    </div>
                     <div class="mb-3 col-md-6">
                         <label for="user_filter" class="form-label">Filter by Employee</label>
                         <select name="user_filter" id="user_filter" class="form-select">
@@ -137,13 +177,12 @@
                             @endforeach
                         </select>
                     </div>
-                </div>
-
-                <div class="col-md-12 text-end">
-                    <button type="button" id="apply-filters" class="btn btn-primary">
-                        <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                        Apply Filters
-                    </button>
+                    <div class="mb-3 col-md-6 d-flex align-items-end">
+                        <button type="button" id="apply-filters" class="btn btn-primary">
+                            <span class="tf-icon ti ti-filter ti-xs me-1"></span>
+                            Apply Filters
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -165,81 +204,113 @@
             </div>
             <div class="card-body">
                 @if(count($reportData) > 0)
-                    <!-- Legend -->
-                    <div class="legend">
-                        <div class="legend-item">
-                            <div class="legend-color work-type-client"></div>
-                            <span>Client Work</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color work-type-internal"></div>
-                            <span>Internal Work</span>
-                        </div>
-                        <div class="legend-item">
-                            <div class="legend-color work-type-bench"></div>
-                            <span>Bench Work</span>
-                        </div>
-                    </div>
+                    <!-- Weekday Navigation -->
+                    <ul class="nav nav-pills weekday-nav" id="weekday-tabs" role="tablist">
+                        @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $weekday)
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link {{ request()->weekday_filter == $weekday || (request()->weekday_filter == null && $weekday == 'Monday') ? 'active' : '' }}" 
+                                        id="{{ strtolower($weekday) }}-tab" 
+                                        data-bs-toggle="pill" 
+                                        data-bs-target="#{{ strtolower($weekday) }}" 
+                                        type="button" 
+                                        role="tab" 
+                                        aria-controls="{{ strtolower($weekday) }}" 
+                                        aria-selected="{{ request()->weekday_filter == $weekday || (request()->weekday_filter == null && $weekday == 'Monday') ? 'true' : 'false' }}">
+                                    {{ $weekday }}
+                                </button>
+                            </li>
+                        @endforeach
+                    </ul>
 
-                    <!-- Gantt Chart -->
-                    <div class="gantt-chart">
-                        <div class="gantt-header">
-                            <div class="gantt-employee-column">Employee / Weekday</div>
-                            @for($hour = 0; $hour < 24; $hour++)
-                                <div class="gantt-time-column">{{ sprintf('%02d:00', $hour) }}</div>
-                            @endfor
-                        </div>
-
-                        @foreach($reportData as $userData)
-                            @foreach($userData['schedules'] as $schedule)
-                                <div class="gantt-row">
-                                    <div class="gantt-employee-cell">
-                                        <strong>{{ $userData['user_name'] }}</strong><br>
-                                        <small class="text-muted">{{ $schedule['weekday'] }}</small>
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="weekday-tabContent">
+                        @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $weekday)
+                            <div class="tab-pane fade {{ request()->weekday_filter == $weekday || (request()->weekday_filter == null && $weekday == 'Monday') ? 'show active' : '' }}" 
+                                 id="{{ strtolower($weekday) }}" 
+                                 role="tabpanel" 
+                                 aria-labelledby="{{ strtolower($weekday) }}-tab">
+                                
+                                <!-- Legend -->
+                                <div class="legend">
+                                    <div class="legend-item">
+                                        <div class="legend-color bg-success"></div>
+                                        <span>Client Work</span>
                                     </div>
-                                    @for($hour = 0; $hour < 24; $hour++)
-                                        <div class="gantt-time-cell" data-hour="{{ $hour }}">
-                                            @php
-                                                $startHour = (int) substr($schedule['start_time'], 0, 2);
-                                                $startMinute = (int) substr($schedule['start_time'], 3, 2);
-                                                $endHour = (int) substr($schedule['end_time'], 0, 2);
-                                                $endMinute = (int) substr($schedule['end_time'], 3, 2);
-
-                                                $scheduleStartMinutes = $startHour * 60 + $startMinute;
-                                                $scheduleEndMinutes = $endHour * 60 + $endMinute;
-                                                $hourStartMinutes = $hour * 60;
-                                                $hourEndMinutes = ($hour + 1) * 60;
-
-                                                // Check if this schedule overlaps with this hour
-                                                $overlapStart = max($scheduleStartMinutes, $hourStartMinutes);
-                                                $overlapEnd = min($scheduleEndMinutes, $hourEndMinutes);
-
-                                                if ($overlapStart < $overlapEnd) {
-                                                    $overlapDuration = $overlapEnd - $overlapStart;
-                                                    $leftPercent = (($overlapStart - $hourStartMinutes) / 60) * 100;
-                                                    $widthPercent = ($overlapDuration / 60) * 100;
-                                                }
-                                            @endphp
-
-                                            @if(isset($overlapStart) && $overlapStart < $overlapEnd)
-                                                <div class="gantt-bar work-type-{{ strtolower($schedule['work_type']) }}"
-                                                     style="left: {{ $leftPercent }}%; width: {{ $widthPercent }}%;"
-                                                     data-bs-toggle="tooltip"
-                                                     title="{{ $schedule['work_title'] }} ({{ $schedule['start_time'] }} - {{ $schedule['end_time'] }})">
-                                                    {{ $schedule['work_type'] }}
-                                                </div>
-                                            @endif
-                                        </div>
-                                    @endfor
+                                    <div class="legend-item">
+                                        <div class="legend-color bg-warning"></div>
+                                        <span>Internal Work</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-color bg-primary"></div>
+                                        <span>Bench Work</span>
+                                    </div>
                                 </div>
-                            @endforeach
+
+                                <!-- Gantt Chart -->
+                                <div class="gantt-chart">
+                                    <div class="gantt-header">
+                                        <div class="gantt-employee-column">Employee</div>
+                                        @for($hour = 0; $hour <= 23; $hour++)
+                                            <div class="gantt-time-column">
+                                                @php
+                                                    $displayTime = '';
+                                                    if ($hour == 0) {
+                                                        $displayTime = '12 AM';
+                                                    } elseif ($hour < 12) {
+                                                        $displayTime = $hour . ' AM';
+                                                    } elseif ($hour == 12) {
+                                                        $displayTime = '12 PM';
+                                                    } else {
+                                                        $displayTime = ($hour - 12) . ' PM';
+                                                    }
+                                                @endphp
+                                                {{ $displayTime }}
+                                            </div>
+                                        @endfor
+                                    </div>
+
+                                    @php
+                                        $currentWeekdayData = collect($reportData)->map(function($userData) use ($weekday) {
+                                            return [
+                                                'user_id' => $userData['user_id'],
+                                                'user_name' => $userData['user_name'],
+                                                'schedules' => collect($userData['schedules'])->filter(function($schedule) use ($weekday) {
+                                                    return $schedule['weekday'] == $weekday;
+                                                })->values()->toArray()
+                                            ];
+                                        })->filter(function($userData) {
+                                            return count($userData['schedules']) > 0;
+                                        });
+                                    @endphp
+
+                                    @foreach($currentWeekdayData as $userData)
+                                        <div class="gantt-row">
+                                            <div class="gantt-employee-cell">
+                                                {{ $userData['user_name'] }}
+                                            </div>
+                                            @php
+                                                $cellData = $workScheduleService->getGanttCellData($userData, $weekday);
+                                            @endphp
+                                            @foreach($cellData as $cell)
+                                                <div class="gantt-time-cell {{ $cell['bgClass'] }}" 
+                                                     data-hour="{{ $cell['hour'] }}"
+                                                     @if($cell['hasSchedule']) 
+                                                         data-bs-toggle="tooltip" 
+                                                         title="{{ $cell['title'] }}"
+                                                     @endif>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
                         @endforeach
                     </div>
                 @else
                     <div class="text-center py-5">
                         <i class="ti ti-chart-bar me-2" style="font-size: 3rem; color: #6c757d;"></i>
-                        <h5 class="text-muted">No work schedules found for the selected date range</h5>
-                        <p class="text-muted">Try adjusting the date range or create some work schedules first.</p>
+                        <h5 class="text-muted">No work schedules found</h5>
+                        <p class="text-muted">Try adjusting the filters or create some work schedules first.</p>
                     </div>
                 @endif
             </div>
@@ -264,8 +335,32 @@
 
             // Apply filters
             $('#apply-filters').on('click', function() {
-                const weekdayFilter = $('#weekday_filter').val();
                 const userFilter = $('#user_filter').val();
+                const activeTab = $('.nav-link.active').attr('id').replace('-tab', '');
+                const weekdayFilter = activeTab.charAt(0).toUpperCase() + activeTab.slice(1);
+
+                let url = '{{ route("administration.work_schedule.report") }}';
+                const params = new URLSearchParams();
+
+                if (weekdayFilter) {
+                    params.append('weekday_filter', weekdayFilter);
+                }
+
+                if (userFilter) {
+                    params.append('user_filter', userFilter);
+                }
+
+                if (params.toString()) {
+                    url += '?' + params.toString();
+                }
+
+                window.location.href = url;
+            });
+
+            // Handle tab changes
+            $('.nav-link').on('click', function() {
+                const userFilter = $('#user_filter').val();
+                const weekdayFilter = $(this).attr('id').replace('-tab', '').charAt(0).toUpperCase() + $(this).attr('id').replace('-tab', '').slice(1);
 
                 let url = '{{ route("administration.work_schedule.report") }}';
                 const params = new URLSearchParams();

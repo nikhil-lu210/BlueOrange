@@ -143,8 +143,9 @@ class WorkScheduleController extends Controller
 
         $reportData = $this->workScheduleService->getWorkScheduleReportData($request);
         $users = User::whereHas('employee')->get();
+        $workScheduleService = $this->workScheduleService;
 
-        return view('administration.work_schedule.report', compact('reportData', 'users'));
+        return view('administration.work_schedule.report', compact('reportData', 'users', 'workScheduleService'));
     }
 
     /**

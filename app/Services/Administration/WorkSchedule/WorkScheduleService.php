@@ -411,4 +411,81 @@ class WorkScheduleService
         }
     }
 
+    /**
+     * Get Gantt chart cell data for a specific user and weekday
+     */
+    public function getGanttCellData(array $userData, string $weekday): array
+    {
+        $cells = [];
+        
+        for ($hour = 0; $hour <= 23; $hour++) {
+            $cellData = [
+                'hour' => $hour,
+                'bgClass' => '',
+                'title' => '',
+                'hasSchedule' => false,
+                'workType' => ''
+            ];
+            
+            foreach ($userData['schedules'] as $schedule) {
+                $startTime = $schedule['start_time']->format('H:i');
+                $endTime = $schedule['end_time']->format('H:i');
+                $startHour = (int) substr($startTime, 0, 2);
+                $startMinute = (int) substr($startTime, 3, 2);
+                $endHour = (int) substr($endTime, 0, 2);
+                $endMinute = (int) substr($endTime, 3, 2);
+
+                // Check if this schedule overlaps with this 1-hour period
+                $overlaps = false;
+                
+                // Handle overnight shifts (end time is earlier than start time)
+                if ($endHour < $startHour) {
+                    // Overnight shift: check if current hour falls within the overnight period
+                    // For overnight shifts, include both the start hour and end hour
+                    if ($hour >= $startHour || $hour <= $endHour) {
+                        $overlaps = true;
+                    }
+                } else {
+                    // Regular shift: check if current hour falls within the period
+                    // For regular shifts, include both the start hour and end hour
+                    if ($hour >= $startHour && $hour <= $endHour) {
+                        $overlaps = true;
+                    }
+                }
+
+                if ($overlaps) {
+                    $cellData['hasSchedule'] = true;
+                    $cellData['bgClass'] = $this->getWorkTypeBgClass($schedule['work_type']);
+                    $cellData['title'] = $schedule['work_type'] . ': ' . $schedule['work_title'] . ' (' . $startTime . ' - ' . $endTime . ')';
+                    $cellData['workType'] = $schedule['work_type'];
+                    break; // Use the first overlapping schedule
+                }
+            }
+            
+            $cells[] = $cellData;
+        }
+        
+        return $cells;
+    }
+
+    /**
+     * Get Bootstrap background class for work type
+     */
+    private function getWorkTypeBgClass(string $workType): string
+    {
+        switch (strtolower($workType)) {
+            case 'client':
+            case 'client work':
+                return 'bg-success';
+            case 'internal':
+            case 'internal work':
+                return 'bg-warning';
+            case 'bench':
+            case 'bench work':
+                return 'bg-primary';
+            default:
+                return 'bg-secondary';
+        }
+    }
+
 }
