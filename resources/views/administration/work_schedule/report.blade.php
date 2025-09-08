@@ -278,7 +278,10 @@
                                     @foreach($currentWeekdayData as $userData)
                                         <div class="gantt-row">
                                             <div class="gantt-employee-cell">
-                                                {{ $userData['user_name'] }}
+                                                @php
+                                                    $user = \App\Models\User::find($userData['user_id']);
+                                                @endphp
+                                                {!! show_user_name_and_avatar($user, name: false) !!}
                                             </div>
                                             @php
                                                 $cellData = $workScheduleService->getGanttCellData($userData, $weekday);
