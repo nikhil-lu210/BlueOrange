@@ -10,9 +10,12 @@ class RecognitionObserver
 {
     public function created(Recognition $recognition)
     {
+        $recognition->load(['user', 'recognizer']);
         $service = new RecognitionService();
+
         $employee = User::find($recognition->user_id);
 
         $service->sendCongratulation($employee, $recognition);
+        $service->allUserNotify($employee, $recognition);
     }
 }

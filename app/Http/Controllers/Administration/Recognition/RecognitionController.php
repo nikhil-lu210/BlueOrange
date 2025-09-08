@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Administration\Recognition;
 
-use App\Http\Controllers\Controller;
-use App\Models\Recognition\Recognition;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Recognition\Recognition;
+use App\Notifications\Administration\Recognition\RecognitionCreatedNotification;
 
 class RecognitionController extends Controller
 {
@@ -44,41 +46,26 @@ class RecognitionController extends Controller
             'recognizer_id' => auth()->id(),
         ]);
 
-        // Observer will handle congratulation email
+        // return success JSON
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Recognition submitted successfully',
+        //     'data' => $recognition
+        // ]);
 
-        toast('Recognition submitted successfully', 'success');
+        toast('Recognition Submitted', 'success');
         return redirect()->back();
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Recognition $recognition)
+    public function markRecognizeAsRead()
     {
-        //
-    }
+        Auth::user()
+            ->notifications()
+            ->where('type', RecognitionCreatedNotification::class)
+            ->whereNull('read_at') // mark only unread
+            ->update(['read_at' => now()]);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Recognition $recognition)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Recognition $recognition)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Recognition $recognition)
-    {
-        //
+        toast('Recognition Notification(s) has been marked as read.', 'success');
+        return redirect()->back();
     }
 }

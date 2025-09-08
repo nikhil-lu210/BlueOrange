@@ -9,6 +9,7 @@ use App\Models\Recognition\Recognition;
 use Illuminate\Support\Facades\Notification;
 use App\Mail\Administration\Recognition\RecognitionCongratulationMail;
 use App\Mail\Administration\Recognition\RecognitionReminderMail;
+use App\Notifications\Administration\Recognition\RecognitionCreatedNotification;
 use App\Notifications\Administration\Recognition\RecognitionReminderNotification;
 
 class RecognitionService
@@ -46,6 +47,15 @@ class RecognitionService
      */
     public function sendCongratulation(User $employee, Recognition $recognition)
     {
+        $employee->notify(new RecognitionCreatedNotification($recognition));
         Mail::to($employee->employee->official_email)->send(new RecognitionCongratulationMail($recognition));
+    }
+
+    // Notify all users 
+    public function allUserNotify($employee, Recognition $recognition){
+        $users = User::where('status', 'Active')->where('id','!=',$employee->id)->get();
+        foreach ($users as $key => $user) {
+            $user->notify(new RecognitionCreatedNotification($recognition));
+        }
     }
 }

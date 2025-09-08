@@ -107,6 +107,15 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Error fetching weekend days:', error));
 
+    // Force calendar to refetch events after initial load and apply initial filters
+    setTimeout(() => {
+        calendar.refetchEvents();
+        // Apply initial filters after events are loaded
+        setTimeout(() => {
+            applyFilters();
+        }, 500);
+    }, 1000);
+
     // Function to update calendar title
     function updateCalendarTitle(info) {
         const title = info.view.title;
