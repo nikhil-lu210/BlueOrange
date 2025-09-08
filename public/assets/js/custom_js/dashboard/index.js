@@ -202,32 +202,7 @@ $(document).ready(function () {
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
-
-    // Don't show notification automatically - only show when called with real data
-    // The notification will be hidden by default and only shown when showCustomRecognition() is called
-
-    // Example usage:
-    // showCustomRecognition({
-    //     employeeName: 'John Doe',
-    //     points: 500,
-    //     recognizedBy: 'Jane Smith',
-    //     categoryIcon: 'star',
-    //     category: 'Excellence',
-    //     message: 'Outstanding performance this month!'
-    // });
 });
-
-// Test function for recognition notification
-function testRecognitionNotification() {
-    showCustomRecognition({
-        employeeName: 'John Doe',
-        points: 500,
-        recognizedBy: 'Jane Smith',
-        categoryIcon: 'star',
-        category: 'Excellence',
-        message: 'Outstanding performance this month! Keep up the great work!'
-    });
-}
 
 $(document).ready(function () {
     let submitting = false;
@@ -482,7 +457,7 @@ if (document.querySelector('.birthday-wish-container')) {
             this.currentSlide = 0;
             this.autoPlayInterval = null;
             this.isAutoPlaying = false;
-            this.slideShowDuration = 3000; // 3 seconds per slide
+            this.slideShowDuration = 10000; // 10 seconds per slide
 
             this.initializeElements();
             if (!this.slidesContainer) return;

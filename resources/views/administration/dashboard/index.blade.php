@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     {{-- FullCalendar --}}
     <link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
-    
+
     <link rel="stylesheet" href="{{ asset('assets/css/custom_css/dashboard/index.css') }}" />
 @endsection
 
@@ -32,25 +32,7 @@
 @endsection
 
 {{-- Recognition Notification --}}
-{{-- @include('administration.dashboard.partials._recognition_notification') --}}
-
-{{-- @section('breadcrumb_action')
-    <div class="d-flex gap-2">
-        @if ($canRecognize)
-            <button class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#recognitionModal">
-                <i class="ti ti-badge me-1"></i>
-                {{ __('Submit Recognition') }}
-            </button>
-        @endif
-        
-        <button class="btn btn-outline-info btn-md" onclick="testRecognitionNotification()">
-            <i class="ti ti-bell me-1"></i>
-            Test Notification
-        </button>
-    </div>
-@endsection --}}
-
-
+@include('administration.dashboard.partials._recognition_notification')
 
 @section('content')
     {{-- <!-- Start row --> --}}
@@ -58,16 +40,12 @@
     {{-- Birdthday Wish --}}
     @include('administration.dashboard.partials._birthday_wish')
 
-    {{-- @include('administration.dashboard.partials._recognition_congratulation') --}}
-
-    {{-- @include('administration.dashboard.partials._recognition_form') --}}
-
-    @if ($autoShowRecognitionModal) 
+    @if ($autoShowRecognitionModal)
         @include('administration.dashboard.partials._recognition_urgent_prompt')
     @endif
 
-    @if (!$autoShowRecognitionModal) 
-    @include('administration.dashboard.partials._recognition_default_prompt')
+    @if (!$autoShowRecognitionModal)
+        @include('administration.dashboard.partials._recognition_default_prompt')
     @endif
 
     {{-- Upcoming Birthdays --}}
@@ -105,7 +83,6 @@
 
     {{-- Recognition Congratulation Modal --}}
     @include('administration.dashboard.modals.recognize_congrats_modal_multi_users')
-
     {{-- <!-- End row --> --}}
 @endsection
 
@@ -130,12 +107,11 @@
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <script src="{{ asset('assets/js/custom_js/dashboard/index.js') }}"></script>
-
 @endsection
 
 @section('custom_script')
     {{--  External js  --}}
-    
+
     <script>
         /* Dashboard Calendar Configuration
         Configuration object for the dashboard calendar */
@@ -146,9 +122,9 @@
             taskUrl: '{{ route("administration.task.index") }}',
             currentUserId: {{ Auth::id() }}
         };
-  
+
         @if ($showEmployeeInfoUpdateModal)
-            
+
             $(document).ready(function () {
                 // Show the modal
                 $('#employeeInfoUpdateModal').modal('show');
@@ -222,16 +198,14 @@
                     });
                 });
             });
-            
+
         @endif
 
         @if ($recognitionData)
-            
             $(document).ready(function () {
                 // Show the modal
                 $('#recognizeCongratsModal').modal('show');
             });
         @endif
     </script>
-
 @endsection

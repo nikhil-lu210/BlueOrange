@@ -30,8 +30,8 @@ return [
     | Can be numeric range or predefined steps.
     */
     'marks' => [
-        'min' => 1,
-        'max' => 5000,
+        'min' => 100,
+        'max' => 1000,
         'step' => 1 // step for slider/dropdown (1 = all integers)
     ],
 ];

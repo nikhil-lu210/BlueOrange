@@ -4,7 +4,7 @@
         <div class="modal-content p-3 p-md-5">
             <!-- Confetti Container -->
             <div class="confetti-container" id="confettiContainer"></div>
-            <a href="{{ route('administration.notification.mark_recognize_as_read') }}" class="btn-close btn-pinned"></a>
+            <a href="{{ route('administration.recognition.notification.mark_as_read') }}" class="btn-close btn-pinned"></a>
 
             <div class="modal-body">
                 <!-- Recognition Carousel -->
@@ -64,20 +64,20 @@
                 </div>
 
                 @if(count($recognitionData) > 1)
-                <!-- Carousel Controls -->
-                <div class="carousel-controls">
-                    <button class="carousel-btn" id="prevBtn">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
+                    <!-- Carousel Controls -->
+                    <div class="carousel-controls">
+                        <button class="carousel-btn" id="prevBtn">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
 
-                    <div class="progress-counter" id="progressCounter">
-                        1 of {{ count($recognitionData) }}
+                        <div class="progress-counter" id="progressCounter">
+                            1 of {{ count($recognitionData) }}
+                        </div>
+
+                        <button class="carousel-btn" id="nextBtn">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
-
-                    <button class="carousel-btn" id="nextBtn">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                </div>
                 @endif
             </div>
         </div>

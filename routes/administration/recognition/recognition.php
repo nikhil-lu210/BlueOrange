@@ -17,5 +17,7 @@ Route::prefix('recognition')
                 Route::post('/store', 'store')->name('store')->can('Recognition Create');
                 Route::get('/show/{recognition}', 'show')->name('show')->can('Recognition Read');
                 Route::get('/destroy/{recognition}', 'destroy')->name('destroy')->can('Recognition Delete');
+
+                Route::get('/mark-recognize-as-read', 'markRecognizeAsRead')->name('notification.mark_as_read')->can('Recognition Read');
             });
     });
