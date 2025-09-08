@@ -37,12 +37,12 @@
     {{-- Birdthday Wish --}}
     @include('administration.dashboard.partials._birthday_wish')
 
-    @if ($autoShowRecognitionModal)
-        @include('administration.dashboard.partials._recognition_urgent_prompt')
-    @endif
-
-    @if (!$autoShowRecognitionModal)
-        @include('administration.dashboard.partials._recognition_default_prompt')
+    @if ($canRecognize)
+        @if ($autoShowRecognitionModal)
+            @include('administration.dashboard.partials._recognition_urgent_prompt')
+        @else
+            @include('administration.dashboard.partials._recognition_default_prompt')
+        @endif
     @endif
 
     {{-- Upcoming Birthdays --}}
@@ -78,7 +78,9 @@
     @endif
 
     {{-- Recognition Congratulation Modal --}}
-    @include('administration.dashboard.modals.recognize_congrats_modal_multi_users')
+    @if (auth()->user()->hasPermissionTo('Recognition Read'))
+        @include('administration.dashboard.modals.recognize_congrats_modal_multi_users')
+    @endif
     {{-- <!-- End row --> --}}
 @endsection
 
@@ -100,11 +102,15 @@
     <script src="{{ asset('assets/js/custom_js/calendar/dashboard_calendar.js') }}"></script>
 
     <!-- Lucide Icons for Recognition Notification -->
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    @if ($canRecognize || auth()->user()->hasPermissionTo('Recognition Read'))
+        <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    @endif
 
     <!-- Optimized Dashboard JavaScript -->
     <script src="{{ asset('assets/js/custom_js/dashboard/core.js') }}"></script>
-    <script src="{{ asset('assets/js/custom_js/dashboard/recognition.js') }}"></script>
+    @if ($canRecognize || auth()->user()->hasPermissionTo('Recognition Read'))
+        <script src="{{ asset('assets/js/custom_js/dashboard/recognition.js') }}"></script>
+    @endif
 @endsection
 
 @section('custom_script')
@@ -120,7 +126,11 @@
         // Dashboard Data Configuration
         window.dashboardData = {
             showEmployeeInfoUpdateModal: {{ $showEmployeeInfoUpdateModal ? 'true' : 'false' }},
-            hasRecognitionData: {{ !empty($recognitionData) ? 'true' : 'false' }}
+            @if ($canRecognize || auth()->user()->hasPermissionTo('Recognition Read'))
+            hasRecognitionData: {{ !empty($recognitionData) ? 'true' : 'false' }},
+            @endif
+            canRecognize: {{ $canRecognize ? 'true' : 'false' }},
+            canReadRecognition: {{ auth()->user()->hasPermissionTo('Recognition Read') ? 'true' : 'false' }}
         };
     </script>
 @endsection

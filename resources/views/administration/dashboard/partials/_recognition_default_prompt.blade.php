@@ -18,10 +18,6 @@
                         </div>
                     </div>
                     <div class="d-flex align-items-center">
-                        <span class="badge bg-label-success me-3">
-                            <i class="ti ti-trending-up" style="font-size: 24px" class="me-1"></i>
-                            Active
-                        </span>
                         <button class="btn btn-lg btn-primary" data-bs-toggle="modal" data-bs-target="#recognitionModal">
                             Recognize Team
                         </button>
