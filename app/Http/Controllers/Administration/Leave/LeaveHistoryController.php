@@ -64,13 +64,6 @@ class LeaveHistoryController extends Controller
             ->whereIn('user_id', $userIds)
             ->get();
 
-        // Log access
-        Log::info('Leave histories accessed', [
-            'user_id' => auth()->id(),
-            'team_size' => $userIds->count(),
-            'ip_address' => request()->ip()
-        ]);
-
         return view('administration.leave.index', compact(['teamLeaders', 'users', 'leaves']));
     }
 
