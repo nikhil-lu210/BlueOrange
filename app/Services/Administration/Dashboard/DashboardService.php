@@ -77,37 +77,35 @@ class DashboardService {
     }
 
     /**
-     * Get users who are currently working.
+     * Get users who are currently working with optimized query.
      */
     public function getCurrentlyWorkingUsers(): Collection
     {
-        // First, get all users who have active attendances
-        $usersWithActiveAttendances = User::with(['employee', 'media'])
-            ->where('status', 'Active')
-            ->whereNotIn('id', [1, 2]) // Exclude Developer and Controller users
-            ->whereHas('attendances', function($subQuery) {
-                // Users who are currently working (clocked in but not clocked out)
-                $subQuery->whereNull('clock_out')
-                        ->whereNotNull('clock_in');
+        // Get all active attendances with user data in a single optimized query
+        $activeAttendances = Attendance::with(['user.employee', 'user.media'])
+            ->whereNull('clock_out')
+            ->whereNotNull('clock_in')
+            ->whereHas('user', function($query) {
+                $query->where('status', 'Active')
+                      ->whereNotIn('id', [1, 2]); // Exclude Developer and Controller users
             })
+            ->orderBy('clock_in', 'desc')
             ->get();
 
-        // Then, for each user, load their current attendance
-        $usersWithActiveAttendances->each(function($user) {
-            $currentAttendance = Attendance::where('user_id', $user->id)
-                ->whereNull('clock_out')
-                ->whereNotNull('clock_in')
-                ->orderBy('clock_in', 'desc')
-                ->first();
+        // Group by user and get the latest attendance for each user
+        $usersWithLatestAttendance = $activeAttendances
+            ->groupBy('user_id')
+            ->map(function($attendances) {
+                $user = $attendances->first()->user;
+                $latestAttendance = $attendances->first();
 
-            // Set the attendance as a collection to maintain consistency with the original approach
-            $user->setRelation('attendances', collect($currentAttendance ? [$currentAttendance] : []));
-        });
+                // Set the latest attendance as a collection to maintain consistency
+                $user->setRelation('attendances', collect([$latestAttendance]));
 
-        // Filter out users who don't have any current attendance (safety check)
-        return $usersWithActiveAttendances->filter(function($user) {
-            return $user->attendances->isNotEmpty();
-        });
+                return $user;
+            });
+
+        return $usersWithLatestAttendance->values();
     }
 
     /**
@@ -169,10 +167,10 @@ class DashboardService {
 
         // Filter users whose shift has started but have no attendance today
         return $usersWithActiveShifts->filter(function($user) use ($today, $currentTime) {
-            // Get the active shift for this user
-            $activeShift = $user->employee_shifts()
+            // Get the active shift for this user (already loaded with eager loading)
+            $activeShift = $user->employee_shifts
                 ->where('status', 'Active')
-                ->latest('created_at')
+                ->sortByDesc('created_at')
                 ->first();
 
             // Check if user has an active shift
@@ -438,11 +436,12 @@ class DashboardService {
         $recognitionNotifications = auth()->user()->unreadNotifications
             ->where('type', 'App\\Notifications\\Administration\\Recognition\\RecognitionCreatedNotification')
             ->values();
+
         $recognitionData = [];
 
         foreach ($recognitionNotifications as $notification) {
             $recognition = collect($notification->data['recognition'] ?? []);
-            
+
             $userId = $notification->data['recognition']['user_id'] ?? null;
             $user = User::find($userId);
 
@@ -465,7 +464,6 @@ class DashboardService {
             ];
         }
         return $recognitionData;
-        // dd($recognitionData);
     }
 
 }

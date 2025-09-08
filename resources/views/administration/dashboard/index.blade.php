@@ -31,9 +31,6 @@
     <li class="breadcrumb-item active">{{ __('Dashboard') }}</li>
 @endsection
 
-{{-- Recognition Notification --}}
-@include('administration.dashboard.partials._recognition_notification')
-
 @section('content')
     {{-- <!-- Start row --> --}}
 
@@ -78,7 +75,6 @@
 
     @if ($canRecognize)
         @include('administration.dashboard.modals.employee_recognition_modal')
-        {{-- @include('administration.dashboard.modals.employee_recognition_modal_form') --}}
     @endif
 
     {{-- Recognition Congratulation Modal --}}
@@ -106,106 +102,25 @@
     <!-- Lucide Icons for Recognition Notification -->
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
-    <script src="{{ asset('assets/js/custom_js/dashboard/index.js') }}"></script>
+    <!-- Optimized Dashboard JavaScript -->
+    <script src="{{ asset('assets/js/custom_js/dashboard/core.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/dashboard/recognition.js') }}"></script>
 @endsection
 
 @section('custom_script')
-    {{--  External js  --}}
-
     <script>
-        /* Dashboard Calendar Configuration
-        Configuration object for the dashboard calendar */
-
-        const dashboardCalendarConfig = {
+        // Dashboard Calendar Configuration
+        window.dashboardCalendarConfig = {
             eventsUrl: '{{ route("administration.dashboard.calendar.events") }}',
             weekendsUrl: '{{ route("administration.dashboard.calendar.weekends") }}',
             taskUrl: '{{ route("administration.task.index") }}',
             currentUserId: {{ Auth::id() }}
         };
 
-        @if ($showEmployeeInfoUpdateModal)
-
-            $(document).ready(function () {
-                // Show the modal
-                $('#employeeInfoUpdateModal').modal('show');
-
-                // Wait for the modal to be shown, then initialize Select2
-                $('#employeeInfoUpdateModal').on('shown.bs.modal', function () {
-                    // Initialize blood group Select2
-                    $('#blood_group').select2({
-                        dropdownParent: $('#employeeInfoUpdateModal'),
-                        width: '100%'
-                    });
-
-                    // Initialize institute Select2 with tagging
-                    $('#institute_id').select2({
-                        dropdownParent: $('#employeeInfoUpdateModal'),
-                        tags: true,
-                        tokenSeparators: [],
-                        createTag: function (params) {
-                            var term = $.trim(params.term);
-                            if (term === '') {
-                                return null;
-                            }
-                            return {
-                                id: 'new:' + term,
-                                text: term + ' (New Institute)',
-                                newTag: true
-                            };
-                        },
-                        templateResult: function (data) {
-                            var $result = $('<span></span>');
-                            $result.text(data.text);
-                            if (data.newTag) {
-                                $result.append(' <em>(will be created)</em>');
-                            }
-                            return $result;
-                        },
-                        insertTag: function (data, tag) {
-                            data.push(tag);
-                        },
-                        width: '100%'
-                    });
-
-                    // Initialize education level Select2 with tagging
-                    $('#education_level_id').select2({
-                        dropdownParent: $('#employeeInfoUpdateModal'),
-                        tags: true,
-                        tokenSeparators: [],
-                        createTag: function (params) {
-                            var term = $.trim(params.term);
-                            if (term === '') {
-                                return null;
-                            }
-                            return {
-                                id: 'new:' + term,
-                                text: term + ' (New Education Level)',
-                                newTag: true
-                            };
-                        },
-                        templateResult: function (data) {
-                            var $result = $('<span></span>');
-                            $result.text(data.text);
-                            if (data.newTag) {
-                                $result.append(' <em>(will be created)</em>');
-                            }
-                            return $result;
-                        },
-                        insertTag: function (data, tag) {
-                            data.push(tag);
-                        },
-                        width: '100%'
-                    });
-                });
-            });
-
-        @endif
-
-        @if ($recognitionData)
-            $(document).ready(function () {
-                // Show the modal
-                $('#recognizeCongratsModal').modal('show');
-            });
-        @endif
+        // Dashboard Data Configuration
+        window.dashboardData = {
+            showEmployeeInfoUpdateModal: {{ $showEmployeeInfoUpdateModal ? 'true' : 'false' }},
+            hasRecognitionData: {{ !empty($recognitionData) ? 'true' : 'false' }}
+        };
     </script>
 @endsection
