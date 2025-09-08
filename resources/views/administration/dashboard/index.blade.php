@@ -34,7 +34,7 @@
 {{-- Recognition Notification --}}
 {{-- @include('administration.dashboard.partials._recognition_notification') --}}
 
-{{-- @section('breadcrumb_action')
+@section('breadcrumb_action')
     <div class="d-flex gap-2">
         @if ($canRecognize)
             <button class="btn btn-primary btn-md" data-bs-toggle="modal" data-bs-target="#recognitionModal">
@@ -43,12 +43,12 @@
             </button>
         @endif
         
-        <button class="btn btn-outline-info btn-md" onclick="testRecognitionNotification()">
+        {{-- <button class="btn btn-outline-info btn-md" onclick="testRecognitionNotification()">
             <i class="ti ti-bell me-1"></i>
             Test Notification
-        </button>
+        </button> --}}
     </div>
-@endsection --}}
+@endsection
 
 
 
@@ -99,8 +99,8 @@
 
 
     @if ($canRecognize)
-        {{-- @include('administration.dashboard.modals.employee_recognition_modal') --}}
-        @include('administration.dashboard.modals.employee_recognition_modal_form')
+        @include('administration.dashboard.modals.employee_recognition_modal')
+        {{-- @include('administration.dashboard.modals.employee_recognition_modal_form') --}}
     @endif
 
     {{-- Recognition Congratulation Modal --}}

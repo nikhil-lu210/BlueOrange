@@ -45,11 +45,13 @@ class RecognitionController extends Controller
         ]);
 
         // return success JSON
-        return response()->json([
-            'success' => true,
-            'message' => 'Recognition submitted successfully',
-            'data' => $recognition
-        ]);
+        // return response()->json([
+        //     'success' => true,
+        //     'message' => 'Recognition submitted successfully',
+        //     'data' => $recognition
+        // ]);
+
+        return redirect()->back()->with('success', 'Recognition submitted successfully');
     }
 
     /**
