@@ -149,11 +149,11 @@
                                     @foreach(old('work_items') as $index => $item)
                                         <div class="work-item-row" data-index="{{ $index }}">
                                             <div class="row">
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label class="form-label">Start Time</label>
                                                     <input type="time" name="work_items[{{ $index }}][start_time]" class="form-control work-start-time" value="{{ old("work_items.{$index}.start_time") }}" required>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-2">
                                                     <label class="form-label">End Time</label>
                                                     <input type="time" name="work_items[{{ $index }}][end_time]" class="form-control work-end-time" value="{{ old("work_items.{$index}.end_time") }}" required>
                                                 </div>
@@ -166,9 +166,17 @@
                                                         @endforeach
                                                     </select>
                                                 </div>
-                                                <div class="col-md-3">
+                                                <div class="col-md-5">
                                                     <label class="form-label">Work Title</label>
-                                                    <input type="text" name="work_items[{{ $index }}][work_title]" class="form-control" placeholder="Enter work title" value="{{ old("work_items.{$index}.work_title") }}" required>
+                                                    <select name="work_items[{{ $index }}][work_title]" class="form-select work-title-select" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new Work Title" required>
+                                                        <option value="">Select Work Title</option>
+                                                        @foreach ($workTitles as $title)
+                                                            <option value="{{ $title }}" {{ old("work_items.{$index}.work_title") == $title ? 'selected' : '' }}>
+                                                                {{ $title }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    <small class="text-muted">You can type to add a new Work Title if not found in the list</small>
                                                 </div>
                                             </div>
                                             <div class="row mt-2">
@@ -183,11 +191,11 @@
                                 @else
                                     <div class="work-item-row" data-index="0">
                                         <div class="row">
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <label class="form-label">Start Time</label>
                                                 <input type="time" name="work_items[0][start_time]" class="form-control work-start-time" required>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-2">
                                                 <label class="form-label">End Time</label>
                                                 <input type="time" name="work_items[0][end_time]" class="form-control work-end-time" required>
                                             </div>
@@ -200,9 +208,15 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-                                            <div class="col-md-3">
+                                            <div class="col-md-5">
                                                 <label class="form-label">Work Title</label>
-                                                <input type="text" name="work_items[0][work_title]" class="form-control" placeholder="Enter work title" required>
+                                                <select name="work_items[0][work_title]" class="form-select work-title-select" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new Work Title" required>
+                                                    <option value="">Select Work Title</option>
+                                                    @foreach ($workTitles as $title)
+                                                        <option value="{{ $title }}">{{ $title }}</option>
+                                                    @endforeach
+                                                </select>
+                                                <small class="text-muted">You can type to add a new Work Title if not found in the list</small>
                                             </div>
                                         </div>
                                         <div class="row mt-2">
@@ -228,11 +242,11 @@
                                                 @foreach(old("weekday_work_items.{$weekday}") as $index => $item)
                                                     <div class="work-item-row" data-index="{{ $index }}">
                                                         <div class="row">
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-2">
                                                                 <label class="form-label">Start Time</label>
                                                                 <input type="time" name="weekday_work_items[{{ $weekday }}][{{ $index }}][start_time]" class="form-control work-start-time" value="{{ old("weekday_work_items.{$weekday}.{$index}.start_time") }}" required>
                                                             </div>
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-2">
                                                                 <label class="form-label">End Time</label>
                                                                 <input type="time" name="weekday_work_items[{{ $weekday }}][{{ $index }}][end_time]" class="form-control work-end-time" value="{{ old("weekday_work_items.{$weekday}.{$index}.end_time") }}" required>
                                                             </div>
@@ -245,9 +259,17 @@
                                                                     @endforeach
                                                                 </select>
                                                             </div>
-                                                            <div class="col-md-3">
+                                                            <div class="col-md-5">
                                                                 <label class="form-label">Work Title</label>
-                                                                <input type="text" name="weekday_work_items[{{ $weekday }}][{{ $index }}][work_title]" class="form-control" placeholder="Enter work title" value="{{ old("weekday_work_items.{$weekday}.{$index}.work_title") }}" required>
+                                                                <select name="weekday_work_items[{{ $weekday }}][{{ $index }}][work_title]" class="form-select work-title-select" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new Work Title" required>
+                                                                    <option value="">Select Work Title</option>
+                                                                    @foreach ($workTitles as $title)
+                                                                        <option value="{{ $title }}" {{ old("weekday_work_items.{$weekday}.{$index}.work_title") == $title ? 'selected' : '' }}>
+                                                                            {{ $title }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                </select>
+                                                                <small class="text-muted">You can type to add a new Work Title if not found in the list</small>
                                                             </div>
                                                         </div>
                                                         <div class="row mt-2">
@@ -262,11 +284,11 @@
                                             @else
                                                 <div class="work-item-row" data-index="0">
                                                     <div class="row">
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-2">
                                                             <label class="form-label">Start Time</label>
                                                             <input type="time" name="weekday_work_items[{{ $weekday }}][0][start_time]" class="form-control work-start-time" required>
                                                         </div>
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-2">
                                                             <label class="form-label">End Time</label>
                                                             <input type="time" name="weekday_work_items[{{ $weekday }}][0][end_time]" class="form-control work-end-time" required>
                                                         </div>
@@ -279,9 +301,15 @@
                                                                 @endforeach
                                                             </select>
                                                         </div>
-                                                        <div class="col-md-3">
+                                                        <div class="col-md-5">
                                                             <label class="form-label">Work Title</label>
-                                                            <input type="text" name="weekday_work_items[{{ $weekday }}][0][work_title]" class="form-control" placeholder="Enter work title" required>
+                                                            <select name="weekday_work_items[{{ $weekday }}][0][work_title]" class="form-select work-title-select" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new Work Title" required>
+                                                                <option value="">Select Work Title</option>
+                                                                @foreach ($workTitles as $title)
+                                                                    <option value="{{ $title }}">{{ $title }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                            <small class="text-muted">You can type to add a new Work Title if not found in the list</small>
                                                         </div>
                                                     </div>
                                                     <div class="row mt-2">
@@ -349,6 +377,40 @@
             @foreach ($availableWeekdays as $weekday)
                 weekdayWorkItemIndexes['{{ $weekday }}'] = 0;
             @endforeach
+
+            // Initialize Select2 with tagging for work titles
+            function initializeWorkTitleSelect2() {
+                $('.work-title-select').select2({
+                    tags: true,
+                    tokenSeparators: [],
+                    dropdownParent: $('.card-body'),
+                    createTag: function (params) {
+                        var term = $.trim(params.term);
+                        if (term === '') {
+                            return null;
+                        }
+                        return {
+                            id: 'new:' + term,
+                            text: term,
+                            newTag: true
+                        };
+                    },
+                    templateResult: function (data) {
+                        var $result = $('<span></span>');
+                        $result.text(data.text);
+                        if (data.newTag) {
+                            $result.append(' <em>(New Work Title will be created)</em>');
+                        }
+                        return $result;
+                    },
+                    insertTag: function (data, tag) {
+                        data.push(tag);
+                    }
+                });
+            }
+
+            // Initialize work title select2 on page load
+            initializeWorkTitleSelect2();
 
             // Load shift information when user is selected
             $('#user_id').on('change', function() {
@@ -445,11 +507,11 @@
                 const workItemHtml = `
                     <div class="work-item-row" data-index="${workItemIndex}">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="form-label">Start Time</label>
                                 <input type="time" name="work_items[${workItemIndex}][start_time]" class="form-control work-start-time" required>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="form-label">End Time</label>
                                 <input type="time" name="work_items[${workItemIndex}][end_time]" class="form-control work-end-time" required>
                             </div>
@@ -462,9 +524,15 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <label class="form-label">Work Title</label>
-                                <input type="text" name="work_items[${workItemIndex}][work_title]" class="form-control" placeholder="Enter work title" required>
+                                <select name="work_items[${workItemIndex}][work_title]" class="form-select work-title-select" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new Work Title" required>
+                                    <option value="">Select Work Title</option>
+                                    @foreach ($workTitles as $title)
+                                        <option value="{{ $title }}">{{ $title }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">You can type to add a new Work Title if not found in the list</small>
                             </div>
                         </div>
                         <div class="row mt-2">
@@ -478,13 +546,42 @@
                 `;
                 $('#common-work-items-container').append(workItemHtml);
 
+                // Initialize select2 for the new work title dropdown
+                $(`select[name="work_items[${workItemIndex}][work_title]"]`).select2({
+                    tags: true,
+                    tokenSeparators: [],
+                    dropdownParent: $('.card-body'),
+                    createTag: function (params) {
+                        var term = $.trim(params.term);
+                        if (term === '') {
+                            return null;
+                        }
+                        return {
+                            id: 'new:' + term,
+                            text: term,
+                            newTag: true
+                        };
+                    },
+                    templateResult: function (data) {
+                        var $result = $('<span></span>');
+                        $result.text(data.text);
+                        if (data.newTag) {
+                            $result.append(' <em>(New Work Title will be created)</em>');
+                        }
+                        return $result;
+                    },
+                    insertTag: function (data, tag) {
+                        data.push(tag);
+                    }
+                });
+
                 // Set time constraints for new item
                 if (currentShiftInfo) {
                     setTimeConstraintsForElement(`input[name="work_items[${workItemIndex}][start_time]"]`, `input[name="work_items[${workItemIndex}][end_time]"]`, currentShiftInfo.start_time, currentShiftInfo.end_time);
                 }
 
                 // Set required attribute for new item
-                $(`input[name="work_items[${workItemIndex}][start_time]"], input[name="work_items[${workItemIndex}][end_time]"], select[name="work_items[${workItemIndex}][work_type]"], input[name="work_items[${workItemIndex}][work_title]"]`).attr('required', 'required');
+                $(`input[name="work_items[${workItemIndex}][start_time]"], input[name="work_items[${workItemIndex}][end_time]"], select[name="work_items[${workItemIndex}][work_type]"], select[name="work_items[${workItemIndex}][work_title]"]`).attr('required', 'required');
 
                 updateRemoveButtons('#common-work-items-container');
             });
@@ -498,11 +595,11 @@
                 const workItemHtml = `
                     <div class="work-item-row" data-index="${index}">
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="form-label">Start Time</label>
                                 <input type="time" name="weekday_work_items[${weekday}][${index}][start_time]" class="form-control work-start-time" required>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-2">
                                 <label class="form-label">End Time</label>
                                 <input type="time" name="weekday_work_items[${weekday}][${index}][end_time]" class="form-control work-end-time" required>
                             </div>
@@ -515,9 +612,15 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-5">
                                 <label class="form-label">Work Title</label>
-                                <input type="text" name="weekday_work_items[${weekday}][${index}][work_title]" class="form-control" placeholder="Enter work title" required>
+                                <select name="weekday_work_items[${weekday}][${index}][work_title]" class="form-select work-title-select" data-allow-clear="true" data-tags="true" data-placeholder="Select or type to add new Work Title" required>
+                                    <option value="">Select Work Title</option>
+                                    @foreach ($workTitles as $title)
+                                        <option value="{{ $title }}">{{ $title }}</option>
+                                    @endforeach
+                                </select>
+                                <small class="text-muted">You can type to add a new Work Title if not found in the list</small>
                             </div>
                         </div>
                         <div class="row mt-2">
@@ -531,13 +634,42 @@
                 `;
                 $(`.work-items-for-weekday[data-weekday="${weekday}"]`).append(workItemHtml);
 
+                // Initialize select2 for the new work title dropdown
+                $(`select[name="weekday_work_items[${weekday}][${index}][work_title]"]`).select2({
+                    tags: true,
+                    tokenSeparators: [],
+                    dropdownParent: $('.card-body'),
+                    createTag: function (params) {
+                        var term = $.trim(params.term);
+                        if (term === '') {
+                            return null;
+                        }
+                        return {
+                            id: 'new:' + term,
+                            text: term,
+                            newTag: true
+                        };
+                    },
+                    templateResult: function (data) {
+                        var $result = $('<span></span>');
+                        $result.text(data.text);
+                        if (data.newTag) {
+                            $result.append(' <em>(New Work Title will be created)</em>');
+                        }
+                        return $result;
+                    },
+                    insertTag: function (data, tag) {
+                        data.push(tag);
+                    }
+                });
+
                 // Set time constraints for new item
                 if (currentShiftInfo) {
                     setTimeConstraintsForElement(`input[name="weekday_work_items[${weekday}][${index}][start_time]"]`, `input[name="weekday_work_items[${weekday}][${index}][end_time]"]`, currentShiftInfo.start_time, currentShiftInfo.end_time);
                 }
 
                 // Set required attribute for new item
-                $(`input[name="weekday_work_items[${weekday}][${index}][start_time]"], input[name="weekday_work_items[${weekday}][${index}][end_time]"], select[name="weekday_work_items[${weekday}][${index}][work_type]"], input[name="weekday_work_items[${weekday}][${index}][work_title]"]`).attr('required', 'required');
+                $(`input[name="weekday_work_items[${weekday}][${index}][start_time]"], input[name="weekday_work_items[${weekday}][${index}][end_time]"], select[name="weekday_work_items[${weekday}][${index}][work_type]"], select[name="weekday_work_items[${weekday}][${index}][work_title]"]`).attr('required', 'required');
 
                 updateRemoveButtons(`.work-items-for-weekday[data-weekday="${weekday}"]`);
             });
@@ -586,7 +718,7 @@
                         const startTime = $(this).find('.work-start-time').val();
                         const endTime = $(this).find('.work-end-time').val();
                         const workType = $(this).find('.work-type').val();
-                        const workTitle = $(this).find('input[name*="work_title"]').val();
+                        const workTitle = $(this).find('select[name*="work_title"]').val();
 
                         if (!startTime || !endTime || !workType || !workTitle) {
                             errors.push(`Work item ${index + 1} is incomplete`);
@@ -613,7 +745,7 @@
                             const startTime = $(this).find('.work-start-time').val();
                             const endTime = $(this).find('.work-end-time').val();
                             const workType = $(this).find('.work-type').val();
-                            const workTitle = $(this).find('input[name*="work_title"]').val();
+                            const workTitle = $(this).find('select[name*="work_title"]').val();
 
                             if (!startTime || !endTime || !workType || !workTitle) {
                                 errors.push(`${weekday} - Work item ${index + 1} is incomplete`);
@@ -682,11 +814,11 @@
         // Function to validate time range (handles overnight shifts)
         function isValidTimeRange(startTime, endTime) {
             if (!startTime || !endTime) return false;
-            
+
             // Convert time strings to minutes for easier comparison
             const startMinutes = timeToMinutes(startTime);
             const endMinutes = timeToMinutes(endTime);
-            
+
             // Check if this is an overnight shift (end time is "before" start time)
             if (endMinutes <= startMinutes) {
                 // For overnight shifts, add 24 hours (1440 minutes) to end time
@@ -694,7 +826,7 @@
                 // Check if the overnight duration is reasonable (not more than 24 hours)
                 return (overnightEndMinutes - startMinutes) <= 1440;
             }
-            
+
             // For regular shifts, end time should be after start time
             return endMinutes > startMinutes;
         }
@@ -709,7 +841,7 @@
         function setTimeConstraints(shiftStartTime, shiftEndTime) {
             // Remove min/max attributes from all time inputs to avoid HTML5 validation issues with overnight shifts
             $('.work-start-time, .work-end-time').removeAttr('min').removeAttr('max');
-            
+
             // For overnight shifts, we'll rely on our custom validation instead of HTML5 validation
             // This prevents the "Value must be X or later" error for overnight shifts
         }

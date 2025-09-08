@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\WorkSchedule\WorkSchedule;
+use App\Models\WorkScheduleItem\WorkScheduleItem;
 use App\Services\Administration\WorkSchedule\WorkScheduleService;
 use App\Http\Requests\Administration\WorkSchedule\WorkScheduleStoreRequest;
 use App\Http\Requests\Administration\WorkSchedule\WorkScheduleUpdateRequest;
@@ -50,7 +51,10 @@ class WorkScheduleController extends Controller
         // Get work types
         $workTypes = WorkSchedule::getWorkTypes();
 
-        return view('administration.work_schedule.create', compact('users', 'availableWeekdays', 'workTypes'));
+        // Get existing work titles for dropdown
+        $workTitles = WorkScheduleItem::query()->distinct()->orderBy('work_title', 'ASC')->pluck('work_title')->toArray();
+
+        return view('administration.work_schedule.create', compact('users', 'availableWeekdays', 'workTypes', 'workTitles'));
     }
 
     /**
@@ -104,15 +108,11 @@ class WorkScheduleController extends Controller
     public function update(WorkScheduleUpdateRequest $request, WorkSchedule $workSchedule)
     {
         try {
-            $updatedSchedule = $this->workScheduleService->updateWorkSchedule($workSchedule, $request->validated());
+            $this->workScheduleService->updateWorkSchedule($workSchedule, $request->validated());
 
-            return redirect()->route('administration.work_schedule.show', $workSchedule)
-                ->with('success', 'Work schedule has been updated successfully.');
-
+            return redirect()->route('administration.work_schedule.show', $workSchedule)->with('success', 'Work schedule has been updated successfully.');
         } catch (Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', $e->getMessage());
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
 
@@ -138,14 +138,12 @@ class WorkScheduleController extends Controller
      */
     public function report(Request $request)
     {
-        $weekdayFilter = $request->get('weekday_filter');
-        $userFilter = $request->get('user_filter');
-
         $reportData = $this->workScheduleService->getWorkScheduleReportData($request);
         $users = User::whereHas('employee')->get();
         $workScheduleService = $this->workScheduleService;
+        $weekdays = WorkSchedule::getWeekdays();
 
-        return view('administration.work_schedule.report', compact('reportData', 'users', 'workScheduleService'));
+        return view('administration.work_schedule.report', compact('reportData', 'users', 'workScheduleService', 'weekdays'));
     }
 
     /**
