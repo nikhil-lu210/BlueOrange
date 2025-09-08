@@ -17,6 +17,38 @@ class WorkScheduleStoreRequest extends FormRequest
     }
 
     /**
+     * Prepare the data for validation.
+     */
+    protected function prepareForValidation()
+    {
+        $data = $this->all();
+
+        // Handle new work title creation for common work items
+        if (isset($data['work_items']) && is_array($data['work_items'])) {
+            foreach ($data['work_items'] as $index => $item) {
+                if (isset($item['work_title']) && str_starts_with($item['work_title'], 'new:')) {
+                    $data['work_items'][$index]['work_title'] = substr($item['work_title'], 4); // Remove 'new:' prefix
+                }
+            }
+        }
+
+        // Handle new work title creation for individual weekday work items
+        if (isset($data['weekday_work_items']) && is_array($data['weekday_work_items'])) {
+            foreach ($data['weekday_work_items'] as $weekday => $weekdayItems) {
+                if (is_array($weekdayItems)) {
+                    foreach ($weekdayItems as $index => $item) {
+                        if (isset($item['work_title']) && str_starts_with($item['work_title'], 'new:')) {
+                            $data['weekday_work_items'][$weekday][$index]['work_title'] = substr($item['work_title'], 4); // Remove 'new:' prefix
+                        }
+                    }
+                }
+            }
+        }
+
+        $this->replace($data);
+    }
+
+    /**
      * Get the validation rules that apply to the request.
      *
      * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
@@ -33,11 +65,11 @@ class WorkScheduleStoreRequest extends FormRequest
         // Add validation rules based on mode
         // Check if same_schedule_for_all is present and truthy
         $sameScheduleForAll = $this->has('same_schedule_for_all') && $this->input('same_schedule_for_all');
-        
+
         if ($sameScheduleForAll) {
             // Same schedule for all weekdays - validate work_items
             $rules['work_items'] = 'required|array|min:1';
-            
+
             if ($this->has('work_items') && is_array($this->input('work_items'))) {
                 foreach ($this->input('work_items') as $index => $item) {
                     $rules["work_items.{$index}.start_time"] = 'required|date_format:H:i';
@@ -49,10 +81,10 @@ class WorkScheduleStoreRequest extends FormRequest
         } else {
             // Individual schedule for each weekday - validate weekday_work_items only
             $selectedWeekdays = $this->input('weekdays', []);
-            
+
             foreach ($selectedWeekdays as $weekday) {
                 $rules["weekday_work_items.{$weekday}"] = 'required|array|min:1';
-                
+
                 if ($this->has("weekday_work_items.{$weekday}")) {
                     foreach ($this->input("weekday_work_items.{$weekday}") as $index => $item) {
                         $rules["weekday_work_items.{$weekday}.{$index}.start_time"] = 'required|date_format:H:i';
@@ -75,14 +107,14 @@ class WorkScheduleStoreRequest extends FormRequest
         $validator->after(function ($validator) {
             // If in individual mode, remove work_items validation errors
             $sameScheduleForAll = $this->has('same_schedule_for_all') && $this->input('same_schedule_for_all');
-            
+
             if (!$sameScheduleForAll) {
                 $errors = $validator->errors();
                 $workItemErrors = $errors->get('work_items');
                 if (!empty($workItemErrors)) {
                     $errors->forget('work_items');
                 }
-                
+
                 // Remove individual work_items field errors
                 foreach ($errors->keys() as $key) {
                     if (str_starts_with($key, 'work_items.')) {
@@ -90,7 +122,7 @@ class WorkScheduleStoreRequest extends FormRequest
                     }
                 }
             }
-            
+
             // Custom validation for overnight shifts
             $this->validateOvernightShifts($validator);
         });
@@ -102,7 +134,7 @@ class WorkScheduleStoreRequest extends FormRequest
     private function validateOvernightShifts($validator)
     {
         $sameScheduleForAll = $this->has('same_schedule_for_all') && $this->input('same_schedule_for_all');
-        
+
         if ($sameScheduleForAll) {
             // Validate common work items
             if ($this->has('work_items') && is_array($this->input('work_items'))) {
@@ -135,19 +167,19 @@ class WorkScheduleStoreRequest extends FormRequest
         try {
             $start = \Carbon\Carbon::createFromFormat('H:i', $startTime);
             $end = \Carbon\Carbon::createFromFormat('H:i', $endTime);
-            
+
             if (!$start || !$end) {
                 return; // Let the date_format validation handle this
             }
-            
+
             // Check if this is an overnight shift (end time is "before" start time)
             $isOvernight = $end->lt($start);
-            
+
             if ($isOvernight) {
                 // For overnight shifts, add 24 hours to end time for comparison
                 $end->addDay();
             }
-            
+
             // Check if end time is after start time
             if ($end->lte($start)) {
                 $validator->errors()->add(
@@ -155,7 +187,7 @@ class WorkScheduleStoreRequest extends FormRequest
                     'End time must be after start time. For overnight shifts, ensure the work item spans correctly across midnight.'
                 );
             }
-            
+
         } catch (\Exception $e) {
             // Let the date_format validation handle invalid formats
         }

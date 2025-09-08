@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\WorkSchedule\WorkSchedule;
+use App\Models\WorkScheduleItem\WorkScheduleItem;
 use App\Services\Administration\WorkSchedule\WorkScheduleService;
 use App\Http\Requests\Administration\WorkSchedule\WorkScheduleStoreRequest;
 use App\Http\Requests\Administration\WorkSchedule\WorkScheduleUpdateRequest;
@@ -50,7 +51,10 @@ class WorkScheduleController extends Controller
         // Get work types
         $workTypes = WorkSchedule::getWorkTypes();
 
-        return view('administration.work_schedule.create', compact('users', 'availableWeekdays', 'workTypes'));
+        // Get existing work titles for dropdown
+        $workTitles = WorkScheduleItem::query()->distinct()->orderBy('work_title', 'ASC')->pluck('work_title')->toArray();
+
+        return view('administration.work_schedule.create', compact('users', 'availableWeekdays', 'workTypes', 'workTitles'));
     }
 
     /**
