@@ -60,11 +60,15 @@ class DashboardController extends Controller
         // Employee Recognition
         $canRecognize = $this->dashboardService->canRecognize($user);
         $autoShowRecognitionModal = $this->dashboardService->shouldAutoShowRecognitionModal($user, 15);
-        $latestRecognition = $this->dashboardService->getLatestRecognitionForUser($user, 30);
+        $latestRecognition = $this->dashboardService->getLatestRecognitionForUser($user, 15);
 
         // Upcoming birthdays in next 30 days
         $upcomingBirthdays = $this->dashboardService->getUpcomingBirthdays(30);
 
+        // Get unread recognition notifications with related modal data
+        $recognitionData = $this->dashboardService->getUnreadRecognitionNotifications();
+
+        // Pass recognition data to the view
         return view('administration.dashboard.index', compact([
             'user',
             'wish',
@@ -86,6 +90,7 @@ class DashboardController extends Controller
             'autoShowRecognitionModal',
             'latestRecognition',
             'upcomingBirthdays',
+            'recognitionData',
         ]));
     }
 }

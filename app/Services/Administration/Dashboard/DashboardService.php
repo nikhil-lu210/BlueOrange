@@ -363,7 +363,7 @@ class DashboardService {
     /**
      * Get the latest recognition for an employee (for congratulation card).
      */
-    public function getLatestRecognitionForUser(User $user, int $days = 30)
+    public function getLatestRecognitionForUser(User $user, int $days = 15)
     {
         return Recognition::where('user_id', $user->id)
             ->where('created_at', '>=', now()->subDays($days))
@@ -429,4 +429,43 @@ class DashboardService {
 
         return $upcoming;
     }
+
+    /**
+     * Get unread recognition notifications and their related modal data.
+     */
+    public function getUnreadRecognitionNotifications(): array
+    {
+        $recognitionNotifications = auth()->user()->unreadNotifications
+            ->where('type', 'App\\Notifications\\Administration\\Recognition\\RecognitionCreatedNotification')
+            ->values();
+        $recognitionData = [];
+
+        foreach ($recognitionNotifications as $notification) {
+            $recognition = collect($notification->data['recognition'] ?? []);
+            
+            $userId = $notification->data['recognition']['user_id'] ?? null;
+            $user = User::find($userId);
+
+            $avatarUrl = $user?->getFirstMediaUrl('avatar', 'profile_view_color') ?: asset('assets/img/avatars/no_image.png');
+
+
+            if (! $recognition) {
+                continue; // Skip if no recognition data
+            }
+            // Extract related modal data
+            $recognitionData[] = [
+                'notification_id' => $notification->id,
+                'id' => $recognition['id'] ?? null,
+                'employee_name' => $recognition['user']['employee']['alias_name'] ?? null,
+                'recognizer_name' => $recognition['recognizer']['employee']['alias_name'] ?? null,
+                'category' => $recognition['category'] ?? null,
+                'total_mark' => $recognition['total_mark'] ?? null,
+                'comment' => $recognition['comment'] ?? null,
+                'avatar_url' => $avatarUrl ?? null,
+            ];
+        }
+        return $recognitionData;
+        // dd($recognitionData);
+    }
+
 }
