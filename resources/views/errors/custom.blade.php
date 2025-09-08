@@ -12,6 +12,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@100..900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/js/tabler.min.js">
+    </script>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.4.0/dist/css/tabler.min.css" />
     <!-- End css -->
     
     <!-- Page CSS -->
@@ -109,9 +114,11 @@
             cursor: pointer;
             transition: all 0.3s ease;
             box-shadow: 0 4px 8px rgba(115, 103, 240, 0.2);
+            text-decoration: none;
         }
 
         .container-3-4-1:hover {
+            text-decoration: none;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(115, 103, 240, 0.3);
         }
@@ -155,28 +162,30 @@
         <div class="container-1-2-0">
             <!-- GIF -->
             <img
-                src="{{ asset('assets/img/error/error.gif') }}"
-                alt="error gif"
+                src="{{ asset($image) }}"
+                alt="Error {{ $statusCode }}"
             />
 
             <!-- Content -->
             <div class="container-1-2-1">
                 <div class="container-2-3-0">
-                    <div class="text-404">{{ $exception->getStatusCode() }}</div>
-                    <div class="text-3-4-1">Page not found</div>
+                    <div class="text-404">{{ $statusCode }} </div>
+                    <div class="text-3-4-1">{{ $title }}</div>
                     
-                    @auth
+                    {{-- @auth
                         <p class="mb-4">{{ $exception->getMessage() }}</p>
                     @endauth
+                    @auth
+                        <p class="mt-3 text-muted">Debug: {{ $exception->getMessage() }}</p>
+                    @endauth --}}
                 </div>
                 
                 <div class="container-2-3-1">
                     <div class="text-3-4-0">
-                        We're sorry, the page you requested could not be found.<br />
-                        Please go back to the homepage.
+                        {{ $message }}
                     </div>
                     <a href="{{ url()->previous() }}" class="container-3-4-1 mt-3">
-                        <div class="text-4-5-0">Homepage</div>
+                        <div class="text-4-5-0"><i class="ti ti-arrow-left"></i> Back To Previous</div>
                     </a>
                 </div>
             </div>
