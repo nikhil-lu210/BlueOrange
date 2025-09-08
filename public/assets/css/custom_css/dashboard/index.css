@@ -1,0 +1,838 @@
+
+/* Employee Recognition Modal Styles - slider flow */
+/* Recognition Carousel Container */
+.recognition-carousel {
+    position: relative;
+    width: 100%;
+    overflow: hidden;
+}
+
+.recognition-slides {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+    width: 100%;
+}
+
+.recognition-slide {
+    flex: 0 0 100%;
+    min-height: 500px;
+}
+
+/* Carousel Controls */
+.carousel-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+.carousel-btn {
+    background: linear-gradient(135deg, #8e84f2, #b2acf6);
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.carousel-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 15px rgba(142, 132, 242, 0.4);
+}
+
+.carousel-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Carousel Indicators */
+.carousel-indicators {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.indicator {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(142, 132, 242, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.indicator.active {
+    background: #8e84f2;
+    transform: scale(1.2);
+}
+
+/* Progress Counter */
+.progress-counter {
+    background: rgba(142, 132, 242, 0.1);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    color: #8e84f2;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+/* Auto-play Controls */
+.autoplay-controls {
+    position: absolute;
+    top: 15px;
+    right: 60px;
+    z-index: 25;
+}
+
+.autoplay-btn {
+    background: rgba(255, 255, 255, 0.9);
+    border: 1px solid rgba(142, 132, 242, 0.3);
+    border-radius: 25px;
+    padding: 0.4rem 0.8rem;
+    color: #8e84f2;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.autoplay-btn:hover {
+    background: rgba(142, 132, 242, 0.1);
+}
+
+.autoplay-btn.playing {
+    background: #8e84f2;
+    color: white;
+}
+.recognize_modal_form_body {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+    min-height: 350px;
+    position: relative;
+}
+.slide-container {
+    position: relative;
+    overflow: hidden;
+    height: 350px;
+}
+.slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.slide.active { transform: translateX(0); }
+.slide.slide-left { transform: translateX(-100%); }
+.slide.slide-right { transform: translateX(100%); }
+.step-indicator {
+    position: absolute;
+    top: -45px;
+    left: 15px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    font-size: 14px;
+}
+.recognition-icon {
+    width: 70px;
+    height: 70px;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+.recognize-btn, .recognize-form-next-btn, .recognize-form-submit-btn {
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    transition: all 0.3s ease;
+}
+.recognize-btn:hover, .recognize-form-next-btn:hover, .recognize-form-submit-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+}
+.recognize-form-back-btn {
+    background: linear-gradient(135deg, #6b7280, #9ca3af);
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.3);
+    transition: all 0.3s ease;
+}
+.recognize-form-back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4);
+}
+.form-select:focus, .form-control:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+}
+.arrow-bounce { animation: bounce 2s infinite; }
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+    40% { transform: translateY(-10px); }
+    60% { transform: translateY(-5px); }
+}
+.pulse-animation { animation: pulse 2s infinite; }
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+.points-dropdown {
+    background: #8b5cf6;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(139, 92, 246, 0.3);
+}
+.points-dropdown:focus {
+    background: #7c3aed;
+    color: white;
+    box-shadow: 0 0 0 0.2rem rgba(139, 92, 246, 0.4);
+}
+.team-badge {
+    background: linear-gradient(135deg, #f59e0b, #ef4444);
+    border-radius: 15px;
+    width: 60px;
+    height: 60px;
+    position: relative;
+}
+.team-badge::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 35px;
+    height: 35px;
+    background: white;
+    border-radius: 50%;
+}
+.points-label { font-size: 12px; color: #6b7280; margin-bottom: 5px; }
+
+/* Custom CSS Here */
+@import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+.birthday-wish > * {
+    font-family: "Satisfy", cursive;
+}
+.birthday-wish .birthday-message {
+    font-family: "Indie Flower", cursive;
+    font-size: 24px;
+}
+
+button[disabled],
+button:disabled,
+button[disabled]:hover {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Table */
+.table-borderless th, .table-bordered th {
+    font-weight: bold;
+}
+
+/* Fix for horizontal scrollbar */
+.table-responsive {
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+/* Ensure content doesn't overflow container */
+.card-body {
+    overflow-x: hidden;
+    word-wrap: break-word;
+}
+
+/* Fix for excessive vertical scrolling */
+.content-wrapper {
+    min-height: calc(100vh - 150px);
+    max-height: 100%;
+    overflow-y: auto;
+}
+
+/* Fix for confetti animation */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #f0f0f0;
+    animation: confetti 5s ease-in-out infinite;
+    z-index: 10;
+    top: 0;
+    max-height: 100%;
+}
+
+/* Prevent overflow on mobile */
+@media (max-width: 768px) {
+    .d-flex.justify-content-between.flex-wrap {
+        flex-direction: column;
+    }
+
+    /* Adjust table for mobile */
+    .table-responsive table {
+        min-width: 600px;
+    }
+}
+
+/* Fix for any potential overflow issues */
+.row {
+    margin-right: 0;
+    margin-left: 0;
+    width: 100%;
+}
+
+.container-xxl {
+    max-width: 100%;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+/* Recognition Notification Styles */
+.recognition-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 450px;
+    width: 100%;
+    animation: slideInRight 0.5s ease-out;
+}
+
+.recognition-card {
+    min-height: 320px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    transition: all 0.3s ease;
+}
+
+.recognition-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+}
+
+.icon-bg-white {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.bg-white-20 {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.text-white-80 {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.text-white-90 {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.text-white-70 {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.category-badge {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    backdrop-filter: blur(10px);
+}
+
+.progress-bar-recognition {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-bar-recognition::after {
+    content: '';
+    display: block;
+    height: 100%;
+    width: 30%;
+    background: linear-gradient(90deg, #fff, rgba(255, 255, 255, 0.7));
+    animation: progressAnimation 3s ease-in-out infinite;
+}
+
+@keyframes progressAnimation {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(400%); }
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.notification-closing {
+    animation: slideOutRight 0.3s ease-in forwards;
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 768px) {
+    .recognition-notification {
+        right: 10px;
+        left: 10px;
+        max-width: none;
+    }
+    
+    .recognition-card {
+        min-height: 280px;
+    }
+}
+
+:root {
+    --primary-color: #ff6b6b;
+    --secondary-color: #4ecdc4;
+    --text-color: #333;
+    --background-color: #f7f7f7;
+}
+
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0px); }
+}
+
+@keyframes confetti {
+    0% { transform: translateY(0) rotate(0deg); }
+    100% { transform: translateY(500px) rotate(360deg); }
+}
+.birthday-card {
+    /* background: linear-gradient(135deg, var(--primary-color), var(--secondary-color)); */
+    /* box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); */
+    border-radius: 20px;
+    /* overflow: hidden; */
+    width: 100%;
+    margin: 0 auto;
+    padding: 0rem;
+    text-align: center;
+    z-index: 1;
+    position: relative;
+}
+
+.user-photo {
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 1rem;
+    border: 5px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    /* animation: float 3s ease-in-out infinite; */
+    position: absolute;
+    z-index: 99999999;
+    left: -17%;
+    top: 25%;
+}
+
+.birthday-wish {
+    width: 100%;
+    border-radius: 10px;
+    border: 3px solid white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    /* animation: float 3s ease-in-out infinite; */
+}
+
+.message {
+    color: white;
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+}
+
+
+/* Dashboard Calendar Styles */
+
+.fc-event{
+    cursor: pointer;
+}
+/* Make weekend events non-interactive but keep their appearance */
+.fc-event.weekend-event {
+    pointer-events: none;
+    cursor: default;
+}
+/* Custom styles for weekend events */
+.fc-event.weekend-event .fc-event-title {
+    text-align: center !important;
+    width: 100% !important;
+    display: block !important;
+}
+
+
+/* Recogntion Card */
+
+.recognition-card {
+    margin: auto;
+}
+
+.congrats-card {
+    position: relative;
+}
+
+.ribbon {
+    color: white;
+    padding: 5px 15px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    border-radius: 20px;
+    display: inline-block;
+    position: absolute;
+    bottom: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+
+/* Recognition Notification Styles */
+
+:root {
+    --recognition-from: #7267f0;
+    --recognition-to: #746dc7;
+    --success-color: hsl(142, 76%, 36%);
+    --warning-color: hsl(48, 96%, 53%);
+}
+
+.bg-gradient-recognition {
+    background: linear-gradient(135deg, var(--recognition-from), var(--recognition-to));
+}
+
+.bg-gradient-card {
+    background: linear-gradient(135deg, hsl(0, 0%, 100%), hsl(220, 13%, 97%));
+}
+
+.shadow-notification {
+    box-shadow: 0 15px 40px -10px rgba(0, 0, 0, 0.2);
+}
+
+.icon-bg-success {
+    background-color: rgba(34, 197, 94, 0.1);
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.progress-bar-recognition {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.6));
+    height: 3px;
+    border-radius: 2px;
+    animation: progressBar 5s linear forwards;
+}
+
+@keyframes progressBar {
+    from {
+        width: 100%;
+    }
+    to {
+        width: 0%;
+    }
+}
+
+.recognition-points {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.category-badge {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.notification-body:hover {
+    transform: scale(1.02);
+    transition: transform 0.2s ease;
+}
+
+/* Flip Animation Styles */
+.flip-container {
+    perspective: 1000px;
+    width: 100%;
+    height: 200px;
+    margin-bottom: 1rem;
+    position: relative;
+}
+
+.flip-card {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.8s ease-in-out;
+    animation: flipAnimation 0.8s ease-in-out 2s forwards;
+}
+
+.flip-card.animate {
+    animation: flipAnimation 0.8s ease-in-out 1s forwards;
+}
+
+@keyframes flipAnimation {
+    from {
+        transform: rotateY(0deg);
+    }
+    to {
+        transform: rotateY(180deg);
+    }
+}
+
+.flip-front, .flip-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+}
+
+.flip-front {
+    transform: rotateY(0deg);
+}
+
+.flip-back {
+    transform: rotateY(180deg);
+}
+
+.medal-gif {
+    max-width: 250px;
+    height: auto;
+    object-fit: contain;
+}
+
+.profile-circle {
+    width: 180px;
+    height: 180px;
+    background: linear-gradient(135deg, #b2acf6, #8e84f2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 25px rgba(142, 132, 242, 0.3);
+}
+
+.profile-icon {
+    font-size: 80px;
+    color: white;
+    opacity: 0.9;
+}
+
+/* Confetti Animation */
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    opacity: 0;
+}
+
+.confetti.active {
+    animation: confettiFall 3s linear forwards;
+}
+
+@keyframes confettiFall {
+    0% {
+        opacity: 1;
+        transform: translateY(-20px) rotate(0deg);
+    }
+    100% {
+        opacity: 0;
+        transform: translateY(320px) rotate(360deg);
+    }
+}
+
+.confetti:nth-child(odd) {
+    animation-duration: 2.5s;
+}
+
+.confetti:nth-child(even) {
+    animation-duration: 3.5s;
+}
+
+/* Award Details Styling */
+.award-details {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.award-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: linear-gradient(135deg, #edebff, #f8f7ff);
+    border: 1px solid rgba(207, 205, 227, 0.5);
+    border-radius: 8px;
+    color: #9990f3;
+    font-weight: 500;
+    font-size: 0.9rem;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.award-badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.6),
+        transparent
+    );
+    transition: left 0.6s ease;
+}
+
+.award-badge:hover::before {
+    left: 100%;
+}
+
+.award-badge:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(153, 144, 243, 0.3);
+    border-color: rgba(142, 132, 242, 0.8);
+}
+
+.award-badge i {
+    font-size: 1.1rem;
+    transition: transform 0.3s ease;
+}
+
+.award-badge:hover i {
+    transform: scale(1.1);
+}
+
+.points-badge {
+    background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+    color: #856404;
+    border-color: #ffd700;
+}
+
+.points-badge:hover {
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+    border-color: #ffd700;
+}
+
+/* Quote Section Styling */
+.quote-section {
+    background: rgba(248, 249, 250, 0.8);
+    padding: 1.5rem;
+    border-radius: 12px;
+    border-left: 4px solid #8e84f2;
+    margin: 1rem 0;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.4s ease;
+}
+
+.quote-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(142, 132, 242, 0.03),
+        rgba(178, 172, 246, 0.08)
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+}
+
+.quote-section:hover::before {
+    opacity: 1;
+}
+
+.quote-section:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 30px rgba(142, 132, 242, 0.15);
+    border-left-color: #b2acf6;
+    background: rgba(248, 249, 250, 0.95);
+}
+
+.quote-section:hover .quote-icon i {
+    transform: scale(1.05);
+    color: #b2acf6;
+}
+
+.quote-section:hover blockquote {
+    color: #495057;
+}
+
+.quote-icon i {
+    color: #8e84f2;
+    transition: all 0.3s ease;
+}
+
+.quote-section blockquote {
+    transition: color 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.role-title {
+    background: linear-gradient(135deg, #8e84f2, #b2acf6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+.recognized-by {
+    color: #9990f3;
+    font-weight: 500;
+    margin-bottom: 1rem;
+}

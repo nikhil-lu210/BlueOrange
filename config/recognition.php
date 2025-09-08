@@ -10,13 +10,13 @@ return [
     | You can add/remove categories here without touching the database.
     */
     'categories' => [
-        'Teamwork',
-        'Innovation',
+        'Behavior',
+        'Appreciation',
         'Leadership',
-        'Problem Solving',
-        'Creativity',
-        'Punctuality',
-        'Customer Focus',
+        'Loyalty',
+        'Dedication',
+        'Teamwork',
+        'Innovation'
     ],
 
     // Recognition reminder threshold
@@ -30,8 +30,8 @@ return [
     | Can be numeric range or predefined steps.
     */
     'marks' => [
-        'min' => 1,
-        'max' => 20,
+        'min' => 100,
+        'max' => 1000,
         'step' => 1 // step for slider/dropdown (1 = all integers)
     ],
 ];

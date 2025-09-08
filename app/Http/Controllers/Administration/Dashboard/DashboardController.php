@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Administration\Dashboard;
 
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\DB;
+use Log;
+use Exception;
 use App\Http\Controllers\Controller;
 use App\Services\Administration\Dashboard\DashboardService;
 
@@ -20,72 +20,114 @@ class DashboardController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display the dashboard with all required data.
      */
     public function index()
     {
-        // Get the current authenticated user
-        $user = $this->dashboardService->getCurrentUser();
+        try {
+            $user = $this->dashboardService->getCurrentUser();
+            
+            $dashboardData = $this->getDashboardData($user);
+            
+            return view('administration.dashboard.index', $dashboardData);
+        } catch (Exception $e) {
+            Log::error("Dashboard Loading Error", [
+                'user' => auth()->check() ? auth()->user()->alias_name : 'Guest',
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);            
+            
+            return view('administration.dashboard.index', [
+                'user' => auth()->user(),
+                'error' => 'Unable to load dashboard data. Please refresh the page.'
+            ]);
+        }
+    }
 
-        // Get a random birthday wish
-        $wish = $this->dashboardService->getRandomBirthdayWish();
+    /**
+     * Get all dashboard data organized by category.
+     */
+    private function getDashboardData($user): array
+    {
+        return array_merge(
+            $this->getUserData($user),
+            $this->getAttendanceData($user),
+            $this->getUserStatusData(),
+            $this->getModalData($user),
+            $this->getRecognitionData($user),
+            $this->getBirthdayData()
+        );
+    }
 
-        // Get attendance statistics
+    /**
+     * Get core user data.
+     */
+    private function getUserData($user): array
+    {
+        return [
+            'user' => $user,
+            'wish' => $this->dashboardService->getRandomBirthdayWish(),
+        ];
+    }
+
+    /**
+     * Get attendance-related data.
+     */
+    private function getAttendanceData($user): array
+    {
         $attendanceStats = $this->dashboardService->getAttendanceStatistics($user);
-        $totalWorkedDays = $attendanceStats['totalWorkedDays'];
-        $totalRegularWork = $attendanceStats['totalRegularWork'];
-        $totalOvertimeWork = $attendanceStats['totalOvertimeWork'];
-        $totalRegularWorkingHour = $attendanceStats['totalRegularWorkingHour'];
-        $totalOvertimeWorkingHour = $attendanceStats['totalOvertimeWorkingHour'];
+        
+        return array_merge($attendanceStats, [
+            'activeAttendance' => $this->dashboardService->getActiveAttendance($user),
+            'attendances' => $this->dashboardService->getCurrentMonthAttendances($user),
+        ]);
+    }
 
-        // Get active attendance and current month attendances
-        $activeAttendance = $this->dashboardService->getActiveAttendance($user);
-        $attendances = $this->dashboardService->getCurrentMonthAttendances($user);
+    /**
+     * Get user status data (working, on leave, absent).
+     */
+    private function getUserStatusData(): array
+    {
+        return [
+            'currentlyWorkingUsers' => $this->dashboardService->getCurrentlyWorkingUsers(),
+            'onLeaveUsers' => $this->dashboardService->getUsersOnLeaveToday(),
+            'absentUsers' => $this->dashboardService->getAbsentUsers(),
+        ];
+    }
 
-        // Get users who are currently working, on leave, or absent
-        $currentlyWorkingUsers = $this->dashboardService->getCurrentlyWorkingUsers();
-        $onLeaveUsers = $this->dashboardService->getUsersOnLeaveToday();
-        $absentUsers = $this->dashboardService->getAbsentUsers();
+    /**
+     * Get modal-related data.
+     */
+    private function getModalData($user): array
+    {
+        return [
+            'showEmployeeInfoUpdateModal' => $this->dashboardService->shouldShowEmployeeInfoUpdateModal($user),
+            'groupedBloodGroups' => $this->dashboardService->getGroupedBloodGroups(),
+            'institutes' => $this->dashboardService->getAllInstitutes(),
+            'educationLevels' => $this->dashboardService->getAllEducationLevels(),
+        ];
+    }
 
-        // Check if the employee info update modal should be shown
-        $showEmployeeInfoUpdateModal = $this->dashboardService->shouldShowEmployeeInfoUpdateModal($user);
+    /**
+     * Get recognition-related data.
+     */
+    private function getRecognitionData($user): array
+    {
+        return [
+            'canRecognize' => $this->dashboardService->canRecognize($user),
+            'autoShowRecognitionModal' => $this->dashboardService->shouldAutoShowRecognitionModal($user, 15),
+            'latestRecognition' => $this->dashboardService->getLatestRecognitionForUser($user, 15),
+            'recognitionData' => $this->dashboardService->getUnreadRecognitionNotifications(),
+        ];
+    }
 
-        // Get grouped blood groups for the dropdown
-        $groupedBloodGroups = $this->dashboardService->getGroupedBloodGroups();
-
-        // Get institutes and education levels for the modal
-        $institutes = $this->dashboardService->getAllInstitutes();
-        $educationLevels = $this->dashboardService->getAllEducationLevels();
-
-        // Employee Recognition
-        $canRecognize = $this->dashboardService->canRecognize($user);
-        $autoShowRecognitionModal = $this->dashboardService->shouldAutoShowRecognitionModal($user, 15);
-        $latestRecognition = $this->dashboardService->getLatestRecognitionForUser($user, 30);
-
-        // Upcoming birthdays in next 30 days
-        $upcomingBirthdays = $this->dashboardService->getUpcomingBirthdays(30);
-
-        return view('administration.dashboard.index', compact([
-            'user',
-            'wish',
-            'totalWorkedDays',
-            'totalRegularWork',
-            'totalRegularWorkingHour',
-            'totalOvertimeWorkingHour',
-            'totalOvertimeWork',
-            'activeAttendance',
-            'attendances',
-            'currentlyWorkingUsers',
-            'onLeaveUsers',
-            'absentUsers',
-            'showEmployeeInfoUpdateModal',
-            'groupedBloodGroups',
-            'institutes',
-            'educationLevels',
-            'canRecognize',
-            'autoShowRecognitionModal',
-            'latestRecognition',
-            'upcomingBirthdays',
-        ]));
+    /**
+     * Get birthday-related data.
+     */
+    private function getBirthdayData(): array
+    {
+        return [
+            'upcomingBirthdays' => $this->dashboardService->getUpcomingBirthdays(30),
+        ];
     }
 }
