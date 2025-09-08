@@ -2,6 +2,7 @@
 
 namespace App\Models\WorkSchedule;
 
+use App\Models\Weekend\Weekend;
 use App\Traits\HasCustomRouteId;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -54,6 +55,7 @@ class WorkSchedule extends Model
      */
     public static function getWeekdays(): array
     {
-        return ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        $weekdays = Weekend::where('is_active', false)->pluck('day')->toArray();
+        return $weekdays;
     }
 }

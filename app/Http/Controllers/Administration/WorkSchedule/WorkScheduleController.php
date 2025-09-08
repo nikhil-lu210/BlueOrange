@@ -104,15 +104,11 @@ class WorkScheduleController extends Controller
     public function update(WorkScheduleUpdateRequest $request, WorkSchedule $workSchedule)
     {
         try {
-            $updatedSchedule = $this->workScheduleService->updateWorkSchedule($workSchedule, $request->validated());
+            $this->workScheduleService->updateWorkSchedule($workSchedule, $request->validated());
 
-            return redirect()->route('administration.work_schedule.show', $workSchedule)
-                ->with('success', 'Work schedule has been updated successfully.');
-
+            return redirect()->route('administration.work_schedule.show', $workSchedule)->with('success', 'Work schedule has been updated successfully.');
         } catch (Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', $e->getMessage());
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
     }
 
@@ -138,14 +134,12 @@ class WorkScheduleController extends Controller
      */
     public function report(Request $request)
     {
-        $weekdayFilter = $request->get('weekday_filter');
-        $userFilter = $request->get('user_filter');
-
         $reportData = $this->workScheduleService->getWorkScheduleReportData($request);
         $users = User::whereHas('employee')->get();
         $workScheduleService = $this->workScheduleService;
+        $weekdays = WorkSchedule::getWeekdays();
 
-        return view('administration.work_schedule.report', compact('reportData', 'users', 'workScheduleService'));
+        return view('administration.work_schedule.report', compact('reportData', 'users', 'workScheduleService', 'weekdays'));
     }
 
     /**

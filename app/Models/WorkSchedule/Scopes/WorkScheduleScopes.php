@@ -11,7 +11,7 @@ trait WorkScheduleScopes
      */
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('is_active', true);
+        return $query->where('work_schedules.is_active', true);
     }
 
     /**
@@ -19,7 +19,7 @@ trait WorkScheduleScopes
      */
     public function scopeForUser(Builder $query, int $userId): Builder
     {
-        return $query->where('user_id', $userId);
+        return $query->where('work_schedules.user_id', $userId);
     }
 
     /**
@@ -27,7 +27,7 @@ trait WorkScheduleScopes
      */
     public function scopeForWeekday(Builder $query, string $weekday): Builder
     {
-        return $query->where('weekday', $weekday);
+        return $query->where('work_schedules.weekday', $weekday);
     }
 
     /**

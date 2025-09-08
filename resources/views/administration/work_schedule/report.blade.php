@@ -10,144 +10,147 @@
     {{--  External CSS  --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
+
+    {{-- Select 2 --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
 @endsection
 
 @section('custom_css')
     {{--  External CSS  --}}
     <style>
-    /* Gantt Chart Styles */
-    .gantt-chart {
-        background-color: #f8f9fa;
-        border: 1px solid #e9ecef;
-        border-radius: 8px;
-        padding: 20px;
-        margin-top: 20px;
-        overflow-x: auto;
-    }
-    
-    .gantt-header {
-        display: flex;
-        background-color: #e9ecef;
-        border-radius: 4px;
-        margin-bottom: 10px;
-        min-width: 800px;
-    }
-    
-    .gantt-employee-column {
-        flex: 0 0 200px;
-        min-width: 200px;
-        padding: 15px;
-        border-right: 1px solid #dee2e6;
-        background-color: #f8f9fa;
-        font-weight: bold;
-        color: #495057;
-    }
-    
-    .gantt-time-column {
-        flex: 1;
-        min-width: 35px;
-        padding: 10px 5px;
-        text-align: center;
-        border-right: 1px solid #dee2e6;
-        font-size: 0.8rem;
-        font-weight: 500;
-        color: #495057;
-        background-color: #f8f9fa;
-    }
-    
-    .gantt-row {
-        display: flex;
-        border-bottom: 1px solid #e9ecef;
-        min-height: 50px;
-        align-items: center;
-        min-width: 800px;
-    }
-    
-    .gantt-employee-cell {
-        flex: 0 0 200px;
-        min-width: 200px;
-        padding: 15px;
-        border-right: 1px solid #dee2e6;
-        background-color: white;
-        font-weight: 500;
-        color: #212529;
-    }
-    
-    .gantt-time-cell {
-        flex: 1;
-        min-width: 35px;
-        height: 50px;
-        border-right: 1px solid #e9ecef;
-        position: relative;
-        background-color: white;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        transition: opacity 0.2s;
-        cursor: pointer;
-        font-size: 0.75rem;
-    }
-    
-    .gantt-time-cell:hover {
-        opacity: 0.8;
-    }
-    
-    /* Clean colored cells without text */
-    .gantt-time-cell.bg-warning {
-        opacity: 0.9;
-    }
-    
-    .gantt-time-cell.bg-success,
-    .gantt-time-cell.bg-primary,
-    .gantt-time-cell.bg-secondary {
-        opacity: 0.9;
-    }
-    
-    /* Work Type Colors - Using Bootstrap classes */
-    /* Bootstrap classes: bg-success, bg-warning, bg-primary, bg-secondary */
-    
-    /* Legend */
-    .legend {
-        display: flex;
-        justify-content: center;
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-    
-    .legend-item {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-    }
-    
-    .legend-color {
-        width: 20px;
-        height: 20px;
-        border-radius: 4px;
-    }
-    
-    /* Weekday Navigation */
-    .weekday-nav {
-        margin-bottom: 20px;
-    }
-    
-    .weekday-nav .nav-link {
-        color: #6c757d;
-        border: 1px solid #dee2e6;
-        margin-right: 5px;
-        border-radius: 4px;
-    }
-    
-    .weekday-nav .nav-link.active {
-        background-color: #007bff;
-        border-color: #007bff;
-        color: white;
-    }
-    
-    .weekday-nav .nav-link:hover {
-        background-color: #e9ecef;
-        border-color: #dee2e6;
-    }
+        /* Gantt Chart Styles */
+        .gantt-chart {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        .gantt-header {
+            display: flex;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            min-width: 800px;
+        }
+
+        .gantt-employee-column {
+            flex: 0 0 200px;
+            min-width: 200px;
+            padding: 15px;
+            border-right: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #495057;
+        }
+
+        .gantt-time-column {
+            flex: 1;
+            min-width: 35px;
+            padding: 10px 5px;
+            text-align: center;
+            border-right: 1px solid #dee2e6;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #495057;
+            background-color: #f8f9fa;
+        }
+
+        .gantt-row {
+            display: flex;
+            border-bottom: 1px solid #e9ecef;
+            min-height: 50px;
+            align-items: center;
+            min-width: 800px;
+        }
+
+        .gantt-employee-cell {
+            flex: 0 0 200px;
+            min-width: 200px;
+            padding: 15px;
+            border-right: 1px solid #dee2e6;
+            background-color: white;
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .gantt-time-cell {
+            flex: 1;
+            min-width: 35px;
+            height: 50px;
+            border-right: 1px solid #e9ecef;
+            position: relative;
+            background-color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.2s;
+            cursor: pointer;
+            font-size: 0.75rem;
+        }
+
+        .gantt-time-cell:hover {
+            opacity: 0.8;
+        }
+
+        /* Clean colored cells without text */
+        .gantt-time-cell.bg-warning {
+            opacity: 0.9;
+        }
+
+        .gantt-time-cell.bg-success,
+        .gantt-time-cell.bg-primary,
+        .gantt-time-cell.bg-secondary {
+            opacity: 0.9;
+        }
+
+        /* Work Type Colors - Using Bootstrap classes */
+        /* Bootstrap classes: bg-success, bg-warning, bg-primary, bg-secondary */
+
+        /* Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        /* Weekday Navigation */
+        .weekday-nav {
+            margin-bottom: 20px;
+        }
+
+        .weekday-nav .nav-link {
+            color: #6c757d;
+            border: 1px solid #dee2e6;
+            margin-right: 5px;
+            border-radius: 4px;
+        }
+
+        .weekday-nav .nav-link.active {
+            background-color: #007bff;
+            border-color: #007bff;
+            color: white;
+        }
+
+        .weekday-nav .nav-link:hover {
+            background-color: #e9ecef;
+            border-color: #dee2e6;
+        }
     </style>
 @endsection
 
@@ -163,22 +166,21 @@
 @section('content')
 
 <!-- Filter Section -->
-<div class="row">
-    <div class="col-md-12">
+<div class="row justify-content-center">
+    <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-body">
                 <div class="row">
-                    <div class="mb-3 col-md-6">
-                        <label for="user_filter" class="form-label">Filter by Employee</label>
-                        <select name="user_filter" id="user_filter" class="form-select">
+                    <div class="col-md-8">
+                        <select name="user_filter" id="user_filter" class="form-select select2" data-allow-clear="true">
                             <option value="">All Employees</option>
                             @foreach($users ?? [] as $user)
                                 <option value="{{ $user->id }}" {{ request()->user_filter == $user->id ? 'selected' : '' }}>{{ get_employee_name($user) }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="mb-3 col-md-6 d-flex align-items-end">
-                        <button type="button" id="apply-filters" class="btn btn-primary">
+                    <div class="col-md-4">
+                        <button type="button" id="apply-filters" class="btn btn-primary btn-block">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
                             Apply Filters
                         </button>
@@ -192,30 +194,20 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card mb-4">
-            <div class="card-header header-elements">
-                <h5 class="mb-0">Work Schedule Report - Gantt Chart View</h5>
-
-                <div class="card-header-elements ms-auto">
-                    <a href="{{ route('administration.work_schedule.index') }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-arrow-left ti-xs me-1"></span>
-                        Back to Schedules
-                    </a>
-                </div>
-            </div>
             <div class="card-body">
                 @if(count($reportData) > 0)
                     <!-- Weekday Navigation -->
-                    <ul class="nav nav-pills weekday-nav" id="weekday-tabs" role="tablist">
-                        @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $weekday)
+                    <ul class="nav nav-pills weekday-nav d-flex justify-content-between" id="weekday-tabs" role="tablist">
+                        @foreach($weekdays as $weekday)
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link {{ request()->weekday_filter == $weekday || (request()->weekday_filter == null && $weekday == 'Monday') ? 'active' : '' }}" 
-                                        id="{{ strtolower($weekday) }}-tab" 
-                                        data-bs-toggle="pill" 
-                                        data-bs-target="#{{ strtolower($weekday) }}" 
-                                        type="button" 
-                                        role="tab" 
-                                        aria-controls="{{ strtolower($weekday) }}" 
-                                        aria-selected="{{ request()->weekday_filter == $weekday || (request()->weekday_filter == null && $weekday == 'Monday') ? 'true' : 'false' }}">
+                                <button class="nav-link {{ request()->weekday_filter == $weekday || (request()->weekday_filter == null && $weekday == date('l')) ? 'active' : '' }}"
+                                        id="{{ strtolower($weekday) }}-tab"
+                                        data-bs-toggle="pill"
+                                        data-bs-target="#{{ strtolower($weekday) }}"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="{{ strtolower($weekday) }}"
+                                        aria-selected="{{ request()->weekday_filter == $weekday || (request()->weekday_filter == null && $weekday == date('l')) ? 'true' : 'false' }}">
                                     {{ $weekday }}
                                 </button>
                             </li>
@@ -224,12 +216,12 @@
 
                     <!-- Tab Content -->
                     <div class="tab-content" id="weekday-tabContent">
-                        @foreach(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] as $weekday)
-                            <div class="tab-pane fade {{ request()->weekday_filter == $weekday || (request()->weekday_filter == null && $weekday == 'Monday') ? 'show active' : '' }}" 
-                                 id="{{ strtolower($weekday) }}" 
-                                 role="tabpanel" 
+                        @foreach($weekdays as $weekday)
+                            <div class="tab-pane fade {{ request()->weekday_filter == $weekday || (request()->weekday_filter == null && $weekday == date('l')) ? 'show active' : '' }}"
+                                 id="{{ strtolower($weekday) }}"
+                                 role="tabpanel"
                                  aria-labelledby="{{ strtolower($weekday) }}-tab">
-                                
+
                                 <!-- Legend -->
                                 <div class="legend">
                                     <div class="legend-item">
@@ -237,11 +229,11 @@
                                         <span>Client Work</span>
                                     </div>
                                     <div class="legend-item">
-                                        <div class="legend-color bg-warning"></div>
+                                        <div class="legend-color bg-primary"></div>
                                         <span>Internal Work</span>
                                     </div>
                                     <div class="legend-item">
-                                        <div class="legend-color bg-primary"></div>
+                                        <div class="legend-color bg-warning"></div>
                                         <span>Bench Work</span>
                                     </div>
                                 </div>
@@ -292,10 +284,10 @@
                                                 $cellData = $workScheduleService->getGanttCellData($userData, $weekday);
                                             @endphp
                                             @foreach($cellData as $cell)
-                                                <div class="gantt-time-cell {{ $cell['bgClass'] }}" 
+                                                <div class="gantt-time-cell {{ $cell['bgClass'] }}"
                                                      data-hour="{{ $cell['hour'] }}"
-                                                     @if($cell['hasSchedule']) 
-                                                         data-bs-toggle="tooltip" 
+                                                     @if($cell['hasSchedule'])
+                                                         data-bs-toggle="tooltip"
                                                          title="{{ $cell['title'] }}"
                                                      @endif>
                                                 </div>
@@ -324,6 +316,9 @@
 @section('script_links')
     {{--  External Javascript Links --}}
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
+
+    <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
+    <script src="{{ asset('assets/js/form-layouts.js') }}"></script>
 @endsection
 
 @section('custom_script')

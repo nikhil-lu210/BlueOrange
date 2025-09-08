@@ -100,7 +100,7 @@ class WorkScheduleService
 
             // Validate shift time constraints based on mode
             $sameScheduleForAll = isset($data['same_schedule_for_all']) && $data['same_schedule_for_all'];
-            
+
             if ($sameScheduleForAll) {
                 if (isset($data['work_items']) && is_array($data['work_items'])) {
                     $this->validateShiftConstraints($data['work_items'], $employeeShift);
@@ -183,7 +183,7 @@ class WorkScheduleService
      */
     public function getWorkScheduleReportData($request): array
     {
-        $weekdayFilter = $request->get('weekday_filter');
+        $weekdayFilter = $request->get('weekday_filter') ?? date('l');
         $userFilter = $request->get('user_filter');
 
         $query = WorkSchedule::withDetails()->active();
@@ -208,8 +208,8 @@ class WorkScheduleService
         $reportData = [];
         $workTypeColors = [
             'Client' => '#28a745',
-            'Internal' => '#007bff',
-            'Bench' => '#ffc107'
+            'Internal' => '#ffc107',
+            'Bench' => '#007bff'
         ];
 
         foreach ($schedules as $userId => $userSchedules) {
@@ -248,15 +248,15 @@ class WorkScheduleService
     {
         $shiftStartTime = Carbon::createFromFormat('H:i:s', $employeeShift->start_time);
         $shiftEndTime = Carbon::createFromFormat('H:i:s', $employeeShift->end_time);
-        
+
         // Check if shift is overnight (end time is "before" start time)
         $isOvernightShift = $shiftEndTime->lt($shiftStartTime);
-        
+
         if ($isOvernightShift) {
             // For overnight shifts, add 24 hours to end time for calculation
             $shiftEndTime->addDay();
         }
-        
+
         $shiftTotalMinutes = $shiftEndTime->diffInMinutes($shiftStartTime);
 
         $totalWorkMinutes = 0;
@@ -268,11 +268,11 @@ class WorkScheduleService
 
             // Check if work item is overnight
             $isOvernightWork = $endTime->lt($startTime);
-            
+
             // Create copies for duration calculation
             $startTimeForDuration = $startTime->copy();
             $endTimeForDuration = $endTime->copy();
-            
+
             if ($isOvernightWork) {
                 // For overnight work items, add 24 hours to end time for calculation
                 $endTimeForDuration->addDay();
@@ -281,11 +281,11 @@ class WorkScheduleService
             // Validate against shift times (handle overnight shifts properly)
             $shiftStartOriginal = Carbon::createFromFormat('H:i:s', $employeeShift->start_time);
             $shiftEndOriginal = Carbon::createFromFormat('H:i:s', $employeeShift->end_time);
-            
+
             if ($isOvernightShift) {
                 // For overnight shifts, work items must be within the shift range
                 // Shift: 23:00-07:00, valid work items: 23:00-01:00, 01:00-07:00, etc.
-                
+
                 if ($isOvernightWork) {
                     // For overnight work items, both start and end should be within shift range
                     // Start should be >= shift start, End should be <= shift end
@@ -310,7 +310,7 @@ class WorkScheduleService
             // Store original times for overlap checking
             $originalStart = Carbon::createFromFormat('H:i', $item['start_time']);
             $originalEnd = Carbon::createFromFormat('H:i', $item['end_time']);
-            
+
             // Check for overlapping times
             foreach ($timeRanges as $range) {
                 if ($this->timeRangesOverlap(['start' => $originalStart, 'end' => $originalEnd], $range)) {
@@ -337,11 +337,11 @@ class WorkScheduleService
         $end1 = $range1['end'];
         $start2 = $range2['start'];
         $end2 = $range2['end'];
-        
+
         // Check if either range is overnight
         $isOvernight1 = $end1->lt($start1);
         $isOvernight2 = $end2->lt($start2);
-        
+
         if ($isOvernight1 && $isOvernight2) {
             // Both are overnight - they overlap if they share any time
             return true; // For simplicity, consider all overnight ranges as potentially overlapping
@@ -400,7 +400,7 @@ class WorkScheduleService
             // Handle different time formats
             $start = Carbon::createFromFormat('H:i', $startTime);
             $end = Carbon::createFromFormat('H:i', $endTime);
-            
+
             if (!$start || !$end) {
                 throw new Exception("Invalid time format: start='{$startTime}', end='{$endTime}'");
             }
@@ -423,7 +423,7 @@ class WorkScheduleService
     public function getGanttCellData(array $userData, string $weekday): array
     {
         $cells = [];
-        
+
         for ($hour = 0; $hour <= 23; $hour++) {
             $cellData = [
                 'hour' => $hour,
@@ -432,7 +432,7 @@ class WorkScheduleService
                 'hasSchedule' => false,
                 'workType' => ''
             ];
-            
+
             foreach ($userData['schedules'] as $schedule) {
                 $startTime = $schedule['start_time']->format('H:i');
                 $endTime = $schedule['end_time']->format('H:i');
@@ -443,7 +443,7 @@ class WorkScheduleService
 
                 // Check if this schedule overlaps with this 1-hour period
                 $overlaps = false;
-                
+
                 // Handle overnight shifts (end time is earlier than start time)
                 if ($endHour < $startHour) {
                     // Overnight shift: check if current hour falls within the overnight period
@@ -467,10 +467,10 @@ class WorkScheduleService
                     break; // Use the first overlapping schedule
                 }
             }
-            
+
             $cells[] = $cellData;
         }
-        
+
         return $cells;
     }
 
@@ -485,10 +485,10 @@ class WorkScheduleService
                 return 'bg-success';
             case 'internal':
             case 'internal work':
-                return 'bg-warning';
+                return 'bg-primary';
             case 'bench':
             case 'bench work':
-                return 'bg-primary';
+                return 'bg-warning';
             default:
                 return 'bg-secondary';
         }
