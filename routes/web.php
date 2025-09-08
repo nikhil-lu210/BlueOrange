@@ -20,6 +20,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/error', function () {
+    return view('errors.testError');
+});
+
 // Temporary test route for certificate functionality
 Route::get('/test-certificate', function () {
     $employees = \App\Models\User::select(['id', 'name'])
