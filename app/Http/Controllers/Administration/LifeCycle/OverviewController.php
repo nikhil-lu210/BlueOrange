@@ -98,6 +98,29 @@ class OverviewController extends Controller
     {
         return view('administration.lifecycle.onboarding');
     }
+
+    /**
+     * Display the active employees view.
+     */
+    public function active()
+    {
+        return view('administration.lifecycle.active');
+    }
+
+    /**
+     * Display the offboarding view.
+     */
+    public function offboarding()
+    {
+        return view('administration.lifecycle.offboarding');
+    }
+
+    public function transfer()
+    {
+        return view('administration.lifecycle.transfer');
+    }
+
+
     /**
      * Show the form for creating a new resource.
      */
