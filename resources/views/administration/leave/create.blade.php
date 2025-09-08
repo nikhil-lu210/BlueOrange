@@ -427,15 +427,11 @@
                         dates.push(dateStr);
 
                         // Validation
-                        if (inputDate < today || (selectedType === 'Earned' && inputDate <= minEarnedDate)) {
+                        if (selectedType === 'Earned' && inputDate <= minEarnedDate) {
                             $(this).addClass('is-invalid');
                             $(this).next('.invalid-feedback').remove();
 
-                            if (inputDate < today) {
-                                $(this).after('<div class="invalid-feedback">Leave date cannot be in the past.</div>');
-                            } else if (selectedType === 'Earned' && inputDate <= minEarnedDate) {
-                                $(this).after('<div class="invalid-feedback">For Earned leave, date must be after 3 days from today.</div>');
-                            }
+                            $(this).after('<div class="invalid-feedback">For Earned leave, date must be after 3 days from today.</div>');
 
                             hasValidationError = true;
                         } else {
