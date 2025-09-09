@@ -50,9 +50,9 @@
                         @if (auth()->user()->hasAllPermissions(['Attendance Create', 'Attendance Read']))
                             @isset($activeAttendance->clock_in)
                                 <div class="d-flex align-items-center">
-                                    <form action="{{ route('administration.attendance.clockout') }}" method="post" class="mb-0 confirm-form-danger"></form>
+                                    <form action="{{ route('administration.attendance.clockout') }}" method="post" class="mb-0 confirm-form-danger">
+                                        @csrf
                                         <div class="avatar flex-shrink-0 me-2">
-                                            @csrf
                                             <button type="submit" name="attendance" value="clock_out"
                                                     class="avatar-initial rounded bg-danger border-0"
                                                     data-bs-toggle="tooltip"
