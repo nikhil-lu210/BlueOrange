@@ -113,12 +113,23 @@ class DashboardController extends Controller
      */
     private function getRecognitionData($user): array
     {
-        return [
-            'canRecognize' => $this->dashboardService->canRecognize($user),
-            'autoShowRecognitionModal' => $this->dashboardService->shouldAutoShowRecognitionModal($user, 15),
-            'latestRecognition' => $this->dashboardService->getLatestRecognitionForUser($user, 15),
-            'recognitionData' => $this->dashboardService->getUnreadRecognitionNotifications(),
+        $canRecognize = $this->dashboardService->canRecognize($user);
+        $canReadRecognition = $user->hasPermissionTo('Recognition Read');
+        
+        $data = [
+            'canRecognize' => $canRecognize,
         ];
+        
+        // Only include recognition data for users who can recognize or read recognition
+        if ($canRecognize || $canReadRecognition) {
+            $data = array_merge($data, [
+                'autoShowRecognitionModal' => $this->dashboardService->shouldAutoShowRecognitionModal($user, 15),
+                'latestRecognition' => $this->dashboardService->getLatestRecognitionForUser($user, 15),
+                'recognitionData' => $this->dashboardService->getUnreadRecognitionNotifications(),
+            ]);
+        }
+        
+        return $data;
     }
 
     /**

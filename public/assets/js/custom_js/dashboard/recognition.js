@@ -16,6 +16,7 @@ class RecognitionSystem {
         this.initNotificationSystem();
         this.initConfettiSystem();
         this.initMultiUserCarousel();
+        this.initAutoShowModal();
     }
 
     // Recognition Notification System
@@ -147,7 +148,8 @@ class RecognitionSystem {
 
     // Multi-User Recognition Carousel
     initMultiUserCarousel() {
-        class MultiRecognitionCarousel {
+        // Define the carousel class globally
+        window.MultiRecognitionCarousel = class MultiRecognitionCarousel {
             constructor() {
                 this.currentSlide = 0;
                 this.autoPlayInterval = null;
@@ -256,6 +258,7 @@ class RecognitionSystem {
             }
 
             startAutoPlay() {
+                if (this.totalSlides <= 1) return;
                 this.isAutoPlaying = true;
                 this.autoPlayInterval = setInterval(() => this.nextSlide(), this.slideShowDuration);
             }
@@ -306,9 +309,94 @@ class RecognitionSystem {
         document.addEventListener('DOMContentLoaded', () => {
             const hasMultiCarousel = document.querySelector('#recognizeCongratsModal .recognition-slides');
             if (hasMultiCarousel) {
-                window.multiRecognitionCarousel = new MultiRecognitionCarousel();
+                window.multiRecognitionCarousel = new window.MultiRecognitionCarousel();
             }
         });
+    }
+
+    // Auto-show recognition modal
+    initAutoShowModal() {
+        // Check if DOM is already ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                this.checkAndShowModal();
+            });
+        } else {
+            this.checkAndShowModal();
+        }
+    }
+    
+    checkAndShowModal() {
+        // Wait for page to be fully loaded
+        const waitForPageLoad = () => {
+            return new Promise((resolve) => {
+                if (document.readyState === 'complete') {
+                    resolve();
+                } else {
+                    window.addEventListener('load', resolve);
+                }
+            });
+        };
+        
+        waitForPageLoad().then(() => {
+            // Additional delay to ensure all scripts and styles are loaded
+            setTimeout(() => {
+                // First check if the modal exists in the DOM
+                const modal = document.getElementById('recognizeCongratsModal');
+                if (!modal) return;
+                
+                // Check if we should auto-show the recognition modal
+                if (window.dashboardData && window.dashboardData.hasRecognitionData && window.dashboardData.canReadRecognition) {
+                    this.showRecognitionModal();
+                } else {
+                    // Fallback: Check if modal exists and has recognition slides
+                    const slides = modal?.querySelector('.recognition-slides');
+                    if (modal && slides && slides.children.length > 0) {
+                        this.showRecognitionModal();
+                    }
+                }
+            }, 2000); // Increased delay to ensure everything is loaded
+        });
+    }
+    
+    // Show recognition modal
+    showRecognitionModal() {
+        const modal = document.getElementById('recognizeCongratsModal');
+        if (modal) {
+            const bsModal = new bootstrap.Modal(modal, {
+                // backdrop: 'static', // uncomment this if you want not to close the modal by clicking outside
+                keyboard: false
+            });
+            
+            // Initialize carousel after modal is shown
+            modal.addEventListener('shown.bs.modal', () => {
+                this.initializeCarouselIfNeeded();
+            }, { once: true });
+            
+            bsModal.show();
+        }
+    }
+    
+    // Initialize carousel if needed
+    initializeCarouselIfNeeded() {
+        if (!window.multiRecognitionCarousel) {
+            const hasMultiCarousel = document.querySelector('#recognizeCongratsModal .recognition-slides');
+            if (hasMultiCarousel && window.MultiRecognitionCarousel) {
+                window.multiRecognitionCarousel = new window.MultiRecognitionCarousel();
+                
+                // Start auto-play after initialization
+                setTimeout(() => {
+                    if (window.multiRecognitionCarousel && window.multiRecognitionCarousel.totalSlides > 1) {
+                        window.multiRecognitionCarousel.startAutoPlay();
+                    }
+                }, 1000);
+            }
+        } else {
+            // Start auto-play if not already running
+            if (window.multiRecognitionCarousel && window.multiRecognitionCarousel.totalSlides > 1 && !window.multiRecognitionCarousel.isAutoPlaying) {
+                window.multiRecognitionCarousel.startAutoPlay();
+            }
+        }
     }
 }
 

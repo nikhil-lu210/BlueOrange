@@ -78,7 +78,7 @@
     @endif
 
     {{-- Recognition Congratulation Modal --}}
-    @if (auth()->user()->hasPermissionTo('Recognition Read'))
+    @if (auth()->user()->hasPermissionTo('Recognition Read') && !empty($recognitionData))
         @include('administration.dashboard.modals.recognize_congrats_modal_multi_users')
     @endif
     {{-- <!-- End row --> --}}
@@ -102,13 +102,13 @@
     <script src="{{ asset('assets/js/custom_js/calendar/dashboard_calendar.js') }}"></script>
 
     <!-- Lucide Icons for Recognition Notification -->
-    @if ($canRecognize || auth()->user()->hasPermissionTo('Recognition Read'))
+    @if ($canRecognize || (auth()->user()->hasPermissionTo('Recognition Read') && !empty($recognitionData)))
         <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     @endif
 
     <!-- Optimized Dashboard JavaScript -->
     <script src="{{ asset('assets/js/custom_js/dashboard/core.js') }}"></script>
-    @if ($canRecognize || auth()->user()->hasPermissionTo('Recognition Read'))
+    @if ($canRecognize || (auth()->user()->hasPermissionTo('Recognition Read') && !empty($recognitionData)))
         <script src="{{ asset('assets/js/custom_js/dashboard/recognition.js') }}"></script>
     @endif
 @endsection
@@ -126,9 +126,7 @@
         // Dashboard Data Configuration
         window.dashboardData = {
             showEmployeeInfoUpdateModal: {{ $showEmployeeInfoUpdateModal ? 'true' : 'false' }},
-            @if ($canRecognize || auth()->user()->hasPermissionTo('Recognition Read'))
-            hasRecognitionData: {{ !empty($recognitionData) ? 'true' : 'false' }},
-            @endif
+            hasRecognitionData: {{ (!empty($recognitionData) && ($canRecognize || auth()->user()->hasPermissionTo('Recognition Read'))) ? 'true' : 'false' }},
             canRecognize: {{ $canRecognize ? 'true' : 'false' }},
             canReadRecognition: {{ auth()->user()->hasPermissionTo('Recognition Read') ? 'true' : 'false' }}
         };

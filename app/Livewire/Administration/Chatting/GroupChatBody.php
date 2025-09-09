@@ -32,17 +32,69 @@ class GroupChatBody extends Component
 
     public function loadMessages()
     {
-        $isGroupUser = $this->chattingGroup->group_users->contains(auth()->user()->id);
-        if ($isGroupUser == false) {
-            toast('You are not authorised to view this group: '.$this->chattingGroup->name.'.','warning');
-            return redirect()->route('administration.chatting.group.index');
+        try {
+            // Check if user is authenticated
+            if (!auth()->check()) {
+                $this->dispatch('sessionExpired');
+                return;
+            }
+
+            // Check if group exists
+            if (!$this->chattingGroup) {
+                \Log::warning('GroupChatBody: ChattingGroup is null');
+                return;
+            }
+
+            // Use a more efficient check for group membership
+            $isGroupUser = $this->checkGroupMembership();
+            if ($isGroupUser == false) {
+                toast('You are not authorised to view this group: '.$this->chattingGroup->name.'.','warning');
+                return redirect()->route('administration.chatting.group.index');
+            }
+
+            // Load messages with optimized query
+            $this->messages = $this->chattingGroup->group_messages()
+                ->with(['sender.media', 'files'])
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+            // Mark messages as read (only if there are messages)
+            if ($this->messages->isNotEmpty()) {
+                $this->markMessagesAsRead();
+            }
+        } catch (\Exception $e) {
+            // Log the error with more context
+            \Log::error('Error loading group messages: ' . $e->getMessage(), [
+                'user_id' => auth()->id(),
+                'group_id' => $this->chattingGroup->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            // If it's a session or token issue, dispatch an event to refresh the token
+            if (str_contains($e->getMessage(), 'session') || str_contains($e->getMessage(), 'token') || str_contains($e->getMessage(), '419')) {
+                $this->dispatch('sessionExpired');
+            } else {
+                // For other errors, set empty messages to prevent further issues
+                $this->messages = collect();
+            }
         }
+    }
 
-        $this->messages = $this->chattingGroup->group_messages;
-
-        // Mark messages as read
-        $this->markMessagesAsRead();
-        // dd($this->messages);
+    /**
+     * Check if user is a member of the group (optimized)
+     */
+    private function checkGroupMembership()
+    {
+        try {
+            // Use a direct database query instead of the relationship for better performance
+            return \DB::table('chatting_group_user')
+                ->where('chatting_group_id', $this->chattingGroup->id)
+                ->where('user_id', auth()->id())
+                ->exists();
+        } catch (\Exception $e) {
+            \Log::error('Error checking group membership: ' . $e->getMessage());
+            return false; // Default to false for security
+        }
     }
 
 
