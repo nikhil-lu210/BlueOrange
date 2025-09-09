@@ -16,6 +16,6 @@ Route::controller(GroupChattingController::class)->prefix('group')->name('group.
     Route::get('/remove/user/{group}/{groupid}/{user}', 'removeUser')->name('remove.user');
     Route::get('/{group}/{groupid}/destroy', 'destroy')->name('destroy');
 
-    Route::get('/browser-unread-messages', 'fetchUnreadMessagesForBrowser')->name('browser.fetch_unread');
+    Route::get('/browser-unread-messages', 'fetchUnreadMessagesForBrowser')->name('browser.fetch_unread')->middleware(['handle.ajax', 'throttle:60,1']);
     Route::get('/read-browser-notification-message/show/{groupId}', 'readBrowserNotification')->name('browser.read.message');
 });

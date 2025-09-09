@@ -118,41 +118,54 @@ trait UserAccessors
      */
     public function getUserInteractionsAttribute()
     {
-        // Use a static cache to prevent duplicate queries
-        static $cache = [];
-
-        // Create a unique key for this user
+        // Use Laravel's cache instead of static cache for better performance
         $cacheKey = 'user_interactions_' . $this->id;
+        
+        return cache()->remember($cacheKey, now()->addMinutes(10), function () {
+            try {
+                // Use a more efficient approach with exists() check first
+                $hasInteractions = DB::table('user_interactions')
+                    ->where(function ($query) {
+                        $query->where('user_id', $this->id)
+                              ->orWhere('interacted_user_id', $this->id);
+                    })
+                    ->exists();
 
-        // Check if we already have the interactions in the cache
-        if (isset($cache[$cacheKey])) {
-            return $cache[$cacheKey];
-        }
+                if (!$hasInteractions) {
+                    // If no interactions, just return the current user
+                    return collect([$this]);
+                }
 
-        // Optimize by using a single query with UNION
-        $interactedUsers = DB::table('users')
-            ->select('users.*')
-            ->join('user_interactions', 'users.id', '=', 'user_interactions.interacted_user_id')
-            ->where('user_interactions.user_id', $this->id)
-            ->whereNull('users.deleted_at');
+                // Get user IDs from both directions in a single query
+                $userIds = DB::table('user_interactions')
+                    ->select('user_id as id')
+                    ->where('interacted_user_id', $this->id)
+                    ->union(
+                        DB::table('user_interactions')
+                            ->select('interacted_user_id as id')
+                            ->where('user_id', $this->id)
+                    )
+                    ->pluck('id')
+                    ->unique()
+                    ->filter() // Remove null values
+                    ->values();
 
-        $interactingUsers = DB::table('users')
-            ->select('users.*')
-            ->join('user_interactions', 'users.id', '=', 'user_interactions.user_id')
-            ->where('user_interactions.interacted_user_id', $this->id)
-            ->whereNull('users.deleted_at')
-            ->union($interactedUsers);
+                // Get users with a single query
+                $users = User::whereIn('id', $userIds)
+                    ->whereNull('deleted_at')
+                    ->get();
 
-        // Get the results as a collection of User models
-        $userIds = $interactingUsers->pluck('id')->unique();
-        $users = User::whereIn('id', $userIds)->get();
+                // Add the current user if not already included
+                if (!$users->contains('id', $this->id)) {
+                    $users->push($this);
+                }
 
-        // Add the current user
-        $result = $users->push($this)->unique('id');
-
-        // Cache the result
-        $cache[$cacheKey] = $result;
-
-        return $result;
+                return $users;
+            } catch (\Exception $e) {
+                // Log the error and return a fallback
+                \Log::error('Error in getUserInteractionsAttribute: ' . $e->getMessage());
+                return collect([$this]);
+            }
+        });
     }
 }

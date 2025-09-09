@@ -15,7 +15,7 @@ Route::controller(ChattingController::class)->prefix('chatting')->name('chatting
     include_once 'group_chatting.php';
 });
 
-Route::controller(ChattingController::class)->prefix('chatting')->name('chatting.')->group(function () {
+Route::controller(ChattingController::class)->prefix('chatting')->name('chatting.')->middleware(['handle.ajax', 'throttle:60,1'])->group(function () {
     Route::get('/one-to-one/browser-unread-messages', 'fetchUnreadMessagesForBrowser')->name('browser.fetch_unread');
     Route::get('/one-to-one/read-browser-notification-message/{id}/{userid}', 'readBrowserNotification')->name('browser.read.message');
 });

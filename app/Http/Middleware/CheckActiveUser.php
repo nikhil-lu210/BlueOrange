@@ -21,6 +21,15 @@ class CheckActiveUser
             // Log the user out if they are not active
             Auth::logout();
 
+            // If this is an AJAX request, return JSON response instead of redirect
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Your account is not active. Please contact support.',
+                    'status' => 403
+                ], 403);
+            }
+
             // Redirect them to the login page with a message
             toast('Your account is not active. Please contact support.', 'warning');
             return redirect()->route('login')->withErrors([

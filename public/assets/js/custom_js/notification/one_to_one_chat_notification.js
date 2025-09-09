@@ -66,6 +66,12 @@ $(document).ready(function () {
         requestNotificationPermission();
     }
 
+    // Track consecutive errors to implement exponential backoff
+    let consecutiveErrors = 0;
+    let maxConsecutiveErrors = 3;
+    let currentInterval = 15000; // Start with 15 seconds
+    let maxInterval = 300000; // Max 5 minutes
+
     /**
      * Fetch unread one-to-one chat messages and show notifications
      */
@@ -98,8 +104,12 @@ $(document).ready(function () {
         $.ajax({
             url: fetchUrl,
             type: 'GET',
-            timeout: 5000, // 5 second timeout
+            timeout: 10000, // Increased timeout to 10 seconds
             success: function(response) {
+                // Reset error counter on successful request
+                consecutiveErrors = 0;
+                currentInterval = 15000; // Reset to normal interval
+
                 // Extract messages from the response format
                 const messages = response.messages || [];
 
@@ -150,20 +160,38 @@ $(document).ready(function () {
                     });
                 }
             },
-            error: function(_, status, error) {
-                // Only log error in console if it's not a timeout
-                if (status !== 'timeout') {
-                    console.error("Error fetching new messages:", error);
+            error: function(xhr, status, error) {
+                consecutiveErrors++;
+
+                // Log error details for debugging
+                console.error("Error fetching new messages:", {
+                    status: xhr.status,
+                    statusText: xhr.statusText,
+                    error: error,
+                    consecutiveErrors: consecutiveErrors
+                });
+
+                // If we get a 508 Loop Detected or too many consecutive errors, implement exponential backoff
+                if (xhr.status === 508 || consecutiveErrors >= maxConsecutiveErrors) {
+                    currentInterval = Math.min(currentInterval * 2, maxInterval);
+                    console.warn(`Implementing exponential backoff. Next check in ${currentInterval/1000} seconds`);
+
+                    // Clear the current interval and set a new one with backoff
+                    clearInterval(window.oneToOneChatInterval);
+                    window.oneToOneChatInterval = setInterval(fetchUnreadChatMessages, currentInterval);
                 }
 
-                // Don't retry immediately on error to avoid flooding the server
-                // The next check will happen on the regular interval
+                // If we get authentication errors (401, 403), stop polling
+                if (xhr.status === 401 || xhr.status === 403) {
+                    console.error("Authentication error. Stopping chat notifications.");
+                    clearInterval(window.oneToOneChatInterval);
+                }
             }
         });
     }
 
     // Check for new messages every 15 seconds
-    setInterval(fetchUnreadChatMessages, 15000);
+    window.oneToOneChatInterval = setInterval(fetchUnreadChatMessages, 15000);
 
     // Also check when the tab becomes visible
     document.addEventListener("visibilitychange", function () {
