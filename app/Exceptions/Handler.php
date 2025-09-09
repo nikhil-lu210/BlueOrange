@@ -3,7 +3,6 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Http\Response;
 use Throwable;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -43,7 +42,7 @@ class Handler extends ExceptionHandler
     /**
      * Render an exception into an HTTP response.
      */
-    public function render($request, Throwable $exception): Response
+    public function render($request, Throwable $exception)
     {
         $exception = $this->normalizeException($exception);
 
