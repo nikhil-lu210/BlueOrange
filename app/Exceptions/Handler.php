@@ -100,7 +100,7 @@ class Handler extends ExceptionHandler
                 default => [
                     'title' => 'Unexpected Error',
                     'message' => 'An error occurred. Please try again later.',
-                    'image' => 'assets/img/error/default.png',
+                    'image' => 'assets/img/error/default.gif',
                 ],
             };
 
