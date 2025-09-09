@@ -182,7 +182,7 @@
                 
                 <div class="container-2-3-1">
                     <div class="text-3-4-0">
-                        {{ $message }}
+                        {!! $message !!}
                     </div>
                     <a href="{{ url()->previous() }}" class="container-3-4-1 mt-3">
                         <div class="text-4-5-0"><i class="ti ti-arrow-left"></i> Back To Previous</div>

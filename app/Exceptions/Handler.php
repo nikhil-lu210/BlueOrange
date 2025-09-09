@@ -85,6 +85,11 @@ class Handler extends ExceptionHandler
                 500 => [
                     'title' => 'Server Error',
                     'message' => 'Something went wrong on our end.',
+                    'image' => 'assets/img/error/500.gif',
+                ],
+                419 => [
+                    'title' => 'Server Error',
+                    'message' => 'Something went wrong on our end.',
                     'image' => 'assets/img/error/500.png',
                 ],
                 default => [
