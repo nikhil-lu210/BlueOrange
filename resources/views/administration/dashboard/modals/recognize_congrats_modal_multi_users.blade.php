@@ -1,10 +1,11 @@
 <!-- Multi-User Recognition Modal -->
-<div class="modal fade" data-bs-backdrop="static" id="recognizeCongratsModal" tabindex="-1" aria-hidden="true">
+{{-- data-bs-backdrop="static" add this if you want not to close the modal by clicking outside --}}
+<div class="modal fade" id="recognizeCongratsModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content p-3 p-md-5">
             <!-- Confetti Container -->
             <div class="confetti-container" id="confettiContainer"></div>
-            <a href="{{ route('administration.recognition.notification.mark_as_read') }}" class="btn-close btn-pinned"></a>
+            <a href="{{ route('administration.recognition.notification.mark_as_read') }}" class="btn-close btn-pinned confirm-warning" title="Click here to close this modal permanently"></a>
 
             <div class="modal-body">
                 <!-- Recognition Carousel -->
@@ -59,7 +60,6 @@
                         @empty
                             <p class="text-center">No recognitions available.</p>
                         @endforelse
-
                     </div>
                 </div>
 
