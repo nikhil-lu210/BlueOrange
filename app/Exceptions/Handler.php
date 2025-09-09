@@ -71,26 +71,31 @@ class Handler extends ExceptionHandler
             $statusCode = $exception->getStatusCode();
 
             $errorData = match ($statusCode) {
-                403 => [
+                401 => [
                     'title' => 'Access Denied',
                     'message' => 'Sorry, you don`t have permission to access this page.',
+                    'image' => 'assets/img/error/401.gif',
+                ],
+                403 => [
+                    'title' => 'Forbidden',
+                    'message' => 'You do not have permission to access this resource.',
                     'image' => 'assets/img/error/403.gif',
                 ],
                 404 => [
                     'title' => 'Page Not Found',
                     'message' => 'We`re sorry, the page you requested could not be found.<br />
                                 Please go back to the homepage.',
-                    'image' => 'assets/img/error/error.gif',
+                    'image' => 'assets/img/error/404.gif',
+                ],
+                419 => [
+                    'title' => 'Page Expired',
+                    'message' => 'Page expired, please refresh and try again.',
+                    'image' => 'assets/img/error/419.gif',
                 ],
                 500 => [
                     'title' => 'Server Error',
                     'message' => 'Something went wrong on our end.',
                     'image' => 'assets/img/error/500.gif',
-                ],
-                419 => [
-                    'title' => 'Server Error',
-                    'message' => 'Something went wrong on our end.',
-                    'image' => 'assets/img/error/500.png',
                 ],
                 default => [
                     'title' => 'Unexpected Error',
