@@ -113,8 +113,8 @@
             });
         };
 
-        // Refresh CSRF token more frequently (every 5 minutes) to prevent expiration
-        setInterval(refreshCsrfToken, 5 * 60 * 1000);
+        // Refresh CSRF token less frequently (every 15 minutes) to reduce server load
+        setInterval(refreshCsrfToken, 15 * 60 * 1000);
 
         // Also refresh when the user becomes active after being idle
         let idleTime = 0;

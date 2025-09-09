@@ -25,7 +25,7 @@
         // Set up a polling mechanism for chat updates with error handling
         let refreshInterval;
         let consecutiveErrors = 0;
-        let currentInterval = 15000; // Start with 15 seconds instead of 5
+        let currentInterval = 30000; // Start with 30 seconds to reduce server load
         let maxConsecutiveErrors = 3;
         let maxInterval = 120000; // Max 2 minutes
 
@@ -34,7 +34,7 @@
                 try {
                     Livewire.dispatch('refresh');
                     consecutiveErrors = 0; // Reset on success
-                    currentInterval = 15000; // Reset to normal interval
+                    currentInterval = 30000; // Reset to normal interval
                 } catch (error) {
                     consecutiveErrors++;
                     console.error('Livewire refresh error:', error);
@@ -109,8 +109,8 @@
             });
         };
 
-        // Refresh CSRF token more frequently (every 5 minutes) to prevent expiration
-        setInterval(refreshCsrfToken, 5 * 60 * 1000);
+        // Refresh CSRF token less frequently (every 15 minutes) to reduce server load
+        setInterval(refreshCsrfToken, 15 * 60 * 1000);
 
         // Scroll to bottom of chat
         const scrollToBottom = function() {
