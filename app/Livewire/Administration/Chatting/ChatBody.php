@@ -93,21 +93,19 @@ class ChatBody extends Component
     }
 
     /**
-     * Check if user can interact with another user (optimized)
+     * Check if user can interact with another user (simplified)
      */
     private function checkUserInteraction($receiverId)
     {
         try {
-            // Use a direct database query instead of the accessor for better performance
+            // Use a simple, direct query to avoid memory issues
             return \DB::table('user_interactions')
-                ->where(function ($query) use ($receiverId) {
-                    $query->where('user_id', auth()->id())
-                          ->where('interacted_user_id', $receiverId);
-                })
-                ->orWhere(function ($query) use ($receiverId) {
-                    $query->where('user_id', $receiverId)
-                          ->where('interacted_user_id', auth()->id());
-                })
+                ->where('user_id', auth()->id())
+                ->where('interacted_user_id', $receiverId)
+                ->exists() || 
+                \DB::table('user_interactions')
+                ->where('user_id', $receiverId)
+                ->where('interacted_user_id', auth()->id())
                 ->exists();
         } catch (\Exception $e) {
             \Log::error('Error checking user interaction: ' . $e->getMessage());

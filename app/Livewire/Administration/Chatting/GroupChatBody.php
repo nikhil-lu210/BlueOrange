@@ -81,12 +81,12 @@ class GroupChatBody extends Component
     }
 
     /**
-     * Check if user is a member of the group (optimized)
+     * Check if user is a member of the group (simplified)
      */
     private function checkGroupMembership()
     {
         try {
-            // Use a direct database query instead of the relationship for better performance
+            // Use a simple, direct query to avoid memory issues
             return \DB::table('chatting_group_user')
                 ->where('chatting_group_id', $this->chattingGroup->id)
                 ->where('user_id', auth()->id())
