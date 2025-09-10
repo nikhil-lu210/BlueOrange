@@ -2,7 +2,7 @@
 
 namespace App\Exceptions;
 
-use Illuminate\Support\Facades\Log;
+use Psr\Log\LoggerInterface;
 use Throwable;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Illuminate\Validation\ValidationException;
@@ -15,13 +15,32 @@ class ExceptionLogger
     public static function logIfNeeded(Throwable $exception): void
     {
         if (self::shouldLog($exception)) {
-            Log::error('Application Exception', [
+            // Resolve a PSR logger from the container to avoid using facades
+            // (facades may not be available very early in the bootstrap/exception
+            // flow which causes "A facade root has not been set" errors).
+            $logger = null;
+            try {
+                $logger = app(LoggerInterface::class);
+            } catch (\Throwable $e) {
+                // If the container isn't available for some reason, fall back.
+                $logger = null;
+            }
+
+            $context = [
                 'message' => $exception->getMessage(),
                 'file' => $exception->getFile(),
                 'line' => $exception->getLine(),
                 'code' => $exception->getCode(),
                 'trace' => array_slice($exception->getTrace(), 0, ErrorConfiguration::getMaxTraceEntries()),
-            ]);
+            ];
+
+            if ($logger instanceof LoggerInterface) {
+                $logger->error('Application Exception', $context);
+            } else {
+                // Last-resort fallback for very early exceptions
+                error_log('Application Exception: ' . $exception->getMessage());
+                error_log(print_r($context, true));
+            }
         }
     }
 
