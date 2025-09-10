@@ -14,6 +14,10 @@
     {{-- Custom CSS --}}
     <style>
         /* Custom CSS Here */
+        .custom-option-basic .custom-option-content {
+            padding: 0.5em;
+            padding-left: 2.5em;
+        }
     </style>
 @endsection
 
@@ -37,78 +41,139 @@
         
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.settings.rolepermission.role.index') }}" class="btn btn-sm btn-primary">
-                        <span class="tf-icon ti ti-circle ti-xs me-1"></span>
+                        <span class="tf-icon ti ti-arrow-left ti-xs me-1"></span>
                         All Roles
                     </a>
                 </div>
             </div>
             <div class="card-body">
-                <form action="{{ route('administration.settings.rolepermission.role.store') }}" method="post" autocomplete="off">
+                <form action="{{ route('administration.settings.rolepermission.role.store') }}" method="post" autocomplete="off" id="roleCreateForm">
                     @csrf
-                    <div class="col-12 mb-4">
-                        <label class="form-label" for="name">Role Name</label>
-                        <input type="text" id="name" name="name" class="form-control" placeholder="Enter a role name" tabindex="-1" />
-                    </div>
-                    <div class="col-12">
-                        <h5>Role Permissions</h5>
-                        <!-- Permission table -->
-                        <div class="table-responsive">
-                            <table class="table table-flush-spacing">
-                                <thead>
-                                    <tr>
-                                        <td class="bg-white text-nowrap fw-medium">
-                                            Superadmin Access 
-                                            <i class="ti ti-info-circle" data-bs-toggle="tooltip" data-bs-placement="top" title="Allows a full access to the system"></i>
-                                        </td>
-                                        <td class="bg-white" colspan="6">
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="selectAllPermissions" />
-                                                <label class="form-check-label" for="selectAllPermissions">
-                                                    Select All Permissions
-                                                </label>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($modules as $key => $module) 
-                                        <tr>
-                                            <td class="text-nowrap fw-medium">{{ $module->name }}</td>
-                                            <td>
-                                                <!-- "Everything" Checkbox for the module -->
-                                                <div class="d-flex">
-                                                    <div class="form-check me-3 me-lg-5">
-                                                        <input class="form-check-input everything-checkbox" type="checkbox" id="select_everything{{ $module->id }}" data-module-id="{{ $module->id }}" />
-                                                        <label class="form-check-label" for="select_everything{{ $module->id }}">
-                                                            Select Everything
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            @foreach ($module->permissions as $sl => $permission) 
-                                                <td>
-                                                    <div class="d-flex">
-                                                        <div class="form-check me-3 me-lg-5">
-                                                            <input class="form-check-input" type="checkbox" name="permissions[]" id="permission{{ $permission->id }}" value="{{ $permission->id }}" data-module-id="{{ $module->id }}" />
-                                                            <label class="form-check-label" for="permission{{ $permission->id }}">
-                                                                {{ $permission->name }}
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            @endforeach
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
+                    
+                    <!-- Role Basic Information -->
+                    <div class="row mb-4">
+                        <div class="col-md-9">
+                            <label class="form-label" for="name">Role Name <span class="text-danger">*</span></label>
+                            <input type="text" id="name" name="name" class="form-control" placeholder="Enter a role name" required />
                         </div>
-                        <!-- Permission table -->
+                        <div class="col-md-3">
+                            <div class="form-check custom-option custom-option-basic mt-4">
+                                <label class="form-check-label custom-option-content" for="selectAllPermissions">
+                                    <input class="form-check-input" type="checkbox" id="selectAllPermissions">
+                                    <span class="custom-option-header pb-0">
+                                        <span class="h6 mb-0">Select All Permissions</span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-12 mt-4">
-                        <button type="submit" class="btn btn-primary float-end">Add New Role</button>
+
+                    <!-- Permission Summary -->
+                    <div class="row mb-0">
+                        <div class="col-12">
+                            <div class="alert alert-primary d-flex align-items-center">
+                                <span class="tf-icon ti ti-info-circle me-2"></span>
+                                <div class="flex-grow-1">
+                                    <strong>Permission Summary:</strong>
+                                    <span id="permissionSummary">No permissions selected</span>
+                                </div>
+                                <div class="permission-stats">
+                                    <span class="badge bg-primary me-2">
+                                        <span id="selectedCount">0</span> / <span id="totalCount">{{ $modules->sum(fn($m) => $m->permissions->count()) }}</span> Selected
+                                    </span>
+                                    <span class="badge bg-success">
+                                        <span id="moduleCount">0</span> / {{ $modules->count() }} Modules
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Permission Table -->
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="table-responsive text-nowrap">
+                                <table class="table table-bordered">
+                                    <thead class="fixed-header bg-label-primary">
+                                        <tr>
+                                            <th class="text-left">Modules</th>
+                                            <th class="text-center">Everything</th>
+                                            <th class="text-center">Create</th>
+                                            <th class="text-center">Read</th>
+                                            <th class="text-center">Update</th>
+                                            <th class="text-center">Delete</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="scrollable-content">
+                                        @foreach ($modules as $module)
+                                            <tr>
+                                                <th>
+                                                    <div class="d-flex justify-content-between align-items-center text-capitalize">
+                                                        <span>
+                                                            <span class="tf-icon ti ti-lock me-2"></span>
+                                                            {{ $module->name }}
+                                                        </span>
+                                                        <span class="badge bg-label-primary ms-2">
+                                                            {{ $module->permissions->count() }}
+                                                        </span>
+                                                    </div>
+                                                </th>
+                                                @php
+                                                    $permissionTypes = ['Everything', 'Create', 'Read', 'Update', 'Delete'];
+                                                @endphp
+                                                
+                                                @foreach($permissionTypes as $permissionType)
+                                                    @php
+                                                        $permission = $module->permissions->filter(function($p) use ($permissionType) {
+                                                            return str_contains($p->name, $permissionType);
+                                                        })->first();
+                                                    @endphp
+                                                    <td class="text-center">
+                                                        @if($permission)
+                                                            <label class="switch switch-square">
+                                                                <input type="checkbox" 
+                                                                    class="switch-input {{ $permissionType === 'Everything' ? 'module-everything-checkbox' : 'permission-checkbox' }}" 
+                                                                    @if($permissionType !== 'Everything') name="permissions[]" @endif
+                                                                    id="permission_{{ $permission->id }}" 
+                                                                    value="{{ $permission->id }}" 
+                                                                    data-module-id="{{ $module->id }}"
+                                                                    @if($permissionType === 'Everything') data-permission-id="{{ $permission->id }}" @endif>
+                                                                <span class="switch-toggle-slider">
+                                                                    <span class="switch-on"><i class="ti ti-check"></i></span>
+                                                                    <span class="switch-off"><i class="ti ti-x"></i></span>
+                                                                </span>
+                                                            </label>
+                                                        @else
+                                                            <span class="text-muted">-</span>
+                                                        @endif
+                                                    </td>
+                                                @endforeach
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Form Actions -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ route('administration.settings.rolepermission.role.index') }}" 
+                                   class="btn btn-secondary">
+                                    <span class="tf-icon ti ti-x ti-xs me-1"></span>
+                                    Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary" id="submitBtn">
+                                    <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                                    Create Role
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </form>
-                <!--/ Add role form -->
             </div>
         </div>        
     </div>
@@ -125,53 +190,86 @@
     {{-- Custom Javascript --}}
     <script>
         $(document).ready(function () {
-            // "Select All Permissions" checkbox behavior
+            let totalPermissions = {{ $modules->sum(fn($m) => $m->permissions->count()) }};
+            let totalModules = {{ $modules->count() }};
+            
+            // Update permission summary
+            function updatePermissionSummary() {
+                let selectedPermissions = $("input[name='permissions[]']:checked").length;
+                let selectedModules = $('tbody tr').filter(function() {
+                    return $(this).find("input[name='permissions[]']:checked").length > 0;
+                }).length;
+                
+                $('#selectedCount').text(selectedPermissions);
+                $('#moduleCount').text(selectedModules);
+                
+                if (selectedPermissions === 0) {
+                    $('#permissionSummary').text('No permissions selected');
+                } else if (selectedPermissions === totalPermissions) {
+                    $('#permissionSummary').text('All permissions selected');
+                } else {
+                    $('#permissionSummary').text(`${selectedPermissions} permissions selected across ${selectedModules} modules`);
+                }
+                
+                // Update module "Everything" checkboxes
+                $('tbody tr').each(function() {
+                    let moduleId = $(this).find('.module-everything-checkbox').data('module-id');
+                    let moduleSelectedCount = $(this).find("input[name='permissions[]']:checked").length;
+                    let moduleTotalCount = $(this).find("input[name='permissions[]']").length;
+                    
+                    // Update module "Everything" checkbox
+                    let moduleEverythingCheckbox = $(this).find('.module-everything-checkbox');
+                    if (moduleSelectedCount === moduleTotalCount && moduleTotalCount > 0) {
+                        moduleEverythingCheckbox.prop('checked', true);
+                    } else {
+                        moduleEverythingCheckbox.prop('checked', false);
+                    }
+                });
+                
+                // Update main "Select All" checkbox
+                let anyUnchecked = $("input[name='permissions[]']:not(:checked)").length > 0;
+                $("#selectAllPermissions").prop("checked", !anyUnchecked);
+            }
+            
+            // Main "Select All Permissions" checkbox behavior
             $("#selectAllPermissions").click(function () {
                 var selectAllChecked = $(this).prop("checked");
                 $("input[name='permissions[]']").prop("checked", selectAllChecked);
-                $(".everything-checkbox").prop("checked", selectAllChecked);
+                $(".module-everything-checkbox").prop("checked", selectAllChecked);
+                updatePermissionSummary();
             });
-    
-            // Individual permission checkbox click behavior
-            $("input[name='permissions[]']").click(function () {
-                var row = $(this).closest("tr");
-                var moduleId = $(this).data("module-id");
-    
-                var everythingCheckbox = row.find(".everything-checkbox[data-module-id='" + moduleId + "']");
-                var permissionsCheckboxes = row.find("input[name='permissions[]'][data-module-id='" + moduleId + "']");
-    
-                // Handle the "Everything" checkbox based on individual permissions
-                if ($(this).prop("checked")) {
-                    var allChecked = permissionsCheckboxes.filter(":checked").length === permissionsCheckboxes.length;
-                    if (allChecked) {
-                        everythingCheckbox.prop("checked", true);
-                    }
-                } else {
-                    everythingCheckbox.prop("checked", false);
+            
+            // Module "Everything" checkbox behavior
+            $('.module-everything-checkbox').change(function() {
+                let moduleId = $(this).data('module-id');
+                let moduleRow = $(this).closest('tr');
+                let isChecked = $(this).prop('checked');
+                
+                // Check/uncheck all permissions in this module row
+                moduleRow.find("input[name='permissions[]']").prop('checked', isChecked);
+                updatePermissionSummary();
+            });
+            
+            // Individual permission checkbox behavior
+            $('.permission-checkbox').change(function() {
+                updatePermissionSummary();
+            });
+            
+            // Form submission with loading state
+            $('#roleCreateForm').submit(function(e) {
+                let selectedPermissions = $("input[name='permissions[]']:checked").length;
+                
+                if (selectedPermissions === 0) {
+                    e.preventDefault();
+                    toastr.error('Please select at least one permission for this role.');
+                    return false;
                 }
-    
-                // Check the "Select All Permissions" checkbox if all individual permissions are selected
-                var anyUnchecked = $("input[name='permissions[]']:not(:checked)").length > 0;
-                $("#selectAllPermissions").prop("checked", !anyUnchecked);
+                
+                $('#submitBtn').addClass('loading').prop('disabled', true);
             });
-    
-            // "Everything" checkbox click behavior
-            $(".everything-checkbox").click(function () {
-                var moduleId = $(this).data("module-id");
-                var row = $(this).closest("tr");
-                var permissionsCheckboxes = row.find("input[name='permissions[]'][data-module-id='" + moduleId + "']");
-    
-                // If "Everything" is checked, select all individual permissions for that module
-                if ($(this).prop("checked")) {
-                    permissionsCheckboxes.prop("checked", true);
-                } else {
-                    permissionsCheckboxes.prop("checked", false);
-                }
-    
-                // Check the "Select All Permissions" checkbox if all permissions are selected
-                var anyUnchecked = $("input[name='permissions[]']:not(:checked)").length > 0;
-                $("#selectAllPermissions").prop("checked", !anyUnchecked);
-            });
+            
+            // Initialize summary
+            updatePermissionSummary();
         });
     </script>
 @endsection

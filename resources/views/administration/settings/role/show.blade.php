@@ -86,19 +86,54 @@
                     <h5 class="text-center"><strong>{{ $role->name }}</strong> Role's Permissions</h5>
 
                     <div class="col-md-12 mb-4">
-                        <div class="row justify-content-center">
-                            <div class="col-md-8">
-                                <dl class="row mb-0">
+                        <div class="table-responsive text-nowrap">
+                            <table class="table table-bordered">
+                                <thead class="fixed-header bg-label-primary">
+                                    <tr>
+                                        <th class="text-left">Modules</th>
+                                        <th class="text-center">Everything</th>
+                                        <th class="text-center">Create</th>
+                                        <th class="text-center">Read</th>
+                                        <th class="text-center">Update</th>
+                                        <th class="text-center">Delete</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="scrollable-content">
                                     @foreach ($permissionModules as $module)
-                                        <dt class="col-sm-4 mb-2 fw-bold text-nowrap">{{ $module->name }}:</dt>
-                                        <dd class="col-sm-8">
-                                            @foreach ($module->permissions as $permission)
-                                                <span class="badge bg-label-primary">{{ $permission->name }}</span>
-                                            @endforeach
-                                        </dd>
+                                    <tr>
+                                        <th>
+                                            <div class="d-flex justify-content-between align-items-center text-capitalize">
+                                                <span>
+                                                    <span class="tf-icon ti ti-lock me-2"></span>
+                                                    {{ $module->name }}
+                                                </span>
+                                                <span class="badge bg-label-primary ms-2">
+                                                    {{ $module->permissions->count() }}
+                                                </span>
+                                            </div>
+                                        </th>
+                                        @php
+                                            $permissionTypes = ['Everything', 'Create', 'Read', 'Update', 'Delete'];
+                                        @endphp
+                                        
+                                        @foreach($permissionTypes as $permissionType)
+                                            @php
+                                                $permission = $module->permissions->filter(function($p) use ($permissionType) {
+                                                    return str_contains($p->name, $permissionType);
+                                                })->first();
+                                            @endphp
+                                            <td class="text-center">
+                                                @if($permission && $role->hasPermissionTo($permission))
+                                                    <i class="ti ti-check me-1 text-bold text-success"></i>
+                                                @else
+                                                    <i class="ti ti-x me-1 text-bold text-danger"></i>
+                                                @endif
+                                            </td>
+                                        @endforeach
+                                    </tr>
                                     @endforeach
-                                </dl>
-                            </div>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

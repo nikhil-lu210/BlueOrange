@@ -38,7 +38,7 @@ class RoleController extends Controller
      */
     public function create()
     {
-        $modules = PermissionModule::with(['permissions'])->get();
+        $modules = PermissionModule::with(['permissions'])->get()->sortBy('name');
         // dd($modules);
         return view('administration.settings.role.create', compact(['modules']));
     }
@@ -80,7 +80,7 @@ class RoleController extends Controller
             $query->whereHas('roles', function ($roleQuery) use ($role) {
                 $roleQuery->where('name', $role->name);
             });
-        }])->get();
+        }])->get()->sortBy('name');
 
         return view('administration.settings.role.show', compact('role', 'permissionModules'));
     }
@@ -93,7 +93,7 @@ class RoleController extends Controller
     {
         abort_if(!auth()->user()->hasAnyRole(['Developer', 'Super Admin']) || ($role->name == 'Developer' && $role->name == 'Super Admin'), 403, 'You are not authorize to view this role\'s edit page.');
 
-        $modules = PermissionModule::with(['permissions'])->get();
+        $modules = PermissionModule::with(['permissions'])->get()->sortBy('name');
         // dd($modules);
         return view('administration.settings.role.edit', compact(['modules', 'role']));
     }
