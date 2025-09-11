@@ -36,6 +36,13 @@ class ErrorConfiguration
                 'message' => 'Something went wrong on our end.',
                 'image' => 'assets/img/error/500.gif',
             ],
+            503 => [
+                'title' => 'Maintenance Mode',
+                'message' => 'We\'re currently performing scheduled maintenance to improve your experience.<br />
+                            Please check back in a few minutes.',
+                'image' => 'assets/img/error/503.gif',
+                'view' => 'errors.503',
+            ],
             default => [
                 'title' => 'Unexpected Error',
                 'message' => 'An error occurred. Please try again later.',

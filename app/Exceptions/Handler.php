@@ -61,7 +61,10 @@ class Handler extends ExceptionHandler
         $statusCode = $exception->getStatusCode();
         $errorData = ErrorConfiguration::getErrorData($statusCode);
 
-        return response()->view(ErrorConfiguration::getErrorView(), [
+        // Check if a specific view is defined for this status code
+        $view = $errorData['view'] ?? ErrorConfiguration::getErrorView();
+
+        return response()->view($view, [
             'statusCode' => $statusCode,
             'title' => $errorData['title'],
             'message' => $errorData['message'],

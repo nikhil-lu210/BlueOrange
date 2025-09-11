@@ -1,13 +1,13 @@
 @extends('layouts.errors.app')
 
-@section('page_title', 'Error')
+@section('page_title', 'Maintenance Mode')
 
 @section('error_content')
     <!-- Image Column -->
     <div class="col-lg-5 col-md-6 col-12 text-center">
         <img
             src="{{ asset($image) }}"
-            alt="Error {{ $statusCode }}"
+            alt="Maintenance Mode"
             class="img-fluid"
             style="max-width: 400px;"
         />
@@ -27,10 +27,23 @@
                 <div class="error-message mb-4">
                     {!! $message !!}
                 </div>
+                
+                <!-- Maintenance Info Card -->
+                <div class="card bg-light border mb-4">
+                    <div class="card-body text-center">
+                        <h5 class="card-title text-dark mb-3">
+                            <i class="ti ti-tools me-2"></i> What's happening?
+                        </h5>
+                        <p class="card-text text-muted mb-0">
+                            Our team is working hard to bring you an even better experience. This maintenance is necessary to ensure optimal performance.
+                        </p>
+                    </div>
+                </div>
+                
                 <div class="d-flex justify-content-center">
-                    <a href="{{ url()->previous() }}" class="btn-error">
+                    <a href="javascript:void(0)" onclick="location.reload()" class="btn-error">
                         <div class="btn-error-text">
-                            <i class="ti ti-arrow-left me-2"></i> Back To Previous
+                            <i class="ti ti-refresh me-2"></i> Try Again
                         </div>
                     </a>
                 </div>
