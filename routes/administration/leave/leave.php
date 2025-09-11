@@ -20,7 +20,7 @@ Route::prefix('leave')
 
                 Route::put('/approve/{leaveHistory}', 'approve')->name('approve')->can('Leave History Update')->middleware('throttle:30,1'); // 30 approvals per minute
                 Route::put('/reject/{leaveHistory}', 'reject')->name('reject')->can('Leave History Update')->middleware('throttle:30,1'); // 30 rejections per minute
-                Route::put('/cancel/{leaveHistory}', 'cancel')->name('cancel')->can('Leave History Update')->middleware('throttle:30,1'); // 30 cancellations per minute
+                Route::put('/cancel/{leaveHistory}', 'cancel')->name('cancel')->can('Leave History Create')->middleware('throttle:30,1'); // 30 cancellations per minute
 
                 Route::post('/store', 'store')->name('store')->can('Leave History Create')->middleware('throttle:15,1'); // 15 requests per minute
 

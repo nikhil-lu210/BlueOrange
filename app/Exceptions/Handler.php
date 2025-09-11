@@ -59,8 +59,7 @@ class Handler extends ExceptionHandler
     protected function renderHttpException(HttpExceptionInterface $exception)
     {
         $statusCode = $exception->getStatusCode();
-        $context = $this->determineContext($exception);
-        $errorData = ErrorConfiguration::getErrorData($statusCode, $context);
+        $errorData = ErrorConfiguration::getErrorData($statusCode);
 
         return response()->view(ErrorConfiguration::getErrorView(), [
             'statusCode' => $statusCode,
@@ -69,25 +68,6 @@ class Handler extends ExceptionHandler
             'image' => $errorData['image'],
             'exception' => $exception,
         ], $statusCode);
-    }
-
-    /**
-     * Determine the context of the error based on the request or exception.
-     */
-    private function determineContext(HttpExceptionInterface $exception): ?string
-    {
-        $request = request();
-
-        // Check if the request is related to leave module
-        if ($request && (
-            str_contains($request->path(), 'leave') ||
-            str_contains($request->url(), 'leave') ||
-            str_contains($exception->getMessage(), 'leave')
-        )) {
-            return 'leave';
-        }
-
-        return null;
     }
 
     /**

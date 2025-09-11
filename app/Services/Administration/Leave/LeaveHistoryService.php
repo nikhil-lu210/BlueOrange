@@ -375,9 +375,7 @@ class LeaveHistoryService
      */
     public function cancel(Request $request, LeaveHistory $leaveHistory): void
     {
-        if ($leaveHistory->status !== 'Approved') {
-            throw new Exception('Only approved leaves can be canceled.');
-        }
+        // Authorization is handled by the Policy - no need to duplicate checks here
 
         DB::transaction(function () use ($request, $leaveHistory) {
             $user = $leaveHistory->user;
@@ -410,6 +408,17 @@ class LeaveHistoryService
 
             // Send Mail to the Leave Applier by Queue
             Mail::to($leaveHistory->user->employee->official_email)->queue(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
+
+            // If the leave was canceled by the user themselves and it was pending, notify the team leader
+            if (auth()->id() === $leaveHistory->user_id && $leaveHistory->getOriginal('status') === 'Pending') {
+                // Send Notification to Team Leader
+                if ($leaveHistory->user->active_team_leader) {
+                    $leaveHistory->user->active_team_leader->notify(new LeaveRequestUpdateNotification($leaveHistory, auth()->user()));
+
+                    // Send Mail to the Team Leader
+                    Mail::to($leaveHistory->user->active_team_leader->employee->official_email)->queue(new LeaveRequestStatusUpdateMail($leaveHistory, auth()->user()));
+                }
+            }
         });
     }
 
