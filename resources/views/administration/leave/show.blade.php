@@ -181,6 +181,48 @@
             $('#rejectLeaveForm').on('submit', function() {
                 $('#leaveRejectNoteInput').val(leaveRejectNoteEditor.root.innerHTML);
             });
+
+            // Prevent double submission for approve form
+            $('#approveLeaveModal form').on('submit', function(e) {
+                const submitBtn = $('#approveSubmitBtn');
+                if (submitBtn.prop('disabled')) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Disable submit button and show loading
+                submitBtn.prop('disabled', true);
+                submitBtn.find('.btn-text').addClass('d-none');
+                submitBtn.find('.btn-loading').removeClass('d-none');
+            });
+
+            // Prevent double submission for cancel form
+            $('#cancelLeaveModal form').on('submit', function(e) {
+                const submitBtn = $('#cancelSubmitBtn');
+                if (submitBtn.prop('disabled')) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Disable submit button and show loading
+                submitBtn.prop('disabled', true);
+                submitBtn.find('.btn-text').addClass('d-none');
+                submitBtn.find('.btn-loading').removeClass('d-none');
+            });
+
+            // Prevent double submission for reject form
+            $('#rejectLeaveModal form').on('submit', function(e) {
+                const submitBtn = $('#rejectSubmitBtn');
+                if (submitBtn.prop('disabled')) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Disable submit button and show loading
+                submitBtn.prop('disabled', true);
+                submitBtn.find('.btn-text').addClass('d-none');
+                submitBtn.find('.btn-loading').removeClass('d-none');
+            });
         });
     </script>
 @endsection

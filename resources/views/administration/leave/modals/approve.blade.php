@@ -68,9 +68,13 @@
 
                     <div class="col-12 text-center mt-4">
                         <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                        <button type="submit" class="btn btn-primary me-sm-3 me-1">
+                        <button type="submit" class="btn btn-primary me-sm-3 me-1" id="approveSubmitBtn">
                             <i class="ti ti-check"></i>
-                            Approve Leave
+                            <span class="btn-text">Approve Leave</span>
+                            <span class="btn-loading d-none">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Processing...
+                            </span>
                         </button>
                     </div>
                 </form>
