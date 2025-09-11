@@ -31,7 +31,7 @@ class LeaveHistoryPolicy
     {
         return ($user->hasPermissionTo('Leave History Read') || $user->getAllPermissions()->contains('name', 'Leave History Read'))
             ? Response::allow()
-            : Response::deny('Access denied: You need \'Leave History Read\' permission to view leave records.');
+            : Response::deny('You do not have permission to view leave histories.');
     }
 
     /**
@@ -52,7 +52,7 @@ class LeaveHistoryPolicy
             }
         }
 
-        return Response::deny('Access denied: You can only view your own leave requests or those of your team members.');
+        return Response::deny('You do not have permission to view this leave request.');
     }
 
     /**
@@ -61,16 +61,16 @@ class LeaveHistoryPolicy
     public function create(User $user): Response
     {
         if (!($user->hasPermissionTo('Leave History Create') || $user->getAllPermissions()->contains('name', 'Leave History Create'))) {
-            return Response::deny('Access denied: You need \'Leave History Create\' permission to submit leave requests.');
+            return Response::deny('You do not have permission to create leave requests.');
         }
 
         if (!$user->allowed_leave) {
-            return Response::deny('Leave policy missing: No active leave policy has been assigned to your account. Please contact HR to set up your leave entitlements.');
+            return Response::deny('No active leave policy found. Please contact HR to assign a leave policy.');
         }
 
         // Check if user has active team leader
         if (!$user->active_team_leader) {
-            return Response::deny('Team leader missing: No active team leader has been assigned to your account. Leave requests require team leader approval. Please contact HR.');
+            return Response::deny('No active team leader found. Leave requests require a team leader for approval.');
         }
 
         return Response::allow();
@@ -82,18 +82,18 @@ class LeaveHistoryPolicy
     public function update(User $user, LeaveHistory $leaveHistory): Response
     {
         if (!($user->hasPermissionTo('Leave History Update') || $user->getAllPermissions()->contains('name', 'Leave History Update'))) {
-            return Response::deny('Access denied: You need \'Leave History Update\' permission to modify leave requests.');
+            return Response::deny('You do not have permission to update leave requests.');
         }
 
         // Admins cannot approve/reject their own leave
         if ($user->id === $leaveHistory->user_id) {
-            return Response::deny('Self-approval not allowed: You cannot approve or reject your own leave requests. Please ask your team leader to handle this.');
+            return Response::deny('You cannot approve or reject your own leave request.');
         }
 
         // Check if the leave belongs to someone in their team
         $userInteractionIds = $user->user_interactions->pluck('id');
         if (!$userInteractionIds->contains($leaveHistory->user_id)) {
-            return Response::deny('Team access only: You can only manage leave requests for members of your team.');
+            return Response::deny('You can only update leave requests for your team members.');
         }
 
         return Response::allow();
@@ -115,8 +115,8 @@ class LeaveHistoryPolicy
 
         // Scenario 2: User is the leave request creator - can cancel only "Pending" leave history
         if ($user->id === $leaveHistory->user_id) {
-        if ($leaveHistory->status !== 'Pending') {
-                return Response::deny('Status restriction: You can only cancel your own leave requests that are still pending approval.');
+            if ($leaveHistory->status !== 'Pending') {
+                return Response::deny('You can only cancel your own pending leave requests.');
             }
             return Response::allow();
         }
@@ -124,14 +124,14 @@ class LeaveHistoryPolicy
         // Scenario 3: User is the active team leader - can cancel any leave history of running year only
         if ($leaveRequestCreator && $leaveRequestCreator->active_team_leader && $leaveRequestCreator->active_team_leader->id === $user->id) {
             if ($leaveYear !== $currentYear) {
-                return Response::deny('Year restriction: As a team leader, you can only cancel leave requests for the current year (' . $currentYear . ').');
+                return Response::deny('You can only cancel leave requests for the current year (' . $currentYear . ').');
             }
             return Response::allow();
         }
 
 
         // Default: No permission to cancel
-        return Response::deny('Access denied: You don\'t have permission to cancel this leave request. Only the request creator, team leader, or administrators can cancel leaves.');
+        return Response::deny('You do not have permission to cancel this leave request.');
     }
 
     /**
@@ -140,23 +140,23 @@ class LeaveHistoryPolicy
     public function approve(User $user, LeaveHistory $leaveHistory): Response
     {
         if (!($user->hasPermissionTo('Leave History Update') || $user->getAllPermissions()->contains('name', 'Leave History Update'))) {
-            return Response::deny('Access denied: You need \'Leave History Update\' permission to approve leave requests.');
+            return Response::deny('You do not have permission to approve leave requests.');
         }
 
         // Cannot approve own leave
         if ($user->id === $leaveHistory->user_id) {
-            return Response::deny('Self-approval not allowed: You cannot approve your own leave requests. Please ask your team leader to handle this.');
+            return Response::deny('You cannot approve your own leave request.');
         }
 
         // Can only approve pending leaves
         if ($leaveHistory->status !== 'Pending') {
-            return Response::deny('Status restriction: Only pending leave requests can be approved. This request has already been processed.');
+            return Response::deny('Only pending leave requests can be approved.');
         }
 
         // Check if the leave belongs to someone in their team
         $userInteractionIds = $user->user_interactions->pluck('id');
         if (!$userInteractionIds->contains($leaveHistory->user_id)) {
-            return Response::deny('Team access only: You can only approve leave requests for members of your team.');
+            return Response::deny('You can only approve leave requests for your team members.');
         }
 
         return Response::allow();
@@ -168,23 +168,23 @@ class LeaveHistoryPolicy
     public function reject(User $user, LeaveHistory $leaveHistory): Response
     {
         if (!($user->hasPermissionTo('Leave History Update') || $user->getAllPermissions()->contains('name', 'Leave History Update'))) {
-            return Response::deny('Access denied: You need \'Leave History Update\' permission to reject leave requests.');
+            return Response::deny('You do not have permission to reject leave requests.');
         }
 
         // Cannot reject own leave
         if ($user->id === $leaveHistory->user_id) {
-            return Response::deny('Self-rejection not allowed: You cannot reject your own leave requests. Please ask your team leader to handle this.');
+            return Response::deny('You cannot reject your own leave request.');
         }
 
         // Can only reject pending leaves
         if ($leaveHistory->status !== 'Pending') {
-            return Response::deny('Status restriction: Only pending leave requests can be rejected. This request has already been processed.');
+            return Response::deny('Only pending leave requests can be rejected.');
         }
 
         // Check if the leave belongs to someone in their team
         $userInteractionIds = $user->user_interactions->pluck('id');
         if (!$userInteractionIds->contains($leaveHistory->user_id)) {
-            return Response::deny('Team access only: You can only reject leave requests for members of your team.');
+            return Response::deny('You can only reject leave requests for your team members.');
         }
 
         return Response::allow();
@@ -197,7 +197,7 @@ class LeaveHistoryPolicy
     {
         // Only super admins can delete leave records
         if (!$user->hasAnyRole(['Super Admin', 'Developer'])) {
-            return Response::deny('Access restricted: Only Super Administrators and Developers can delete leave records.');
+            return Response::deny('Only super administrators can delete leave records.');
         }
 
         return Response::allow();
@@ -210,7 +210,7 @@ class LeaveHistoryPolicy
     {
         return $user->hasAnyRole(['Super Admin', 'Developer'])
             ? Response::allow()
-            : Response::deny('Access restricted: Only Super Administrators and Developers can restore leave records.');
+            : Response::deny('Only super administrators can restore leave records.');
     }
 
     /**
@@ -220,7 +220,7 @@ class LeaveHistoryPolicy
     {
         return $user->hasAnyRole(['Super Admin', 'Developer'])
             ? Response::allow()
-            : Response::deny('Access restricted: Only Super Administrators and Developers can permanently delete leave records.');
+            : Response::deny('Only super administrators can permanently delete leave records.');
     }
 
     /**
@@ -230,6 +230,6 @@ class LeaveHistoryPolicy
     {
         return ($user->hasPermissionTo('Leave History Everything') || $user->getAllPermissions()->contains('name', 'Leave History Everything'))
             ? Response::allow()
-            : Response::deny('Access denied: You need \'Leave History Everything\' permission to export leave data.');
+            : Response::deny('You do not have permission to export leave data.');
     }
 }

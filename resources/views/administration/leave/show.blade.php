@@ -83,6 +83,18 @@
                         </div>
                     @endif
                 @endcanany
+
+                {{-- Cancel Leave button for users who can cancel their own pending leaves --}}
+                @can('cancel', $leaveHistory)
+                    @if ($leaveHistory->status === 'Pending' && auth()->id() === $leaveHistory->user_id)
+                        <div class="card-header-elements ms-auto">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#cancelLeaveModal" class="btn btn-sm btn-warning">
+                                <span class="tf-icon ti ti-ban ti-xs me-1"></span>
+                                {{ __('Cancel My Leave') }}
+                            </button>
+                        </div>
+                    @endif
+                @endcan
             </div>
             <div class="card-body">
                 <div class="row justify-content-left">
@@ -113,6 +125,12 @@
     @include('administration.leave.modals.approve')
     {{-- Reject Modal --}}
     @include('administration.leave.modals.reject')
+    {{-- Cancel Modal for users who can cancel their own pending leaves --}}
+    @can('cancel', $leaveHistory)
+        @if (auth()->id() === $leaveHistory->user_id)
+            @include('administration.leave.modals.cancel')
+        @endif
+    @endcan
 @endif
 
 @if ($leaveHistory->status === 'Approved')
