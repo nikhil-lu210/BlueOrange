@@ -18,11 +18,11 @@ Route::prefix('leave')
                 Route::get('/create', 'create')->name('create')->can('Leave History Create');
                 Route::get('/show/{leaveHistory}', 'show')->name('show')->can('Leave History Read');
 
-                Route::put('/approve/{leaveHistory}', 'approve')->name('approve')->can('Leave History Update')->middleware('throttle:10,1'); // 10 approvals per minute
-                Route::put('/reject/{leaveHistory}', 'reject')->name('reject')->can('Leave History Update')->middleware('throttle:10,1'); // 10 rejections per minute
-                Route::put('/cancel/{leaveHistory}', 'cancel')->name('cancel')->can('Leave History Update')->middleware('throttle:3,1'); // 3 cancellations per minute
+                Route::put('/approve/{leaveHistory}', 'approve')->name('approve')->can('Leave History Update')->middleware('throttle:30,1'); // 30 approvals per minute
+                Route::put('/reject/{leaveHistory}', 'reject')->name('reject')->can('Leave History Update')->middleware('throttle:30,1'); // 30 rejections per minute
+                Route::put('/cancel/{leaveHistory}', 'cancel')->name('cancel')->can('Leave History Update')->middleware('throttle:30,1'); // 30 cancellations per minute
 
-                Route::post('/store', 'store')->name('store')->can('Leave History Create')->middleware('throttle:5,1'); // 5 requests per minute
+                Route::post('/store', 'store')->name('store')->can('Leave History Create')->middleware('throttle:15,1'); // 15 requests per minute
 
                 Route::get('/export', 'export')->name('export')->can('Leave History Read');
             });

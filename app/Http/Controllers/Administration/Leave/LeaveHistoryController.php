@@ -122,6 +122,13 @@ class LeaveHistoryController extends Controller
             toast('Leave Application Submitted Successfully.', 'success');
             return redirect()->route('administration.leave.history.my');
         } catch (Exception $e) {
+            // Check if it's a rate limit error
+            if (str_contains($e->getMessage(), 'Too Many Attempts') || str_contains($e->getMessage(), '429')) {
+                return redirect()->back()->withErrors([
+                    'submission' => 'Too many requests. Please wait a moment before trying again.'
+                ]);
+            }
+
             return redirect()->back()->withErrors([
                 'submission' => 'Failed to submit leave request: ' . $e->getMessage()
             ]);
@@ -164,6 +171,13 @@ class LeaveHistoryController extends Controller
             toast('Leave request approved and leave balance updated successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
+            // Check if it's a rate limit error
+            if (str_contains($e->getMessage(), 'Too Many Attempts') || str_contains($e->getMessage(), '429')) {
+                return redirect()->back()->withErrors([
+                    'approval' => 'Too many requests. Please wait a moment before trying again.'
+                ]);
+            }
+
             return redirect()->back()->withErrors([
                 'approval' => 'Failed to approve leave: ' . $e->getMessage()
             ]);
@@ -222,6 +236,13 @@ class LeaveHistoryController extends Controller
             toast('Leave request has been Canceled Successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
+            // Check if it's a rate limit error
+            if (str_contains($e->getMessage(), 'Too Many Attempts') || str_contains($e->getMessage(), '429')) {
+                return redirect()->back()->withErrors([
+                    'cancellation' => 'Too many requests. Please wait a moment before trying again.'
+                ]);
+            }
+
             return redirect()->back()->withErrors([
                 'cancellation' => 'Failed to cancel leave: ' . $e->getMessage()
             ]);

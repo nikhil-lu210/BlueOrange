@@ -210,10 +210,20 @@
                     </div>
                     <div class="mt-2 float-end">
                         <a href="{{ route('administration.leave.history.create') }}" class="btn btn-outline-danger me-2 confirm-danger">Reset Form</a>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
                             <i class="ti ti-check me-2"></i>
-                            Apply Now
+                            <span class="btn-text">Apply Now</span>
+                            <span class="btn-loading d-none">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Processing...
+                            </span>
                         </button>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <i class="ti ti-info-circle me-1"></i>
+                            You can submit up to 15 leave requests per minute. Please avoid clicking the submit button multiple times.
+                        </small>
                     </div>
                 </form>
             </div>
@@ -542,6 +552,13 @@
 
             // Form submission validation
             $('#postForm').on('submit', function(e) {
+                // Prevent double submission
+                const submitBtn = $('#submitBtn');
+                if (submitBtn.prop('disabled')) {
+                    e.preventDefault();
+                    return false;
+                }
+
                 // Validate dates first
                 if (!validateDates()) {
                     e.preventDefault();
@@ -593,6 +610,11 @@
                     });
                     return false;
                 }
+
+                // All validations passed, disable submit button and show loading
+                submitBtn.prop('disabled', true);
+                submitBtn.find('.btn-text').addClass('d-none');
+                submitBtn.find('.btn-loading').removeClass('d-none');
 
                 // All validations passed, submit the form
                 if (window.leaveReasonEditor) {
