@@ -4,17 +4,17 @@
 
 @section('error_content')
     <!-- Image Column -->
-    <div class="col-lg-5 col-md-6 col-12 text-center">
+    <div class="col-lg-7 col-md-6 col-12 text-center">
         <img
             src="{{ asset($image) }}"
             alt="Maintenance Mode"
             class="img-fluid"
-            style="max-width: 400px;"
+            style="border-radius: 20%;"
         />
     </div>
 
     <!-- Content Column -->
-    <div class="col-lg-7 col-md-6 col-12">
+    <div class="col-lg-5 col-md-6 col-12">
         <div class="d-flex flex-column h-100 justify-content-center">
             <!-- Error Header -->
             <div class="text-center mb-4">
@@ -26,18 +26,6 @@
             <div class="text-center">
                 <div class="error-message mb-4">
                     {!! $message !!}
-                </div>
-                
-                <!-- Maintenance Info Card -->
-                <div class="card bg-light border mb-4">
-                    <div class="card-body text-center">
-                        <h5 class="card-title text-dark mb-3">
-                            <i class="ti ti-tools me-2"></i> What's happening?
-                        </h5>
-                        <p class="card-text text-muted mb-0">
-                            Our team is working hard to bring you an even better experience. This maintenance is necessary to ensure optimal performance.
-                        </p>
-                    </div>
                 </div>
                 
                 <div class="d-flex justify-content-center">
