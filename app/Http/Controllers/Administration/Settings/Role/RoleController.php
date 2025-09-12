@@ -114,7 +114,18 @@ class RoleController extends Controller
      */
     public function update(RoleUpdateRequest $request, Role $role)
     {
-        abort_if(!auth()->user()->hasAnyRole(['Developer', 'Super Admin']) || ($role->name == 'Developer' || $role->name == 'Super Admin'), 403, 'You are not authorize to update this role.');
+        abort_if(
+            // Case 1: role is Developer/Super Admin → only Developer allowed
+            (($role->name === 'Developer' || $role->name === 'Super Admin')
+                && !auth()->user()->hasRole('Developer'))
+
+            // Case 2: any other role → must be Developer or Super Admin
+            || (!in_array($role->name, ['Developer', 'Super Admin'])
+                && !auth()->user()->hasAnyRole(['Developer', 'Super Admin'])),
+
+            403,
+            'You are not authorized to view this role\'s edit page.'
+        );
 
         try {
             DB::transaction(function() use ($request, $role) {
