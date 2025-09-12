@@ -25,6 +25,7 @@
         "spatie/laravel-permission": "^5.11",
         "stevebauman/location": "^7.0",
         "stevebauman/purify": "^6.2",
+        "stichoza/google-translate-php": "^5.3",
         "vinkla/hashids": "11.0"
     },
     "require-dev": {
