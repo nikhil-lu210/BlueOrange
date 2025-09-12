@@ -115,11 +115,12 @@
                                         @php
                                             $permissionTypes = ['Everything', 'Create', 'Read', 'Update', 'Delete'];
                                         @endphp
-                                        
+
                                         @foreach($permissionTypes as $permissionType)
                                             @php
-                                                $permission = $module->permissions->filter(function($p) use ($permissionType) {
-                                                    return str_contains($p->name, $permissionType);
+                                                $permission = $module->permissions->filter(function($p) use ($permissionType, $module) {
+                                                    // Use exact match with module name to prevent partial matches
+                                                    return $p->name === $module->name . ' ' . $permissionType;
                                                 })->first();
                                             @endphp
                                             <td class="text-center">

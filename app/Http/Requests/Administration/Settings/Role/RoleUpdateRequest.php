@@ -27,19 +27,22 @@ class RoleUpdateRequest extends FormRequest
             'name' => [
                 'sometimes',
                 'string',
+                'max:255',
                 Rule::unique('roles')->ignore($roleId)
-                // Rule::unique('roles')->ignore($roleId)->where(function ($query) {
-                //     $query->whereNull('deleted_at');
-                // }),
             ],
-            'permissions' => ['required', 'array'],
+            'permissions' => ['required', 'array', 'min:1'],
+            'permissions.*' => ['required', 'integer', 'exists:permissions,id'],
         ];
     }
 
     public function messages()
     {
         return [
-            'permissions.required' => 'You did not select any permission. Please select any permission.'
+            'name.unique' => 'A role with this name already exists.',
+            'name.max' => 'Role name cannot exceed 255 characters.',
+            'permissions.required' => 'At least one permission must be selected.',
+            'permissions.min' => 'At least one permission must be selected.',
+            'permissions.*.exists' => 'One or more selected permissions are invalid.',
         ];
     }
 }
