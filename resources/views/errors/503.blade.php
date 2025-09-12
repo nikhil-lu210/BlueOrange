@@ -1,41 +1,44 @@
-@extends('layouts.errors.app')
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ config('app.name') }} || Maintenance Mode</title>
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            overflow: hidden; /* no scrollbars */
+        }
 
-@section('page_title', 'Maintenance Mode')
+        .lottie-wrapper {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #fff; /* optional background color */
+        }
 
-@section('error_content')
-    <!-- Image Column -->
-    <div class="col-lg-7 col-md-6 col-12 text-center">
-        <img
+        .lottie-wrapper lottie-player {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="lottie-wrapper">
+        <lottie-player
             src="{{ asset($image) }}"
-            alt="Maintenance Mode"
-            class="img-fluid"
-            style="border-radius: 20%;"
-        />
+            background="transparent"
+            speed="1"
+            autoplay
+        ></lottie-player>
     </div>
 
-    <!-- Content Column -->
-    <div class="col-lg-5 col-md-6 col-12">
-        <div class="d-flex flex-column h-100 justify-content-center">
-            <!-- Error Header -->
-            <div class="text-center mb-4">
-                <div class="error-code">{{ $statusCode }}</div>
-                <div class="error-title">{{ $title }}</div>
-            </div>
-            
-            <!-- Error Body -->
-            <div class="text-center">
-                <div class="error-message mb-4">
-                    {!! $message !!}
-                </div>
-                
-                <div class="d-flex justify-content-center">
-                    <a href="javascript:void(0)" onclick="location.reload()" class="btn-error">
-                        <div class="btn-error-text">
-                            <i class="ti ti-refresh me-2"></i> Try Again
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+</body>
+</html>

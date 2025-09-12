@@ -40,7 +40,7 @@ class ErrorConfiguration
                 'title' => 'Maintenance Mode',
                 'message' => 'We\'re currently performing scheduled maintenance to improve your experience.<br />
                             Please check back in a few minutes.',
-                'image' => 'assets/img/error/503.gif',
+                'image' => 'assets/img/error/error_503.json',
                 'view' => 'errors.503',
             ],
             default => [

@@ -48,9 +48,9 @@ class RoleController extends Controller
      */
     public function store(RoleStoreRequest $request)
     {
-        // dd($request->all());
+        $role = null;
         try {
-            DB::transaction(function() use ($request) {
+            DB::transaction(function() use ($request, &$role) {
                 $role = Role::create([
                     'name' => $request->name,
                 ]);
@@ -62,7 +62,7 @@ class RoleController extends Controller
             }, 5);
 
             toast('Role Has Been Created.','success');
-            return redirect()->back();
+            return redirect()->route('administration.settings.rolepermission.role.show', ['role' => $role]);
         } catch (Exception $e) {
             toast($e->getMessage(), 'error');
             return redirect()->back()->withInput();
@@ -91,7 +91,18 @@ class RoleController extends Controller
      */
     public function edit(Role $role)
     {
-        abort_if(!auth()->user()->hasAnyRole(['Developer', 'Super Admin']) || ($role->name == 'Developer' && $role->name == 'Super Admin'), 403, 'You are not authorize to view this role\'s edit page.');
+        abort_if(
+            // Case 1: role is Developer/Super Admin → only Developer allowed
+            (($role->name === 'Developer' || $role->name === 'Super Admin')
+                && !auth()->user()->hasRole('Developer'))
+
+            // Case 2: any other role → must be Developer or Super Admin
+            || (!in_array($role->name, ['Developer', 'Super Admin'])
+                && !auth()->user()->hasAnyRole(['Developer', 'Super Admin'])),
+
+            403,
+            'You are not authorized to view this role\'s edit page.'
+        );
 
         $modules = PermissionModule::with(['permissions'])->get()->sortBy('name');
         // dd($modules);
@@ -103,7 +114,7 @@ class RoleController extends Controller
      */
     public function update(RoleUpdateRequest $request, Role $role)
     {
-        abort_if(!auth()->user()->hasAnyRole(['Developer', 'Super Admin']) || ($role->name == 'Developer' && $role->name == 'Super Admin'), 403, 'You are not authorize to update this role.');
+        abort_if(!auth()->user()->hasAnyRole(['Developer', 'Super Admin']) || ($role->name == 'Developer' || $role->name == 'Super Admin'), 403, 'You are not authorize to update this role.');
 
         try {
             DB::transaction(function() use ($request, $role) {
@@ -120,7 +131,7 @@ class RoleController extends Controller
             }, 5);
 
             toast('Role Has Been Updated.','success');
-            return redirect()->back();
+            return redirect()->route('administration.settings.rolepermission.role.show', ['role' => $role]);
         } catch (Exception $e) {
             toast($e->getMessage(), 'error');
             return redirect()->back()->withInput();
@@ -132,6 +143,6 @@ class RoleController extends Controller
      */
     public function destroy(Role $role)
     {
-        dd($role);
+        abort(403, 'You are not authorized to delete this role.');
     }
 }

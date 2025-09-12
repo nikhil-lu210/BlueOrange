@@ -151,8 +151,9 @@
 
                                             @foreach($permissionTypes as $permissionType)
                                                 @php
-                                                    $permission = $module->permissions->filter(function($p) use ($permissionType) {
-                                                        return str_contains($p->name, $permissionType);
+                                                    $permission = $module->permissions->filter(function($p) use ($permissionType, $module) {
+                                                        // Use exact match with module name to prevent partial matches
+                                                        return $p->name === $module->name . ' ' . $permissionType;
                                                     })->first();
                                                 @endphp
                                                 <td class="text-center">
@@ -234,15 +235,14 @@
                     $('#permissionSummary').text(`${selectedPermissions} permissions selected across ${selectedModules} modules`);
                 }
 
-                // Update module "Everything" checkboxes
+                // Update module "Everything" checkboxes based on other permissions only
                 $('tbody tr').each(function() {
-                    let moduleId = $(this).find('.module-everything-checkbox').data('module-id');
-                    let moduleSelectedCount = $(this).find("input[name='permissions[]']:checked").length;
-                    let moduleTotalCount = $(this).find("input[name='permissions[]']").length;
-
-                    // Update module "Everything" checkbox
                     let moduleEverythingCheckbox = $(this).find('.module-everything-checkbox');
-                    if (moduleSelectedCount === moduleTotalCount && moduleTotalCount > 0) {
+                    let otherPermissions = $(this).find("input[name='permissions[]'].permission-checkbox");
+                    let checkedOtherPermissions = $(this).find("input[name='permissions[]'].permission-checkbox:checked");
+
+                    // Only update Everything checkbox if all other permissions are checked/unchecked
+                    if (checkedOtherPermissions.length === otherPermissions.length && otherPermissions.length > 0) {
                         moduleEverythingCheckbox.prop('checked', true);
                     } else {
                         moduleEverythingCheckbox.prop('checked', false);
@@ -288,6 +288,7 @@
                     moduleEverythingCheckbox.prop('checked', false);
                 }
 
+                // Update summary without triggering Everything checkbox logic again
                 updatePermissionSummary();
             });
 
