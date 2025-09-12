@@ -247,13 +247,26 @@
                 let moduleRow = $(this).closest('tr');
                 let isChecked = $(this).prop('checked');
 
-                // Check/uncheck all permissions in this module row (including the Everything checkbox itself)
-                moduleRow.find("input[name='permissions[]']").prop('checked', isChecked);
+                // When Everything is checked/unchecked, toggle all other permissions in this module
+                moduleRow.find("input[name='permissions[]'].permission-checkbox").prop('checked', isChecked);
                 updatePermissionSummary();
             });
 
             // Individual permission checkbox behavior
             $('.permission-checkbox').change(function() {
+                let moduleRow = $(this).closest('tr');
+                let moduleEverythingCheckbox = moduleRow.find('.module-everything-checkbox');
+                let otherPermissions = moduleRow.find("input[name='permissions[]'].permission-checkbox");
+                let checkedOtherPermissions = moduleRow.find("input[name='permissions[]'].permission-checkbox:checked");
+
+                // If all other permissions are checked, check Everything
+                // If any other permission is unchecked, uncheck Everything
+                if (checkedOtherPermissions.length === otherPermissions.length && otherPermissions.length > 0) {
+                    moduleEverythingCheckbox.prop('checked', true);
+                } else {
+                    moduleEverythingCheckbox.prop('checked', false);
+                }
+
                 updatePermissionSummary();
             });
 
