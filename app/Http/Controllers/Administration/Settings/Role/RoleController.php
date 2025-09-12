@@ -3,157 +3,107 @@
 namespace App\Http\Controllers\Administration\Settings\Role;
 
 use Exception;
-use Illuminate\Http\Request;
-use App\Models\PermissionModule;
-use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
 use App\Http\Controllers\Controller;
-use Spatie\Permission\Models\Permission;
+use App\Services\Administration\Settings\Role\RoleService;
 use App\Http\Requests\Administration\Settings\Role\RoleStoreRequest;
 use App\Http\Requests\Administration\Settings\Role\RoleUpdateRequest;
 
 class RoleController extends Controller
 {
+    protected RoleService $roleService;
+
+    public function __construct(RoleService $roleService)
+    {
+        $this->roleService = $roleService;
+    }
+
     /**
-     * Display a listing of the resource.
+     * Display a listing of roles
      */
     public function index()
     {
-        $roles = Role::with([
-            'users' => function($userQuery) {
-                $userQuery->whereStatus('Active');
-            },
-            'permissions'
-        ])
-        ->withCount(['users as active_users_count' => function($query) {
-            $query->whereStatus('Active');
-        }])
-        ->get();
-
+        $roles = $this->roleService->getAllRolesWithStats();
         return view('administration.settings.role.index', compact('roles'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Show the form for creating a new role
      */
     public function create()
     {
-        $modules = PermissionModule::with(['permissions'])->get()->sortBy('name');
-        // dd($modules);
-        return view('administration.settings.role.create', compact(['modules']));
+        $modules = $this->roleService->getPermissionModules();
+        return view('administration.settings.role.create', compact('modules'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created role
      */
     public function store(RoleStoreRequest $request)
     {
-        $role = null;
         try {
-            DB::transaction(function() use ($request, &$role) {
-                $role = Role::create([
-                    'name' => $request->name,
-                ]);
+            $role = $this->roleService->createRole($request->validated());
 
-                $permissionIds = $request->input('permissions', []);
+            $message = $this->roleService->generateSuccessMessage('created', $role, count($request->input('permissions', [])));
 
-                $permissions = Permission::whereIn('id', $permissionIds)->get();
-                $role->syncPermissions($permissions);
-            }, 5);
-
-            toast('Role Has Been Created.','success');
+            toast($message, 'success');
             return redirect()->route('administration.settings.rolepermission.role.show', ['role' => $role]);
         } catch (Exception $e) {
-            toast($e->getMessage(), 'error');
+            $message = $this->roleService->generateErrorMessage('create', $e);
+
+            toast($message, 'error');
             return redirect()->back()->withInput();
         }
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified role
      */
     public function show(Role $role)
     {
-        $permissionModules = PermissionModule::whereHas('permissions.roles', function ($query) use ($role) {
-            $query->where('name', $role->name);
-        })->with(['permissions' => function ($query) use ($role) {
-            $query->whereHas('roles', function ($roleQuery) use ($role) {
-                $roleQuery->where('name', $role->name);
-            });
-        }])->get()->sortBy('name');
-
+        $permissionModules = $this->roleService->getRolePermissionModules($role);
         return view('administration.settings.role.show', compact('role', 'permissionModules'));
     }
 
-
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the specified role
      */
     public function edit(Role $role)
     {
-        abort_if(
-            // Case 1: role is Developer/Super Admin → only Developer allowed
-            (($role->name === 'Developer' || $role->name === 'Super Admin')
-                && !auth()->user()->hasRole('Developer'))
+        $this->authorize('update', $role);
+        $modules = $this->roleService->getPermissionModules();
 
-            // Case 2: any other role → must be Developer or Super Admin
-            || (!in_array($role->name, ['Developer', 'Super Admin'])
-                && !auth()->user()->hasAnyRole(['Developer', 'Super Admin'])),
-
-            403,
-            'You are not authorized to view this role\'s edit page.'
-        );
-
-        $modules = PermissionModule::with(['permissions'])->get()->sortBy('name');
-        // dd($modules);
-        return view('administration.settings.role.edit', compact(['modules', 'role']));
+        return view('administration.settings.role.edit', compact('modules', 'role'));
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the specified role
      */
     public function update(RoleUpdateRequest $request, Role $role)
     {
-        abort_if(
-            // Case 1: role is Developer/Super Admin → only Developer allowed
-            (($role->name === 'Developer' || $role->name === 'Super Admin')
-                && !auth()->user()->hasRole('Developer'))
-
-            // Case 2: any other role → must be Developer or Super Admin
-            || (!in_array($role->name, ['Developer', 'Super Admin'])
-                && !auth()->user()->hasAnyRole(['Developer', 'Super Admin'])),
-
-            403,
-            'You are not authorized to view this role\'s edit page.'
-        );
-
+        $this->authorize('update', $role);
+        
         try {
-            DB::transaction(function() use ($request, $role) {
-                $role->update([
-                    'name' => $request->name ? $request->name : $role->name,
-                    'updated_at' => now()
-                ]);
+            $originalPermissionCount = $role->permissions->count();
+            $this->roleService->updateRole($role, $request->validated());
 
-                $permissionIds = $request->input('permissions', []);
-
-                $permissions = Permission::whereIn('id', $permissionIds)->get();
-
-                $role->syncPermissions($permissions);
-            }, 5);
-
-            toast('Role Has Been Updated.','success');
+            $message = $this->roleService->generateUpdateSuccessMessage($role, $originalPermissionCount, count($request->input('permissions', [])));
+            
+            toast($message, 'success');
             return redirect()->route('administration.settings.rolepermission.role.show', ['role' => $role]);
         } catch (Exception $e) {
-            toast($e->getMessage(), 'error');
+            $message = $this->roleService->generateErrorMessage('update', $e);
+
+            toast($message, 'error');
             return redirect()->back()->withInput();
         }
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified role
      */
     public function destroy(Role $role)
     {
-        abort(403, 'You are not authorized to delete this role.');
+        abort(403, 'Role deletion is currently disabled for security reasons.');
     }
 }
