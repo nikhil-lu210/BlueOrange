@@ -5,6 +5,7 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Stichoza\GoogleTranslate\GoogleTranslate;
 
 class Localization
 {
@@ -15,8 +16,10 @@ class Localization
      */
     public function handle(Request $request, Closure $next): Response
     {
-        app()->setLocale(session('localization', config('app.locale')));
+        $locale = session('localization', config('app.locale'));
+        app()->setLocale($locale);
 
+        view()->share('autoTranslator', new GoogleTranslate($locale));
         return $next($request);
     }
 }
