@@ -9,8 +9,8 @@
                                 <i class="ti ti-briefcase ti-xl"></i>
                             </span>
                             <div class="content-right">
-                                <h5 class="text-success mb-0" title="{{ __('Total Worked') }}" data-bs-placement="left">{{ format_number($totalWorkedDays) }} <small>Days</small></h5>
-                                <small class="mb-0" title="{{ __('Total Days in '). config('app.name') }}" data-bs-placement="left">{{ total_day($user->employee->joining_date) }}</small>
+                                <h5 class="text-success mb-0" title="{{ ___('Total Worked') }}" data-bs-placement="left">{{ format_number($totalWorkedDays) }} <small>{{ ___('Days') }}</small></h5>
+                                <small class="mb-0" title="{{ ___('Total Days in </br>') . config('app.name') }}" data-bs-placement="left">{{ ___(total_day($user->employee->joining_date)) }}</small>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-3">
@@ -19,7 +19,7 @@
                             </span>
                             <div class="content-right">
                                 <h5 class="text-primary mb-0">{{ total_time($totalRegularWork) }}</h5>
-                                <small class="mb-0 text-muted">Total Worked (Regular)</small>
+                                <small class="mb-0 text-muted">{{ ___('Total Worked (Regular) ') }}</small>
                             </div>
                         </div>
                         <div class="d-flex align-items-center gap-3">
@@ -28,7 +28,7 @@
                             </span>
                             <div class="content-right">
                                 <h5 class="text-warning mb-0">{{ total_time($totalOvertimeWork) }}</h5>
-                                <small class="mb-0 text-muted">Total Worked (Overtime)</small>
+                                <small class="mb-0 text-muted">{{ ___('Total Worked (Overtime) ') }}</small>
                             </div>
                         </div>
                     </div>

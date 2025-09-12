@@ -2,15 +2,15 @@
     <div class="col-md-12 mb-4">
         <div class="card card-border-shadow-primary">
             <div class="card-header header-elements">
-                <h5 class="mb-0">My Attendances Of <b class="text-bold text-primary">{{ date('F Y') }}</b></h5>
+                <h5 class="mb-0">{{ ___('My Attendances Of') }} <b class="text-bold text-primary">{{ date('F Y') }}</b></h5>
 
                 <div class="card-header-elements ms-auto" style="margin-top: -5px;">
-                    <small class="badge bg-primary cursor-pointer" title="Total Working Hour (Regular)" data-bs-placement="top" >
+                    <small class="badge bg-primary cursor-pointer" title="{{ ___('Total Working Hour (Regular)') }}" data-bs-placement="top" >
                         {{ total_time($totalRegularWorkingHour) }}
                     </small>
 
                     @isset ($totalOvertimeWorkingHour)
-                        <small class="badge bg-warning cursor-pointer" title="Total Working Hour (Overtime)" data-bs-placement="bottom" >
+                        <small class="badge bg-warning cursor-pointer" title="{{ ___('Total Working Hour (Overtime)') }}" data-bs-placement="bottom" >
                             {{ total_time($totalOvertimeWorkingHour) }}
                         </small>
                     @endisset
