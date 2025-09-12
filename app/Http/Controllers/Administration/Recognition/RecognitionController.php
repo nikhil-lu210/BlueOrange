@@ -6,16 +6,68 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Recognition\Recognition;
+use App\Models\User;
+use App\Services\Administration\Recognition\RecognitionService;
+use App\Http\Requests\Recognition\StoreRecognitionRequest;
+use App\Http\Requests\Recognition\UpdateRecognitionRequest;
 use App\Notifications\Administration\Recognition\RecognitionCreatedNotification;
+use App\Exports\Administration\Recognition\RecognitionReportExport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RecognitionController extends Controller
 {
+    protected $recognitionService;
+
+    public function __construct(RecognitionService $recognitionService)
+    {
+        $this->recognitionService = $recognitionService;
+    }
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $this->authorize('viewAny', Recognition::class);
+
+        $query = Recognition::with(['user', 'recognizer']);
+
+        // Apply filters
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('recognizer_id')) {
+            $query->where('recognizer_id', $request->recognizer_id);
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('min_score')) {
+            $query->where('total_mark', '>=', $request->min_score);
+        }
+
+        if ($request->filled('max_score')) {
+            $query->where('total_mark', '<=', $request->max_score);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $recognitions = $query->latest()->paginate(20);
+
+        // Get filter data
+        $users = User::where('status', 'Active')->get();
+        $categories = config('recognition.categories');
+
+        return view('administration.recognition.index', compact('recognitions', 'users', 'categories'));
     }
 
     /**
@@ -23,38 +75,191 @@ class RecognitionController extends Controller
      */
     public function create()
     {
-        //
+        $this->authorize('create', Recognition::class);
+
+        $users = auth()->user()->tl_employees ?? collect();
+        $categories = config('recognition.categories');
+
+        return view('administration.recognition.create', compact('users', 'categories'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreRecognitionRequest $request)
     {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'category' => 'required|string|in:' . implode(',', config('recognition.categories')),
-            'total_mark' => 'required|integer|min:' . config('recognition.marks.min') . '|max:' . config('recognition.marks.max'),
-            'comment' => 'required|string|max:1000',
-        ]);
+        $this->authorize('create', Recognition::class);
 
-        $recognition = Recognition::create([
-            'user_id' => $validated['user_id'],
-            'category' => $validated['category'],
-            'total_mark' => $validated['total_mark'],
-            'comment' => $validated['comment'],
+        Recognition::create([
+            'user_id' => $request->user_id,
+            'category' => $request->category,
+            'total_mark' => $request->total_mark,
+            'comment' => $request->comment,
             'recognizer_id' => auth()->id(),
         ]);
 
-        // return success JSON
-        // return response()->json([
-        //     'success' => true,
-        //     'message' => 'Recognition submitted successfully',
-        //     'data' => $recognition
-        // ]);
-
-        toast('Recognition Submitted', 'success');
+        toast('Recognition Submitted Successfully', 'success');
         return redirect()->back();
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Recognition $recognition)
+    {
+        $this->authorize('view', $recognition);
+
+        $recognition->load(['user', 'recognizer']);
+        
+        return view('administration.recognition.show', compact('recognition'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Recognition $recognition)
+    {
+        $this->authorize('update', $recognition);
+
+        $categories = config('recognition.categories');
+        
+        return view('administration.recognition.edit', compact('recognition', 'categories'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateRecognitionRequest $request, Recognition $recognition)
+    {
+        $this->authorize('update', $recognition);
+
+        $recognition->update($request->validated());
+
+        toast('Recognition Updated Successfully', 'success');
+        return redirect()->route('administration.recognition.show', $recognition);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Recognition $recognition)
+    {
+        $this->authorize('delete', $recognition);
+
+        $recognition->delete();
+
+        toast('Recognition Deleted Successfully', 'success');
+        return redirect()->back();
+    }
+
+    /**
+     * Display user's own recognitions.
+     */
+    public function my(Request $request)
+    {
+        $this->authorize('viewAny', Recognition::class);
+
+        $query = Recognition::with(['user', 'recognizer'])
+            ->where('user_id', auth()->id());
+
+        // Apply filters
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('min_score')) {
+            $query->where('total_mark', '>=', $request->min_score);
+        }
+
+        if ($request->filled('max_score')) {
+            $query->where('total_mark', '<=', $request->max_score);
+        }
+
+        $recognitions = $query->latest()->paginate(20);
+        $categories = config('recognition.categories');
+
+        return view('administration.recognition.my', compact('recognitions', 'categories'));
+    }
+
+    /**
+     * Get recognition analytics.
+     */
+    public function analytics()
+    {
+        $this->authorize('viewAny', Recognition::class);
+
+        $analytics = $this->recognitionService->getDashboardAnalytics(auth()->user());
+        
+        return view('administration.recognition.analytics', compact('analytics'));
+    }
+
+    /**
+     * Get recognition leaderboard.
+     */
+    public function leaderboard(Request $request)
+    {
+        $this->authorize('viewAny', Recognition::class);
+
+        $category = $request->get('category');
+        $limit = $request->get('limit', 10);
+
+        if ($category) {
+            $topPerformers = $this->recognitionService->getCategoryLeaderboard($category, $limit);
+        } else {
+            $topPerformers = $this->recognitionService->getTopPerformers($limit);
+        }
+
+        $categories = config('recognition.categories');
+
+        return view('administration.recognition.leaderboard', compact('topPerformers', 'categories', 'category'));
+    }
+
+    /**
+     * Export recognition report to Excel.
+     */
+    public function export(Request $request)
+    {
+        $this->authorize('viewAny', Recognition::class);
+
+        $query = Recognition::with(['user', 'recognizer']);
+
+        // Apply filters
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+
+        if ($request->filled('recognizer_id')) {
+            $query->where('recognizer_id', $request->recognizer_id);
+        }
+
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+        }
+
+        if ($request->filled('min_score')) {
+            $query->where('total_mark', '>=', $request->min_score);
+        }
+
+        if ($request->filled('max_score')) {
+            $query->where('total_mark', '<=', $request->max_score);
+        }
+
+        if ($request->filled('date_from')) {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+
+        if ($request->filled('date_to')) {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $recognitions = $query->orderBy('created_at', 'desc')->get();
+
+        $fileName = 'recognition_report_' . now()->format('Y_m_d_H_i_s') . '.xlsx';
+
+        return Excel::download(
+            new RecognitionReportExport($recognitions),
+            $fileName
+        );
     }
 
     public function markRecognizeAsRead()

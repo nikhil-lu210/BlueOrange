@@ -16,7 +16,12 @@ Route::prefix('recognition')
                 Route::get('/create', 'create')->name('create')->can('Recognition Create');
                 Route::post('/store', 'store')->name('store')->can('Recognition Create');
                 Route::get('/show/{recognition}', 'show')->name('show')->can('Recognition Read');
+                Route::get('/edit/{recognition}', 'edit')->name('edit')->can('Recognition Update');
+                Route::put('/update/{recognition}', 'update')->name('update')->can('Recognition Update');
                 Route::get('/destroy/{recognition}', 'destroy')->name('destroy')->can('Recognition Delete');
+                Route::get('/analytics', 'analytics')->name('analytics')->can('Recognition Read');
+                Route::get('/leaderboard', 'leaderboard')->name('leaderboard')->can('Recognition Read');
+                Route::get('/export', 'export')->name('export')->can('Recognition Read');
 
                 Route::get('/mark-recognize-as-read', 'markRecognizeAsRead')->name('notification.mark_as_read')->can('Recognition Read');
             });
