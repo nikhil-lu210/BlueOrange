@@ -31,18 +31,7 @@ class Kernel extends ConsoleKernel
                 ->appendOutputTo(storage_path('logs/send-task-notifications.log'));
 
         /**
-         * Task 2: Send task alerts
-         * Runs daily at 02:30 AM (staggered from task notifications to reduce PHP load)
-         * withoutOverlapping ensures no overlap if previous run is still active
-         * Output logged to send-task-alerts.log
-         */
-        $schedule->command('send:task-alerts --no-ansi --quiet')
-                ->dailyAt('02:30')
-                ->withoutOverlapping()
-                ->appendOutputTo(storage_path('logs/send-task-alerts.log'));
-
-        /**
-         * Task 3: Send birthday emails
+         * Task 2: Send birthday emails
          * Runs daily at 03:00 AM
          * Staggered after task notifications and alerts to prevent hitting entry process limit
          * Output logged to send-birthday-emails.log
@@ -53,7 +42,7 @@ class Kernel extends ConsoleKernel
                 ->appendOutputTo(storage_path('logs/send-birthday-emails.log'));
 
         /**
-         * Task 4: Process queue jobs
+         * Task 3: Process queue jobs
          * Runs every 10 minutes (reduced from 5 minutes to reduce concurrent PHP processes)
          * '--once' ensures the queue worker exits after one job, preventing long-running processes
          * withoutOverlapping prevents multiple simultaneous workers
@@ -65,7 +54,7 @@ class Kernel extends ConsoleKernel
                 ->appendOutputTo(storage_path('logs/queue-cron.log'));
 
         /**
-         * Task 5: Clear logs
+         * Task 4: Clear logs
          * Runs weekly on Friday at 06:00 AM
          * withoutOverlapping prevents overlap with previous clear logs run
          * Output logged to clear-logs.log
