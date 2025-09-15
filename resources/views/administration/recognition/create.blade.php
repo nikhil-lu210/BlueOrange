@@ -18,6 +18,7 @@
     <style>
         .score-slider {
             width: 100%;
+            height: 10px;
         }
         .score-display {
             font-size: 24px;
@@ -25,6 +26,37 @@
             color: #2c2c54;
             text-align: center;
             margin: 10px 0;
+        }
+        /* Webkit (Chrome, Edge, Safari) */
+        .score-slider::-webkit-slider-runnable-track {
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #dff7e9, #198754); /* light to dark success */
+        }
+        .score-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #198754;
+            cursor: pointer;
+            margin-top: -4px; /* centers thumb on track */
+            border: none;
+        }
+
+        /* Firefox */
+        .score-slider::-moz-range-track {
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(to right, #dff7e9, #198754);
+        }
+        .score-slider::-moz-range-thumb {
+            height: 18px;
+            width: 18px;
+            border-radius: 50%;
+            background: #198754;
+            cursor: pointer;
+            border: none;
         }
     </style>
 @endsection
@@ -93,19 +125,27 @@
                         </div>
 
                         <div class="mb-3 col-md-12">
-                            <label for="total_mark" class="form-label">{{ __('Recognition Score') }} <strong class="text-danger">*</strong></label>
-                            <div class="score-display p-2 bg-label-primary rounded" id="scoreDisplay">{{ config('recognition.marks.min') }}</div>
-                            <input type="range" name="total_mark" id="total_mark" 
-                                   min="{{ config('recognition.marks.min') }}" 
-                                   max="{{ config('recognition.marks.max') }}" 
+                            <label for="total_mark" class="form-label">
+                                {{ __('Recognition Score') }} <strong class="text-danger">*</strong>
+                            </label>
+
+                            <div class="score-display p-2 bg-label-success rounded mb-2 text-center fw-bold" id="scoreDisplay">
+                                {{ config('recognition.marks.min') }}
+                            </div>
+
+                            <input type="range" name="total_mark" id="total_mark"
+                                   min="{{ config('recognition.marks.min') }}"
+                                   max="{{ config('recognition.marks.max') }}"
                                    step="{{ config('recognition.marks.step', 1) }}"
                                    value="{{ old('total_mark', config('recognition.marks.min')) }}"
-                                   class="form-range score-slider @error('total_mark') is-invalid @enderror" 
+                                   class="form-range score-slider @error('total_mark') is-invalid @enderror"
                                    required />
+
                             <div class="d-flex justify-content-between">
                                 <small class="text-muted">{{ config('recognition.marks.min') }}</small>
                                 <small class="text-muted">{{ config('recognition.marks.max') }}</small>
                             </div>
+
                             @error('total_mark')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
                             @enderror
@@ -113,8 +153,8 @@
 
                         <div class="mb-3 col-md-12">
                             <label for="comment" class="form-label">{{ __('Comment') }} <strong class="text-danger">*</strong></label>
-                            <textarea name="comment" id="comment" rows="4" 
-                                      class="form-control @error('comment') is-invalid @enderror" 
+                            <textarea name="comment" id="comment" rows="4"
+                                      class="form-control @error('comment') is-invalid @enderror"
                                       placeholder="Please provide details about why this employee deserves recognition..."
                                       required>{{ old('comment') }}</textarea>
                             <div class="form-text">
@@ -161,7 +201,7 @@
             // Score slider functionality
             const scoreSlider = document.getElementById('total_mark');
             const scoreDisplay = document.getElementById('scoreDisplay');
-            
+
             scoreSlider.addEventListener('input', function() {
                 scoreDisplay.textContent = this.value;
             });
@@ -169,11 +209,11 @@
             // Comment character counter
             const commentTextarea = document.getElementById('comment');
             const commentCount = document.getElementById('commentCount');
-            
+
             commentTextarea.addEventListener('input', function() {
                 const length = this.value.length;
                 commentCount.textContent = length;
-                
+
                 if (length > 1000) {
                     commentCount.style.color = 'red';
                 } else if (length > 800) {

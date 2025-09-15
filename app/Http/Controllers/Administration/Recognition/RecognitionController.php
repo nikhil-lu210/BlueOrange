@@ -61,7 +61,7 @@ class RecognitionController extends Controller
             $query->whereDate('created_at', '<=', $request->date_to);
         }
 
-        $recognitions = $query->latest()->paginate(20);
+        $recognitions = $query->latest()->paginate(100);
 
         // Get filter data
         $users = User::where('status', 'Active')->get();
@@ -175,7 +175,7 @@ class RecognitionController extends Controller
             $query->where('total_mark', '<=', $request->max_score);
         }
 
-        $recognitions = $query->latest()->paginate(20);
+        $recognitions = $query->latest()->paginate(100);
         $categories = config('recognition.categories');
 
         return view('administration.recognition.my', compact('recognitions', 'categories'));
@@ -202,11 +202,13 @@ class RecognitionController extends Controller
 
         $category = $request->get('category');
         $limit = $request->get('limit', 10);
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
 
         if ($category) {
-            $topPerformers = $this->recognitionService->getCategoryLeaderboard($category, $limit);
+            $topPerformers = $this->recognitionService->getCategoryLeaderboard($category, $limit, $dateFrom, $dateTo);
         } else {
-            $topPerformers = $this->recognitionService->getTopPerformers($limit);
+            $topPerformers = $this->recognitionService->getTopPerformers($limit, $dateFrom, $dateTo);
         }
 
         $categories = config('recognition.categories');

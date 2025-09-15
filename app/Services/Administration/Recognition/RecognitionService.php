@@ -6,9 +6,10 @@ use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Recognition\Recognition;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Notification;
-use App\Mail\Administration\Recognition\RecognitionCongratulationMail;
 use App\Mail\Administration\Recognition\RecognitionReminderMail;
+use App\Mail\Administration\Recognition\RecognitionCongratulationMail;
 use App\Notifications\Administration\Recognition\RecognitionCreatedNotification;
 use App\Notifications\Administration\Recognition\RecognitionReminderNotification;
 
@@ -51,7 +52,7 @@ class RecognitionService
         Mail::to($employee->employee->official_email)->send(new RecognitionCongratulationMail($recognition));
     }
 
-    // Notify all users 
+    // Notify all users
     public function allUserNotify($employee, Recognition $recognition){
         $users = User::where('status', 'Active')->where('id','!=',$employee->id)->get();
         foreach ($users as $key => $user) {
@@ -86,15 +87,45 @@ class RecognitionService
     /**
      * Get top performers by recognition score.
      */
-    public function getTopPerformers(int $limit = 10): \Illuminate\Database\Eloquent\Collection
+    public function getTopPerformers(int $limit = 10, string $dateFrom = null, string $dateTo = null): Collection
     {
-        return User::withCount(['received_recognitions as recognition_count'])
-            ->withSum('received_recognitions as total_score', 'total_mark')
-            ->withAvg('received_recognitions as avg_score', 'total_mark')
-            ->whereHas('received_recognitions')
+        $query = User::withCount(['received_recognitions as recognition_count' => function ($query) use ($dateFrom, $dateTo) {
+                if ($dateFrom) {
+                    $query->whereDate('created_at', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $query->whereDate('created_at', '<=', $dateTo);
+                }
+            }])
+            ->withSum(['received_recognitions as total_score' => function ($query) use ($dateFrom, $dateTo) {
+                if ($dateFrom) {
+                    $query->whereDate('created_at', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $query->whereDate('created_at', '<=', $dateTo);
+                }
+            }], 'total_mark')
+            ->withAvg(['received_recognitions as avg_score' => function ($query) use ($dateFrom, $dateTo) {
+                if ($dateFrom) {
+                    $query->whereDate('created_at', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $query->whereDate('created_at', '<=', $dateTo);
+                }
+            }], 'total_mark')
+            ->whereHas('received_recognitions', function ($query) use ($dateFrom, $dateTo) {
+                if ($dateFrom) {
+                    $query->whereDate('created_at', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $query->whereDate('created_at', '<=', $dateTo);
+                }
+            })
             ->orderBy('total_score', 'desc')
-            ->limit($limit)
-            ->get();
+            ->orderBy('recognition_count', 'desc')
+            ->limit($limit);
+
+        return $query->get();
     }
 
     /**
@@ -151,7 +182,7 @@ class RecognitionService
     public function getMonthlyRecognitionReport(string $month = null): array
     {
         $targetMonth = $month ? \Carbon\Carbon::parse($month) : now();
-        
+
         $recognitions = Recognition::with(['user', 'recognizer'])
             ->whereYear('created_at', $targetMonth->year)
             ->whereMonth('created_at', $targetMonth->month)
@@ -191,20 +222,40 @@ class RecognitionService
     /**
      * Get recognition leaderboard by category.
      */
-    public function getCategoryLeaderboard(string $category, int $limit = 10): \Illuminate\Database\Eloquent\Collection
+    public function getCategoryLeaderboard(string $category, int $limit = 10, string $dateFrom = null, string $dateTo = null): Collection
     {
-        return User::withSum(['received_recognitions as category_score' => function ($query) use ($category) {
+        $query = User::withSum(['received_recognitions as category_score' => function ($query) use ($category, $dateFrom, $dateTo) {
                 $query->where('category', $category);
+                if ($dateFrom) {
+                    $query->whereDate('created_at', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $query->whereDate('created_at', '<=', $dateTo);
+                }
             }], 'total_mark')
-            ->withCount(['received_recognitions as category_count' => function ($query) use ($category) {
+            ->withCount(['received_recognitions as category_count' => function ($query) use ($category, $dateFrom, $dateTo) {
                 $query->where('category', $category);
+                if ($dateFrom) {
+                    $query->whereDate('created_at', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $query->whereDate('created_at', '<=', $dateTo);
+                }
             }])
-            ->whereHas('received_recognitions', function ($query) use ($category) {
+            ->whereHas('received_recognitions', function ($query) use ($category, $dateFrom, $dateTo) {
                 $query->where('category', $category);
+                if ($dateFrom) {
+                    $query->whereDate('created_at', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $query->whereDate('created_at', '<=', $dateTo);
+                }
             })
             ->orderBy('category_score', 'desc')
-            ->limit($limit)
-            ->get();
+            ->orderBy('category_count', 'desc')
+            ->limit($limit);
+
+        return $query->get();
     }
 
     /**
