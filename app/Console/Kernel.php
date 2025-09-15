@@ -18,47 +18,74 @@ class Kernel extends ConsoleKernel
         //          ->timezone(config('app.timezone'))
         //          ->withoutOverlapping()
         //          ->appendOutputTo(storage_path('logs/salaries-calculate.log'));
-
-        // Schedule to send task notifications daily at 2:00 AM
+        
+        /**
+         * Task 1: Send task notifications
+         * Runs daily at 02:00 AM
+         * withoutOverlapping prevents a new instance if the previous is still running
+         * Output is logged to send-task-notifications.log
+         */
         $schedule->command('send:task-notifications --no-ansi --quiet')
-                 ->dailyAt('02:00')
-                 ->timezone(config('app.timezone'))
-                 ->withoutOverlapping()
-                 ->appendOutputTo(storage_path('logs/send-task-notifications.log'));
+                ->dailyAt('02:00')
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/send-task-notifications.log'));
 
-        // Schedule to send birthday emails daily at 4:00 AM
-        $schedule->command('send:birthday-emails --no-ansi --quiet')
-                 ->dailyAt('04:00')
-                 ->timezone(config('app.timezone'))
-                 ->withoutOverlapping()
-                 ->appendOutputTo(storage_path('logs/send-birthday-emails.log'));
-
-        // Schedule to send task alert notifications every day at 3:00 AM
+        /**
+         * Task 2: Send task alerts
+         * Runs daily at 02:30 AM (staggered from task notifications to reduce PHP load)
+         * withoutOverlapping ensures no overlap if previous run is still active
+         * Output logged to send-task-alerts.log
+         */
         $schedule->command('send:task-alerts --no-ansi --quiet')
-                 ->dailyAt('03:00')
-                 ->timezone(config('app.timezone'))
-                 ->withoutOverlapping()
-                 ->appendOutputTo(storage_path('logs/send-task-alerts.log'));
+                ->dailyAt('02:30')
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/send-task-alerts.log'));
 
-        // Schedule to process queue every 5 minutes (replaces --once cron)
+        /**
+         * Task 3: Send birthday emails
+         * Runs daily at 03:00 AM
+         * Staggered after task notifications and alerts to prevent hitting entry process limit
+         * Output logged to send-birthday-emails.log
+         */
+        $schedule->command('send:birthday-emails --no-ansi --quiet')
+                ->dailyAt('03:00')
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/send-birthday-emails.log'));
+
+        /**
+         * Task 4: Process queue jobs
+         * Runs every 10 minutes (reduced from 5 minutes to reduce concurrent PHP processes)
+         * '--once' ensures the queue worker exits after one job, preventing long-running processes
+         * withoutOverlapping prevents multiple simultaneous workers
+         * Output logged to queue-cron.log
+         */
         $schedule->command('queue:work --once --tries=3')
-                 ->everyFiveMinutes()
-                 ->withoutOverlapping()
-                 ->appendOutputTo(storage_path('logs/queue-cron.log'));
+                ->everyTenMinutes()
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/queue-cron.log'));
 
-        // Clear logs every week on Friday at 6:00 AM
+        /**
+         * Task 5: Clear logs
+         * Runs weekly on Friday at 06:00 AM
+         * withoutOverlapping prevents overlap with previous clear logs run
+         * Output logged to clear-logs.log
+         */
         $schedule->command('clear:logs --no-ansi --quiet')
-                 ->weeklyOn(5, '06:00')
-                 ->timezone(config('app.timezone'))
-                 ->withoutOverlapping()
-                 ->appendOutputTo(storage_path('logs/clear-logs.log'));
+                ->weeklyOn(5, '06:00')
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/clear-logs.log'));
 
-        // Optional: delete old cache sessions daily at 7:00 AM
+        /**
+         * Task 6: Clear cache (optional)
+         * Runs daily at 07:00 AM
+         * Staggered after all heavy tasks to avoid peak load
+         * withoutOverlapping ensures no conflicts if a previous cache clear is still running
+         * Output logged to cache-clear.log
+         */
         $schedule->command('cache:clear')
-                 ->dailyAt('07:00')
-                 ->timezone(config('app.timezone'))
-                 ->withoutOverlapping()
-                 ->appendOutputTo(storage_path('logs/cache-clear.log'));
+                ->dailyAt('07:00')
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/cache-clear.log'));
     }
 
     /**
