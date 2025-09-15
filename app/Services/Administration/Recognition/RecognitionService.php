@@ -6,9 +6,10 @@ use Carbon\Carbon;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Models\Recognition\Recognition;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Notification;
-use App\Mail\Administration\Recognition\RecognitionCongratulationMail;
 use App\Mail\Administration\Recognition\RecognitionReminderMail;
+use App\Mail\Administration\Recognition\RecognitionCongratulationMail;
 use App\Notifications\Administration\Recognition\RecognitionCreatedNotification;
 use App\Notifications\Administration\Recognition\RecognitionReminderNotification;
 
@@ -51,7 +52,7 @@ class RecognitionService
         Mail::to($employee->employee->official_email)->send(new RecognitionCongratulationMail($recognition));
     }
 
-    // Notify all users 
+    // Notify all users
     public function allUserNotify($employee, Recognition $recognition){
         $users = User::where('status', 'Active')->where('id','!=',$employee->id)->get();
         foreach ($users as $key => $user) {
@@ -86,12 +87,13 @@ class RecognitionService
     /**
      * Get top performers by recognition score.
      */
-    public function getTopPerformers(int $limit = 10): \Illuminate\Database\Eloquent\Collection
+    public function getTopPerformers(int $limit = 10): Collection
     {
         return User::withCount(['received_recognitions as recognition_count'])
             ->withSum('received_recognitions as total_score', 'total_mark')
             ->withAvg('received_recognitions as avg_score', 'total_mark')
             ->whereHas('received_recognitions')
+            ->orderBy('recognition_count', 'desc')
             ->orderBy('total_score', 'desc')
             ->limit($limit)
             ->get();
@@ -151,7 +153,7 @@ class RecognitionService
     public function getMonthlyRecognitionReport(string $month = null): array
     {
         $targetMonth = $month ? \Carbon\Carbon::parse($month) : now();
-        
+
         $recognitions = Recognition::with(['user', 'recognizer'])
             ->whereYear('created_at', $targetMonth->year)
             ->whereMonth('created_at', $targetMonth->month)
@@ -202,6 +204,7 @@ class RecognitionService
             ->whereHas('received_recognitions', function ($query) use ($category) {
                 $query->where('category', $category);
             })
+            ->orderBy('category_count', 'desc')
             ->orderBy('category_score', 'desc')
             ->limit($limit)
             ->get();
