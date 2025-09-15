@@ -121,8 +121,8 @@ class RecognitionService
                     $query->whereDate('created_at', '<=', $dateTo);
                 }
             })
-            ->orderBy('recognition_count', 'desc')
             ->orderBy('total_score', 'desc')
+            ->orderBy('recognition_count', 'desc')
             ->limit($limit);
 
         return $query->get();
@@ -251,8 +251,8 @@ class RecognitionService
                     $query->whereDate('created_at', '<=', $dateTo);
                 }
             })
-            ->orderBy('category_count', 'desc')
             ->orderBy('category_score', 'desc')
+            ->orderBy('category_count', 'desc')
             ->limit($limit);
 
         return $query->get();

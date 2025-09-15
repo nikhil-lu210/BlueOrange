@@ -212,7 +212,7 @@
                                         <tr>
                                             <td class="text-center">
                                                 <span class="badge bg-label-primary text-primary fs-6 fw-bold">
-                                                    {{ $index + 1 }}
+                                                    {{ $index + 4 }}
                                                 </span>
                                             </td>
                                             <td>

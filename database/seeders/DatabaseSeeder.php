@@ -11,6 +11,7 @@ use Database\Seeders\Attendance\AttendanceSeeder;
 use Database\Seeders\DailyBreak\DailyBreakSeeder;
 use Database\Seeders\Accounts\IncomeExpenseSeeder;
 use Database\Seeders\Permission\PermissionsTableSeeder;
+use Database\Seeders\Recognition\RecognitionSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -29,6 +30,7 @@ class DatabaseSeeder extends Seeder
 
             // AttendanceSeeder::class,
             // DailyBreakSeeder::class,
+            // RecognitionSeeder::class,
 
             // IncomeExpenseSeeder::class
         ]);
