@@ -63,6 +63,19 @@ body.swal2-toast-shown .swal2-container.swal2-top-right {
     z-index: 9999999 !important;
 }
 
+/* Card Styles */
+.box-shadow-none {
+    box-shadow: none !important;
+}
+
+.box-shadow-sm {
+    box-shadow: 0 0.125rem 0.25rem rgba(165, 163, 174, 0.3) !important;
+}
+
+.box-shadow-lg {
+    box-shadow: 0 0.625rem 1.25rem rgba(165, 163, 174, 0.4) !important;
+}
+
 /* Border Styles */
 .border-primary {
     border: 3px solid #7367f0 !important; /* Primary color */

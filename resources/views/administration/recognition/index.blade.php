@@ -105,10 +105,9 @@
                         <thead>
                             <tr>
                                 <th>Sl.</th>
-                                <th>Score</th>
                                 <th>Employee</th>
+                                <th>Score</th>
                                 <th>Category</th>
-                                <th>Comment</th>
                                 <th>Recognizer</th>
                                 <th>Date</th>
                                 <th class="text-center">Action</th>
@@ -118,22 +117,25 @@
                             @foreach ($recognitions as $key => $recognition)
                                 <tr>
                                     <th>#{{ serial($recognitions, $key) }}</th>
-                                    <td class="text-center">
-                                        <div class="marks">
-                                            <span class="mark-got">{{ $recognition->total_mark }}</span>
-                                            <span class="total-mark">{{ config('recognition.marks.max') }}</span>
-                                        </div>
-                                    </td>
                                     <td>
                                         {!! show_user_name_and_avatar($recognition->user, name: null) !!}
                                     </td>
-                                    <td>
-                                        <span class="badge bg-primary">{{ $recognition->category }}</span>
+                                    <td class="text-center">
+                                        <div class="d-flex align-items-center justify-content-center">
+                                            <div class="me-2">
+                                                <span class="badge {{ $recognition->score_badge_color }} fs-6 fw-bold">{{ $recognition->total_mark }}</span>
+                                            </div>
+                                            <span class="text-muted">/</span>
+                                            <div class="ms-2">
+                                                <span class="text-muted">{{ config('recognition.marks.max') }}</span>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>
-                                        <div class="text-truncate" style="max-width: 200px;" title="{{ strip_tags($recognition->comment) }}">
-                                            {!! show_content(strip_tags($recognition->comment), 50) !!}
-                                        </div>
+                                        <span class="badge {{ $recognition->category_badge_color }}">
+                                            <i class="{{ $recognition->category_icon }} me-1"></i>
+                                            {{ $recognition->category }}
+                                        </span>
                                     </td>
                                     <td>
                                         {!! show_user_name_and_avatar($recognition->recognizer, name: null) !!}

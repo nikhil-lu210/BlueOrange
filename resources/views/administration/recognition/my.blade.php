@@ -19,48 +19,6 @@
 
 @section('custom_css')
     {{--  External CSS  --}}
-    <style>
-        .marks {
-            width: 60px;
-            height: 60px;
-            display: grid;
-            grid-template-areas:
-                "got divider"
-                "divider total";
-            place-items: center;
-            position: relative;
-            background: #f5f4ff;
-            border: 1px solid #b7b4f2;
-            border-radius: 6px;
-            font-family: system-ui, sans-serif;
-        }
-        .marks .mark-got {
-            grid-area: got;
-            font-size: 18px;
-            font-weight: 700;
-            color: #2c2c54;
-            justify-self: start;
-            align-self: start;
-            margin: -10px;
-        }
-        .marks .total-mark {
-            grid-area: total;
-            font-size: 16px;
-            font-weight: 500;
-            color: #555;
-            justify-self: end;
-            align-self: end;
-            margin: 6px;
-        }
-        .marks::before {
-            content: "";
-            position: absolute;
-            width: 120%;
-            height: 1px;
-            background: #b7b4f2;
-            transform: rotate(-45deg);
-        }
-    </style>
 @endsection
 
 @section('page_name')
@@ -75,18 +33,15 @@
 @section('content')
 
 <!-- Start row -->
-<div class="row">
-    <div class="col-md-12">
-        <form action="{{ route('administration.recognition.my') }}" method="get" autocomplete="off">
-            <div class="card card-border-shadow-primary mb-4 border-0">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">{{ __('Filter My Recognitions') }}</h5>
-                </div>
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <form action="{{ route('administration.recognition.my') }}" method="GET" autocomplete="off">
+            <div class="card card-border-shadow-primary mb-4 border-0" style="z-index: 999;">
                 <div class="card-body">
                     <div class="row">
-                        <div class="mb-3 col-md-3">
+                        <div class="mb-3 col-md-5">
                             <label for="category" class="form-label">Category</label>
-                            <select name="category" id="category" class="form-select @error('category') is-invalid @enderror">
+                            <select name="category" id="category" class="form-select select2 @error('category') is-invalid @enderror">
                                 <option value="" {{ is_null(request()->category) ? 'selected' : '' }}>All Categories</option>
                                 @foreach ($categories as $category)
                                     <option value="{{ $category }}" {{ $category == request()->category ? 'selected' : '' }}>
@@ -99,9 +54,9 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3 col-md-3">
+                        <div class="mb-3 col-md-2">
                             <label for="min_score" class="form-label">Min Score</label>
-                            <input type="number" name="min_score" id="min_score" value="{{ request()->min_score }}" 
+                            <input type="number" name="min_score" id="min_score" value="{{ request()->min_score }}"
                                    min="{{ config('recognition.marks.min') }}" max="{{ config('recognition.marks.max') }}"
                                    class="form-control @error('min_score') is-invalid @enderror" placeholder="Min Score" />
                             @error('min_score')
@@ -109,9 +64,9 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3 col-md-3">
+                        <div class="mb-3 col-md-2">
                             <label for="max_score" class="form-label">Max Score</label>
-                            <input type="number" name="max_score" id="max_score" value="{{ request()->max_score }}" 
+                            <input type="number" name="max_score" id="max_score" value="{{ request()->max_score }}"
                                    min="{{ config('recognition.marks.min') }}" max="{{ config('recognition.marks.max') }}"
                                    class="form-control @error('max_score') is-invalid @enderror" placeholder="Max Score" />
                             @error('max_score')
@@ -120,13 +75,7 @@
                         </div>
 
                         <div class="mb-3 col-md-3 d-flex align-items-end">
-                            @if (request()->category || request()->min_score || request()->max_score)
-                                <a href="{{ route('administration.recognition.my') }}" class="btn btn-danger me-2">
-                                    <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
-                                    Reset Filters
-                                </a>
-                            @endif
-                            <button type="submit" class="btn btn-primary">
+                            <button type="submit" class="btn btn-primary btn-block">
                                 <span class="tf-icon ti ti-filter ti-xs me-1"></span>
                                 Filter Recognitions
                             </button>
@@ -164,7 +113,6 @@
                                     <th>Sl.</th>
                                     <th>Score</th>
                                     <th>Category</th>
-                                    <th>Comment</th>
                                     <th>Recognizer</th>
                                     <th>Date</th>
                                     <th class="text-center">Action</th>
@@ -175,18 +123,21 @@
                                     <tr>
                                         <th>#{{ serial($recognitions, $key) }}</th>
                                         <td class="text-center">
-                                            <div class="marks">
-                                                <span class="mark-got">{{ $recognition->total_mark }}</span>
-                                                <span class="total-mark">{{ config('recognition.marks.max') }}</span>
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <div class="me-2">
+                                                    <span class="badge {{ $recognition->score_badge_color }} fs-6 fw-bold">{{ $recognition->total_mark }}</span>
+                                                </div>
+                                                <span class="text-muted">/</span>
+                                                <div class="ms-2">
+                                                    <span class="text-muted">{{ config('recognition.marks.max') }}</span>
+                                                </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge bg-primary">{{ $recognition->category }}</span>
-                                        </td>
-                                        <td>
-                                            <div class="text-truncate" style="max-width: 200px;" title="{{ strip_tags($recognition->comment) }}">
-                                                {!! show_content(strip_tags($recognition->comment), 50) !!}
-                                            </div>
+                                            <span class="badge {{ $recognition->category_badge_color }}">
+                                                <i class="{{ $recognition->category_icon }} me-1"></i>
+                                                {{ $recognition->category }}
+                                            </span>
                                         </td>
                                         <td>
                                             {!! show_user_name_and_avatar($recognition->recognizer, name: null) !!}

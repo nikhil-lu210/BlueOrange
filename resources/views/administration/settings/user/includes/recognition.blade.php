@@ -40,7 +40,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-md-3 text-center mb-3">
                         <div class="card bg-label-success border-0">
                             <div class="card-body">
@@ -56,7 +56,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-md-3 text-center mb-3">
                         <div class="card bg-label-warning border-0">
                             <div class="card-body">
@@ -72,7 +72,7 @@
                             </div>
                         </div>
                     </div>
-                    
+
                     <div class="col-md-3 text-center mb-3">
                         <div class="card bg-label-dark border-0">
                             <div class="card-body">
@@ -117,49 +117,15 @@
                             $totalMarks = config('recognition.marks.max');
                         @endphp
                         @foreach ($user->received_recognitions->sortByDesc('created_at') as $sl => $recognition)
-                            @php
-                                $scorePercentage = ($recognition->total_mark / $totalMarks) * 100;
-                                $scoreBgClass = 'bg-label-secondary';
-                                $borderClass = 'card-border-shadow-secondary';
-                                if ($scorePercentage >= 90) {
-                                    $scoreBgClass = 'bg-label-success';
-                                    $borderClass = 'card-border-shadow-success';
-                                } elseif ($scorePercentage >= 80) {
-                                    $scoreBgClass = 'bg-label-primary';
-                                    $borderClass = 'card-border-shadow-primary';
-                                } elseif ($scorePercentage >= 70) {
-                                    $scoreBgClass = 'bg-label-warning';
-                                    $borderClass = 'card-border-shadow-warning';
-                                } elseif ($scorePercentage >= 60) {
-                                    $scoreBgClass = 'bg-label-info';
-                                    $borderClass = 'card-border-shadow-info';
-                                } else {
-                                    $scoreBgClass = 'bg-label-danger';
-                                    $borderClass = 'card-border-shadow-danger';
-                                }
-                            @endphp
                             <div class="col-md-6 col-lg-4">
-                                <div class="card recognition-card h-100 {{ $borderClass }}">
+                                <div class="card recognition-card h-100 card-border-shadow-primary">
                                     <div class="card-body d-flex flex-column">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <div class="recognition-category">
-                                                @if($recognition->category == 'Behavior')
-                                                    <span class="badge bg-label-primary text-primary">{{ $recognition->category }}</span>
-                                                @elseif($recognition->category == 'Appreciation')
-                                                    <span class="badge bg-label-info text-info">{{ $recognition->category }}</span>
-                                                @elseif($recognition->category == 'Leadership')
-                                                    <span class="badge bg-label-warning text-warning">{{ $recognition->category }}</span>
-                                                @elseif($recognition->category == 'Loyalty')
-                                                    <span class="badge bg-label-success text-success">{{ $recognition->category }}</span>
-                                                @elseif($recognition->category == 'Dedication')
-                                                    <span class="badge bg-label-secondary text-secondary">{{ $recognition->category }}</span>
-                                                @elseif($recognition->category == 'Teamwork')
-                                                    <span class="badge bg-label-dark text-dark">{{ $recognition->category }}</span>
-                                                @elseif($recognition->category == 'Innovation')
-                                                    <span class="badge bg-label-danger text-danger">{{ $recognition->category }}</span>
-                                                @else
-                                                    <span class="badge bg-label-primary text-primary">{{ $recognition->category }}</span>
-                                                @endif
+                                                <span class="badge {{ $recognition->category_badge_color }}">
+                                                    <i class="{{ $recognition->category_icon }} me-1"></i>
+                                                    {{ $recognition->category }}
+                                                </span>
                                             </div>
                                             <div class="text-end">
                                                 <small class="text-muted">{{ show_date($recognition->created_at) }}</small>
@@ -169,19 +135,19 @@
                                         </div>
 
                                         <hr>
-                                        
+
                                         <div class="mb-3">
                                             <small class="card-text text-muted">
                                                 {!! show_content(strip_tags($recognition->comment), 120) !!}
                                             </small>
                                         </div>
-                                        
+
                                         <div class="d-flex align-items-center justify-content-between mt-auto">
                                             <div class="d-flex align-items-center" title="{{ __('Recognized By') }}">
                                                 {!! show_user_name_and_avatar($recognition->recognizer, name: null) !!}
                                             </div>
                                             <div class="text-muted">
-                                                <small class="badge {{ $scoreBgClass }}">{{ $recognition->total_mark }}/{{ $totalMarks }}</small>
+                                                <small class="badge {{ $recognition->score_badge_color }}">{{ $recognition->formatted_score }}</small>
                                             </div>
                                         </div>
                                     </div>
