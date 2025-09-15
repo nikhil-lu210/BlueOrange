@@ -49,7 +49,7 @@ class Kernel extends ConsoleKernel
          * Output logged to queue-cron.log
          */
         $schedule->command('queue:work --tries=3 --max-jobs=10 --stop-when-empty')
-                ->everyTenMinutes()
+                ->everyFiveMinutes()
                 ->withoutOverlapping()
                 ->appendOutputTo(storage_path('logs/queue-cron.log'));
 
