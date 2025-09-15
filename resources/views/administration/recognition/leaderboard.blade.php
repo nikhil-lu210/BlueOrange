@@ -116,50 +116,6 @@
             font-size: 0.9rem;
         }
         
-        .rankings-list {
-            padding: 0 1.5rem 1.5rem;
-        }
-        
-        .ranking-item {
-            display: flex;
-            align-items: center;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid #f1f3f4;
-        }
-        
-        .ranking-item:last-child {
-            border-bottom: none;
-        }
-        
-        .ranking-position {
-            width: 30px;
-            font-weight: 600;
-            color: #6c757d;
-            text-align: center;
-        }
-        
-        .ranking-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            margin: 0 1rem;
-            object-fit: cover;
-        }
-        
-        .ranking-info {
-            flex: 1;
-        }
-        
-        .ranking-name {
-            font-weight: 500;
-            margin-bottom: 0;
-            color: #333;
-        }
-        
-        .ranking-points {
-            color: #6c757d;
-            font-weight: 500;
-        }
         
         @media (max-width: 768px) {
             .top-users {
@@ -217,93 +173,101 @@
                     <!-- Top 3 Podium Display -->
                     @if($topPerformers->count() >= 3)
                         <div class="top-users">
-                            <!-- 2nd Place -->
-                            <div class="top-user second">
-                                <div class="rank-badge second">2<sup>nd</sup></div>
-                                @if ($topPerformers[1]->hasMedia('avatar'))
-                                    <img src="{{ $topPerformers[1]->getFirstMediaUrl('avatar', 'profile_view_color') }}" alt="Avatar" class="user-avatar">
-                                @else
-                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="user-avatar">
-                                @endif
-                                <div class="user-name">
-                                    <span class="alias-name">{{ $topPerformers[1]->alias_name }}</span>
-                                    <br>
-                                    <span class="role-name text-muted">{{ $topPerformers[1]->roles->first()->name }}</span>
+                            @foreach([0, 1, 2] as $position)
+                                @php
+                                    $performer = $topPerformers[$position];
+                                    $rankClass = ['first', 'second', 'third'][$position];
+                                    $rankText = ['1<sup>st</sup>', '2<sup>nd</sup>', '3<sup>rd</sup>'][$position];
+                                    $recognitionCount = $performer->recognition_count ?? $performer->category_count ?? 0;
+                                    $totalScore = $performer->total_score ?? $performer->category_score ?? 0;
+                                @endphp
+                                <div class="top-user {{ $rankClass }}">
+                                    <div class="rank-badge {{ $rankClass }}">{!! $rankText !!}</div>
+                                    @if ($performer->hasMedia('avatar'))
+                                        <img src="{{ $performer->getFirstMediaUrl('avatar', 'profile_view_color') }}" alt="Avatar" class="user-avatar">
+                                    @else
+                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="user-avatar">
+                                    @endif
+                                    <div class="user-name">
+                                        <span class="alias-name">{{ $performer->alias_name }}</span>
+                                        <br>
+                                        <span class="role-name text-muted">{{ $performer->roles->first()->name ?? 'Employee' }}</span>
+                                    </div>
+                                    <div class="user-points badge bg-primary text-white" title="For {{ $recognitionCount }} Recognitions">{{ $totalScore }}</div>
                                 </div>
-                                <div class="user-points">{{ $topPerformers[1]->recognition_count ?? $topPerformers[1]->category_count ?? 0 }} recognitions</div>
-                            </div>
-
-                            <!-- 1st Place -->
-                            <div class="top-user first">
-                                <div class="rank-badge first">1<sup>st</sup></div>
-                                @if ($topPerformers[0]->hasMedia('avatar'))
-                                    <img src="{{ $topPerformers[0]->getFirstMediaUrl('avatar', 'profile_view_color') }}" alt="Avatar" class="user-avatar">
-                                @else
-                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="user-avatar">
-                                @endif
-                                <div class="user-name">
-                                    <span class="alias-name">{{ $topPerformers[0]->alias_name }}</span>
-                                    <br>
-                                    <span class="role-name text-muted">{{ $topPerformers[0]->roles->first()->name }}</span>
-                                </div>
-                                <div class="user-points">{{ $topPerformers[0]->recognition_count ?? $topPerformers[0]->category_count ?? 0 }} recognitions</div>
-                            </div>
-
-                            <!-- 3rd Place -->
-                            <div class="top-user third">
-                                <div class="rank-badge third">3<sup>rd</sup></div>
-                                @if ($topPerformers[2]->hasMedia('avatar'))
-                                    <img src="{{ $topPerformers[2]->getFirstMediaUrl('avatar', 'profile_view_color') }}" alt="Avatar" class="user-avatar">
-                                @else
-                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="user-avatar">
-                                @endif
-                                <div class="user-name">
-                                    <span class="alias-name">{{ $topPerformers[2]->alias_name }}</span>
-                                    <br>
-                                    <span class="role-name text-muted">{{ $topPerformers[2]->roles->first()->name }}</span>
-                                </div>
-                                <div class="user-points">
-                                    total_marks_here_with_color
-                                </div>
-                            </div>
+                            @endforeach
                         </div>
                     @endif
 
-                    <!-- Remaining Performers List -->
+                    <!-- Remaining Performers Table -->
                     @if($topPerformers->count() > 3)
-                        <div class="rankings-list">
-                            @foreach ($topPerformers->skip(3) as $index => $performer)
-                                <div class="ranking-item">
-                                    <div class="ranking-position">{{ $index + 4 }}</div>
-                                    @if ($performer->hasMedia('avatar'))
-                                        <img src="{{ $performer->getFirstMediaUrl('avatar', 'profile_view_color') }}" alt="Avatar" class="ranking-avatar">
-                                    @else
-                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="ranking-avatar">
-                                    @endif
-                                    <div class="ranking-info">
-                                        <div class="ranking-name">{{ $performer->alias_name }}</div>
-                                    </div>
-                                    <div class="ranking-points">{{ $performer->recognition_count ?? $performer->category_count ?? 0 }} recognitions</div>
-                                </div>
-                            @endforeach
+                        <div class="table-responsive mt-3">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    @foreach ($topPerformers->skip(3) as $index => $performer)
+                                        @php
+                                            $recognitionCount = $performer->recognition_count ?? $performer->category_count ?? 0;
+                                            $totalScore = $performer->total_score ?? $performer->category_score ?? 0;
+                                        @endphp
+                                        <tr>
+                                            <td class="text-center">
+                                                <span class="badge bg-label-primary text-primary fs-6 fw-bold">
+                                                    {{ $index + 1 }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {!! show_user_name_and_avatar($performer, role: null) !!}
+                                            </td>
+                                            <td>
+                                                <div class="fw-bold text-primary fs-5">{{ $recognitionCount }} Recognitions</div>
+                                            </td>
+                                            <td>
+                                                <small class="badge bg-label-primary fs-6 fw-bold">{{ $totalScore }}</small>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     @elseif($topPerformers->count() < 3)
-                        <!-- If less than 3 performers, show in simple list format -->
-                        <div class="rankings-list">
-                            @foreach ($topPerformers as $index => $performer)
-                                <div class="ranking-item">
-                                    <div class="ranking-position">{{ $index + 1 }}</div>
-                                    @if ($performer->hasMedia('avatar'))
-                                        <img src="{{ $performer->getFirstMediaUrl('avatar', 'profile_view_color') }}" alt="Avatar" class="ranking-avatar">
-                                    @else
-                                        <img src="{{ asset('assets/img/avatars/no_image.png') }}" alt="No Avatar" class="ranking-avatar">
-                                    @endif
-                                    <div class="ranking-info">
-                                        <div class="ranking-name">{{ $performer->alias_name }}</div>
-                                    </div>
-                                    <div class="ranking-points">{{ $performer->recognition_count ?? $performer->category_count ?? 0 }} recognitions</div>
-                                </div>
-                            @endforeach
+                        <!-- If less than 3 performers, show in table format -->
+                        <div class="table-responsive">
+                            <table class="table table-borderless">
+                                <tbody>
+                                    @foreach ($topPerformers as $index => $performer)
+                                        @php
+                                            $recognitionCount = $performer->recognition_count ?? $performer->category_count ?? 0;
+                                            $totalScore = $performer->total_score ?? $performer->category_score ?? 0;
+                                        @endphp
+                                        <tr>
+                                            <td class="text-center" style="width: 60px;">
+                                                <span class="badge bg-label-primary text-primary fs-6 fw-bold">
+                                                    {{ $index + 1 }}
+                                                </span>
+                                            </td>
+                                            <td style="width: 50px;">
+                                                @if ($performer->hasMedia('avatar'))
+                                                    <img src="{{ $performer->getFirstMediaUrl('avatar', 'profile_view_color') }}" 
+                                                         alt="Avatar" class="rounded-circle" width="40" height="40">
+                                                @else
+                                                    <img src="{{ asset('assets/img/avatars/no_image.png') }}" 
+                                                         alt="No Avatar" class="rounded-circle" width="40" height="40">
+                                                @endif
+                                            </td>
+                                            <td>
+                                                <div>
+                                                    <h6 class="mb-0">{{ $performer->alias_name }}</h6>
+                                                    <small class="text-muted">{{ $performer->roles->first()->name ?? 'Employee' }}</small>
+                                                </div>
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="fw-bold text-primary fs-5">{{ $recognitionCount }} recognitions</div>
+                                                <small class="text-muted">{{ $totalScore }} total score</small>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     @endif
                 @else
@@ -325,7 +289,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- End row -->
 

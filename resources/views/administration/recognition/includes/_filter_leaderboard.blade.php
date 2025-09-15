@@ -2,12 +2,6 @@
     <div class="col-md-10">
         <form action="{{ route('administration.recognition.leaderboard') }}" method="GET" autocomplete="off">
             <div class="card card-border-shadow-primary mb-4 border-0" style="z-index: 999;">
-                <div class="card-header">
-                    <h5 class="card-title mb-0">
-                        <i class="ti ti-filter me-2"></i>
-                        {{ __('Filter Leaderboard') }}
-                    </h5>
-                </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="mb-3 col-md-4">
@@ -53,7 +47,7 @@
                             @enderror
                         </div>
 
-                        <div class="mb-3 col-md-12 text-end">
+                        <div class="col-md-12 text-end">
                             @if ($category || request()->date_from || request()->date_to || request()->limit)
                                 <a href="{{ route('administration.recognition.leaderboard') }}" class="btn btn-danger me-2">
                                     <span class="tf-icon ti ti-refresh ti-xs me-1"></span>

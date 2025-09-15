@@ -202,11 +202,13 @@ class RecognitionController extends Controller
 
         $category = $request->get('category');
         $limit = $request->get('limit', 10);
+        $dateFrom = $request->get('date_from');
+        $dateTo = $request->get('date_to');
 
         if ($category) {
-            $topPerformers = $this->recognitionService->getCategoryLeaderboard($category, $limit);
+            $topPerformers = $this->recognitionService->getCategoryLeaderboard($category, $limit, $dateFrom, $dateTo);
         } else {
-            $topPerformers = $this->recognitionService->getTopPerformers($limit);
+            $topPerformers = $this->recognitionService->getTopPerformers($limit, $dateFrom, $dateTo);
         }
 
         $categories = config('recognition.categories');
