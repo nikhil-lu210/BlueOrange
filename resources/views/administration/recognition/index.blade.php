@@ -101,7 +101,7 @@
             </div>
             <div class="card-body">
                 <div class="table-responsive text-nowrap">
-                    <table class="table table-bordered">
+                    <table class="table data-table table-bordered">
                         <thead>
                             <tr>
                                 <th>Sl.</th>
