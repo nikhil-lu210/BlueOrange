@@ -48,8 +48,8 @@ class Kernel extends ConsoleKernel
          * withoutOverlapping prevents multiple simultaneous workers
          * Output logged to queue-cron.log
          */
-        $schedule->command('queue:work --once --tries=3')
-                ->everyTenMinutes()
+        $schedule->command('queue:work --tries=3 --max-jobs=10 --stop-when-empty')
+                ->everyFiveMinutes()
                 ->withoutOverlapping()
                 ->appendOutputTo(storage_path('logs/queue-cron.log'));
 
