@@ -10,6 +10,30 @@
  */
 
 $(document).ready(function () {
+    // Global notification manager to prevent conflicts
+    if (!window.notificationManager) {
+        window.notificationManager = {
+            activePolling: null,
+            startPolling: function(type, callback, interval) {
+                // Stop any existing polling
+                if (this.activePolling) {
+                    clearInterval(this.activePolling);
+                }
+                
+                // Start new polling
+                this.activePolling = setInterval(callback, interval);
+                // console.log(`Started ${type} notification polling`);
+            },
+            stopPolling: function() {
+                if (this.activePolling) {
+                    clearInterval(this.activePolling);
+                    this.activePolling = null;
+                    // console.log('Stopped notification polling');
+                }
+            }
+        };
+    }
+
     /**
      * Check if user is currently on a specific group chat page
      * @returns {boolean} True if on a specific group chat page
@@ -68,13 +92,21 @@ $(document).ready(function () {
     // Track consecutive errors to implement exponential backoff
     let consecutiveErrors = 0;
     let maxConsecutiveErrors = 3;
-    let currentInterval = 15000; // Start with 15 seconds
-    let maxInterval = 300000; // Max 5 minutes
+    let currentInterval = 30000; // Start with 30 seconds (reduced frequency)
+    let maxInterval = 600000; // Max 10 minutes
+    let isPollingActive = true;
 
     /**
      * Fetch unread group chat messages and show notifications
      */
     function fetchUnreadGroupMessages() {
+        // Stop polling if we've reached max errors or if polling is disabled
+        if (!isPollingActive || consecutiveErrors >= maxConsecutiveErrors * 2) {
+            console.warn('Group chat notifications stopped due to too many errors');
+            clearInterval(window.groupChatInterval);
+            return;
+        }
+
         // Get current group ID if we're on a group chat page
         let currentGroupId = null;
         if (isOnGroupChatPage()) {
@@ -107,7 +139,7 @@ $(document).ready(function () {
             success: function(response) {
                 // Reset error counter on successful request
                 consecutiveErrors = 0;
-                currentInterval = 15000; // Reset to normal interval
+                currentInterval = 30000; // Reset to normal interval
 
                 // Extract messages from the response format
                 const messages = response || [];
@@ -168,8 +200,8 @@ $(document).ready(function () {
                     consecutiveErrors: consecutiveErrors
                 });
 
-                // If we get a 508 Loop Detected or too many consecutive errors, implement exponential backoff
-                if (xhr.status === 508 || consecutiveErrors >= maxConsecutiveErrors) {
+                // If we get server errors (500, 502, 503, 504) or too many consecutive errors, implement exponential backoff
+                if ([500, 502, 503, 504, 508].includes(xhr.status) || consecutiveErrors >= maxConsecutiveErrors) {
                     currentInterval = Math.min(currentInterval * 2, maxInterval);
                     console.warn(`Implementing exponential backoff. Next check in ${currentInterval/1000} seconds`);
 
@@ -181,14 +213,35 @@ $(document).ready(function () {
                 // If we get authentication errors (401, 403), stop polling
                 if (xhr.status === 401 || xhr.status === 403) {
                     console.error("Authentication error. Stopping group chat notifications.");
+                    isPollingActive = false;
+                    clearInterval(window.groupChatInterval);
+                }
+
+                // If we get too many consecutive errors, stop polling completely
+                if (consecutiveErrors >= maxConsecutiveErrors * 2) {
+                    console.error("Too many consecutive errors. Stopping group chat notifications permanently.");
+                    isPollingActive = false;
                     clearInterval(window.groupChatInterval);
                 }
             }
         });
     }
 
-    // Check for new messages every 15 seconds
-    window.groupChatInterval = setInterval(fetchUnreadGroupMessages, 15000);
+    // Smart polling system - alternate between one-to-one and group chat notifications
+    // This prevents both systems from hitting the server simultaneously
+    let isGroupChatActive = false; // Start with false since one-to-one starts with true
+    
+    function smartPolling() {
+        if (isGroupChatActive) {
+            fetchUnreadGroupMessages();
+        }
+        // Toggle for next poll
+        isGroupChatActive = !isGroupChatActive;
+    }
+    
+    // Check for new messages every 30 seconds (reduced frequency to prevent resource exhaustion)
+    // Use the global notification manager to prevent conflicts
+    window.notificationManager.startPolling('smart chat', smartPolling, 30000);
 
     // Also check when the tab becomes visible
     document.addEventListener("visibilitychange", function () {
