@@ -86,56 +86,64 @@ class GroupChattingController extends Controller
      */
     public function fetchUnreadMessagesForBrowser(Request $request)
     {
-        $userId = auth()->id();
+        try {
+            $userId = auth()->id();
 
-        // Get the current group ID from the request if available
-        $currentGroupId = $request->input('current_group_id', null);
+            // Get the current group ID from the request if available
+            $currentGroupId = $request->input('current_group_id', null);
 
-        // For debugging - check if we should bypass cache
-        $bypassCache = $request->input('bypass_cache', false);
+            // Cache key with user-specific key for uniqueness
+            $cacheKey = "unread_group_messages_for_user_{$userId}";
 
-        // Cache key with user-specific key for uniqueness
-        $cacheKey = "unread_group_messages_for_user_{$userId}";
+            // Try to get from cache first (5 minute cache)
+            $cachedMessages = Cache::get($cacheKey);
+            if ($cachedMessages && !$request->input('bypass_cache', false)) {
+                return response()->json($cachedMessages);
+            }
 
-        // Clear cache if requested
-        if ($bypassCache) {
-            Cache::forget($cacheKey);
+            // Get unread messages directly from the database with optimized query
+            $query = GroupChatting::select(['id', 'chatting_group_id', 'sender_id', 'message', 'created_at'])
+                ->whereDoesntHave('readByUsers', function ($query) use ($userId) {
+                    $query->where('user_id', $userId);
+                })
+                ->whereHas('group', function ($query) use ($userId) {
+                    // Only include messages from groups the user is a member of
+                    $query->whereHas('group_users', function ($q) use ($userId) {
+                        $q->where('user_id', $userId);
+                    });
+                })
+                ->where('sender_id', '!=', $userId) // Don't show notifications for own messages
+                ->with(['sender:id,name', 'group:id,name']) // Only load necessary fields
+                ->latest()
+                ->limit(5);
+
+            // If we're on a specific group chat page, exclude messages from that group
+            if ($currentGroupId) {
+                $query->where('chatting_group_id', '!=', $currentGroupId);
+            }
+
+            $unreadMessages = $query->get();
+
+            // Transform the data
+            $transformedMessages = $unreadMessages->map(function ($message) {
+                return [
+                    'id' => $message->id,
+                    'chatting_group_id' => $message->chatting_group_id,
+                    'group_name' => $message->group->name,
+                    'sender_name' => $message->sender->name,
+                    'message' => $message->message,
+                ];
+            });
+
+            // Store in cache for future use (5 minutes)
+            Cache::put($cacheKey, $transformedMessages, now()->addMinutes(5));
+
+            return response()->json($transformedMessages);
+
+        } catch (\Exception $e) {
+            \Log::error('Error fetching unread group messages for browser notification: ' . $e->getMessage());
+            return response()->json([], 500);
         }
-
-        // Get unread messages directly from the database
-        $query = GroupChatting::whereDoesntHave('readByUsers', function ($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-            ->whereHas('group', function ($query) use ($userId) {
-                // Only include messages from groups the user is a member of
-                $query->whereHas('group_users', function ($q) use ($userId) {
-                    $q->where('user_id', $userId);
-                });
-            })
-            ->where('sender_id', '!=', $userId) // Don't show notifications for own messages
-            ->with('sender', 'group')
-            ->latest()
-            ->limit(5);
-
-        // If we're on a specific group chat page, exclude messages from that group
-        if ($currentGroupId) {
-            $query->where('chatting_group_id', '!=', $currentGroupId);
-        }
-
-        $unreadMessages = $query->get();
-
-        // Store in cache for future use
-        Cache::put($cacheKey, $unreadMessages, now()->addMinutes(5));
-
-        return response()->json($unreadMessages->map(function ($message) {
-            return [
-                'id' => $message->id,
-                'chatting_group_id' => $message->chatting_group_id,
-                'group_name' => $message->group->name,
-                'sender_name' => $message->sender->name,
-                'message' => $message->message,
-            ];
-        }));
     }
 
 
