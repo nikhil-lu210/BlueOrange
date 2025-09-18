@@ -16,9 +16,22 @@
         class="form-control barcode-input"
         placeholder="Scan barcode or enter user ID"
         :disabled="loading"
+        :aria-describedby="loading ? 'loading-status' : 'input-help'"
+        :aria-invalid="barcodeValue && barcodeValue.trim() && !validationService.validateBarcodeInput(barcodeValue).isValid"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
         @keyup.enter="handleScan"
         @input="handleInput"
       />
+      <div id="input-help" class="form-text">
+        Enter a valid user ID or scan a barcode
+      </div>
+      <div v-if="loading" id="loading-status" class="form-text text-primary">
+        <i class="bi bi-hourglass-split me-1"></i>
+        Processing...
+      </div>
     </div>
 
     <!-- User Info Display -->
@@ -32,8 +45,10 @@
           class="btn btn-outline-light btn-sm"
           @click="clearUser"
           :disabled="loading"
+          :aria-label="`Clear user ${currentUser.alias_name}`"
+          title="Clear user"
         >
-          <i class="bi bi-x"></i>
+          <i class="bi bi-x" aria-hidden="true"></i>
         </button>
       </div>
     </div>
@@ -46,8 +61,9 @@
             class="btn btn-primary btn-action w-100"
             @click="handleRecordEntry(currentUser.suggestedType || 'Regular')"
             :disabled="loading"
+            :aria-label="`Record ${currentUser.suggestedType || 'Regular'} entry for ${currentUser.alias_name}`"
           >
-            <i class="bi bi-plus-circle me-1"></i>
+            <i class="bi bi-plus-circle me-1" aria-hidden="true"></i>
             Record {{ currentUser.suggestedType || 'Regular' }} Entry
           </button>
         </div>
@@ -84,6 +100,8 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
+import { validationService } from '../services/validationService'
+import { errorService } from '../services/errorService'
 
 interface User {
   id: number
@@ -126,10 +144,30 @@ const handleInput = () => {
 
 const handleScan = () => {
   const userid = barcodeValue.value.trim()
-  if (userid && !props.loading) {
-    emit('user-scanned', userid)
-    barcodeValue.value = ''
+
+  if (!userid || props.loading) {
+    return
   }
+
+  // Validate barcode input
+  const validation = validationService.validateBarcodeInput(userid)
+  if (!validation.isValid) {
+    errorService.logWarning(`Invalid barcode input: ${validation.errors.join(', ')}`, {
+      component: 'Scanner',
+      action: 'handleScan',
+      additionalData: { userid }
+    })
+
+    // Show user-friendly error message
+    ;(window as any).Toast?.show(`Invalid barcode: ${validation.errors.join(', ')}`, 'error')
+    barcodeValue.value = ''
+    return
+  }
+
+  // Use sanitized data
+  const sanitizedUserid = validation.sanitizedData
+  emit('user-scanned', sanitizedUserid)
+  barcodeValue.value = ''
 }
 
 const handleRecordEntry = (type: string) => {

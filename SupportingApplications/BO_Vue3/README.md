@@ -5,13 +5,17 @@ A Vue.js 3 Progressive Web Application for offline-first attendance management t
 ## 🚀 Features
 
 - **Offline-First Design**: Works completely offline after initial sync
-- **SQLite Database**: Uses `sql.js` for in-memory SQLite database
-- **Barcode Scanning**: Scan user barcodes for clock in/out
-- **Smart Attendance Logic**: Automatically detects if user is already clocked in
+- **Smart Storage**: Uses localStorage with fallback to in-memory storage
+- **Barcode Scanning**: Scan user barcodes for attendance entry
+- **Data Validation**: Comprehensive input validation and sanitization
+- **Error Handling**: Robust error handling with user-friendly messages
 - **BlueOrange Integration**: Syncs users and attendances with BlueOrange backend
 - **PWA Support**: Installable as a Progressive Web App
+- **Mobile Optimized**: Touch-friendly interface with responsive design
+- **Accessibility**: ARIA labels, keyboard navigation, and screen reader support
 - **Auto-Import**: Configured with `unplugin-auto-import` and `unplugin-vue-components`
 - **TypeScript**: Full TypeScript support with type safety
+- **Testing**: Comprehensive test suite with Vitest
 
 ## 📋 Prerequisites
 
@@ -35,13 +39,17 @@ A Vue.js 3 Progressive Web Application for offline-first attendance management t
 
 3. **Configure environment variables:**
    ```bash
-   cp .env.example .env
+   cp env.example .env
    ```
    
    Edit `.env` file with your BlueOrange API configuration:
    ```env
    VITE_API_BASE_URL=http://blueorange.test/api
    VITE_API_TIMEOUT=10000
+   VITE_APP_NAME=BlueOrange Offline Attendance
+   VITE_APP_VERSION=1.0.0
+   VITE_DB_NAME=blueorange_offline
+   VITE_DEBUG_MODE=false
    ```
 
 4. **Start development server:**
@@ -171,6 +179,19 @@ BlueOrange DB → Initial Sync → Persistent SQLite (IndexedDB) → Offline Usa
 - **✅ Data Validation**: Prevents duplicates and validates all data
 - **🔄 Conflict Resolution**: Handles sync conflicts gracefully
 - **📊 Real-time Stats**: Shows users, attendances, and sync status
+
+## 🧪 Testing
+
+```bash
+# Run tests
+pnpm test
+
+# Run tests with UI
+pnpm test:ui
+
+# Run tests with coverage
+pnpm test:coverage
+```
 
 ## 🚀 Building for Production
 

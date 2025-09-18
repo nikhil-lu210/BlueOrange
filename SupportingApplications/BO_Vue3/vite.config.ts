@@ -17,10 +17,8 @@ export default defineConfig({
     AutoImport({
       imports: [
         'vue',
-        'vue-router',
         'pinia',
         {
-          'vue-router': ['useRouter', 'useRoute'],
           'pinia': ['defineStore', 'storeToRefs'],
           'vue': ['ref', 'computed', 'reactive', 'watch', 'onMounted', 'onUnmounted', 'nextTick']
         }
@@ -93,7 +91,7 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ['sql.js']
+    include: []
   },
   server: {
     headers: {

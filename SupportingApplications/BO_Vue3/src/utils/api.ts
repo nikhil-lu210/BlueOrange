@@ -1,11 +1,11 @@
 // API utility for communicating with Laravel backend
 import { getServerName } from './constants'
+import { errorService } from '../services/errorService'
+import { validationService } from '../services/validationService'
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://blueorange.test/api'
 const API_TIMEOUT = import.meta.env.VITE_API_TIMEOUT || 60000
 const API_ENDPOINTS = {
-  getUser: '/offline-attendance/user',
-  getUserStatus: '/offline-attendance/user',
   getAllUsers: '/offline-attendance/users',
   syncAttendances: '/offline-attendance/sync'
 }
@@ -19,7 +19,7 @@ class API {
 
   private async makeRequest(endpoint: string, options: RequestInit = {}): Promise<any> {
     const url = `${this.baseURL}${endpoint}`
-    console.log(`🌐 Making API request to: ${url}`)
+    errorService.logInfo(`Making API request to: ${url}`)
 
     const defaultOptions: RequestInit = {
       headers: {
@@ -34,7 +34,7 @@ class API {
       // Add timeout using AbortController
       const controller = new AbortController()
       const timeoutId = setTimeout(() => {
-        console.log(`⏰ Request timeout after ${API_TIMEOUT}ms for: ${url}`)
+        errorService.logWarning(`Request timeout after ${API_TIMEOUT}ms for: ${url}`)
         controller.abort()
       }, API_TIMEOUT)
 
@@ -47,86 +47,113 @@ class API {
 
       if (!response.ok) {
         const errorText = await response.text()
-        console.error(`❌ HTTP error! status: ${response.status}, response: ${errorText}`)
-        throw new Error(`HTTP error! status: ${response.status} - ${errorText}`)
+        const error = new Error(`HTTP error! status: ${response.status} - ${errorText}`)
+        errorService.logError(error, { action: 'api_request', additionalData: { url, status: response.status } })
+        throw error
       }
 
       const data = await response.json()
-      console.log(`✅ API request successful: ${url}`)
+      errorService.logInfo(`API request successful: ${url}`)
       return data
     } catch (error) {
-      if (error.name === 'AbortError') {
-        const timeoutError = new Error(`Request timeout after ${API_TIMEOUT}ms`)
-        console.error(`⏰ ${timeoutError.message} for: ${url}`)
-        throw timeoutError
-      }
-      if (error.name === 'TypeError' && error.message.includes('fetch')) {
-        const connectionError = new Error(`Cannot connect to ${getServerName()} server. Please check if the server is running at ${this.baseURL}`)
-        console.error(`🔌 ${connectionError.message}`)
-        throw connectionError
-      }
-      console.error('❌ API request failed:', error)
-      throw error
-    }
-  }
-
-  async getUser(userid: string): Promise<any> {
-    try {
-      const response = await this.makeRequest(`${API_ENDPOINTS.getUser}/${userid}`)
-
-      if (response.success && response.data) {
-        return response.data
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          const timeoutError = new Error(`Request timeout after ${API_TIMEOUT}ms`)
+          errorService.logError(timeoutError, { action: 'api_timeout', additionalData: { url } })
+          throw timeoutError
+        }
+        if (error.name === 'TypeError' && error.message.includes('fetch')) {
+          const connectionError = new Error(`Cannot connect to ${getServerName()} server. Please check if the server is running at ${this.baseURL}`)
+          errorService.logError(connectionError, { action: 'api_connection', additionalData: { url } })
+          throw connectionError
+        }
+        errorService.logError(error, { action: 'api_request', additionalData: { url } })
+        throw error
       } else {
-        throw new Error(response.message || 'User not found')
+        const unknownError = new Error('Unknown error occurred')
+        errorService.logError(unknownError, { action: 'api_request', additionalData: { url } })
+        throw unknownError
       }
-    } catch (error) {
-      console.error('Failed to get user:', error)
-      throw error
     }
   }
 
-  async getUserAttendanceStatus(userid: string): Promise<any> {
-    try {
-      const response = await this.makeRequest(`${API_ENDPOINTS.getUser}/${userid}/status`)
-
-      if (response.success && response.data) {
-        return response.data
-      } else {
-        throw new Error(response.message || 'Failed to get user status')
-      }
-    } catch (error) {
-      console.error('Failed to get user attendance status:', error)
-      throw error
-    }
-  }
 
   async getAllUsers(): Promise<any[]> {
     try {
       const response = await this.makeRequest(API_ENDPOINTS.getAllUsers)
 
+      // Validate API response
+      const validation = validationService.validateApiResponse(response, ['success', 'data'])
+      if (!validation.isValid) {
+        throw new Error(`Invalid API response: ${validation.errors.join(', ')}`)
+      }
+
       if (response.success && response.data) {
-        return response.data
+        // Validate and sanitize user data
+        const sanitizedUsers = response.data.map((user: any) => {
+          const userValidation = validationService.validateUserData({
+            userid: user.userid,
+            name: user.name,
+            alias_name: user.alias_name
+          })
+
+          if (!userValidation.isValid) {
+            errorService.logWarning(`Invalid user data: ${userValidation.errors.join(', ')}`, {
+              action: 'validate_user_data',
+              userid: user.userid
+            })
+          }
+
+          return userValidation.sanitizedData || user
+        })
+
+        return sanitizedUsers
       } else {
         throw new Error(response.message || 'Failed to get users')
       }
     } catch (error) {
-      console.error('Failed to get all users:', error)
+      const errorToLog = error instanceof Error ? error : new Error('Unknown error occurred')
+      errorService.logError(errorToLog, { action: 'get_all_users' })
       throw error
     }
   }
 
   async syncAttendances(attendances: any[]): Promise<any> {
     try {
+      // Validate attendance data before sending
+      const validatedAttendances = attendances.map(att => {
+        const validation = validationService.validateAttendanceData({
+          user_id: att.user_id,
+          type: att.type,
+          entry_date_time: att.entry_date_time
+        })
+
+        if (!validation.isValid) {
+          errorService.logWarning(`Invalid attendance data: ${validation.errors.join(', ')}`, {
+            action: 'validate_attendance_data',
+            userId: att.user_id
+          })
+        }
+
+        return validation.sanitizedData || att
+      })
+
       const response = await this.makeRequest(API_ENDPOINTS.syncAttendances, {
         method: 'POST',
         body: JSON.stringify({
-          attendances: attendances.map(att => ({
+          attendances: validatedAttendances.map(att => ({
             user_id: att.user_id,
             entry_date_time: att.entry_date_time,
             type: att.type
           }))
         })
       })
+
+      // Validate API response
+      const validation = validationService.validateApiResponse(response, ['success'])
+      if (!validation.isValid) {
+        throw new Error(`Invalid API response: ${validation.errors.join(', ')}`)
+      }
 
       if (response.success) {
         return {
@@ -140,19 +167,21 @@ class API {
         throw new Error(response.message || 'Sync failed')
       }
     } catch (error) {
-      console.error('Failed to sync attendances:', error)
+      const errorToLog = error instanceof Error ? error : new Error('Unknown error occurred')
+      errorService.logError(errorToLog, { action: 'sync_attendances' })
       throw error
     }
   }
 
   async testConnection(): Promise<boolean> {
     try {
-      console.log(`🔍 Testing connection to ${getServerName()} server...`)
+      errorService.logInfo(`Testing connection to ${getServerName()} server...`)
       await this.makeRequest('/offline-attendance/users', { method: 'GET' })
-      console.log('✅ Connection test successful')
+      errorService.logInfo('Connection test successful')
       return true
     } catch (error) {
-      console.log('❌ Connection test failed:', error.message)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      errorService.logWarning(`Connection test failed: ${errorMessage}`)
       return false
     }
   }

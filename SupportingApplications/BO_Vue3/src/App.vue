@@ -98,6 +98,7 @@ import Toast from './components/Toast.vue'
 import { smartDbService as dbService } from './services/smartDb'
 import { syncService } from './services/syncService'
 import { workflowService } from './services/workflowService'
+import { errorService } from './services/errorService'
 import { APP_NAME, getServerName } from './utils/constants'
 
 // Stores
@@ -287,6 +288,9 @@ const loadAttendanceData = async () => {
 // Initialize
 onMounted(async () => {
   try {
+    // Initialize error service first
+    errorService.init()
+
     // Initialize the app using workflow service
     const status = await workflowService.initializeApp()
 
