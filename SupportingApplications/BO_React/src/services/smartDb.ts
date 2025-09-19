@@ -1,6 +1,7 @@
 // Smart database service for React that uses simple localStorage with fallback
 import { simpleStorageService } from './simpleStorage'
 import { mockDbService } from './mockDb'
+import type { Attendance } from '../types'
 
 class SmartDatabaseService {
   private useMock = false
@@ -48,6 +49,14 @@ class SmartDatabaseService {
   }
 
   async updateUser(id: number, userData: any): Promise<void> {
+    await this.init()
+    return this.getService().updateUser(id, userData)
+  }
+
+  // Attendance operations
+  async addAttendance(attendanceData: Attendance): Promise<Attendance> {
+    await this.init()
+    return this.getService().addAttendance(attendanceData)
     await this.init()
     return this.getService().updateUser(id, userData)
   }

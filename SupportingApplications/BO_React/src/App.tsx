@@ -14,12 +14,13 @@ import { workflowService } from './services/workflowService';
 
 export default function App() {
   // Use proper Zustand selectors for reactive updates
-  const attendances = useAttendanceStore((state) => state.attendances);
-  const unsyncedCount = useAttendanceStore((state) => state.unsyncedCount || 0);
-  const totalCount = useAttendanceStore((state) => state.totalCount || 0);
-  const syncedCount = useAttendanceStore((state) => state.syncedCount || 0);
+  const attendanceStore = useAttendanceStore();
+  const usersStore = useUsersStore();
 
-  const users = useUsersStore((state) => state.users);
+  const attendances = attendanceStore.attendances;
+  const unsyncedCount = attendanceStore.unsyncedCount || 0;
+  const totalCount = attendanceStore.totalCount || 0;
+  const syncedCount = attendanceStore.syncedCount || 0;
 
   const {
     isOnline,
@@ -35,7 +36,8 @@ export default function App() {
 
   const deleteAttendance = async (id: number) => {
     try {
-      await useAttendanceStore.getState().deleteAttendance(id);
+      await attendanceStore.deleteAttendance(id);
+      await reloadData();
       window.Toast?.show('Attendance record deleted', 'success');
     } catch (e) {
       console.error(e);
@@ -45,7 +47,7 @@ export default function App() {
 
   const clearAllAttendances = async () => {
     try {
-      await useAttendanceStore.getState().clearAll();
+      await attendanceStore.clearAll();
       window.Toast?.show('All attendance records cleared', 'success');
     } catch (e) {
       console.error(e);
@@ -53,12 +55,18 @@ export default function App() {
     }
   };
 
+  const reloadData = async () => {
+    await Promise.all([
+      attendanceStore.loadAttendances(),
+      usersStore.loadUsers()
+    ]);
+  };
+
   useEffect(() => {
     (async () => {
       try {
         const status = await workflowService.initializeApp();
-        await useAttendanceStore.getState().loadAttendances();
-        await useUsersStore.getState().loadUsers();
+        await reloadData();
 
         if (navigator.onLine && !status.hasUsers) {
           await syncActiveUsers();
@@ -70,14 +78,27 @@ export default function App() {
     })();
   }, []);
 
+  // Monitor unsyncedCount changes to show sync notification
+  useEffect(() => {
+    if (unsyncedCount > 0 && isOnline) {
+      window.Toast?.show('You have unsynced attendance records. Click "Sync Attendances" to upload them.', 'info');
+    }
+  }, [unsyncedCount, isOnline]);
+
   return (
     <div id="app">
       <NavBar
         isOnline={isOnline}
         loading={loading}
         unsyncedCount={unsyncedCount}
-        onSyncActiveUsers={syncActiveUsers}
-        onSyncAttendances={syncAttendances}
+        onSyncActiveUsers={async () => {
+          const result = await syncActiveUsers();
+          if (result) await reloadData();
+        }}
+        onSyncAttendances={async () => {
+          const result = await syncAttendances();
+          if (result) await reloadData();
+        }}
       />
 
       <div className="container-fluid mt-4">
@@ -93,7 +114,7 @@ export default function App() {
               total={totalCount}
               pending={unsyncedCount}
               synced={syncedCount}
-              users={users.length}
+              users={usersStore.users.length}
             />
           </div>
         </div>

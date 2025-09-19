@@ -24,16 +24,23 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
     set({ attendances: data })
   },
 
-  addAttendance: async (attendanceData: any) => {
-    // Compatibility shim with Vue store
+  addAttendance: async (attendanceData: Attendance) => {
+    // Save the attendance data to the database
+    const savedAttendance = await dbService.addAttendance(attendanceData)
+    // Reload the attendances to update the state
     await get().loadAttendances()
-    return attendanceData
+    return savedAttendance
   },
 
-  syncAttendances: async () => {
+  syncAttendances: async (): Promise<SyncResult> => {
     const unsynced = await dbService.getUnsyncedAttendances()
     if (unsynced.length === 0) {
-      return { success: true, syncedCount: 0, totalCount: 0, message: 'No records to sync' }
+      return {
+        success: true,
+        syncedCount: 0,
+        totalCount: 0,
+        message: 'No records to sync'
+      }
     }
 
     const api = new API()
@@ -46,7 +53,14 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
       await get().loadAttendances()
     }
 
-    return result
+    // Ensure result matches SyncResult type
+    return {
+      success: result.success,
+      message: result.message || 'Sync completed',
+      syncedCount: result.syncedCount || 0,
+      totalCount: result.totalCount || 0,
+      errors: result.errors
+    }
   },
 
   deleteAttendance: async (id: number) => {

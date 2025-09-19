@@ -27,8 +27,8 @@ export interface Status {
 export interface SyncResult {
   success: boolean;
   message: string;
-  syncedCount?: number;
-  totalCount?: number;
+  syncedCount: number;
+  totalCount: number;
   errors?: string[];
 }
 

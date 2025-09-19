@@ -6,16 +6,16 @@ export const ToastContainer: React.FC = () => {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const nextIdRef = useRef(1);
 
+  const removeToast = (id: number) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  };
+
   useEffect(() => {
     const show = (message: string, type: ToastType = 'info') => {
       const id = nextIdRef.current++;
       const toast = { id, type, message };
       setToasts((prev) => [...prev, toast]);
       window.setTimeout(() => removeToast(id), 5000);
-    };
-
-    const removeToast = (id: number) => {
-      setToasts((prev) => prev.filter((t) => t.id !== id));
     };
 
     window.Toast = { show };
@@ -50,6 +50,12 @@ export const ToastContainer: React.FC = () => {
           <div className="toast-header">
             <i className={`bi me-2 ${getIcon(toast.type)}`}></i>
             <strong className="me-auto">{getTitle(toast.type)}</strong>
+            <button
+              type="button"
+              className="btn-close btn-sm"
+              onClick={() => removeToast(toast.id)}
+              aria-label="Close"
+            ></button>
           </div>
           <div className="toast-body">{toast.message}</div>
         </div>

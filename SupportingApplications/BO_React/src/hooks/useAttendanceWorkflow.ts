@@ -2,8 +2,13 @@ import { useState, useEffect } from 'react';
 import { workflowService } from '../services/workflowService';
 import type { User, AttendanceType, Status } from '../types';
 import { getServerName } from '../utils/constants';
+import { useAttendanceStore } from '../stores/attendance';
+import { useUsersStore } from '../stores/users';
 
 export const useAttendanceWorkflow = () => {
+  const attendanceStore = useAttendanceStore();
+  const usersStore = useUsersStore();
+  
   const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
   const [currentUser, setCurrentUser] = useState<(User & { suggestedType?: AttendanceType }) | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,6 +47,7 @@ export const useAttendanceWorkflow = () => {
       if (result.success) {
         updateStatus(result.message, 'success');
         setCurrentUser(null);
+        await attendanceStore.loadAttendances();
         window.Toast?.show('Entry recorded successfully', 'success');
         return true;
       } else {
@@ -62,7 +68,7 @@ export const useAttendanceWorkflow = () => {
   const syncActiveUsers = async () => {
     if (!isOnline) {
       updateStatus('No internet connection. Working offline.', 'warning');
-      return;
+      return null;
     }
     try {
       setLoading(true);
@@ -70,6 +76,11 @@ export const useAttendanceWorkflow = () => {
       const result = await workflowService.syncActiveUsers((progress) => {
         updateStatus(progress.message, 'loading');
       });
+      
+      if (result.totalUsers > 0) {
+        await usersStore.downloadAllUsers();
+      }
+      
       updateStatus(`Active users sync completed: ${result.totalUsers} users synced`, 'success');
       window.Toast?.show(`Synced ${result.totalUsers} active users from ${getServerName()}`, 'success');
       return result;
@@ -86,12 +97,12 @@ export const useAttendanceWorkflow = () => {
   const syncAttendances = async () => {
     if (!isOnline) {
       updateStatus('No internet connection', 'error');
-      return;
+      return null;
     }
     try {
       setLoading(true);
       updateStatus(`Syncing offline attendances to ${getServerName()}...`, 'loading');
-      const result = await workflowService.syncOfflineData();
+      const result = await attendanceStore.syncAttendances();
       if (result.success) {
         updateStatus(`Synced ${result.syncedCount} records to ${getServerName()}`, 'success');
         window.Toast?.show(`Successfully synced ${result.syncedCount} records`, 'success');
@@ -129,6 +140,17 @@ export const useAttendanceWorkflow = () => {
       window.removeEventListener('online', updateOnline);
       window.removeEventListener('offline', updateOnline);
     };
+  }, []);
+
+  useEffect(() => {
+    const loadData = async () => {
+      await Promise.all([
+        attendanceStore.loadAttendances(),
+        usersStore.loadUsers()
+      ]);
+    };
+
+    loadData();
   }, []);
 
   return {
