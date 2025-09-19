@@ -3,18 +3,24 @@ import './App.css';
 import './assets/css/app.css';
 import { NavBar } from './components/NavBar';
 import { StatusBar } from './components/StatusBar';
-import { StatsCards } from './components/StatsCards';
-import { ScannerPanel } from './components/ScannerPanel';
-import { AttendancePanel } from './components/AttendancePanel';
+import { DashboardStats } from './components/DashboardStats';
+import { BarcodeScanner } from './components/BarcodeScanner';
+import { AttendanceRecords } from './components/AttendanceRecords';
 import { ToastContainer } from './components/Toast';
-import { useAttendanceStore } from './bo/stores/attendance';
-import { useUsersStore } from './bo/stores/users';
+import { useAttendanceStore } from './stores/attendance';
+import { useUsersStore } from './stores/users';
 import { useAttendanceWorkflow } from './hooks/useAttendanceWorkflow';
-import { workflowService } from './bo/services/workflowService';
+import { workflowService } from './services/workflowService';
 
 export default function App() {
-  const attendanceStore = useAttendanceStore();
-  const usersStore = useUsersStore();
+  // Use proper Zustand selectors for reactive updates
+  const attendances = useAttendanceStore((state) => state.attendances);
+  const unsyncedCount = useAttendanceStore((state) => state.unsyncedCount || 0);
+  const totalCount = useAttendanceStore((state) => state.totalCount || 0);
+  const syncedCount = useAttendanceStore((state) => state.syncedCount || 0);
+
+  const users = useUsersStore((state) => state.users);
+
   const {
     isOnline,
     currentUser,
@@ -27,15 +33,9 @@ export default function App() {
     clearUser,
   } = useAttendanceWorkflow();
 
-  const attendances = attendanceStore.attendances;
-  const users = usersStore.users;
-  const unsyncedCount = attendanceStore.unsyncedCount || 0;
-  const totalCount = attendanceStore.totalCount || 0;
-  const syncedCount = attendanceStore.syncedCount || 0;
-
   const deleteAttendance = async (id: number) => {
     try {
-      await attendanceStore.deleteAttendance(id);
+      await useAttendanceStore.getState().deleteAttendance(id);
       window.Toast?.show('Attendance record deleted', 'success');
     } catch (e) {
       console.error(e);
@@ -45,7 +45,7 @@ export default function App() {
 
   const clearAllAttendances = async () => {
     try {
-      await attendanceStore.clearAll();
+      await useAttendanceStore.getState().clearAll();
       window.Toast?.show('All attendance records cleared', 'success');
     } catch (e) {
       console.error(e);
@@ -57,8 +57,8 @@ export default function App() {
     (async () => {
       try {
         const status = await workflowService.initializeApp();
-        await attendanceStore.loadAttendances();
-        await usersStore.loadUsers();
+        await useAttendanceStore.getState().loadAttendances();
+        await useUsersStore.getState().loadUsers();
 
         if (navigator.onLine && !status.hasUsers) {
           await syncActiveUsers();
@@ -89,7 +89,7 @@ export default function App() {
 
         <div className="row">
           <div className="col-md-12">
-            <StatsCards
+            <DashboardStats
               total={totalCount}
               pending={unsyncedCount}
               synced={syncedCount}
@@ -100,7 +100,7 @@ export default function App() {
 
         <div className="row">
           <div className="col-lg-4 col-md-6 mb-4">
-            <ScannerPanel
+            <BarcodeScanner
               currentUser={currentUser}
               loading={loading}
               onUserScanned={handleUserScanned}
@@ -109,7 +109,7 @@ export default function App() {
             />
           </div>
           <div className="col-lg-8 col-md-6">
-            <AttendancePanel
+            <AttendanceRecords
               attendances={attendances}
               loading={loading}
               onDeleteAttendance={deleteAttendance}

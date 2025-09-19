@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { User, AttendanceType } from '../types';
 
-interface ScannerPanelProps {
+interface BarcodeScannerProps {
   currentUser: (User & { suggestedType?: AttendanceType }) | null;
   loading: boolean;
   onUserScanned: (userid: string) => void;
@@ -9,7 +9,7 @@ interface ScannerPanelProps {
   onClearUser: () => void;
 }
 
-export const ScannerPanel: React.FC<ScannerPanelProps> = ({
+export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   currentUser,
   loading,
   onUserScanned,
@@ -57,11 +57,11 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({
     <div className="scanner-panel p-4">
       <h5 className="mb-3">
         <i className="bi bi-qr-code-scan me-2"></i>
-        Barcode Scanner
+        Employee Scanner
       </h5>
 
       <div className="mb-3">
-        <label htmlFor="barcodeInput" className="form-label">Scan or Enter User ID</label>
+        <label htmlFor="barcodeInput" className="form-label">Scan Employee ID or Enter Manually</label>
         <input
           id="barcodeInput"
           ref={inputRef}
@@ -69,8 +69,9 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({
           onChange={(e) => handleInput(e.target.value)}
           type="text"
           className="form-control barcode-input"
-          placeholder="Scan barcode or enter user ID"
+          placeholder="Scan employee barcode or type ID manually"
           disabled={loading}
+          autoComplete="off"
           onKeyUp={(e) => {
             if (e.key === 'Enter') handleScan();
           }}
@@ -92,7 +93,7 @@ export const ScannerPanel: React.FC<ScannerPanelProps> = ({
       ) : (
         <div className="text-muted small mt-3">
           <i className="bi bi-info-circle me-1"></i>
-          Scan a barcode or enter a user ID to begin
+          Scan an employee barcode or enter their ID to record attendance
         </div>
       )}
 

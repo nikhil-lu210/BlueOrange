@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { smartDbService as dbService } from '../services/smartDb';
 import type { Attendance, User } from '../types';
 
-interface AttendancePanelProps {
+interface AttendanceRecordsProps {
   attendances: Attendance[];
   loading: boolean;
   onDeleteAttendance: (id: number) => void;
   onClearAllAttendances: () => void;
 }
 
-export const AttendancePanel: React.FC<AttendancePanelProps> = ({
+export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
   attendances,
   loading,
   onDeleteAttendance,
@@ -55,8 +55,8 @@ export const AttendancePanel: React.FC<AttendancePanelProps> = ({
     <div className="attendance-panel p-4">
       <div className="d-flex align-items-center justify-content-between mb-3">
         <h5 className="mb-0">
-          <i className="bi bi-table me-2"></i>
-          Attendance Records
+          <i className="bi bi-clock-history me-2"></i>
+          Today's Attendance Records
         </h5>
         <div className="d-flex align-items-center gap-2">
           {attendances.length > 0 && (
@@ -76,9 +76,9 @@ export const AttendancePanel: React.FC<AttendancePanelProps> = ({
 
       {attendances.length === 0 ? (
         <div className="text-center text-muted py-4">
-          <i className="bi bi-inbox display-4 d-block mb-2"></i>
-          <p className="mb-0">No attendance records found</p>
-          <small>Scan a barcode to start recording attendance</small>
+          <i className="bi bi-clock-history display-4 d-block mb-2"></i>
+          <p className="mb-0">No attendance records for today</p>
+          <small>Scan an employee barcode to start recording attendance</small>
         </div>
       ) : (
         <div className="table-responsive">

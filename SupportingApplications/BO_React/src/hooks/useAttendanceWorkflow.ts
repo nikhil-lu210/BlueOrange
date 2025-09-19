@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react';
-import { workflowService } from '../bo/services/workflowService';
-import type { User, AttendanceType } from '../types';
-import { getServerName } from '../bo/utils/constants';
-
-interface Status {
-  message: string;
-  type: 'info' | 'success' | 'warning' | 'error' | 'loading';
-}
+import { workflowService } from '../services/workflowService';
+import type { User, AttendanceType, Status } from '../types';
+import { getServerName } from '../utils/constants';
 
 export const useAttendanceWorkflow = () => {
   const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);

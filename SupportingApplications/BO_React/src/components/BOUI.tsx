@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { smartDbService as dbService } from '../bo/services/smartDb'
+import { smartDbService as dbService } from '../services/smartDb'
 
 // ========== Types ==========
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
