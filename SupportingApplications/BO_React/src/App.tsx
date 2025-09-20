@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import './assets/css/app.css';
 import { NavBar } from './components/NavBar';
@@ -15,6 +15,9 @@ import { useAuthorization } from './hooks/useAuthorization';
 import { workflowService } from './services/workflowService';
 
 export default function App() {
+  // State for storing delete ID during authorization
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+
   // Use proper Zustand selectors for reactive updates
   const attendances = useAttendanceStore((state) => state.attendances);
   const unsyncedCount = useAttendanceStore((state) => state.unsyncedCount || 0);
@@ -52,6 +55,16 @@ export default function App() {
       console.error(e);
       window.Toast?.show('Failed to delete attendance record', 'error');
     }
+  };
+
+  // Authorized version of delete attendance
+  const handleDeleteAttendance = (id: number) => {
+    requestAuthorization(
+      'Delete Attendance Record',
+      'You need to authorize to delete this attendance record. This action cannot be undone and will permanently remove the record from your local database.'
+    );
+    // Store the ID to delete after authorization
+    setDeleteId(id);
   };
 
   const clearAllAttendances = async () => {
@@ -97,9 +110,14 @@ export default function App() {
         syncAttendances().finally(() => clearAuthorization());
       } else if (modalTitle === 'Clear All Records') {
         clearAllAttendances().finally(() => clearAuthorization());
+      } else if (modalTitle === 'Delete Attendance Record' && deleteId !== null) {
+        deleteAttendance(deleteId).finally(() => {
+          clearAuthorization();
+          setDeleteId(null);
+        });
       }
     }
-  }, [authorizedUser, modalTitle]); // Remove function dependencies to prevent infinite loop
+  }, [authorizedUser, modalTitle, deleteId]); // Added deleteId to dependencies
 
   useEffect(() => {
     (async () => {
@@ -159,7 +177,7 @@ export default function App() {
               <AttendanceRecords
                 attendances={attendances}
                 loading={loading}
-                onDeleteAttendance={deleteAttendance}
+                onDeleteAttendance={handleDeleteAttendance}
               />
           </div>
         </div>
