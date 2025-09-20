@@ -14,30 +14,25 @@ import { workflowService } from './services/workflowService';
 
 export default function App() {
   // Use proper Zustand selectors for reactive updates
-  const attendanceStore = useAttendanceStore();
-  const usersStore = useUsersStore();
-
-  const attendances = attendanceStore.attendances;
-  const unsyncedCount = attendanceStore.unsyncedCount || 0;
-  const totalCount = attendanceStore.totalCount || 0;
-  const syncedCount = attendanceStore.syncedCount || 0;
+  const attendances = useAttendanceStore((state) => state.attendances);
+  const unsyncedCount = useAttendanceStore((state) => state.unsyncedCount || 0);
+  const totalCount = useAttendanceStore((state) => state.totalCount || 0);
+  const syncedCount = useAttendanceStore((state) => state.syncedCount || 0);
+  const users = useUsersStore((state) => state.users);
 
   const {
     isOnline,
-    currentUser,
     loading,
     status,
-    handleUserScanned,
     handleRecordEntry,
     syncActiveUsers,
     syncAttendances,
-    clearUser,
   } = useAttendanceWorkflow();
 
   const deleteAttendance = async (id: number) => {
     try {
-      await attendanceStore.deleteAttendance(id);
-      await reloadData();
+      await useAttendanceStore.getState().deleteAttendance(id);
+      // Store state is already refreshed by deleteAttendance method
       window.Toast?.show('Attendance record deleted', 'success');
     } catch (e) {
       console.error(e);
@@ -47,7 +42,8 @@ export default function App() {
 
   const clearAllAttendances = async () => {
     try {
-      await attendanceStore.clearAll();
+      await useAttendanceStore.getState().clearAll();
+      // Store state is already refreshed by clearAll method
       window.Toast?.show('All attendance records cleared', 'success');
     } catch (e) {
       console.error(e);
@@ -55,18 +51,12 @@ export default function App() {
     }
   };
 
-  const reloadData = async () => {
-    await Promise.all([
-      attendanceStore.loadAttendances(),
-      usersStore.loadUsers()
-    ]);
-  };
-
   useEffect(() => {
     (async () => {
       try {
         const status = await workflowService.initializeApp();
-        await reloadData();
+        await useAttendanceStore.getState().loadAttendances();
+        await useUsersStore.getState().loadUsers();
 
         if (navigator.onLine && !status.hasUsers) {
           await syncActiveUsers();
@@ -78,27 +68,14 @@ export default function App() {
     })();
   }, []);
 
-  // Monitor unsyncedCount changes to show sync notification
-  useEffect(() => {
-    if (unsyncedCount > 0 && isOnline) {
-      window.Toast?.show('You have unsynced attendance records. Click "Sync Attendances" to upload them.', 'info');
-    }
-  }, [unsyncedCount, isOnline]);
-
   return (
     <div id="app">
       <NavBar
         isOnline={isOnline}
         loading={loading}
         unsyncedCount={unsyncedCount}
-        onSyncActiveUsers={async () => {
-          const result = await syncActiveUsers();
-          if (result) await reloadData();
-        }}
-        onSyncAttendances={async () => {
-          const result = await syncAttendances();
-          if (result) await reloadData();
-        }}
+        onSyncActiveUsers={syncActiveUsers}
+        onSyncAttendances={syncAttendances}
       />
 
       <div className="container-fluid mt-4">
@@ -114,7 +91,7 @@ export default function App() {
               total={totalCount}
               pending={unsyncedCount}
               synced={syncedCount}
-              users={usersStore.users.length}
+              users={users.length}
             />
           </div>
         </div>
@@ -122,11 +99,8 @@ export default function App() {
         <div className="row">
           <div className="col-lg-4 col-md-6 mb-4">
             <BarcodeScanner
-              currentUser={currentUser}
               loading={loading}
-              onUserScanned={handleUserScanned}
               onRecordEntry={handleRecordEntry}
-              onClearUser={clearUser}
             />
           </div>
           <div className="col-lg-8 col-md-6">

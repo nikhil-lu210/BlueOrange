@@ -2,15 +2,12 @@ import { useState, useEffect } from 'react';
 import { workflowService } from '../services/workflowService';
 import type { User, AttendanceType, Status } from '../types';
 import { getServerName } from '../utils/constants';
-import { useAttendanceStore } from '../stores/attendance';
+import { useStoreRefresh } from './useStoreRefresh';
 import { useUsersStore } from '../stores/users';
 
 export const useAttendanceWorkflow = () => {
-  const attendanceStore = useAttendanceStore();
-  const usersStore = useUsersStore();
-  
+  const { refreshAttendanceStore, refreshUsersStore } = useStoreRefresh();
   const [isOnline, setIsOnline] = useState<boolean>(typeof navigator !== 'undefined' ? navigator.onLine : true);
-  const [currentUser, setCurrentUser] = useState<(User & { suggestedType?: AttendanceType }) | null>(null);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<Status>({ message: 'Ready to scan attendance', type: 'info' });
 
@@ -18,36 +15,27 @@ export const useAttendanceWorkflow = () => {
     setStatus({ message, type });
   };
 
-  const handleUserScanned = async (userid: string) => {
+
+  const handleRecordEntry = async (userid: string, type: AttendanceType) => {
     try {
       setLoading(true);
       updateStatus('Looking up user...', 'loading');
-      const result = await workflowService.handleUserScan(userid);
-      if (result.action === 'not_found') {
-        setCurrentUser(null);
-        updateStatus(result.message, 'error');
-        return;
-      }
-      setCurrentUser(result.user);
-      updateStatus(result.message, 'success');
-    } catch (e) {
-      console.error(e);
-      setCurrentUser(null);
-      updateStatus('Error looking up user', 'error');
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const handleRecordEntry = async (type: AttendanceType) => {
-    if (!currentUser) return;
-    try {
-      setLoading(true);
-      const result = await workflowService.recordUserEntry(currentUser.id, type);
+      // First, check if user exists in local database
+      const user = await useUsersStore.getState().getUser(userid);
+      if (!user) {
+        updateStatus(`User ${userid} not found in local database. Please sync with ${getServerName()} first.`, 'error');
+        window.Toast?.show(`User ${userid} not found. Please sync users first.`, 'error');
+        return false;
+      }
+
+      updateStatus(`Recording ${type} entry for ${user.alias_name}...`, 'loading');
+      const result = await workflowService.recordUserEntry(user.id, type);
+
       if (result.success) {
         updateStatus(result.message, 'success');
-        setCurrentUser(null);
-        await attendanceStore.loadAttendances();
+        // Refresh store state to trigger UI update
+        await refreshAttendanceStore();
         window.Toast?.show('Entry recorded successfully', 'success');
         return true;
       } else {
@@ -66,24 +54,21 @@ export const useAttendanceWorkflow = () => {
   };
 
   const syncActiveUsers = async () => {
-    if (!isOnline) {
-      updateStatus('No internet connection. Working offline.', 'warning');
-      return null;
-    }
-    try {
-      setLoading(true);
-      updateStatus(`Syncing active users from ${getServerName()}...`, 'loading');
-      const result = await workflowService.syncActiveUsers((progress) => {
-        updateStatus(progress.message, 'loading');
-      });
-      
-      if (result.totalUsers > 0) {
-        await usersStore.downloadAllUsers();
+      if (!isOnline) {
+        updateStatus('No internet connection. Working offline.', 'warning');
+        return;
       }
-      
-      updateStatus(`Active users sync completed: ${result.totalUsers} users synced`, 'success');
-      window.Toast?.show(`Synced ${result.totalUsers} active users from ${getServerName()}`, 'success');
-      return result;
+      try {
+        setLoading(true);
+        updateStatus(`Syncing active users from ${getServerName()}...`, 'loading');
+        const result = await workflowService.syncActiveUsers((progress) => {
+          updateStatus(progress.message, 'loading');
+        });
+        updateStatus(`Active users sync completed: ${result.totalUsers} users synced`, 'success');
+        // Refresh store state to trigger UI update
+        await refreshUsersStore();
+        window.Toast?.show(`Synced ${result.totalUsers} active users from ${getServerName()}`, 'success');
+        return result;
     } catch (e) {
       console.error(e);
       updateStatus('Active users sync failed', 'error');
@@ -95,23 +80,25 @@ export const useAttendanceWorkflow = () => {
   };
 
   const syncAttendances = async () => {
-    if (!isOnline) {
-      updateStatus('No internet connection', 'error');
-      return null;
-    }
-    try {
-      setLoading(true);
-      updateStatus(`Syncing offline attendances to ${getServerName()}...`, 'loading');
-      const result = await attendanceStore.syncAttendances();
-      if (result.success) {
-        updateStatus(`Synced ${result.syncedCount} records to ${getServerName()}`, 'success');
-        window.Toast?.show(`Successfully synced ${result.syncedCount} records`, 'success');
-        return result;
-      } else {
-        updateStatus('Sync failed', 'error');
-        window.Toast?.show('Sync failed: ' + (result.message || ''), 'error');
-        return null;
+      if (!isOnline) {
+        updateStatus('No internet connection', 'error');
+        return;
       }
+      try {
+        setLoading(true);
+        updateStatus(`Syncing offline attendances to ${getServerName()}...`, 'loading');
+        const result = await workflowService.syncOfflineData();
+        if (result.success) {
+          updateStatus(`Synced ${result.syncedCount} records to ${getServerName()}`, 'success');
+          // Refresh store state to trigger UI update
+          await refreshAttendanceStore();
+          window.Toast?.show(`Successfully synced ${result.syncedCount} records`, 'success');
+          return result;
+        } else {
+          updateStatus('Sync failed', 'error');
+          window.Toast?.show('Sync failed: ' + (result.message || ''), 'error');
+          return null;
+        }
     } catch (e) {
       console.error(e);
       updateStatus('Sync failed', 'error');
@@ -122,10 +109,6 @@ export const useAttendanceWorkflow = () => {
     }
   };
 
-  const clearUser = () => {
-    setCurrentUser(null);
-    updateStatus('Ready to scan attendance', 'info');
-  };
 
   useEffect(() => {
     const updateOnline = () => {
@@ -142,26 +125,13 @@ export const useAttendanceWorkflow = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const loadData = async () => {
-      await Promise.all([
-        attendanceStore.loadAttendances(),
-        usersStore.loadUsers()
-      ]);
-    };
-
-    loadData();
-  }, []);
 
   return {
     isOnline,
-    currentUser,
     loading,
     status,
-    handleUserScanned,
     handleRecordEntry,
     syncActiveUsers,
     syncAttendances,
-    clearUser,
   };
 };

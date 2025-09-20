@@ -5,31 +5,37 @@ import type { Attendance, SyncResult } from '../types'
 
 interface AttendanceState {
   attendances: Attendance[]
+  unsyncedCount: number
+  totalCount: number
+  syncedCount: number
   loadAttendances: () => Promise<void>
   addAttendance: (attendanceData: Attendance) => Promise<Attendance>
   syncAttendances: () => Promise<SyncResult>
   deleteAttendance: (id: number) => Promise<void>
   clearAll: () => Promise<void>
-  // Computed values - these will be calculated from attendances array
-  get unsyncedCount(): number
-  get totalCount(): number
-  get syncedCount(): number
 }
 
 export const useAttendanceStore = create<AttendanceState>((set, get) => ({
   attendances: [],
+  unsyncedCount: 0,
+  totalCount: 0,
+  syncedCount: 0,
 
   loadAttendances: async () => {
     const data = await dbService.getAllAttendances()
-    set({ attendances: data })
+    set({
+      attendances: data,
+      totalCount: data.length,
+      unsyncedCount: data.filter((a: Attendance) => !a.synced).length,
+      syncedCount: data.filter((a: Attendance) => a.synced).length
+    })
   },
 
   addAttendance: async (attendanceData: Attendance) => {
-    // Save the attendance data to the database
-    const savedAttendance = await dbService.addAttendance(attendanceData)
-    // Reload the attendances to update the state
+    // This method is used for compatibility, but actual attendance recording
+    // is done through the workflow service
     await get().loadAttendances()
-    return savedAttendance
+    return attendanceData
   },
 
   syncAttendances: async (): Promise<SyncResult> => {
@@ -73,16 +79,4 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
     await get().loadAttendances()
   },
 
-  // Computed getters - these will automatically update when attendances change
-  get unsyncedCount() {
-    return get().attendances.filter((a: Attendance) => !a.synced).length
-  },
-
-  get totalCount() {
-    return get().attendances.length
-  },
-
-  get syncedCount() {
-    return get().attendances.filter((a: Attendance) => a.synced).length
-  }
 }))
