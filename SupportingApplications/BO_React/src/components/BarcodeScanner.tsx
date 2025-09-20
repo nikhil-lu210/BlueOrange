@@ -136,8 +136,8 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
             value={userid}
             onChange={(e) => setUserid(e.target.value)}
             onKeyDown={handleKeyDown}
-            onPaste={handlePaste}
-            onContextMenu={handleContextMenu}
+            // onPaste={handlePaste}
+            // onContextMenu={handleContextMenu}
             className="form-control"
             placeholder="20010101"
             disabled={loading}

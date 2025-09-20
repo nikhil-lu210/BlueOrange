@@ -6,14 +6,12 @@ interface AttendanceRecordsProps {
   attendances: Attendance[];
   loading: boolean;
   onDeleteAttendance: (id: number) => void;
-  onClearAllAttendances: () => void;
 }
 
 export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
   attendances,
   loading,
   onDeleteAttendance,
-  onClearAllAttendances,
 }) => {
   const [users, setUsers] = useState<User[]>([]);
 
@@ -59,17 +57,6 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
           Today's Attendance Records
         </h5>
         <div className="d-flex align-items-center gap-2">
-          {attendances.length > 0 && (
-            <button
-              className="btn btn-outline-danger btn-sm"
-              onClick={() => !loading && onClearAllAttendances()}
-              disabled={loading}
-              title="Clear all attendance records"
-            >
-              <i className="bi bi-trash"></i>
-              {" "}Clear All
-            </button>
-          )}
           {loading && <div className="loading-spinner"></div>}
         </div>
       </div>

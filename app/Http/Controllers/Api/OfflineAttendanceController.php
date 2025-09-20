@@ -13,9 +13,87 @@ use App\Services\Administration\Attendance\AttendanceEntryService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class OfflineAttendanceController extends Controller
 {
+    /**
+     * Authorize user for sensitive operations (Sync from, Sync to, Clear All)
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function authorizeUser(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'email' => 'required|email',
+                'password' => 'required|string'
+            ]);
+
+            $email = $request->input('email');
+            $password = $request->input('password');
+
+            // Find user by email
+            $user = User::where('email', $email)
+                ->where('status', 'Active')
+                ->first();
+
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found or inactive',
+                    'data' => null
+                ], 404);
+            }
+
+            // Verify password
+            if (!Hash::check($password, $user->password)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid credentials',
+                    'data' => null
+                ], 401);
+            }
+
+            // Check if user has "Attendance Create" permission
+            $hasPermission = $user->hasPermissionTo('Attendance Create');
+
+            if (!$hasPermission) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'You do not have permission to perform this action',
+                    'data' => null
+                ], 403);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Authorization successful',
+                'data' => [
+                    'user_id' => $user->id,
+                    'name' => $user->name,
+                    'email' => $user->email,
+                    'permissions' => ['Attendance Create']
+                ]
+            ]);
+
+        } catch (Exception $e) {
+            Log::error('Offline Attendance API: Authorization error', [
+                'email' => $request->input('email'),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Authorization failed: ' . $e->getMessage(),
+                'data' => null
+            ], 500);
+        }
+    }
+
     /**
      * Get user data by userid for offline sync
      *
@@ -173,6 +251,7 @@ class OfflineAttendanceController extends Controller
             $attendances = $request->input('attendances', []);
             $syncedCount = 0;
             $errors = [];
+            $syncedRecordIds = []; // Track which specific records were successfully synced
 
             $startTime = microtime(true);
 
@@ -191,8 +270,9 @@ class OfflineAttendanceController extends Controller
             $userLookup = $users->keyBy('id');
             $useridLookup = $users->keyBy('userid');
 
-            foreach ($attendances as $attendanceData) {
+            foreach ($attendances as $index => $attendanceData) {
                 try {
+                    $originalIndex = $index; // Store the original index for tracking
 
                     // Validate required fields - support both old and new format
                     if (!isset($attendanceData['user_id']) && !isset($attendanceData['userid'])) {
@@ -225,6 +305,7 @@ class OfflineAttendanceController extends Controller
                         $attendance = $this->processEntryRecord($user, $type, $entryDateTime);
 
                         $syncedCount++;
+                        $syncedRecordIds[] = $originalIndex; // Track this record as successfully synced
                     } else {
                         // Handle legacy format - convert to entry format
                         // Convert legacy format to entry format
@@ -244,6 +325,7 @@ class OfflineAttendanceController extends Controller
 
                         $attendance = $this->processEntryRecord($user, $type, $entryDateTime);
                         $syncedCount++;
+                        $syncedRecordIds[] = $originalIndex; // Track this record as successfully synced
                     }
                 } catch (Exception $e) {
                     $userId = $attendanceData['user_id'] ?? $attendanceData['userid'] ?? 'unknown';
@@ -270,6 +352,7 @@ class OfflineAttendanceController extends Controller
                 'data' => [
                     'synced_count' => $syncedCount,
                     'total_count' => count($attendances),
+                    'synced_record_ids' => $syncedRecordIds, // Array of original indices that were successfully synced
                     'errors' => $errors
                 ]
             ], $allSynced ? 200 : 422);

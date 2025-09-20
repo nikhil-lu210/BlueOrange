@@ -7,9 +7,9 @@ import { useUsersStore } from '../stores/users';
  * This ensures UI updates automatically after operations
  */
 export const useStoreRefresh = () => {
-  const refreshAttendanceStore = useCallback(async () => {
-    await useAttendanceStore.getState().loadAttendances();
-  }, []);
+         const refreshAttendanceStore = useCallback(async () => {
+           await useAttendanceStore.getState().loadAttendances();
+         }, []);
 
   const refreshUsersStore = useCallback(async () => {
     await useUsersStore.getState().loadUsers();

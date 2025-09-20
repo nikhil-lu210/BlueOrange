@@ -38,16 +38,8 @@ class SyncService {
     try {
       console.log(`Starting active users sync from ${getServerName()}...`)
 
-      const api = new API()
-      const isConnected = await api.testConnection()
-      if (!isConnected) {
-        return {
-          success: false,
-          message: `Cannot connect to ${getServerName()} server. Please check if the server is running and accessible.`,
-          usersSynced: 0,
-          attendancesSynced: 0
-        }
-      }
+      // Remove testConnection call to prevent unnecessary requests
+      // The actual API call will handle connection errors
 
       const usersResult = await this.syncUsers()
       if (!usersResult.success) {
@@ -62,6 +54,7 @@ class SyncService {
         errors: usersResult.errors || []
       }
     } catch (error: any) {
+      console.error('Error in syncActiveUsers:', error);
       return {
         success: false,
         message: `Sync failed: ${error?.message || 'Unknown error'}`,
@@ -114,6 +107,7 @@ class SyncService {
         errors: errors.length > 0 ? errors : undefined
       }
     } catch (error: any) {
+      console.error('Error in syncUsers:', error);
       return {
         success: false,
         message: `Failed to sync users: ${error?.message || 'Unknown error'}`,
@@ -133,14 +127,8 @@ class SyncService {
 
     try {
       const api = new API()
-      const isConnected = await api.testConnection()
-      if (!isConnected) {
-        return {
-          success: false,
-          message: `Cannot connect to ${getServerName()} server. Please check if the server is running and accessible.`,
-          attendancesSynced: 0
-        }
-      }
+      // Remove testConnection call to prevent unnecessary requests
+      // The actual API call will handle connection errors
 
       const unsyncedAttendances = await dbService.getUnsyncedAttendances()
       if (unsyncedAttendances.length === 0) {
@@ -155,11 +143,34 @@ class SyncService {
 
       const result = await api.syncAttendances(attendancesToSync)
 
-      if (result.success) {
-        for (let i = 0; i < result.syncedCount; i++) {
-          await dbService.markAttendanceAsSynced(unsyncedAttendances[i].id)
+      // Handle both complete success and partial success (some records synced, some failed)
+      if (result.success || result.syncedCount > 0) {
+        // For partial success, we need to be more careful about which records to mark as synced
+        // The backend processes records sequentially, so the first N records that didn't error should be marked as synced
+
+        // Mark only the specifically synced records as synced in local database
+        if (result.syncedRecordIds && result.syncedRecordIds.length > 0) {
+          // Use the specific record IDs returned by the backend
+          for (const recordIndex of result.syncedRecordIds) {
+            if (recordIndex < unsyncedAttendances.length) {
+              await dbService.markAttendanceAsSynced(unsyncedAttendances[recordIndex].id)
+            }
+          }
+        } else if (result.success) {
+          // Fallback: if no specific IDs but complete success, mark all records as synced
+          for (const attendance of unsyncedAttendances) {
+            await dbService.markAttendanceAsSynced(attendance.id)
+          }
         }
-        return { success: true, message: `Successfully synced ${result.syncedCount} attendances`, attendancesSynced: result.syncedCount, errors: result.errors }
+
+        // Add a small delay to ensure localStorage operations complete
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        if (result.success) {
+          return { success: true, message: `Successfully synced ${result.syncedCount} attendances`, attendancesSynced: result.syncedCount, errors: result.errors }
+        } else {
+          return { success: false, message: result.message || `Synced ${result.syncedCount} of ${result.totalCount} attendances`, attendancesSynced: result.syncedCount, errors: result.errors }
+        }
       }
 
       return { success: false, message: result.message || 'Sync failed', attendancesSynced: 0, errors: result.errors }

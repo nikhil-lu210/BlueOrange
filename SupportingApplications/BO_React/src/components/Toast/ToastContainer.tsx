@@ -15,7 +15,10 @@ export const ToastContainer: React.FC = () => {
       const id = nextIdRef.current++;
       const toast = { id, type, message };
       setToasts((prev) => [...prev, toast]);
-      window.setTimeout(() => removeToast(id), 5000);
+
+      // Auto-close timing: 15 seconds for errors/warnings, 5 seconds for success/info
+      const timeout = (type === 'error' || type === 'warning') ? 15000 : 5000;
+      window.setTimeout(() => removeToast(id), timeout);
     };
 
     window.Toast = { show };
@@ -57,7 +60,7 @@ export const ToastContainer: React.FC = () => {
               aria-label="Close"
             ></button>
           </div>
-          <div className="toast-body">{toast.message}</div>
+          <div className="toast-body" style={{ whiteSpace: 'pre-line' }}>{toast.message}</div>
         </div>
       ))}
     </div>

@@ -7,9 +7,11 @@ import { DashboardStats } from './components/DashboardStats';
 import { BarcodeScanner } from './components/BarcodeScanner';
 import { AttendanceRecords } from './components/AttendanceRecords';
 import { ToastContainer } from './components/Toast';
+import { AuthorizationModal } from './components/AuthorizationModal';
 import { useAttendanceStore } from './stores/attendance';
 import { useUsersStore } from './stores/users';
 import { useAttendanceWorkflow } from './hooks/useAttendanceWorkflow';
+import { useAuthorization } from './hooks/useAuthorization';
 import { workflowService } from './services/workflowService';
 
 export default function App() {
@@ -28,6 +30,18 @@ export default function App() {
     syncActiveUsers,
     syncAttendances,
   } = useAttendanceWorkflow();
+
+  const {
+    isModalOpen,
+    modalTitle,
+    modalMessage,
+    authorizedUser,
+    loading: authLoading,
+    authorizeUser,
+    requestAuthorization,
+    clearAuthorization,
+    closeModal,
+  } = useAuthorization();
 
   const deleteAttendance = async (id: number) => {
     try {
@@ -51,32 +65,70 @@ export default function App() {
     }
   };
 
+  // Authorized versions of sensitive operations
+  const handleSyncActiveUsers = () => {
+    requestAuthorization(
+      'Sync Active Users',
+      'You need to authorize to sync active users from the server. This will download all active users to your local database.'
+    );
+  };
+
+  const handleSyncAttendances = () => {
+    requestAuthorization(
+      'Sync Attendance Records',
+      'You need to authorize to sync offline attendance records to the server. This will upload all pending attendance records.'
+    );
+  };
+
+  const handleClearAll = () => {
+    requestAuthorization(
+      'Clear All Records',
+      'You need to authorize to clear all attendance records. This action cannot be undone and will permanently delete all local attendance data.'
+    );
+  };
+
+  // Execute operations after authorization
+  useEffect(() => {
+    if (authorizedUser) {
+      // Check which operation was requested based on modal title
+      if (modalTitle === 'Sync Active Users') {
+        syncActiveUsers().finally(() => clearAuthorization());
+      } else if (modalTitle === 'Sync Attendance Records') {
+        syncAttendances().finally(() => clearAuthorization());
+      } else if (modalTitle === 'Clear All Records') {
+        clearAllAttendances().finally(() => clearAuthorization());
+      }
+    }
+  }, [authorizedUser, modalTitle]); // Remove function dependencies to prevent infinite loop
+
   useEffect(() => {
     (async () => {
       try {
-        const status = await workflowService.initializeApp();
+        await workflowService.initializeApp();
         await useAttendanceStore.getState().loadAttendances();
         await useUsersStore.getState().loadUsers();
 
-        if (navigator.onLine && !status.hasUsers) {
-          await syncActiveUsers();
-        }
+        // Don't automatically sync users - let user do it manually with authorization
+        // if (navigator.onLine && !status.hasUsers) {
+        //   await syncActiveUsers();
+        // }
       } catch (e) {
         console.error('Failed to initialize app:', e);
         window.Toast?.show('Failed to initialize app', 'error');
       }
     })();
-  }, []);
+  }, []); // Remove syncActiveUsers dependency to prevent infinite loop
 
   return (
     <div id="app">
-      <NavBar
-        isOnline={isOnline}
-        loading={loading}
-        unsyncedCount={unsyncedCount}
-        onSyncActiveUsers={syncActiveUsers}
-        onSyncAttendances={syncAttendances}
-      />
+            <NavBar
+              isOnline={isOnline}
+              loading={loading}
+              unsyncedCount={unsyncedCount}
+              onSyncActiveUsers={handleSyncActiveUsers}
+              onSyncAttendances={handleSyncAttendances}
+              onClearAll={handleClearAll}
+            />
 
       <div className="container-fluid mt-4">
         <StatusBar
@@ -104,17 +156,25 @@ export default function App() {
             />
           </div>
           <div className="col-lg-8 col-md-6">
-            <AttendanceRecords
-              attendances={attendances}
-              loading={loading}
-              onDeleteAttendance={deleteAttendance}
-              onClearAllAttendances={clearAllAttendances}
-            />
+              <AttendanceRecords
+                attendances={attendances}
+                loading={loading}
+                onDeleteAttendance={deleteAttendance}
+              />
           </div>
         </div>
       </div>
 
-      <ToastContainer />
-    </div>
-  );
-}
+            <ToastContainer />
+
+            <AuthorizationModal
+              isOpen={isModalOpen}
+              onClose={closeModal}
+              onAuthorize={authorizeUser}
+              title={modalTitle}
+              message={modalMessage}
+              loading={authLoading}
+            />
+          </div>
+        );
+      }

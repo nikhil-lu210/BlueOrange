@@ -154,16 +154,16 @@ class SimpleStorageService {
     return this.getAttendances().filter(a => !a.synced)
   }
 
-  async markAttendanceAsSynced(id: number): Promise<void> {
-    await this.ensureInit()
-    const attendances = this.getAttendances()
-    const attendance = attendances.find(a => a.id === id)
+         async markAttendanceAsSynced(id: number): Promise<void> {
+           await this.ensureInit()
+           const attendances = this.getAttendances()
+           const attendance = attendances.find(a => a.id === id)
 
-    if (attendance) {
-      attendance.synced = true
-      this.saveAttendances(attendances)
-    }
-  }
+           if (attendance) {
+             attendance.synced = true
+             this.saveAttendances(attendances)
+           }
+         }
 
   async deleteAttendance(id: number): Promise<void> {
     await this.ensureInit()
@@ -216,16 +216,20 @@ class SimpleStorageService {
 
   private getAttendances(): Attendance[] {
     try {
-      const data = localStorage.getItem(`${DB_NAME}_attendances`)
-      return data ? JSON.parse(data) : []
-    } catch {
+      const key = `${DB_NAME}_attendances`;
+      const data = localStorage.getItem(key)
+      const attendances = data ? JSON.parse(data) : []
+      return attendances
+    } catch (error) {
+      console.error('Error retrieving attendances from localStorage:', error);
       return []
     }
   }
 
   private saveAttendances(attendances: Attendance[]): void {
     try {
-      localStorage.setItem(`${DB_NAME}_attendances`, JSON.stringify(attendances))
+      const key = `${DB_NAME}_attendances`;
+      localStorage.setItem(key, JSON.stringify(attendances))
     } catch (error) {
       console.error('Failed to save attendances:', error)
     }

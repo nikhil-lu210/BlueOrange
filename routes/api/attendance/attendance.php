@@ -5,6 +5,9 @@ use App\Http\Controllers\Api\OfflineAttendanceController;
 
 // Offline Attendance API Routes
 Route::controller(OfflineAttendanceController::class)->prefix('offline-attendance')->group(function () {
+    // Authorize user for sensitive operations
+    Route::post('/authorize', 'authorizeUser');
+
     // Get user data by userid for offline sync
     Route::get('/user/{userid}', 'getUserByUserid');
 

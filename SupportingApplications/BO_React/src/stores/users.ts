@@ -6,6 +6,7 @@ export interface User {
   id: number
   userid: string
   name: string
+  alias_name: string
   email?: string
 }
 

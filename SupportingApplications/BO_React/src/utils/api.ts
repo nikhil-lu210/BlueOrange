@@ -43,6 +43,17 @@ class API {
 
       if (!response.ok) {
         const errorText = await response.text()
+
+        // For sync endpoint, 422 might be a partial success response, not an error
+        if (response.status === 422 && endpoint.includes('/offline-attendance/sync')) {
+          try {
+            const jsonResponse = JSON.parse(errorText);
+            return jsonResponse;
+          } catch (parseError) {
+            throw new Error(`HTTP ${response.status}: ${errorText}`)
+          }
+        }
+
         throw new Error(`HTTP ${response.status}: ${errorText}`)
       }
 
@@ -77,7 +88,7 @@ class API {
     throw new Error(response?.message || 'Failed to get users')
   }
 
-  async syncAttendances(attendances: any[]): Promise<{ success: boolean; syncedCount: number; totalCount: number; errors?: string[]; message?: string }> {
+  async syncAttendances(attendances: any[]): Promise<{ success: boolean; syncedCount: number; totalCount: number; syncedRecordIds?: number[]; errors?: string[]; message?: string }> {
     const response = await this.makeRequest(API_ENDPOINTS.syncAttendances, {
       method: 'POST',
       body: JSON.stringify({
@@ -89,16 +100,27 @@ class API {
       })
     })
 
-    if (response?.success) {
+    // Handle both complete success and partial success (some records synced, some failed)
+    if (response?.success || (response?.data && response.data.synced_count > 0)) {
       return {
-        success: true,
-        syncedCount: response.data?.synced_count ?? attendances.length,
+        success: response?.success || false, // false for partial success
+        syncedCount: response.data?.synced_count ?? 0,
         totalCount: response.data?.total_count ?? attendances.length,
+        syncedRecordIds: response.data?.synced_record_ids || [],
         errors: response.data?.errors || [],
         message: response.message
       }
     }
-    throw new Error(response?.message || 'Sync failed')
+
+    // Return the response even for complete failures so errors array is accessible
+    return {
+      success: false,
+      syncedCount: 0,
+      totalCount: response.data?.total_count ?? attendances.length,
+      syncedRecordIds: [],
+      errors: response.data?.errors || [],
+      message: response.message || 'Sync failed'
+    }
   }
 
   async testConnection(): Promise<boolean> {

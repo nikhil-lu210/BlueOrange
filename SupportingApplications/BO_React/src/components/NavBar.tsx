@@ -7,6 +7,7 @@ interface NavBarProps {
   unsyncedCount: number;
   onSyncActiveUsers: () => void;
   onSyncAttendances: () => void;
+  onClearAll: () => void;
 }
 
 export const NavBar: React.FC<NavBarProps> = ({
@@ -15,6 +16,7 @@ export const NavBar: React.FC<NavBarProps> = ({
   unsyncedCount,
   onSyncActiveUsers,
   onSyncAttendances,
+  onClearAll,
 }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -46,6 +48,15 @@ export const NavBar: React.FC<NavBarProps> = ({
             >
               <i className="bi bi-cloud-arrow-up me-1"></i>
               Sync to {getServerName()} ({unsyncedCount})
+            </button>
+            <button
+              className="btn btn-outline-danger btn-sm"
+              onClick={onClearAll}
+              disabled={loading}
+              title="Clear all attendance records"
+            >
+              <i className="bi bi-trash me-1"></i>
+              Clear All
             </button>
           </div>
         </div>

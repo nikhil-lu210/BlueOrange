@@ -21,15 +21,15 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
   totalCount: 0,
   syncedCount: 0,
 
-  loadAttendances: async () => {
-    const data = await dbService.getAllAttendances()
-    set({
-      attendances: data,
-      totalCount: data.length,
-      unsyncedCount: data.filter((a: Attendance) => !a.synced).length,
-      syncedCount: data.filter((a: Attendance) => a.synced).length
-    })
-  },
+         loadAttendances: async () => {
+           const data = await dbService.getAllAttendances()
+           set({
+             attendances: data,
+             totalCount: data.length,
+             unsyncedCount: data.filter((a: Attendance) => !a.synced).length,
+             syncedCount: data.filter((a: Attendance) => a.synced).length
+           })
+         },
 
   addAttendance: async (attendanceData: Attendance) => {
     // This method is used for compatibility, but actual attendance recording
