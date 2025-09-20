@@ -41,7 +41,7 @@ export const NavBar: React.FC<NavBarProps> = ({
           {/* Action Buttons */}
           <div className="d-flex gap-2">
             <button
-              className="btn btn-outline-primary btn-sm"
+              className="btn btn-label-primary btn-sm"
               onClick={onSyncActiveUsers}
               disabled={!isOnline || loading}
               title={`Sync active users from ${getServerName()}`}
@@ -49,7 +49,7 @@ export const NavBar: React.FC<NavBarProps> = ({
               <i className="bi bi-cloud-download"></i>
             </button>
             <button
-              className="btn btn-outline-success btn-sm position-relative"
+              className="btn btn-label-success btn-sm position-relative"
               onClick={onSyncAttendances}
               disabled={!isOnline || loading || unsyncedCount === 0}
               title={`Sync offline attendances to ${getServerName()}`}
@@ -62,7 +62,7 @@ export const NavBar: React.FC<NavBarProps> = ({
               )}
             </button>
             <button
-              className="btn btn-outline-danger btn-sm"
+              className="btn btn-label-danger btn-sm"
               onClick={onClearAll}
               disabled={loading}
               title="Clear all attendance records"

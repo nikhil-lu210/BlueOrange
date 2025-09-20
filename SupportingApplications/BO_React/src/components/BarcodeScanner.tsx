@@ -28,11 +28,20 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (userid.trim() && !loading) {
-      onRecordEntry(userid.trim(), attendanceType);
+      const currentUserid = userid.trim();
+      const currentType = attendanceType;
+
+      // Clear input immediately
       setUserid('');
-      setTimeout(() => inputRef.current?.focus(), 0);
+      barcodeRef.current = '';
+
+      // Submit the attendance
+      await onRecordEntry(currentUserid, currentType);
+
+      // Keep focus on input
+      setTimeout(() => inputRef.current?.focus(), 100);
     }
   };
 
@@ -51,12 +60,17 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
     if (/^[\w\d]$/.test(key)) {
       // Alphanumeric character - add to barcode
       barcodeRef.current += key;
+      setUserid(barcodeRef.current); // Update input display
       e.preventDefault(); // Prevent manual input
     } else if (e.key === 'Enter') {
-      // Enter key = end of barcode
+      // Enter key = end of barcode or manual input
       e.preventDefault();
       if (barcodeRef.current.trim()) {
+        // Barcode scan completion
         setUserid(barcodeRef.current);
+        setTimeout(() => handleSubmit(), 10);
+      } else if (userid.trim()) {
+        // Manual Enter key press
         handleSubmit();
       }
       barcodeRef.current = '';
@@ -133,7 +147,11 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
                 name="userid"
                 ref={inputRef}
                 value={userid}
-                onChange={(e) => setUserid(e.target.value)}
+                onChange={(e) => {
+                  // Allow manual input but clear barcode buffer
+                  setUserid(e.target.value);
+                  barcodeRef.current = '';
+                }}
                 onKeyDown={handleKeyDown}
                 onPaste={handlePaste}
                 onContextMenu={handleContextMenu}
