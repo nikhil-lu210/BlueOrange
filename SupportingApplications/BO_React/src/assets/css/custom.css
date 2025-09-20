@@ -439,7 +439,7 @@
   font-size: 22px;
 }
 
-.input-group .form-control:focus {
+.input-group .form-control:focus, .form-control:focus {
   border-color: #7367f0;
   box-shadow: none !important;
   z-index: 3;
@@ -508,46 +508,82 @@
 }
 
 /* Custom table styling for DataTables */
-.attendance-table {
-  border-collapse: separate;
-  border-spacing: 0;
+.table-bordered {
+  border: 1px solid #dee2e6 !important;
 }
 
-.attendance-table thead th {
-  background-color: #f8f9fa;
-  border: none;
-  border-bottom: 2px solid #dee2e6;
-  padding: 1rem;
-  font-weight: 600;
-  color: #495057;
-  text-transform: uppercase;
-  font-size: 0.75rem;
-  letter-spacing: 0.05em;
+.table-bordered th,
+.table-bordered td {
+  border: 1px solid #dee2e6 !important;
 }
 
-.attendance-table tbody tr {
-  border-bottom: 1px solid #f1f3f4;
-  transition: all 0.2s ease;
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.02);
 }
 
-.attendance-table tbody tr:hover {
+.table-striped tbody tr:nth-of-type(even) {
   background-color: rgba(115, 103, 240, 0.02);
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(115, 103, 240, 0.08) !important;
   transform: translateY(-1px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.attendance-table tbody td {
-  border: none;
-  padding: 1rem;
-  vertical-align: middle;
-  color: #495057;
+.table thead th {
+  background-color: #f8f9fa !important;
+  border-bottom: 2px solid #dee2e6 !important;
+  padding: 0.75rem 0.5rem !important;
+  font-weight: 600 !important;
+  color: #495057 !important;
+  text-transform: uppercase !important;
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em !important;
+  vertical-align: middle !important;
 }
 
-.attendance-table tbody td .fw-semibold {
-  color: #212529;
-  font-weight: 600;
+.table tbody td {
+  padding: 0.5rem !important;
+  vertical-align: middle !important;
+  color: #495057 !important;
+  border: 1px solid #dee2e6 !important;
 }
 
-.attendance-table tbody td .text-muted {
-  color: #6c757d;
+.table tbody td .fw-semibold {
+  color: #212529 !important;
+  font-weight: 600 !important;
+}
+
+.table tbody td .text-muted {
+  color: #6c757d !important;
+}
+
+/* Compact table styling */
+.table-responsive {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.table {
+  margin-bottom: 0 !important;
+  font-size: 0.875rem;
+}
+
+/* Enhanced avatar styling */
+.table tbody td .rounded-circle {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Badge enhancements */
+.table tbody td .badge {
+  font-weight: 500;
+  border: 1px solid;
+}
+
+/* Button enhancements */
+.table tbody td .btn {
+  border-radius: 4px;
+  font-weight: 500;
 }

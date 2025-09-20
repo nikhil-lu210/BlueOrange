@@ -141,63 +141,64 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
             <p className="text-muted small mb-0">Scan an employee barcode to start recording attendance</p>
           </div>
         ) : (
-          <div className="p-4">
+          <div className="p-3">
             <div className="table-responsive">
-              <table ref={tableRef} className="attendance-table table table-hover mb-0">
-                <thead>
+              <table ref={tableRef} className="table table-bordered table-striped mb-0">
+                <thead className="table-light">
                   <tr>
-                    <th>Employee</th>
-                    <th>Type</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                    <th>Action</th>
+                    <th className="text-center" style={{ width: '25%' }}>Employee</th>
+                    <th className="text-center" style={{ width: '15%' }}>Type</th>
+                    <th className="text-center" style={{ width: '20%' }}>Time</th>
+                    <th className="text-center" style={{ width: '15%' }}>Status</th>
+                    <th className="text-center" style={{ width: '25%' }}>Action</th>
                   </tr>
                 </thead>
                 <tbody>
                   {attendances.map((attendance) => (
                     <tr key={attendance.id}>
-                      <td>
+                      <td className="py-2">
                         <div className="d-flex align-items-center">
-                          <div className="bg-primary text-white bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center me-3" style={{ width: 40, height: 40 }}>
-                            <i className="bi bi-person-fill" style={{ fontSize: '1rem' }}></i>
+                          <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{ width: 32, height: 32 }}>
+                            <i className="bi bi-person-fill" style={{ fontSize: '0.8rem' }}></i>
                           </div>
                           <div>
-                            <div className="fw-semibold text-dark mb-1">
+                            <div className="fw-semibold text-dark" style={{ fontSize: '0.9rem' }}>
                               {getUserInfo(attendance.user_id)?.alias_name || 'Unknown User'}
                             </div>
-                            <small className="text-muted">
+                            <small className="text-muted" style={{ fontSize: '0.75rem' }}>
                               {getUserInfo(attendance.user_id)?.userid || `ID: ${attendance.user_id}`}
                             </small>
                           </div>
                         </div>
                       </td>
-                      <td>
-                        <span className={`badge ${attendance.type === 'Overtime' ? 'bg-label-warning' : 'bg-label-primary'} px-3 py-2 rounded-pill`}>
+                      <td className="text-center py-2">
+                        <span className={`badge ${attendance.type === 'Overtime' ? 'bg-label-warning' : 'bg-label-primary'} px-2 py-1 rounded-pill`} style={{ fontSize: '0.75rem' }}>
                           <i className={`bi ${attendance.type === 'Overtime' ? 'bi-moon-fill' : 'bi-clock-fill'} me-1`}></i>
                           {attendance.type || 'Regular'}
                         </span>
                       </td>
-                      <td>
+                      <td className="text-center py-2">
                         <div>
-                          <div className="fw-medium text-dark mb-1">{formatDate(attendance.entry_date_time)}</div>
-                          <small className="text-muted">{formatTime(attendance.entry_date_time)}</small>
+                          <div className="fw-medium text-dark" style={{ fontSize: '0.85rem' }}>{formatDate(attendance.entry_date_time)}</div>
+                          <small className="text-muted" style={{ fontSize: '0.75rem' }}>{formatTime(attendance.entry_date_time)}</small>
                         </div>
                       </td>
-                      <td>
-                        <span className={`badge ${attendance.synced ? 'bg-label-success' : 'bg-label-warning'} px-3 py-2 rounded-pill`}>
+                      <td className="text-center py-2">
+                        <span className={`badge ${attendance.synced ? 'bg-label-success' : 'bg-label-warning'} px-2 py-1 rounded-pill`} style={{ fontSize: '0.75rem' }}>
                           <i className={`bi ${attendance.synced ? 'bi-check-circle-fill' : 'bi-clock-history'} me-1`}></i>
                           {attendance.synced ? 'Synced' : 'Pending'}
                         </span>
                       </td>
-                      <td className="text-center">
+                      <td className="text-center py-2">
                         <button
-                          className="btn btn-outline-danger btn-sm rounded-pill px-3"
+                          className="btn btn-outline-danger btn-sm px-2 py-1"
                           onClick={() => {
                             if (!loading && confirm('Are you sure you want to delete this attendance record?'))
                               onDeleteAttendance(attendance.id);
                           }}
                           disabled={loading}
                           title="Delete record"
+                          style={{ fontSize: '0.75rem' }}
                         >
                           <i className="bi bi-trash me-1"></i>Delete
                         </button>

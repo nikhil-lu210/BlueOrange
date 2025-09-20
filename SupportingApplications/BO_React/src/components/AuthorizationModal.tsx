@@ -67,7 +67,7 @@ export const AuthorizationModal: React.FC<AuthorizationModalProps> = ({
             ></button>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} autoComplete='off'>
             <div className="modal-body">
               <div className="alert alert-warning d-flex align-items-center" role="alert">
                 <i className="bi bi-exclamation-triangle-fill me-2"></i>
