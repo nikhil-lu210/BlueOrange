@@ -1,0 +1,324 @@
+/* Custom focus styles for better UX - Matching Blade Theme Colors */
+.focus-ring:focus {
+  border-color: #7367f0 !important;
+  box-shadow: 0 0 0 0.2rem rgba(115, 103, 240, 0.25) !important;
+  outline: none !important;
+}
+
+/* Custom input group focus */
+.input-group:focus-within .input-group-text {
+  border-color: #7367f0;
+  z-index: 3;
+}
+
+.input-group:focus-within .form-control {
+  border-color: #7367f0;
+  box-shadow: 0 0 0 0.2rem rgba(115, 103, 240, 0.25);
+}
+
+/* Override Bootstrap colors to match Blade theme */
+:root {
+  --bs-primary: #7367f0;
+  --bs-success: #28c76f;
+  --bs-info: #00cfe8;
+  --bs-warning: #ff9f43;
+  --bs-danger: #ea5455;
+  --bs-primary-rgb: 115, 103, 240;
+  --bs-success-rgb: 40, 199, 111;
+  --bs-info-rgb: 0, 207, 232;
+  --bs-warning-rgb: 255, 159, 67;
+  --bs-danger-rgb: 234, 84, 85;
+}
+
+/* Primary color overrides */
+.text-primary, .text-primary:hover {
+  color: #7367f0 !important;
+}
+
+.bg-primary, .bg-primary:hover {
+  background-color: #7367f0 !important;
+}
+
+.bg-label-primary {
+  background-color: #eae8fd !important;
+  color: #7367f0 !important;
+}
+
+/* Success color overrides */
+.text-success, .text-success:hover {
+  color: #28c76f !important;
+}
+
+.bg-success, .bg-success:hover {
+  background-color: #28c76f !important;
+}
+
+.bg-label-success {
+  background-color: rgba(40, 199, 111, 0.1) !important;
+  color: #28c76f !important;
+}
+
+/* Info color overrides */
+.text-info, .text-info:hover {
+  color: #00cfe8 !important;
+}
+
+.bg-info, .bg-info:hover {
+  background-color: #00cfe8 !important;
+}
+
+.bg-label-info {
+  background-color: rgba(0, 207, 232, 0.1) !important;
+  color: #00cfe8 !important;
+}
+
+/* Warning color overrides */
+.text-warning, .text-warning:hover {
+  color: #ff9f43 !important;
+}
+
+.bg-warning, .bg-warning:hover {
+  background-color: #ff9f43 !important;
+}
+
+.bg-label-warning {
+  background-color: rgba(255, 159, 67, 0.1) !important;
+  color: #ff9f43 !important;
+}
+
+/* Danger color overrides */
+.text-danger, .text-danger:hover {
+  color: #ea5455 !important;
+}
+
+.bg-danger, .bg-danger:hover {
+  background-color: #ea5455 !important;
+}
+
+.bg-label-danger {
+  background-color: rgba(234, 84, 85, 0.1) !important;
+  color: #ea5455 !important;
+}
+
+/* Enhanced card styles */
+.card {
+  transition: all 0.3s ease-in-out;
+  border-radius: 12px !important;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.12) !important;
+}
+
+/* Dashboard stats card specific */
+.card .position-relative {
+  border-radius: 12px !important;
+}
+
+/* Enhanced badge styles */
+.badge {
+  font-weight: 500;
+  letter-spacing: 0.025em;
+  border-radius: 20px !important;
+}
+
+/* Enhanced table styles */
+.table td {
+  vertical-align: middle;
+  border-top: none;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(115, 103, 240, 0.02);
+}
+
+.table thead th {
+  border-bottom: 2px solid #f8f9fa;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+/* Button focus styles - Matching Blade theme */
+.btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(115, 103, 240, 0.25);
+}
+
+.btn-sm {
+  border-radius: 20px !important;
+}
+
+/* Navbar improvements */
+.navbar-brand {
+  font-weight: 600;
+}
+
+/* Status indicator */
+.rounded-circle {
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+/* Custom form check styles - Matching Blade theme */
+.form-check-input:checked {
+  background-color: #7367f0;
+  border-color: #7367f0;
+}
+
+.form-check-input:focus {
+  border-color: rgba(115, 103, 240, 0.5);
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(115, 103, 240, 0.25);
+}
+
+/* Button color overrides to match Blade theme */
+.btn-primary {
+  background-color: #7367f0 !important;
+  border-color: #7367f0 !important;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+  background-color: #685dd8 !important;
+  border-color: #685dd8 !important;
+}
+
+.btn-success {
+  background-color: #28c76f !important;
+  border-color: #28c76f !important;
+}
+
+.btn-success:hover, .btn-success:focus {
+  background-color: #24b364 !important;
+  border-color: #24b364 !important;
+}
+
+.btn-info {
+  background-color: #00cfe8 !important;
+  border-color: #00cfe8 !important;
+}
+
+.btn-info:hover, .btn-info:focus {
+  background-color: #00b8d4 !important;
+  border-color: #00b8d4 !important;
+}
+
+.btn-warning {
+  background-color: #ff9f43 !important;
+  border-color: #ff9f43 !important;
+}
+
+.btn-warning:hover, .btn-warning:focus {
+  background-color: #ff8f29 !important;
+  border-color: #ff8f29 !important;
+}
+
+.btn-danger {
+  background-color: #ea5455 !important;
+  border-color: #ea5455 !important;
+}
+
+.btn-danger:hover, .btn-danger:focus {
+  background-color: #e73e3e !important;
+  border-color: #e73e3e !important;
+}
+
+/* Status bar enhancements */
+.alert {
+  border-radius: 8px !important;
+  border-left: 4px solid;
+}
+
+/* Avatar improvements */
+.rounded-circle {
+  transition: all 0.2s ease-in-out;
+}
+
+.rounded-circle:hover {
+  transform: scale(1.05);
+}
+
+/* Icon improvements */
+.bi {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Custom scrollbar */
+.table-responsive::-webkit-scrollbar {
+  height: 6px;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Card-style radio buttons */
+.card-radio {
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  background: white;
+  min-width: 100px;
+  text-align: center;
+}
+
+.card-radio:hover {
+  border-color: #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-radio.selected {
+  border-color: #7367f0;
+  background-color: rgba(115, 103, 240, 0.05);
+}
+
+.card-radio .form-check-input {
+  margin-right: 8px;
+}
+
+.card-radio .form-check-label {
+  margin-bottom: 0;
+  cursor: pointer;
+}
+
+/* Input group styling */
+.input-group .input-group-text {
+  background-color: transparent;
+  border-color: #dee2e6;
+  color: #6c757d;
+  min-width: 50px;
+  justify-content: center;
+  padding-right: 0px;
+  font-size: 22px;
+}
+
+.input-group .form-control {
+  border-color: #dee2e6;
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  padding-left: 2px;
+  font-size: 22px;
+}
+
+.input-group .form-control:focus {
+  border-color: #7367f0;
+  box-shadow: none !important;
+  z-index: 3;
+}

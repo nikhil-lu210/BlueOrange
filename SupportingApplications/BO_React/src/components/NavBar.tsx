@@ -19,35 +19,47 @@ export const NavBar: React.FC<NavBarProps> = ({
   onClearAll,
 }) => {
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div className="container-fluid">
-        <span className="navbar-brand">
-          <i className="bi bi-clock-history me-2"></i>
-          {APP_NAME}
-        </span>
-        <div className="d-flex align-items-center">
-          <span className={`badge me-3 ${isOnline ? 'bg-success' : 'bg-warning'}`}>
-            <i className={`bi ${isOnline ? 'bi-wifi' : 'bi-wifi-off'}`}></i>
-            {" "}{isOnline ? 'Online' : 'Offline'}
-          </span>
-          <div className="btn-group">
+    <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom">
+      <div className="container-fluid px-4">
+        <div className="navbar-brand d-flex align-items-center">
+          <div className="bg-primary rounded-2 d-flex align-items-center justify-content-center me-3" style={{ width: 36, height: 36 }}>
+            <i className="bi bi-clock-fill text-white"></i>
+          </div>
+          <div>
+            <div className="fw-bold text-dark mb-0">{APP_NAME}</div>
+            <small className="text-muted">Attendance Management</small>
+          </div>
+        </div>
+
+        <div className="d-flex align-items-center gap-3">
+          {/* Connection Status */}
+          <div className="d-flex align-items-center">
+            <div className={`rounded-circle me-2 ${isOnline ? 'bg-success' : 'bg-warning'}`} style={{ width: 8, height: 8 }}></div>
+            <span className="text-muted small">{isOnline ? 'Online' : 'Offline'}</span>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="d-flex gap-2">
             <button
-              className="btn btn-outline-light btn-sm"
+              className="btn btn-outline-primary btn-sm"
               onClick={onSyncActiveUsers}
               disabled={!isOnline || loading}
               title={`Sync active users from ${getServerName()}`}
             >
-              <i className="bi bi-cloud-download me-1"></i>
-              Sync from {getServerName()}
+              <i className="bi bi-cloud-download"></i>
             </button>
             <button
-              className="btn btn-outline-light btn-sm"
+              className="btn btn-outline-success btn-sm position-relative"
               onClick={onSyncAttendances}
               disabled={!isOnline || loading || unsyncedCount === 0}
               title={`Sync offline attendances to ${getServerName()}`}
             >
-              <i className="bi bi-cloud-arrow-up me-1"></i>
-              Sync to {getServerName()} ({unsyncedCount})
+              <i className="bi bi-cloud-arrow-up"></i>
+              {unsyncedCount > 0 && (
+                <span className="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                  {unsyncedCount}
+                </span>
+              )}
             </button>
             <button
               className="btn btn-outline-danger btn-sm"
@@ -55,8 +67,7 @@ export const NavBar: React.FC<NavBarProps> = ({
               disabled={loading}
               title="Clear all attendance records"
             >
-              <i className="bi bi-trash me-1"></i>
-              Clear All
+              <i className="bi bi-trash"></i>
             </button>
           </div>
         </div>

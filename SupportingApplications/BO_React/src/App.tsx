@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import './assets/css/app.css';
+import './assets/css/custom.css';
 import { NavBar } from './components/NavBar';
 import { StatusBar } from './components/StatusBar';
 import { DashboardStats } from './components/DashboardStats';
@@ -138,25 +139,32 @@ export default function App() {
   }, []); // Remove syncActiveUsers dependency to prevent infinite loop
 
   return (
-    <div id="app">
-            <NavBar
-              isOnline={isOnline}
+    <div id="app" className="min-vh-100 bg-light">
+      <NavBar
+        isOnline={isOnline}
+        loading={loading}
+        unsyncedCount={unsyncedCount}
+        onSyncActiveUsers={handleSyncActiveUsers}
+        onSyncAttendances={handleSyncAttendances}
+        onClearAll={handleClearAll}
+      />
+
+      {/* Main Content Area */}
+      <div className="container-fluid px-4 py-3">
+        {/* Quick Entry Form - Prominent Position */}
+        <div className="row justify-content-center mb-4">
+          <div className="col-md-7">
+            <BarcodeScanner
               loading={loading}
-              unsyncedCount={unsyncedCount}
-              onSyncActiveUsers={handleSyncActiveUsers}
-              onSyncAttendances={handleSyncAttendances}
-              onClearAll={handleClearAll}
+              onRecordEntry={handleRecordEntry}
+              statusMessage={status.message}
             />
+          </div>
+        </div>
 
-      <div className="container-fluid mt-4">
-        <StatusBar
-          status={status.message}
-          type={status.type}
-          loading={loading}
-        />
-
-        <div className="row">
-          <div className="col-md-12">
+        {/* Dashboard Stats */}
+        <div className="row mb-4">
+          <div className="col-12">
             <DashboardStats
               total={totalCount}
               pending={unsyncedCount}
@@ -166,33 +174,28 @@ export default function App() {
           </div>
         </div>
 
+        {/* Attendance Records Section */}
         <div className="row">
-          <div className="col-lg-4 col-md-6 mb-4">
-            <BarcodeScanner
+          <div className="col-12">
+            <AttendanceRecords
+              attendances={attendances}
               loading={loading}
-              onRecordEntry={handleRecordEntry}
+              onDeleteAttendance={handleDeleteAttendance}
             />
-          </div>
-          <div className="col-lg-8 col-md-6">
-              <AttendanceRecords
-                attendances={attendances}
-                loading={loading}
-                onDeleteAttendance={handleDeleteAttendance}
-              />
           </div>
         </div>
       </div>
 
-            <ToastContainer />
+      <ToastContainer />
 
-            <AuthorizationModal
-              isOpen={isModalOpen}
-              onClose={closeModal}
-              onAuthorize={authorizeUser}
-              title={modalTitle}
-              message={modalMessage}
-              loading={authLoading}
-            />
-          </div>
-        );
-      }
+      <AuthorizationModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onAuthorize={authorizeUser}
+        title={modalTitle}
+        message={modalMessage}
+        loading={authLoading}
+      />
+    </div>
+  );
+}

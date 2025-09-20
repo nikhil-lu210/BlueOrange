@@ -13,71 +13,64 @@ export const DashboardStats: React.FC<DashboardStatsProps> = ({
   synced,
   users,
 }) => {
+  const stats = [
+    {
+      title: "Active Employees",
+      value: users,
+      icon: "bi-people-fill",
+      color: "primary",
+      bgColor: "bg-primary"
+    },
+    {
+      title: "Today's Records",
+      value: total,
+      icon: "bi-clock-history",
+      color: "info",
+      bgColor: "bg-info"
+    },
+    {
+      title: "Pending Upload",
+      value: pending,
+      icon: "bi-exclamation-triangle-fill",
+      color: "warning",
+      bgColor: "bg-warning"
+    },
+    {
+      title: "Uploaded",
+      value: synced,
+      icon: "bi-check-circle-fill",
+      color: "success",
+      bgColor: "bg-success"
+    }
+  ];
+
   return (
-    <div className="row">
-      <div className="col-lg-3 col-md-6 mb-3">
-        <div className="stats-card p-3">
-          <div className="d-flex align-items-center">
-            <div className="flex-shrink-0">
-              <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
-                <i className="bi bi-people"></i>
-              </div>
-            </div>
-            <div className="flex-grow-1 ms-3">
-              <div className="text-muted small">Active Employees</div>
-              <div className="h5 mb-0">{users}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="row g-3">
+      {stats.map((stat, index) => (
+        <div key={index} className="col-lg-3 col-md-6">
+          <div className="card border-0 shadow-sm h-100 overflow-hidden position-relative">
+            {/* Gradient Background */}
+            <div className={`position-absolute top-0 start-0 w-100 ${stat.bgColor} bg-opacity-10`}
+                 style={{ height: '4px' }}></div>
 
-      <div className="col-lg-3 col-md-6 mb-3">
-        <div className="stats-card p-3">
-          <div className="d-flex align-items-center">
-            <div className="flex-shrink-0">
-              <div className="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
-                <i className="bi bi-clock-history"></i>
+            <div className="card-body p-4">
+              <div className="d-flex align-items-start justify-content-between">
+                <div className="flex-grow-1">
+                  <div className="h4 mb-1 fw-bold text-dark">{stat.value}</div>
+                  <div className="text-muted small fw-medium text-uppercase tracking-wide">
+                    {stat.title}
+                  </div>
+                </div>
+                <div className={`${stat.bgColor} text-white rounded-3 d-flex align-items-center justify-content-center shadow-sm`}
+                     style={{ width: 48, height: 48 }}>
+                  <i className={`bi ${stat.icon}`} style={{ fontSize: '1.2rem' }}></i>
+                </div>
               </div>
-            </div>
-            <div className="flex-grow-1 ms-3">
-              <div className="text-muted small">Today's Records</div>
-              <div className="h5 mb-0">{total}</div>
             </div>
           </div>
         </div>
-      </div>
-
-      <div className="col-lg-3 col-md-6 mb-3">
-        <div className="stats-card p-3">
-          <div className="d-flex align-items-center">
-            <div className="flex-shrink-0">
-              <div className="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
-                <i className="bi bi-exclamation-triangle"></i>
-              </div>
-            </div>
-            <div className="flex-grow-1 ms-3">
-              <div className="text-muted small">Pending Upload</div>
-              <div className="h5 mb-0">{pending}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="col-lg-3 col-md-6 mb-3">
-        <div className="stats-card p-3">
-          <div className="d-flex align-items-center">
-            <div className="flex-shrink-0">
-              <div className="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style={{ width: 48, height: 48 }}>
-                <i className="bi bi-check-circle"></i>
-              </div>
-            </div>
-            <div className="flex-grow-1 ms-3">
-              <div className="text-muted small">Uploaded</div>
-              <div className="h5 mb-0">{synced}</div>
-            </div>
-          </div>
-        </div>
-      </div>
+      ))}
     </div>
   );
 };
+
