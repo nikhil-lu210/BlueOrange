@@ -1,6 +1,3 @@
-
-
-```
 # BO_React - BlueOrange Attendance Management System
 
 A modern, offline-first Progressive Web Application (PWA) for employee attendance management built with React, TypeScript, and Vite. This application provides real-time attendance tracking, barcode scanning, and seamless synchronization with the BlueOrange Laravel backend.
