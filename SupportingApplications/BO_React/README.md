@@ -79,20 +79,37 @@ VITE_API_BASE_URL=http://blueorange.test/api
 VITE_API_TIMEOUT=30000
 ```
 
-### 3) Start Development
-```bash
-# Start the React development server
-npm run dev
+### 3) Available Commands
 
+```bash
+# Development Commands
+npm run dev              # Start Vite dev server + Electron app concurrently
+npm run build            # Build React app for production
+npm run preview          # Preview the production build
+
+# Electron Commands  
+npm run electron:dev     # Start Electron in development mode
+npm start                # Start Electron app (production)
+npm run dist             # Build React app + package Electron app
+
+# The dev command runs both Vite and Electron concurrently
 # Application will be available at http://localhost:5173
 ```
 
-### 4) Build for Production
-```bash
-# Build the application
-npm run build
+### 4) Development Workflow
 
-# Output will be in the dist/ folder
+**For Web Development Only:**
+```bash
+npm run dev
+# This starts both Vite (React) and Electron concurrently
+# Vite serves at http://localhost:5173
+# Electron opens the app automatically
+```
+
+**For Production Build:**
+```bash
+npm run build            # Build React app
+npm run dist             # Build + package Electron app
 ```
 
 ## 📱 Application Usage
