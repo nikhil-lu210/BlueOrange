@@ -64,7 +64,7 @@ export const NavBar: React.FC<NavBarProps> = ({
             <button
               className="btn btn-label-danger btn-sm"
               onClick={onClearAll}
-              disabled={loading}
+              disabled={loading || unsyncedCount === 0}
               title="Clear all attendance records"
             >
               <i className="bi bi-trash"></i>
