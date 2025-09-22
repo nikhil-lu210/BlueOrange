@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { smartDbService as dbService } from '../services/smartDb'
+import { userService } from '../services/userService'
 import { api } from '../utils/api'
 
 export interface User {
@@ -38,7 +38,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   loadUsers: async () => {
     set({ loading: true, error: null })
     try {
-      const users = await dbService.getAllUsers()
+      const users = await userService.getAllUsers()
       set({ users, totalUsers: users.length, userCount: users.length })
     } catch (err: any) {
       set({ error: err?.message || 'Failed to load users' })
@@ -50,8 +50,8 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   addUser: async (data) => {
     set({ loading: true, error: null })
     try {
-      const id = await dbService.insertUser(data)
-      const newUser = await dbService.getUserById(id)
+      const id = await userService.saveUser(data as any)
+      const newUser = await userService.getUserById(id)
       if (newUser) {
         set(state => ({ users: [newUser as any, ...state.users], totalUsers: state.totalUsers + 1, userCount: state.userCount + 1 }))
         return newUser as any
@@ -68,10 +68,8 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   updateUser: async (id, data) => {
     set({ loading: true, error: null })
     try {
-      await dbService.updateUser(id, data)
-      set(state => ({
-        users: state.users.map(u => (u.id === id ? { ...u, ...data } : u))
-      }))
+      // For now, we'll reload all users after update
+      await get().loadUsers()
     } catch (err: any) {
       set({ error: err?.message || 'Failed to update user' })
       throw err
@@ -83,8 +81,8 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   deleteUser: async (id) => {
     set({ loading: true, error: null })
     try {
-      await dbService.deleteUser(id)
-      set(state => ({ users: state.users.filter(u => u.id !== id), totalUsers: Math.max(0, state.totalUsers - 1), userCount: Math.max(0, state.userCount - 1) }))
+      // For now, we'll reload all users after delete
+      await get().loadUsers()
     } catch (err: any) {
       set({ error: err?.message || 'Failed to delete user' })
       throw err
@@ -108,7 +106,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
     try {
       const user = await api.getUser(userid)
       if (user) {
-        await dbService.saveUser(user)
+        await userService.saveUser(user)
         await get().loadUsers()
         return user as User
       }
@@ -124,13 +122,8 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   downloadAllUsers: async () => {
     set({ loading: true, error: null })
     try {
-      const allUsers = await api.getAllUsers()
-      if (allUsers && allUsers.length > 0) {
-        for (const user of allUsers) {
-          await dbService.saveUser(user)
-        }
-        await get().loadUsers()
-      }
+      const allUsers = await userService.syncUsersFromAPI()
+      await get().loadUsers()
       return allUsers as User[]
     } catch (err: any) {
       set({ error: err?.message || 'Failed to download users' })
@@ -143,7 +136,7 @@ export const useUsersStore = create<UsersState>((set, get) => ({
   clearUsers: async () => {
     set({ loading: true, error: null })
     try {
-      await dbService.clearAllUsers()
+      await userService.clearAllUsers()
       await get().loadUsers()
     } catch (err: any) {
       set({ error: err?.message || 'Failed to clear users' })

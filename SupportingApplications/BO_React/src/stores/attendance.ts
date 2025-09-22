@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { smartDbService as dbService } from '../services/smartDb'
+import { attendanceService } from '../services/attendanceService'
 import { API } from '../utils/api'
 import type { Attendance, SyncResult } from '../types'
 
@@ -22,9 +22,8 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
   syncedCount: 0,
 
          loadAttendances: async () => {
-           const data = await dbService.getAllAttendances()
-           console.log('AttendanceStore: Loading attendances', data.length, data);
-           set({
+        const data = await attendanceService.getAllAttendances()
+        set({
              attendances: data,
              totalCount: data.length,
              unsyncedCount: data.filter((a: Attendance) => !a.synced).length,
@@ -40,43 +39,25 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
   },
 
   syncAttendances: async (): Promise<SyncResult> => {
-    const unsynced = await dbService.getUnsyncedAttendances()
-    if (unsynced.length === 0) {
-      return {
-        success: true,
-        syncedCount: 0,
-        totalCount: 0,
-        message: 'No records to sync'
-      }
-    }
+    const result = await attendanceService.syncToServer()
+    await get().loadAttendances()
 
-    const api = new API()
-    const result = await api.syncAttendances(unsynced)
-
-    if (result.success) {
-      for (const attendance of unsynced.slice(0, result.syncedCount)) {
-        await dbService.markAttendanceAsSynced(attendance.id)
-      }
-      await get().loadAttendances()
-    }
-
-    // Ensure result matches SyncResult type
     return {
       success: result.success,
-      message: result.message || 'Sync completed',
-      syncedCount: result.syncedCount || 0,
-      totalCount: result.totalCount || 0,
+      message: result.message,
+      syncedCount: result.syncedCount,
+      totalCount: result.syncedCount, // For compatibility
       errors: result.errors
     }
   },
 
   deleteAttendance: async (id: number) => {
-    await dbService.deleteAttendance(id)
+    await attendanceService.deleteAttendance(id)
     await get().loadAttendances()
   },
 
   clearAll: async () => {
-    await dbService.clearAllAttendances()
+    await attendanceService.clearAllAttendances()
     await get().loadAttendances()
   },
 

@@ -1,6 +1,7 @@
 // Workflow service (React) for offline-first attendance management
-import { smartDbService as dbService } from './smartDb'
-import { syncService } from './syncService'
+import { userService } from './userService'
+import { attendanceService } from './attendanceService'
+import { api } from '../utils/api'
 import { APP_NAME, getServerName } from '../utils/constants'
 
 export interface WorkflowStatus {
@@ -25,22 +26,24 @@ class WorkflowService {
   private lastSyncTime: string | null = null
 
   async initializeApp(): Promise<WorkflowStatus> {
-    await dbService.init()
+    await userService.init()
+    await attendanceService.init()
 
-    const stats = await dbService.getStats()
-    const openAttendances = await dbService.getUnsyncedAttendances()
-    const hasOpenAttendances = openAttendances.some((att: any) => !att.clock_out)
+    const userCount = await userService.getUserCount()
+    const attendanceStats = await attendanceService.getStats()
+    const openAttendances = await attendanceService.getUnsyncedAttendances()
+    const hasOpenAttendances = openAttendances.length > 0
 
     this.isInitialized = true
 
     return {
       isInitialized: true,
-      hasUsers: stats.totalUsers > 0,
+      hasUsers: userCount > 0,
       hasOpenAttendances,
       lastSyncTime: this.lastSyncTime,
-      totalUsers: stats.totalUsers,
-      totalAttendances: stats.totalAttendances,
-      unsyncedAttendances: stats.unsyncedAttendances
+      totalUsers: userCount,
+      totalAttendances: attendanceStats.totalAttendances,
+      unsyncedAttendances: attendanceStats.unsyncedAttendances
     }
   }
 
@@ -49,79 +52,72 @@ class WorkflowService {
       onProgress({ step: 'clear', progress: 25, message: 'Clearing local user data...', isComplete: false })
     }
 
-    await dbService.clearAllUsers()
-
     if (onProgress) {
       onProgress({ step: 'users', progress: 50, message: `Fetching active users from ${getServerName()}...`, isComplete: false })
     }
 
-    const usersResult = await syncService.syncActiveUsers()
-    if (!usersResult.success) {
-      throw new Error(`Failed to sync users: ${usersResult.message}`)
+    try {
+      const syncedUsers = await userService.syncUsersFromAPI()
+
+      if (onProgress) {
+        onProgress({ step: 'complete', progress: 100, message: `Active users sync completed! ${syncedUsers.length} users synced.`, isComplete: true })
+      }
+
+      this.lastSyncTime = new Date().toISOString()
+      return this.initializeApp()
+    } catch (error: any) {
+      throw new Error(`Failed to sync users: ${error.message}`)
     }
-
-    if (onProgress) {
-      onProgress({ step: 'complete', progress: 100, message: `Active users sync completed! ${usersResult.usersSynced} users synced.`, isComplete: true })
-    }
-
-    this.lastSyncTime = new Date().toISOString()
-
-    return this.initializeApp()
   }
 
   async handleUserScan(userid: string): Promise<{ user: any | null; action: 'record_entry' | 'not_found'; message: string }> {
-    const user = await dbService.getUserByUserid(userid)
+    const user = await userService.getUserByUserid(userid)
 
     if (!user) {
       return { user: null, action: 'not_found', message: `User not found in local database. Please sync with ${getServerName()} first.` }
     }
 
-    const type = this.determineAttendanceType()
+    const type = attendanceService.determineAttendanceType()
     return { user: { ...user, suggestedType: type }, action: 'record_entry', message: `${user.alias_name} found. Ready to record ${type} entry.` }
   }
 
-  private determineAttendanceType(): 'Regular' | 'Overtime' {
-    const today = new Date()
-    const dayOfWeek = today.getDay() // 0 = Sunday, 6 = Saturday
-    if (dayOfWeek === 0 || dayOfWeek === 6) return 'Overtime'
-    return 'Regular'
-  }
-
   async recordUserEntry(userId: number, type: 'Regular' | 'Overtime' = 'Regular'): Promise<{ success: boolean; message: string; attendanceId?: number }> {
-    const user = await dbService.getUserById(userId)
+    const user = await userService.getUserById(userId)
     if (!user) {
       return { success: false, message: 'User not found' }
     }
-    const attendanceId = await dbService.recordEntry(userId, type)
+    const attendanceId = await attendanceService.recordEntry(userId, type)
     return { success: true, message: `${user.alias_name} entry recorded successfully`, attendanceId }
   }
 
   async syncOfflineData(): Promise<{ success: boolean; message: string; syncedCount: number; errors?: string[] }> {
-    const result = await syncService.syncOfflineAttendances()
+    const result = await attendanceService.syncToServer()
     if (result.success) {
       this.lastSyncTime = new Date().toISOString()
     }
-    return { success: result.success, message: result.message, syncedCount: result.attendancesSynced || 0, errors: result.errors }
+    return result
   }
 
   async getWorkflowStatus(): Promise<WorkflowStatus> {
-    const stats = await dbService.getStats()
-    const openAttendances = await dbService.getUnsyncedAttendances()
-    const hasOpenAttendances = openAttendances.some((att: any) => !att.clock_out)
+    const userCount = await userService.getUserCount()
+    const attendanceStats = await attendanceService.getStats()
+    const openAttendances = await attendanceService.getUnsyncedAttendances()
+    const hasOpenAttendances = openAttendances.length > 0
 
     return {
       isInitialized: this.isInitialized,
-      hasUsers: stats.totalUsers > 0,
+      hasUsers: userCount > 0,
       hasOpenAttendances,
       lastSyncTime: this.lastSyncTime,
-      totalUsers: stats.totalUsers,
-      totalAttendances: stats.totalAttendances,
-      unsyncedAttendances: stats.unsyncedAttendances
+      totalUsers: userCount,
+      totalAttendances: attendanceStats.totalAttendances,
+      unsyncedAttendances: attendanceStats.unsyncedAttendances
     }
   }
 
   async clearAllData(): Promise<void> {
-    await dbService.clearAllData()
+    await userService.clearAllUsers()
+    await attendanceService.clearAllAttendances()
     this.lastSyncTime = null
   }
 

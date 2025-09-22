@@ -1,6 +1,6 @@
 import React from 'react';
 import { getServerName, APP_NAME } from '../utils/constants';
-import logo from '../../public/assets/favicon.ico';
+import logo from '/assets/favicon.ico?url';
 
 interface NavBarProps {
   isOnline: boolean;
