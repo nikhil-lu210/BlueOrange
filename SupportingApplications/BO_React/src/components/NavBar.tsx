@@ -1,5 +1,6 @@
 import React from 'react';
 import { getServerName, APP_NAME } from '../utils/constants';
+import logo from '../../public/assets/favicon.ico';
 
 interface NavBarProps {
   isOnline: boolean;
@@ -24,8 +25,8 @@ export const NavBar: React.FC<NavBarProps> = ({
     <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom">
       <div className="container-fluid px-4">
         <div className="navbar-brand d-flex align-items-center">
-          <div className="bg-primary rounded-2 d-flex align-items-center justify-content-center me-3" style={{ width: 36, height: 36 }}>
-            <i className="bi bi-clock-fill text-white"></i>
+          <div className="rounded-2 d-flex align-items-center justify-content-center me-3" style={{ width: 36, height: 36 }}>
+            <img src={logo} alt="logo" height="40" width="40"/>
           </div>
           <div>
             <div className="fw-bold text-dark mb-0">{APP_NAME}</div>
@@ -70,6 +71,14 @@ export const NavBar: React.FC<NavBarProps> = ({
               title="Clear all attendance records"
             >
               <i className="bi bi-trash"></i>
+            </button>
+            <button
+              className="btn btn-label-dark btn-sm"
+              onClick={() => window.location.reload()}
+              disabled={loading}
+              title="Refresh"
+            >
+              <i className="bi bi-arrow-clockwise"></i>
             </button>
           </div>
         </div>

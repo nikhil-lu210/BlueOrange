@@ -37,6 +37,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
+      icon: path.join(__dirname, '..', 'public', 'assets', 'favicon.ico'),
       devTools: DEBUG_MODE ? true : false,
     },
   });
