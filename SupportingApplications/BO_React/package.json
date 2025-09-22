@@ -41,6 +41,7 @@
   },
   "build": {
     "appId": "com.example.electronreactapp",
+    "productName": "SI-App",
     "asar": true,
     "compression": "maximum",
     "files": [
@@ -58,7 +59,8 @@
     "win": {
       "target": [
         "nsis"
-      ]
+      ],
+      "icon": "public/assets/favicon.ico"
     },
     "nsis": {
       "oneClick": false,

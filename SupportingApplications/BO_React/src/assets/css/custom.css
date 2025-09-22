@@ -317,6 +317,18 @@
     border-color: var(--danger-color) !important;
     color: var(--light-color) !important;
 }
+.btn-label-dark {
+    background-color: var(--light-color) !important;
+    border-color: var(--dark-color) !important;
+    color: var(--dark-color) !important;
+}
+
+.btn-label-dark:hover,
+.btn-label-dark:focus {
+    background-color: var(--dark-color) !important;
+    border-color: var(--dark-color) !important;
+    color: var(--light-color) !important;
+}
 
 /* Button outline variants - Matching Blade theme */
 .btn-outline-primary {
@@ -382,6 +394,19 @@
     color: var(--light-color) !important;
     background-color: var(--danger-color) !important;
     border-color: var(--danger-color) !important;
+}
+.btn-outline-dark {
+    color: var(--dark-color) !important;
+    border: 1px solid;
+    border-color: var(--dark-color) !important;
+    background-color: transparent !important;
+}
+
+.btn-outline-dark:hover,
+.btn-outline-dark:focus {
+    color: var(--light-color) !important;
+    background-color: var(--dark-color) !important;
+    border-color: var(--dark-color) !important;
 }
 
 /* Status bar enhancements */
