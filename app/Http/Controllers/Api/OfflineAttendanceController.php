@@ -423,16 +423,21 @@ class OfflineAttendanceController extends Controller
             throw new Exception('You cannot Regular Clock-In on Holiday. Please clock in as Overtime.');
         }
 
-        // Check if user already clocked in as Regular today
+        // Check if user already clocked in as Regular today (any Regular attendance, not just open ones)
         $existingRegularAttendance = Attendance::where('user_id', $user->id)
             ->where('clock_in_date', $entryDate)
             ->where('type', 'Regular')
-            ->whereNull('clock_out') // Only check for open attendances
             ->first();
 
         if ($existingRegularAttendance && $type === 'Regular') {
-            // If there's already an open Regular attendance, this entry should be treated as clock-out
-            return $this->processClockOut($existingRegularAttendance, $entryDateTime, $activeShift);
+            // If there's already a Regular attendance today, check if it's open
+            if (is_null($existingRegularAttendance->clock_out)) {
+                // If there's an open Regular attendance, this entry should be treated as clock-out
+                return $this->processClockOut($existingRegularAttendance, $entryDateTime, $activeShift);
+            } else {
+                // If there's already a completed Regular attendance today, throw error
+                throw new Exception('You have already clocked in as Regular today.');
+            }
         }
 
         // Create clock-in record
