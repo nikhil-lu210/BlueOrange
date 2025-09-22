@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import type { AttendanceType } from '../types';
+import { DEBUG_MODE } from '../utils/constants';
 
 interface BarcodeScannerProps {
   loading: boolean;
@@ -46,6 +47,16 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    // In debug mode, allow all manual input
+    if (DEBUG_MODE) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handleSubmit();
+      }
+      return; // Allow all other keys to work normally
+    }
+
+    // Production mode - barcode scanner logic
     const now = Date.now();
     const timeDiff = now - lastKeyTimeRef.current;
     const MAX_INTERVAL = 50; // Max time between keystrokes to qualify as barcode
@@ -81,20 +92,26 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
   };
 
   const handlePaste = (e: React.ClipboardEvent) => {
-    e.preventDefault(); // Block pasting
+    // In debug mode, allow pasting
+    if (!DEBUG_MODE) {
+      e.preventDefault(); // Block pasting in production
+    }
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault(); // Block right-click
+    // In debug mode, allow right-click
+    if (!DEBUG_MODE) {
+      e.preventDefault(); // Block right-click in production
+    }
   };
 
   return (
     <div className="card border-0 shadow-sm">
       {/* Status Bar as Card Header */}
-      <div className="card-header bg-label-primary text-white border-0 py-2">
+      <div className={`card-header ${DEBUG_MODE ? 'bg-warning' : 'bg-label-primary'} text-white border-0 py-2`}>
         <h6 className="mb-0">
-          <i className="bi bi-info-circle me-2"></i>
-          {statusMessage}
+          <i className={`bi ${DEBUG_MODE ? 'bi-bug-fill' : 'bi-info-circle'} me-2`}></i>
+          {DEBUG_MODE ? `[DEBUG MODE] ${statusMessage}` : statusMessage}
         </h6>
       </div>
       <div className="card-body p-4">
@@ -148,9 +165,14 @@ export const BarcodeScanner: React.FC<BarcodeScannerProps> = ({
                 ref={inputRef}
                 value={userid}
                 onChange={(e) => {
-                  // Allow manual input but clear barcode buffer
-                  setUserid(e.target.value);
-                  barcodeRef.current = '';
+                  // In debug mode, allow manual input
+                  if (DEBUG_MODE) {
+                    setUserid(e.target.value);
+                  } else {
+                    // In production mode, only allow barcode input
+                    setUserid(e.target.value);
+                    barcodeRef.current = '';
+                  }
                 }}
                 onKeyDown={handleKeyDown}
                 onPaste={handlePaste}
