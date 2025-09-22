@@ -1,6 +1,33 @@
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
 const { pathToFileURL } = require('url');
+const fs = require('fs');
+
+// Load environment variables from .env file
+function loadEnvFile() {
+  const envPath = path.join(__dirname, '..', '.env');
+  if (fs.existsSync(envPath)) {
+    const envContent = fs.readFileSync(envPath, 'utf8');
+    const envLines = envContent.split('\n');
+
+    envLines.forEach(line => {
+      const trimmedLine = line.trim();
+      if (trimmedLine && !trimmedLine.startsWith('#')) {
+        const [key, ...valueParts] = trimmedLine.split('=');
+        if (key && valueParts.length > 0) {
+          const value = valueParts.join('=').replace(/^["']|["']$/g, ''); // Remove quotes
+          process.env[key.trim()] = value.trim();
+        }
+      }
+    });
+  }
+}
+
+// Load environment variables
+loadEnvFile();
+
+// Get DEBUG_MODE from environment variable
+const DEBUG_MODE = process.env.VITE_DEBUG_MODE === 'true';
 
 function createWindow() {
   const win = new BrowserWindow({
@@ -10,6 +37,7 @@ function createWindow() {
       nodeIntegration: false,
       contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
+      devTools: DEBUG_MODE ? true : false,
     },
   });
 
@@ -26,7 +54,9 @@ function createWindow() {
 
   if (!app.isPackaged) {
     win.loadURL('http://localhost:5173');
-    win.webContents.openDevTools();
+    if (DEBUG_MODE) {
+      win.webContents.openDevTools();
+    }
   } else {
     const indexPath = path.join(__dirname, '..', 'dist', 'index.html');
     const indexUrl = pathToFileURL(indexPath).toString();
