@@ -34,16 +34,96 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
     return () => { mounted = false; };
   }, []);
 
-  // Initialize DataTable when attendances change
+  // Add global delete function for DataTable buttons
   useEffect(() => {
-    if (tableRef.current && attendances.length > 0) {
-      // Destroy existing DataTable if it exists
-      if (dataTableRef.current) {
-        dataTableRef.current.destroy();
-        dataTableRef.current = null;
+    (window as any).deleteAttendance = (id: number) => {
+      if (!loading && confirm('Are you sure you want to delete this attendance record?')) {
+        onDeleteAttendance(id);
       }
+    };
 
-      // Initialize new DataTable
+    return () => {
+      delete (window as any).deleteAttendance;
+    };
+  }, [loading, onDeleteAttendance]);
+
+  // Helper function to update table data
+  const updateTableData = () => {
+    if (dataTableRef.current) {
+      console.log('AttendanceRecords: Updating table data', attendances.length, attendances);
+
+      try {
+        // Clear existing data
+        dataTableRef.current.clear();
+        console.log('AttendanceRecords: Cleared existing data');
+
+        // Add new data if there are attendances
+        if (attendances.length > 0) {
+          console.log('AttendanceRecords: Adding', attendances.length, 'rows to DataTable');
+
+          const rowsData = attendances.map(attendance => {
+            const userInfo = getUserInfo(attendance.user_id);
+            console.log('AttendanceRecords: Processing attendance', attendance.id, 'for user', userInfo);
+
+            return [
+              // Employee column
+              `<div class="d-flex align-items-center">
+                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 32px; height: 32px;">
+                  <i class="bi bi-person-fill" style="font-size: 0.8rem;"></i>
+                </div>
+                <div>
+                  <div class="fw-semibold text-dark" style="font-size: 0.9rem;">
+                    ${userInfo?.alias_name || 'Unknown User'}
+                  </div>
+                  <small class="text-muted" style="font-size: 0.75rem;">
+                    ${userInfo?.userid || `ID: ${attendance.user_id}`}
+                  </small>
+                </div>
+              </div>`,
+              // Type column
+              `<span class="badge ${attendance.type === 'Overtime' ? 'bg-label-warning' : 'bg-label-primary'} px-2 py-1 rounded-pill" style="font-size: 0.75rem;">
+                <i class="bi ${attendance.type === 'Overtime' ? 'bi-moon-fill' : 'bi-clock-fill'} me-1"></i>
+                ${attendance.type || 'Regular'}
+              </span>`,
+              // Time column
+              `<div>
+                <div class="fw-medium text-dark" style="font-size: 0.85rem;">${formatDate(attendance.entry_date_time)}</div>
+                <small class="text-muted" style="font-size: 0.75rem;">${formatTime(attendance.entry_date_time)}</small>
+              </div>`,
+              // Status column
+              `<span class="badge ${attendance.synced ? 'bg-label-success' : 'bg-label-warning'} px-2 py-1 rounded-pill" style="font-size: 0.75rem;">
+                <i class="bi ${attendance.synced ? 'bi-check-circle-fill' : 'bi-clock-history'} me-1"></i>
+                ${attendance.synced ? 'Synced' : 'Pending'}
+              </span>`,
+              // Action column
+              `<button class="btn btn-outline-danger btn-sm px-2 py-1" onclick="deleteAttendance(${attendance.id})" style="font-size: 0.75rem;">
+                <i class="bi bi-trash me-1"></i>Delete
+              </button>`
+            ];
+          });
+
+          dataTableRef.current.rows.add(rowsData);
+          console.log('AttendanceRecords: Added rows to DataTable');
+        }
+
+        // Redraw the table
+        dataTableRef.current.draw();
+        console.log('AttendanceRecords: DataTable redrawn');
+
+      } catch (error) {
+        console.error('AttendanceRecords: Error updating table data', error);
+      }
+    } else {
+      console.log('AttendanceRecords: DataTable not initialized yet');
+    }
+  };
+
+  // Initialize DataTable when we have data or when component is ready
+  useEffect(() => {
+    if (tableRef.current && !dataTableRef.current) {
+      console.log('AttendanceRecords: Initializing DataTable');
+
+      // Initialize DataTable with empty data first
       dataTableRef.current = $(tableRef.current).DataTable({
         responsive: true,
         pageLength: 10,
@@ -67,6 +147,8 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
           }
         }
       });
+
+      console.log('AttendanceRecords: DataTable initialized successfully');
     }
 
     return () => {
@@ -75,7 +157,25 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
         dataTableRef.current = null;
       }
     };
-  }, [attendances]);
+  }, []); // Only run once on mount
+
+  // Separate effect to populate data when both DataTable and data are ready
+  useEffect(() => {
+    if (dataTableRef.current && attendances.length > 0) {
+      console.log('AttendanceRecords: DataTable and data ready, populating table', attendances.length);
+      updateTableData();
+    }
+  }, [dataTableRef.current, attendances.length > 0]);
+
+  // Update DataTable data when attendances or users change (after initial load)
+  useEffect(() => {
+    console.log('AttendanceRecords: attendances or users changed', attendances.length, users.length);
+
+    // Only update if DataTable is already initialized and we have data
+    if (dataTableRef.current && attendances.length > 0) {
+      updateTableData();
+    }
+  }, [attendances, users]); // Update when attendances or users change
 
   const getUserInfo = (userId: number): User | undefined =>
     users.find(u => u.id === userId);
@@ -129,87 +229,84 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
       </div>
       <div className="card-body p-0">
 
-        {attendances.length === 0 ? (
-          <div className="text-center text-muted py-5">
-            <div className="mb-4">
-              <div className="bg-light rounded-circle d-inline-flex align-items-center justify-content-center"
-                   style={{ width: 80, height: 80 }}>
-                <i className="bi bi-clock-history text-muted" style={{ fontSize: '2rem', opacity: 0.5 }}></i>
-              </div>
-            </div>
-            <h6 className="text-muted mb-2 fw-semibold">No attendance records for today</h6>
-            <p className="text-muted small mb-0">Scan an employee barcode to start recording attendance</p>
-          </div>
-        ) : (
-          <div className="p-3">
-            <div className="table-responsive">
-              <table ref={tableRef} className="table table-bordered table-striped mb-0">
-                <thead className="table-light">
-                  <tr>
-                    <th className="text-center" style={{ width: '25%' }}>Employee</th>
-                    <th className="text-center" style={{ width: '15%' }}>Type</th>
-                    <th className="text-center" style={{ width: '20%' }}>Time</th>
-                    <th className="text-center" style={{ width: '15%' }}>Status</th>
-                    <th className="text-center" style={{ width: '25%' }}>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {attendances.map((attendance) => (
-                    <tr key={attendance.id}>
-                      <td className="py-2">
-                        <div className="d-flex align-items-center">
-                          <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{ width: 32, height: 32 }}>
-                            <i className="bi bi-person-fill" style={{ fontSize: '0.8rem' }}></i>
-                          </div>
-                          <div>
-                            <div className="fw-semibold text-dark" style={{ fontSize: '0.9rem' }}>
-                              {getUserInfo(attendance.user_id)?.alias_name || 'Unknown User'}
-                            </div>
-                            <small className="text-muted" style={{ fontSize: '0.75rem' }}>
-                              {getUserInfo(attendance.user_id)?.userid || `ID: ${attendance.user_id}`}
-                            </small>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="text-center py-2">
-                        <span className={`badge ${attendance.type === 'Overtime' ? 'bg-label-warning' : 'bg-label-primary'} px-2 py-1 rounded-pill`} style={{ fontSize: '0.75rem' }}>
-                          <i className={`bi ${attendance.type === 'Overtime' ? 'bi-moon-fill' : 'bi-clock-fill'} me-1`}></i>
-                          {attendance.type || 'Regular'}
-                        </span>
-                      </td>
-                      <td className="text-center py-2">
-                        <div>
-                          <div className="fw-medium text-dark" style={{ fontSize: '0.85rem' }}>{formatDate(attendance.entry_date_time)}</div>
-                          <small className="text-muted" style={{ fontSize: '0.75rem' }}>{formatTime(attendance.entry_date_time)}</small>
-                        </div>
-                      </td>
-                      <td className="text-center py-2">
-                        <span className={`badge ${attendance.synced ? 'bg-label-success' : 'bg-label-warning'} px-2 py-1 rounded-pill`} style={{ fontSize: '0.75rem' }}>
-                          <i className={`bi ${attendance.synced ? 'bi-check-circle-fill' : 'bi-clock-history'} me-1`}></i>
-                          {attendance.synced ? 'Synced' : 'Pending'}
-                        </span>
-                      </td>
-                      <td className="text-center py-2">
-                        <button
-                          className="btn btn-outline-danger btn-sm px-2 py-1"
-                          onClick={() => {
-                            if (!loading && confirm('Are you sure you want to delete this attendance record?'))
-                              onDeleteAttendance(attendance.id);
-                          }}
-                          disabled={loading}
-                          title="Delete record"
-                          style={{ fontSize: '0.75rem' }}
-                        >
-                          <i className="bi bi-trash me-1"></i>Delete
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        )}
+               {attendances.length === 0 ? (
+                 <div className="text-center text-muted py-5">
+                   <div className="mb-4">
+                     <div className="bg-light rounded-circle d-inline-flex align-items-center justify-content-center"
+                          style={{ width: 80, height: 80 }}>
+                       <i className="bi bi-clock-history text-muted" style={{ fontSize: '2rem', opacity: 0.5 }}></i>
+                     </div>
+                   </div>
+                   <h6 className="text-muted mb-2 fw-semibold">No attendance records for today</h6>
+                   <p className="text-muted small mb-0">Scan an employee barcode to start recording attendance</p>
+                 </div>
+               ) : (
+                 <div className="p-3">
+                   <div className="table-responsive">
+                     <table ref={tableRef} className="table table-bordered table-striped mb-0">
+                       <thead className="table-light">
+                         <tr>
+                           <th className="text-center" style={{ width: '25%' }}>Employee</th>
+                           <th className="text-center" style={{ width: '15%' }}>Type</th>
+                           <th className="text-center" style={{ width: '20%' }}>Time</th>
+                           <th className="text-center" style={{ width: '15%' }}>Status</th>
+                           <th className="text-center" style={{ width: '25%' }}>Action</th>
+                         </tr>
+                       </thead>
+                       <tbody>
+                         {/* DataTable will populate this automatically */}
+                         {/* Fallback: If DataTable fails, show React-rendered rows */}
+                         {!dataTableRef.current && attendances.map(attendance => (
+                           <tr key={attendance.id}>
+                             <td>
+                               <div className="d-flex align-items-center">
+                                 <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style={{ width: 32, height: 32 }}>
+                                   <i className="bi bi-person-fill" style={{ fontSize: '0.8rem' }}></i>
+                                 </div>
+                                 <div>
+                                   <div className="fw-semibold text-dark" style={{ fontSize: '0.9rem' }}>
+                                     {getUserInfo(attendance.user_id)?.alias_name || 'Unknown User'}
+                                   </div>
+                                   <small className="text-muted" style={{ fontSize: '0.75rem' }}>
+                                     {getUserInfo(attendance.user_id)?.userid || `ID: ${attendance.user_id}`}
+                                   </small>
+                                 </div>
+                               </div>
+                             </td>
+                             <td className="text-center">
+                               <span className={`badge ${attendance.type === 'Overtime' ? 'bg-label-warning' : 'bg-label-primary'} px-2 py-1 rounded-pill`} style={{ fontSize: '0.75rem' }}>
+                                 <i className={`bi ${attendance.type === 'Overtime' ? 'bi-moon-fill' : 'bi-clock-fill'} me-1`}></i>
+                                 {attendance.type || 'Regular'}
+                               </span>
+                             </td>
+                             <td className="text-center">
+                               <div>
+                                 <div className="fw-medium text-dark" style={{ fontSize: '0.85rem' }}>{formatDate(attendance.entry_date_time)}</div>
+                                 <small className="text-muted" style={{ fontSize: '0.75rem' }}>{formatTime(attendance.entry_date_time)}</small>
+                               </div>
+                             </td>
+                             <td className="text-center">
+                               <span className={`badge ${attendance.synced ? 'bg-label-success' : 'bg-label-warning'} px-2 py-1 rounded-pill`} style={{ fontSize: '0.75rem' }}>
+                                 <i className={`bi ${attendance.synced ? 'bi-check-circle-fill' : 'bi-clock-history'} me-1`}></i>
+                                 {attendance.synced ? 'Synced' : 'Pending'}
+                               </span>
+                             </td>
+                             <td className="text-center">
+                               <button
+                                 className="btn btn-outline-danger btn-sm px-2 py-1"
+                                 onClick={() => onDeleteAttendance(attendance.id)}
+                                 style={{ fontSize: '0.75rem' }}
+                               >
+                                 <i className="bi bi-trash me-1"></i>Delete
+                               </button>
+                             </td>
+                           </tr>
+                         ))}
+                       </tbody>
+                     </table>
+                   </div>
+                 </div>
+               )}
       </div>
     </div>
   );

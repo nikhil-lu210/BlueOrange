@@ -5,6 +5,7 @@ interface NavBarProps {
   isOnline: boolean;
   loading: boolean;
   unsyncedCount: number;
+  totalCount: number;
   onSyncActiveUsers: () => void;
   onSyncAttendances: () => void;
   onClearAll: () => void;
@@ -14,6 +15,7 @@ export const NavBar: React.FC<NavBarProps> = ({
   isOnline,
   loading,
   unsyncedCount,
+  totalCount,
   onSyncActiveUsers,
   onSyncAttendances,
   onClearAll,
@@ -64,7 +66,7 @@ export const NavBar: React.FC<NavBarProps> = ({
             <button
               className="btn btn-label-danger btn-sm"
               onClick={onClearAll}
-              disabled={loading || unsyncedCount === 0}
+              disabled={loading || totalCount === 0}
               title="Clear all attendance records"
             >
               <i className="bi bi-trash"></i>

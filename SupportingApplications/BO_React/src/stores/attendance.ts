@@ -23,6 +23,7 @@ export const useAttendanceStore = create<AttendanceState>((set, get) => ({
 
          loadAttendances: async () => {
            const data = await dbService.getAllAttendances()
+           console.log('AttendanceStore: Loading attendances', data.length, data);
            set({
              attendances: data,
              totalCount: data.length,

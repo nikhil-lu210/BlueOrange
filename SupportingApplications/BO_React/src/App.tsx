@@ -144,6 +144,7 @@ export default function App() {
         isOnline={isOnline}
         loading={loading}
         unsyncedCount={unsyncedCount}
+        totalCount={totalCount}
         onSyncActiveUsers={handleSyncActiveUsers}
         onSyncAttendances={handleSyncAttendances}
         onClearAll={handleClearAll}
