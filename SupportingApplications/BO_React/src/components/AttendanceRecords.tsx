@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { smartDbService as dbService } from '../services/smartDb';
+import { attendanceService } from '../services/attendanceService';
+import { userService } from '../services/userService';
 import type { Attendance, User } from '../types';
 import $ from 'jquery';
 import 'datatables.net';
@@ -25,7 +26,7 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
     let mounted = true;
     (async () => {
       try {
-        const u = await dbService.getAllUsers();
+        const u = await userService.getAllUsers();
         if (mounted) setUsers(u);
       } catch (e) {
         console.error('Failed to load users', e);
@@ -50,20 +51,14 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
   // Helper function to update table data
   const updateTableData = () => {
     if (dataTableRef.current) {
-      console.log('AttendanceRecords: Updating table data', attendances.length, attendances);
-
       try {
         // Clear existing data
         dataTableRef.current.clear();
-        console.log('AttendanceRecords: Cleared existing data');
 
         // Add new data if there are attendances
         if (attendances.length > 0) {
-          console.log('AttendanceRecords: Adding', attendances.length, 'rows to DataTable');
-
           const rowsData = attendances.map(attendance => {
             const userInfo = getUserInfo(attendance.user_id);
-            console.log('AttendanceRecords: Processing attendance', attendance.id, 'for user', userInfo);
 
             return [
               // Employee column
@@ -103,26 +98,20 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
           });
 
           dataTableRef.current.rows.add(rowsData);
-          console.log('AttendanceRecords: Added rows to DataTable');
         }
 
         // Redraw the table
         dataTableRef.current.draw();
-        console.log('AttendanceRecords: DataTable redrawn');
 
       } catch (error) {
         console.error('AttendanceRecords: Error updating table data', error);
       }
-    } else {
-      console.log('AttendanceRecords: DataTable not initialized yet');
     }
   };
 
   // Initialize DataTable when we have data or when component is ready
   useEffect(() => {
     if (tableRef.current && !dataTableRef.current) {
-      console.log('AttendanceRecords: Initializing DataTable');
-
       // Initialize DataTable with empty data first
       dataTableRef.current = $(tableRef.current).DataTable({
         responsive: true,
@@ -147,8 +136,6 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
           }
         }
       });
-
-      console.log('AttendanceRecords: DataTable initialized successfully');
     }
 
     return () => {
@@ -162,15 +149,12 @@ export const AttendanceRecords: React.FC<AttendanceRecordsProps> = ({
   // Separate effect to populate data when both DataTable and data are ready
   useEffect(() => {
     if (dataTableRef.current && attendances.length > 0) {
-      console.log('AttendanceRecords: DataTable and data ready, populating table', attendances.length);
       updateTableData();
     }
   }, [dataTableRef.current, attendances.length > 0]);
 
   // Update DataTable data when attendances or users change (after initial load)
   useEffect(() => {
-    console.log('AttendanceRecords: attendances or users changed', attendances.length, users.length);
-
     // Only update if DataTable is already initialized and we have data
     if (dataTableRef.current && attendances.length > 0) {
       updateTableData();

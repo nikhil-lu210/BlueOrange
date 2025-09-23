@@ -42,8 +42,14 @@ class WorkScheduleController extends Controller
      */
     public function create()
     {
-        // Get users for dropdown
-        $users = User::with('employee')->get();
+        // Get users for dropdown by order by DESC of employee's alias name
+        $users = User::with('employee')
+            ->whereHas('employee')
+            ->whereStatus('Active')
+            ->join('employees', 'users.id', '=', 'employees.user_id')
+            ->orderBy('employees.alias_name', 'ASC')
+            ->select('users.*')
+            ->get();
 
         // Get available weekdays (excluding inactive weekends)
         $availableWeekdays = $this->workScheduleService->getAvailableWeekdays();

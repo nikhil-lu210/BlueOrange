@@ -11,7 +11,7 @@ const API_ENDPOINTS = {
 }
 
 class API {
-  private baseURL: string
+  public baseURL: string
 
   constructor(baseURL: string = API_BASE_URL) {
     this.baseURL = baseURL
@@ -19,7 +19,6 @@ class API {
 
   private async makeRequest(endpoint: string, options: RequestInit = {}): Promise<any> {
     const url = `${this.baseURL}${endpoint}`
-    console.log(`Making API request to: ${url}`)
 
     const defaultOptions: RequestInit = {
       headers: {
@@ -84,7 +83,9 @@ class API {
 
   async getAllUsers(): Promise<any[]> {
     const response = await this.makeRequest(API_ENDPOINTS.getAllUsers)
-    if (response?.success && response?.data) return response.data
+    if (response?.success && response?.data) {
+      return response.data
+    }
     throw new Error(response?.message || 'Failed to get users')
   }
 

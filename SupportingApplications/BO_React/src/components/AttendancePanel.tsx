@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { smartDbService as dbService } from '../services/smartDb';
+import { userService } from '../services/userService';
 import type { Attendance, User } from '../types';
 
 interface AttendancePanelProps {
@@ -21,7 +21,7 @@ export const AttendancePanel: React.FC<AttendancePanelProps> = ({
     let mounted = true;
     (async () => {
       try {
-        const u = await dbService.getAllUsers();
+        const u = await userService.getAllUsers();
         if (mounted) setUsers(u);
       } catch (e) {
         console.error('Failed to load users', e);

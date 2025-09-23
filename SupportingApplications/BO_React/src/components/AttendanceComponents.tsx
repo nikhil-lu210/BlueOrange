@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
-import { smartDbService as dbService } from '../services/smartDb'
+import { userService } from '../services/userService'
 
 // ========== Types ==========
 export type ToastType = 'success' | 'error' | 'warning' | 'info'
@@ -234,7 +234,7 @@ export function AttendanceTable({ attendances, loading, onDeleteAttendance, onCl
     let mounted = true
     ;(async () => {
       try {
-        const u = await dbService.getAllUsers()
+        const u = await userService.getAllUsers()
         if (mounted) setUsers(u)
       } catch (e) {
         console.error('Failed to load users', e)
