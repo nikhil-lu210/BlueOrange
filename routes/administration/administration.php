@@ -90,4 +90,7 @@ Route::prefix('')
 
             // work_schedule
             include_once 'work_schedule/work_schedule.php';
+
+            // database
+            include_once 'database/database.php';
         });
