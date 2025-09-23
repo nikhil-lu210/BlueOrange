@@ -18,7 +18,7 @@ class Kernel extends ConsoleKernel
         //          ->timezone(config('app.timezone'))
         //          ->withoutOverlapping()
         //          ->appendOutputTo(storage_path('logs/salaries-calculate.log'));
-        
+
         /**
          * Task 1: Send task notifications
          * Runs daily at 02:00 AM
@@ -63,6 +63,17 @@ class Kernel extends ConsoleKernel
                 ->weeklyOn(5, '06:00')
                 ->withoutOverlapping()
                 ->appendOutputTo(storage_path('logs/clear-logs.log'));
+
+        /**
+         * Task 5: Database backup
+         * Runs daily at 04:00 PM (16:00)
+         * withoutOverlapping prevents multiple backup processes
+         * Output logged to database-backup.log
+         */
+        $schedule->command('backup:database-daily --no-ansi --quiet')
+                ->dailyAt('16:00')
+                ->withoutOverlapping()
+                ->appendOutputTo(storage_path('logs/database-backup.log'));
 
         /**
          * Task 6: Clear cache (optional)

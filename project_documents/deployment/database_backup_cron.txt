@@ -1,0 +1,70 @@
+Database Backup Cron Job Setup
+================================
+
+The database backup system is now configured to run automatically via Laravel's scheduler.
+
+SCHEDULED BACKUP:
+================
+- Command: php artisan backup:database-daily
+- Schedule: Daily at 04:00 PM (16:00)
+- Location: storage/app/public/db_backup/
+- Retention: 3 days (automatic cleanup)
+- Notifications: Email sent to nigel.pi@staff-india.com, nigel.staffindia@gmail.com
+
+MANUAL BACKUP COMMANDS:
+======================
+# Create backup without email notifications (for testing)
+php artisan backup:database-daily --disable-notifications
+
+# Create backup with email notifications (production)
+php artisan backup:database-daily
+
+CRON JOB SETUP:
+===============
+Add this line to your server's crontab to run Laravel scheduler:
+
+# Run Laravel scheduler every minute
+* * * * * cd /path/to/your/project && php artisan schedule:run >> /dev/null 2>&1
+
+For Windows Task Scheduler:
+- Create a new task
+- Action: Start a program
+- Program: php
+- Arguments: artisan schedule:run
+- Start in: E:\NIGEL\LaravelProjects\laragon\www\BlueOrange
+- Trigger: Daily at 00:00 (or any time)
+
+BACKUP FILE FORMAT:
+==================
+- Filename: si_app_db_backup_DDMMYYYY.sql (e.g., si_app_db_backup_23092025.sql)
+- Location: storage/app/public/db_backup/
+- Download URL: https://yourdomain.com/database/backup/download/si_app_db_backup_23092025.sql
+
+EMAIL NOTIFICATIONS:
+===================
+- Success: Email with download link sent after successful backup
+- Failure: Email with error details sent if backup fails
+- Recipients: nigel.pi@staff-india.com, nigel.staffindia@gmail.com
+- Classes: DatabaseBackupReadyMail, DatabaseBackupFailedMail
+
+AUTOMATIC CLEANUP:
+=================
+- Keeps backups for 3 days only
+- Automatically deletes older backups
+- Never deletes the newest backup
+
+TROUBLESHOOTING:
+===============
+1. If mysqldump not found, add MYSQLDUMP_PATH to .env file:
+   MYSQLDUMP_PATH=C:\laragon\bin\mysql\mysql-8.0.30-winx64\bin\mysqldump.exe
+
+2. Check logs at: storage/logs/database-backup.log
+
+3. Test backup manually:
+   php artisan backup:database-daily --disable-notifications
+
+4. Verify backup file:
+   dir storage\app\public\db_backup
+
+5. Test download link:
+   https://yourdomain.com/database/backup/download/si_app_db_backup_23092025.sql
