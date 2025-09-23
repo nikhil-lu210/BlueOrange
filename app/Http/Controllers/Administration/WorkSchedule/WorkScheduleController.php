@@ -76,7 +76,7 @@ class WorkScheduleController extends Controller
                 : 'Work schedule has been created successfully.';
 
             toast()->success($message);
-            return redirect()->route('administration.work_schedule.index');
+            return redirect()->back();
 
         } catch (Exception $e) {
             return redirect()->back()
