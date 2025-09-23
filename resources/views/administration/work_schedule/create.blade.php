@@ -95,7 +95,7 @@
                                     <div class="col text-center">
                                         <div class="form-check custom-option custom-option-basic">
                                             <label class="form-check-label custom-option-content" for="weekday_{{ $loop->index }}">
-                                                <input name="weekdays[]" class="form-check-input weekday-checkbox" type="checkbox" value="{{ $weekday }}" id="weekday_{{ $loop->index }}" {{ in_array($weekday, old('weekdays', [])) ? 'checked' : '' }}>
+                                                <input name="weekdays[]" class="form-check-input weekday-checkbox" type="checkbox" value="{{ $weekday }}" id="weekday_{{ $loop->index }}" {{ in_array($weekday, old('weekdays', [])) ? 'checked' : '' }} checked>
                                                 <span class="custom-option-header pb-0">
                                                     <span class="h6 mb-0">{{ $weekday }}</span>
                                                 </span>

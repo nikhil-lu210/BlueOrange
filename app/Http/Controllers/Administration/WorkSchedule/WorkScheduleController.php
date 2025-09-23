@@ -75,8 +75,8 @@ class WorkScheduleController extends Controller
                 ? 'Work schedules have been created successfully for ' . count($createdSchedules) . ' weekdays.'
                 : 'Work schedule has been created successfully.';
 
-            return redirect()->route('administration.work_schedule.index')
-                ->with('success', $message);
+            toast()->success($message);
+            return redirect()->route('administration.work_schedule.index');
 
         } catch (Exception $e) {
             return redirect()->back()
