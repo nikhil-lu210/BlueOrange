@@ -1,6 +1,5 @@
 import { create } from 'zustand'
 import { attendanceService } from '../services/attendanceService'
-import { API } from '../utils/api'
 import type { Attendance, SyncResult } from '../types'
 
 interface AttendanceState {
