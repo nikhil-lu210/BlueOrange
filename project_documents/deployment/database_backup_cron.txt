@@ -58,13 +58,29 @@ TROUBLESHOOTING:
 1. If mysqldump not found, add MYSQLDUMP_PATH to .env file:
    MYSQLDUMP_PATH=C:\laragon\bin\mysql\mysql-8.0.30-winx64\bin\mysqldump.exe
 
-2. Check logs at: storage/logs/database-backup.log
+   For shared hosting (cPanel), try these paths:
+   MYSQLDUMP_PATH=/usr/bin/mysqldump
+   MYSQLDUMP_PATH=/opt/cpanel/ea-php82/root/usr/bin/mysqldump
 
-3. Test backup manually:
+2. For shared hosting environments:
+   - The system will automatically fallback to Laravel's database connection
+   - This creates the same SQL dump but uses PHP instead of mysqldump
+   - Check if mysqldump is available: which mysqldump
+
+3. Check logs at: storage/logs/database-backup.log
+
+4. Test backup manually:
    php artisan backup:database-daily --disable-notifications
 
-4. Verify backup file:
+5. Verify backup file:
    dir storage\app\public\db_backup
 
-5. Test download link:
+6. Test download link:
    https://yourdomain.com/database/backup/download/si_app_db_backup_23092025.sql
+
+SHARED HOSTING NOTES:
+====================
+- The backup system automatically detects if mysqldump is available
+- If mysqldump is not found, it falls back to using Laravel's database connection
+- Both methods create identical SQL dump files
+- The fallback method works on all shared hosting providers
