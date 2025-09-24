@@ -241,7 +241,7 @@
                                             $scheduledCount = count(collect($reportData)->map(function($userData) use ($weekday) {
                                                 return collect($userData['schedules'])->where('weekday', $weekday)->first();
                                             })->filter());
-                                            $totalActiveCount = count($users ?? []);
+                                            $totalActiveCount = count(collect($users ?? [])->where('status', 'Active'));
                                         @endphp
                                         <span class="badge bg-label-primary fs-6">
                                             Scheduled: {{ $scheduledCount }}/{{ $totalActiveCount }}
