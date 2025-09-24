@@ -9,14 +9,16 @@ class AuthorizationResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
         return [
-            'user_id' => $this['user_id'],
-            'name' => $this['name'],
-            'email' => $this['email'],
-            'permissions' => $this['permissions']
+            'user_id' => $this->resource['user_id'] ?? $this->user_id,
+            'name' => $this->resource['name'] ?? $this->name,
+            'email' => $this->resource['email'] ?? $this->email,
+            'permissions' => $this->resource['permissions'] ?? $this->permissions ?? [],
         ];
     }
 }
