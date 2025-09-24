@@ -27,6 +27,18 @@ class OfflineAttendanceController extends Controller
     }
 
     /**
+     * API status endpoint for connection testing
+     */
+    public function status(): JsonResponse
+    {
+        return $this->successResponse(
+            ['status' => 'online', 'timestamp' => now()->toISOString()],
+            'API is online'
+        );
+    }
+
+
+    /**
      * Authorize user for sensitive operations (Sync from, Sync to, Clear All)
      */
     public function authorizeUser(OfflineAttendanceAuthorizeRequest $request): JsonResponse
@@ -37,7 +49,7 @@ class OfflineAttendanceController extends Controller
                 $request->input('password')
             );
 
-            return $this->resourceResponse(
+            return $this->successResponse(
                 new AuthorizationResource($authorizationData),
                 'Authorization successful'
             );
@@ -72,7 +84,7 @@ class OfflineAttendanceController extends Controller
         try {
             $userData = $this->offlineAttendanceService->getUserByUserid($userid);
 
-            return $this->resourceResponse(
+            return $this->successResponse(
                 new UserResource($userData),
                 'User found'
             );
@@ -100,7 +112,7 @@ class OfflineAttendanceController extends Controller
         try {
             $statusData = $this->offlineAttendanceService->checkUserAttendanceStatus($userid);
 
-            return $this->resourceResponse(
+            return $this->successResponse(
                 new AttendanceStatusResource($statusData),
                 'User attendance status retrieved'
             );
@@ -127,7 +139,7 @@ class OfflineAttendanceController extends Controller
         try {
             $users = $this->offlineAttendanceService->getAllUsers();
 
-            return $this->collectionResponse(
+            return $this->successResponse(
                 UserResource::collection($users),
                 'Users retrieved successfully'
             );
@@ -156,15 +168,55 @@ class OfflineAttendanceController extends Controller
                 $request->input('attendances', [])
             );
 
-            $message = $result['success']
-                ? "Successfully synced {$result['synced_count']} attendance records"
-                : "Synced {$result['synced_count']} of {$result['total_count']} attendance records. " . count($result['errors']) . " errors occurred.";
+            // Create more user-friendly messages
+            if ($result['success']) {
+                $message = "Successfully synced {$result['synced_count']} attendance record(s)";
+            } else {
+                $errorCount = count($result['errors']);
 
-            return $this->resourceResponse(
-                new SyncResultResource($result),
-                $message,
-                $result['success'] ? 200 : 422
-            );
+                // Always show specific error details for better user experience
+                $errorDetails = [];
+                $maxErrors = min(3, count($result['errors'])); // Show first 3 errors
+
+                    for ($i = 0; $i < $maxErrors; $i++) {
+                        $error = $result['errors'][$i];
+                        // Extract the meaningful part after "attendance for X: " (X is numeric ID)
+                        if (preg_match('/attendance for \d+: (.+)/', $error, $matches)) {
+                            $errorMessage = $matches[1];
+                            $errorDetails[] = ($i + 1) . ") {$errorMessage}";
+                        } else {
+                            $errorDetails[] = ($i + 1) . ") " . $error;
+                        }
+                    }
+
+                if ($result['synced_count'] > 0) {
+                    // Partial success - format message to trigger React app's parseSyncError function
+                    $message = "Synced {$result['synced_count']} of {$result['total_count']} attendance records. " . count($result['errors']) . " errors occurred.";
+                } else {
+                    // Complete failure
+                    $message = "Sync failed: Error processing attendance for\n\n" . implode("\n", $errorDetails);
+                }
+
+                if (count($result['errors']) > 3) {
+                    $message .= "\n\n... and " . (count($result['errors']) - 3) . " more error(s)";
+                }
+            }
+
+            // Return appropriate status based on success
+            if ($result['success']) {
+                // Complete success
+                return $this->successResponse(
+                    new SyncResultResource($result),
+                    $message
+                );
+            } else {
+                // Partial success or complete failure - return success: false
+                return response()->json([
+                    'success' => false,
+                    'message' => $message,
+                    'data' => new SyncResultResource($result)
+                ], 200);
+            }
 
         } catch (Exception $e) {
             Log::error('Offline Attendance API: Error syncing attendances', [

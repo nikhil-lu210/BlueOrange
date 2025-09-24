@@ -132,8 +132,8 @@ class OfflineAttendanceService
                 $user = $this->getUserFromAttendanceData($attendanceData, $userLookup, $useridLookup);
 
                 if (!$user) {
-                    $userId = $attendanceData['user_id'] ?? $attendanceData['userid'] ?? 'unknown';
-                    $errors[] = "User not found for user_id: {$userId}";
+                    $userId = $attendanceData['userid'] ?? $attendanceData['user_id'] ?? 'unknown';
+                    $errors[] = "attendance for {$userId}: User not found for UID {$userId}";
                     continue;
                 }
 
@@ -146,11 +146,32 @@ class OfflineAttendanceService
                 $syncedRecordIds[] = $index;
 
             } catch (Exception $e) {
-                $userId = $attendanceData['user_id'] ?? $attendanceData['userid'] ?? 'unknown';
-                $errors[] = "Error processing attendance for {$userId}: " . $e->getMessage();
+                $userId = $attendanceData['userid'] ?? $attendanceData['user_id'] ?? 'unknown';
+                $userName = $user ? ($user->employee?->alias_name ?? $user->name) : 'Unknown User';
+
+                // Create error message in format expected by React app (without "Error processing" prefix)
+                // The React app expects: "attendance for {numericUserId}: {message}" for regex parsing
+                $errorMessage = $e->getMessage();
+                $numericUserId = $user ? $user->id : $userId; // Use numeric ID for React app regex
+                $displayUserId = $user ? $user->userid : $userId; // Use userid for display
+
+                if (str_contains($errorMessage, 'already have an open Regular attendance')) {
+                    $errorMessage = "attendance for {$numericUserId}: {$userName} (UID{$displayUserId}) already has an open Regular attendance today. Please clock out first or use Overtime.";
+                } elseif (str_contains($errorMessage, 'already clocked in as Regular today')) {
+                    $errorMessage = "attendance for {$numericUserId}: {$userName} (UID{$displayUserId}) has already clocked in as Regular today. Please use Overtime for additional time.";
+                } elseif (str_contains($errorMessage, 'cannot Regular Clock-In on Weekend')) {
+                    $errorMessage = "attendance for {$numericUserId}: {$userName} (UID{$displayUserId}) cannot clock in as Regular on Weekend. Please use Overtime.";
+                } elseif (str_contains($errorMessage, 'cannot Regular Clock-In on Holiday')) {
+                    $errorMessage = "attendance for {$numericUserId}: {$userName} (UID{$displayUserId}) cannot clock in as Regular on Holiday. Please use Overtime.";
+                } else {
+                    $errorMessage = "attendance for {$numericUserId}: {$userName} (UID{$displayUserId}) - " . $e->getMessage();
+                }
+
+                $errors[] = $errorMessage;
 
                 Log::error('Offline Attendance API: Error processing attendance', [
                     'userid' => $userId,
+                    'username' => $userName,
                     'error' => $e->getMessage(),
                     'trace' => $e->getTraceAsString()
                 ]);
@@ -177,11 +198,11 @@ class OfflineAttendanceService
         $users = collect();
 
         if ($userIds->isNotEmpty()) {
-            $users = $users->merge(User::whereIn('id', $userIds)->get());
+            $users = $users->merge(User::with('employee')->whereIn('id', $userIds)->get());
         }
 
         if ($userids->isNotEmpty()) {
-            $users = $users->merge(User::whereIn('userid', $userids)->get());
+            $users = $users->merge(User::with('employee')->whereIn('userid', $userids)->get());
         }
 
         return $users;
@@ -273,11 +294,11 @@ class OfflineAttendanceService
 
         return Attendance::create([
             'user_id' => $user->id,
-            'employee_shift_id' => $activeShift->id,
+            'employee_shift_id' => $activeShift?->id, // Handle null shift
             'clock_in_date' => $entryDateTime->toDateString(),
             'clock_in' => $entryDateTime,
             'type' => $type,
-            'clockin_medium' => 'Barcode',
+            'clockin_medium' => 'Offline-Sync',
             'ip_address' => request()->ip(),
             'created_at' => now(),
             'updated_at' => now()
@@ -355,7 +376,7 @@ class OfflineAttendanceService
             'clock_out' => $entryDateTime,
             'total_time' => $formattedTotalTime,
             'total_adjusted_time' => $formattedAdjustedTotalTime,
-            'clockout_medium' => 'Barcode',
+            'clockout_medium' => 'Offline-Sync',
             'updated_at' => now()
         ]);
 
@@ -367,7 +388,7 @@ class OfflineAttendanceService
      */
     private function calculateAdjustedTime(Attendance $attendance, $activeShift, int $totalSeconds): string
     {
-        if ($attendance->type === 'Regular' && $activeShift) {
+        if ($attendance->type === 'Regular' && $activeShift && $activeShift->total_time) {
             list($shiftHours, $shiftMinutes, $shiftSeconds) = explode(':', $activeShift->total_time);
             $shiftTotalSeconds = ($shiftHours * 3600) + ($shiftMinutes * 60) + $shiftSeconds;
             $adjustedTotalSeconds = min($totalSeconds, $shiftTotalSeconds);

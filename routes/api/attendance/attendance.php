@@ -5,6 +5,9 @@ use App\Http\Controllers\Api\OfflineAttendanceController;
 
 // Offline Attendance API Routes
 Route::controller(OfflineAttendanceController::class)->prefix('offline-attendance')->group(function () {
+    // Status endpoint for connection testing
+    Route::get('/status', 'status');
+
     // Authorize user for sensitive operations
     Route::post('/authorize', 'authorizeUser');
 

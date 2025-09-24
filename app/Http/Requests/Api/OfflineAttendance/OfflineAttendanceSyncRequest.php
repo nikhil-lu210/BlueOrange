@@ -27,13 +27,11 @@ class OfflineAttendanceSyncRequest extends FormRequest
             ],
             'attendances.*.user_id' => [
                 'sometimes',
-                'integer',
-                'exists:users,id'
+                'integer'
             ],
             'attendances.*.userid' => [
                 'sometimes',
-                'string',
-                'exists:users,userid'
+                'string'
             ],
             'attendances.*.type' => [
                 'sometimes',
