@@ -277,7 +277,7 @@ class OfflineAttendanceService
             'clock_in_date' => $entryDateTime->toDateString(),
             'clock_in' => $entryDateTime,
             'type' => $type,
-            'clockin_medium' => 'Barcode',
+            'clockin_medium' => 'Offline-Sync',
             'ip_address' => request()->ip(),
             'created_at' => now(),
             'updated_at' => now()
@@ -355,7 +355,7 @@ class OfflineAttendanceService
             'clock_out' => $entryDateTime,
             'total_time' => $formattedTotalTime,
             'total_adjusted_time' => $formattedAdjustedTotalTime,
-            'clockout_medium' => 'Barcode',
+            'clockout_medium' => 'Offline-Sync',
             'updated_at' => now()
         ]);
 
