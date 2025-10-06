@@ -101,9 +101,15 @@ class DashboardCore {
 
     // Modal Handlers
     initModalHandlers() {
-        // Select2 initialization for modals
+        // Select2 initialization for modals (excluding employee info modal)
         document.addEventListener('shown.bs.modal', function(e) {
             const modal = e.target;
+            
+            // Skip employee info update modal to avoid conflicts with custom initialization
+            if (modal.id === 'employeeInfoUpdateModal') {
+                return;
+            }
+            
             modal.querySelectorAll('.select2').forEach(select => {
                 if (!select.hasAttribute('data-select2-initialized')) {
                     $(select).select2({
@@ -115,88 +121,8 @@ class DashboardCore {
             });
         });
 
-        // Employee info modal initialization
-        if (this.config.showEmployeeInfoUpdateModal) {
-            this.initEmployeeInfoModal();
-        }
     }
 
-    // Employee Info Modal
-    initEmployeeInfoModal() {
-        const modal = document.getElementById('employeeInfoUpdateModal');
-        if (!modal) return;
-
-        // Show modal
-        const bsModal = new bootstrap.Modal(modal);
-        bsModal.show();
-
-        // Initialize Select2 when modal is shown
-        modal.addEventListener('shown.bs.modal', () => {
-            this.initSelect2WithTagging(modal);
-        });
-    }
-
-    // Select2 with Tagging
-    initSelect2WithTagging(modal) {
-        const selectors = [
-            { id: '#blood_group', options: { dropdownParent: $(modal), width: '100%' } },
-            {
-                id: '#institute_id',
-                options: {
-                    dropdownParent: $(modal),
-                    tags: true,
-                    tokenSeparators: [],
-                    createTag: this.createTag,
-                    templateResult: this.templateResult,
-                    insertTag: this.insertTag,
-                    width: '100%'
-                }
-            },
-            {
-                id: '#education_level_id',
-                options: {
-                    dropdownParent: $(modal),
-                    tags: true,
-                    tokenSeparators: [],
-                    createTag: this.createTag,
-                    templateResult: this.templateResult,
-                    insertTag: this.insertTag,
-                    width: '100%'
-                }
-            }
-        ];
-
-        selectors.forEach(({ id, options }) => {
-            const element = modal.querySelector(id);
-            if (element) {
-                $(element).select2(options);
-            }
-        });
-    }
-
-    createTag(params) {
-        const term = params.term.trim();
-        if (term === '') return null;
-
-        return {
-            id: 'new:' + term,
-            text: term + ' (New)',
-            newTag: true
-        };
-    }
-
-    templateResult(data) {
-        const $result = $('<span></span>');
-        $result.text(data.text);
-        if (data.newTag) {
-            $result.append(' <em>(will be created)</em>');
-        }
-        return $result;
-    }
-
-    insertTag(data, tag) {
-        data.push(tag);
-    }
 
     // Initialize Bootstrap tooltips
     initTooltips() {
