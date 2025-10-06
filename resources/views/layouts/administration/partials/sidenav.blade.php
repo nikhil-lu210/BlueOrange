@@ -42,7 +42,7 @@
 
         <!-- Administration -->
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">{{ __('Administration') }}</span>
+            <span class="menu-header-text">{{ ___('Administration') }}</span>
         </li>
 
         @include('layouts.administration.partials.menus.functionality_walkthrough')
@@ -61,14 +61,14 @@
 
         <!-- Settings -->
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">{{ __('Settings') }}</span>
+            <span class="menu-header-text">{{ ___('Settings') }}</span>
         </li>
 
         @include('layouts.administration.partials.menus.settings')
 
         <!-- Accounting -->
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">{{ __('Accounting') }}</span>
+            <span class="menu-header-text">{{ ___('Accounting') }}</span>
         </li>
 
         @include('layouts.administration.partials.menus.salary')
