@@ -79,11 +79,6 @@ Route::prefix('')
             // recognition
             include_once 'recognition/recognition.php';
 
-            // event
-            include_once 'event/event.php';
-            
-            // Employee Life Cycle
-            include_once 'life_cycle/lifeCycle.php';
             // inventory
             include_once 'inventory/inventory.php';
 
