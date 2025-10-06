@@ -166,6 +166,12 @@ class RolesTableSeeder extends Seeder
                     'Dining Room Booking Read',
                     'Dining Room Booking Update',
                     'Dining Room Booking Delete',
+
+                    'Event Everything',
+                    'Event Create',
+                    'Event Read',
+                    'Event Update',
+                    'Event Delete',
                 ];
             } elseif ($role === 'Super Admin') {
                 $permissions = [
@@ -277,6 +283,11 @@ class RolesTableSeeder extends Seeder
                     'Penalty Read',
                     'Penalty Update',
                     'Penalty Delete',
+
+                    'Event Create',
+                    'Event Read',
+                    'Event Update',
+                    'Event Delete',
                 ];
             } else {
                 $permissions = [

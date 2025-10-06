@@ -101,7 +101,6 @@
             $statusColor = 'danger';
             break;
 
-
         case 'Resigned':
             $statusColor = 'warning';
             break;

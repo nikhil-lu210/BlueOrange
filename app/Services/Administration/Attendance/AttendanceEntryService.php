@@ -59,7 +59,7 @@ class AttendanceEntryService
             throw new Exception('You have already clocked in as Regular today.');
         }
 
-        $location = Location::get(get_public_ip());
+        $location = Location::get(request()->ip());
 
         $attendance = DB::transaction(function () use ($clockInTimestamp, $currentDate, $type, $clockInMedium, $scannerId, $location) {
             // Get the active employee shift
