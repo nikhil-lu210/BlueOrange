@@ -50,10 +50,15 @@
                         @if (auth()->user()->hasAllPermissions(['Attendance Create', 'Attendance Read']))
                             @isset($activeAttendance->clock_in)
                                 <div class="d-flex align-items-center">
-                                    <form action="{{ route('administration.attendance.clockout') }}" method="post" class="confirm-form-danger">
+                                    <form action="{{ route('administration.attendance.clockout') }}" method="post" class="mb-0 confirm-form-danger">
+                                        @csrf
                                         <div class="avatar flex-shrink-0 me-2">
-                                            @csrf
-                                            <button type="submit" name="attendance" value="clock_out" class="avatar-initial rounded bg-danger border-0" data-bs-placement="top" title="Clock Out?">
+                                            <button type="submit" name="attendance" value="clock_out"
+                                                    class="avatar-initial rounded bg-danger border-0"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    data-bs-container="body"
+                                                    title="Clock Out">
                                                 <i class="ti ti-clock-off ti-md"></i>
                                             </button>
                                         </div>
@@ -67,16 +72,24 @@
                                     </div>
                                 </div>
                             @else
-                                <form action="{{ route('administration.attendance.clockin') }}" method="post">
+                                <form action="{{ route('administration.attendance.clockin') }}" method="post" class="mb-0">
                                     @csrf
                                     <div class="d-flex align-items-center mt-1">
                                         <div class="avatar flex-shrink-0 me-2">
-                                            <button type="button" class="avatar-initial rounded bg-primary border-0 submit-regular" data-bs-placement="top" title="Regular Clockin?">
+                                            <button type="button" class="avatar-initial rounded bg-primary border-0 submit-regular"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    data-bs-container="body"
+                                                    title="Regular Clock In">
                                                 <i class="ti ti-clock-check ti-md"></i>
                                             </button>
                                         </div>
                                         <div class="avatar flex-shrink-0 me-2">
-                                            <button type="button" class="avatar-initial rounded bg-warning border-0 submit-overtime" data-bs-placement="top" title="Overtime Clockin?">
+                                            <button type="button" class="avatar-initial rounded bg-warning border-0 submit-overtime"
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    data-bs-container="body"
+                                                    title="Overtime Clock In">
                                                 <i class="ti ti-clock-check ti-md"></i>
                                             </button>
                                         </div>

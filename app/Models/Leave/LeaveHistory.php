@@ -3,6 +3,7 @@
 namespace App\Models\Leave;
 
 use App\Traits\HasCustomRouteId;
+use App\Policies\LeaveHistoryPolicy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Stevebauman\Purify\Casts\PurifyHtmlOnGet;
@@ -16,14 +17,21 @@ class LeaveHistory extends Model
 {
     use HasFactory, SoftDeletes, CascadeSoftDeletes, HasCustomRouteId;
 
-    // Relations 
+    // Relations
     use LeaveHistoryRelations;
 
     // Accessors & Mutators
     use LeaveHistoryAccessors, LeaveHistoryMutators;
-    
+
+    /**
+     * The policy class for the model.
+     *
+     * @var string
+     */
+    public static $policy = LeaveHistoryPolicy::class;
+
     protected $cascadeDeletes = [];
-    
+
     // Casting attributes
     protected $casts = [
         'date' => 'date',

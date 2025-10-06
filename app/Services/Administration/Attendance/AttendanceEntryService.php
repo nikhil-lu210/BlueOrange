@@ -80,7 +80,7 @@ class AttendanceEntryService
                 'type' => $type,
                 'clockin_medium' => $clockInMedium,
                 'clockin_scanner_id' => $scannerId ?? null,
-                'ip_address' => $location->ip ?? null,
+                'ip_address' => request()->ip() ?? ($location->ip ?? null),
                 'country' => $location->countryName ?? null,
                 'city' => $location->cityName ?? null,
                 'zip_code' => $location->zipCode ?? null,

@@ -40,38 +40,76 @@ class ChatBody extends Component
                 return;
             }
 
-            $canInteract = Auth::user()->user_interactions->contains('id', $this->receiver->id);
+            // Check if receiver exists
+            if (!$this->receiver) {
+                \Log::warning('ChatBody: Receiver is null');
+                return;
+            }
+
+            // Use a more efficient check for user interactions
+            $canInteract = $this->checkUserInteraction($this->receiver->id);
             if ($canInteract == false) {
                 toast('You are not authorised to interact with '.$this->receiver->name.'.','warning');
                 return redirect()->route('administration.chatting.index');
             }
 
-            if ($this->receiver) {
-                $this->messages = Chatting::with(['sender.media', 'receiver.media', 'task', 'files'])->where(function ($query) {
-                        $query->where('sender_id', auth()->user()->id)
-                            ->where('receiver_id', $this->receiver->id);
-                    })
-                    ->orWhere(function ($query) {
-                        $query->where('sender_id', $this->receiver->id)
-                            ->where('receiver_id', auth()->user()->id);
-                    })
-                    ->orderBy('created_at', 'asc')
-                    ->get();
+            // Load messages with optimized query
+            $this->messages = Chatting::with(['sender.media', 'receiver.media', 'task', 'files'])
+                ->where(function ($query) {
+                    $query->where(function ($q) {
+                        $q->where('sender_id', auth()->user()->id)
+                          ->where('receiver_id', $this->receiver->id);
+                    })->orWhere(function ($q) {
+                        $q->where('sender_id', $this->receiver->id)
+                          ->where('receiver_id', auth()->user()->id);
+                    });
+                })
+                ->orderBy('created_at', 'asc')
+                ->get();
 
-                // Mark all messages from the receiver as seen
+            // Mark all messages from the receiver as seen (only if there are messages)
+            if ($this->messages->isNotEmpty()) {
                 Chatting::where('sender_id', $this->receiver->id)
                     ->where('receiver_id', auth()->user()->id)
                     ->whereNull('seen_at')
                     ->update(['seen_at' => now()]);
             }
         } catch (\Exception $e) {
-            // Log the error
-            \Log::error('Error loading messages: ' . $e->getMessage());
+            // Log the error with more context
+            \Log::error('Error loading messages: ' . $e->getMessage(), [
+                'user_id' => auth()->id(),
+                'receiver_id' => $this->receiver->id ?? null,
+                'trace' => $e->getTraceAsString()
+            ]);
 
             // If it's a session or token issue, dispatch an event to refresh the token
             if (str_contains($e->getMessage(), 'session') || str_contains($e->getMessage(), 'token') || str_contains($e->getMessage(), '419')) {
                 $this->dispatch('sessionExpired');
+            } else {
+                // For other errors, set empty messages to prevent further issues
+                $this->messages = collect();
             }
+        }
+    }
+
+    /**
+     * Check if user can interact with another user (simplified)
+     */
+    private function checkUserInteraction($receiverId)
+    {
+        try {
+            // Use a simple, direct query to avoid memory issues
+            return \DB::table('user_interactions')
+                ->where('user_id', auth()->id())
+                ->where('interacted_user_id', $receiverId)
+                ->exists() || 
+                \DB::table('user_interactions')
+                ->where('user_id', $receiverId)
+                ->where('interacted_user_id', auth()->id())
+                ->exists();
+        } catch (\Exception $e) {
+            \Log::error('Error checking user interaction: ' . $e->getMessage());
+            return false; // Default to false for security
         }
     }
 

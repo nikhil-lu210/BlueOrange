@@ -86,56 +86,57 @@ class ChattingController extends Controller
      */
     public function fetchUnreadMessagesForBrowser(Request $request)
     {
-        $userId = auth()->id();
+        try {
+            $userId = auth()->id();
 
-        // Get the current chat user ID from the request if available
-        $currentChatUserId = $request->input('current_chat_user_id', null);
+            // Get the current chat user ID from the request if available
+            $currentChatUserId = $request->input('current_chat_user_id', null);
 
-        // For debugging - check if we should bypass cache
-        $bypassCache = $request->input('bypass_cache', false);
+            // Cache key with user-specific key for uniqueness
+            $cacheKey = "unread_messages_for_user_{$userId}";
 
-        // Cache key with user-specific key for uniqueness
-        $cacheKey = "unread_messages_for_user_{$userId}";
+            // Try to get from cache first (5 minute cache)
+            $cachedMessages = Cache::get($cacheKey);
+            if ($cachedMessages && !$request->input('bypass_cache', false)) {
+                return response()->json([
+                    'messages' => $cachedMessages,
+                    'cached' => true,
+                    'timestamp' => now()->toDateTimeString()
+                ]);
+            }
 
-        // Clear cache if requested
-        if ($bypassCache) {
-            Cache::forget($cacheKey);
-        }
+            // Get unread messages directly from the database with optimized query
+            $query = Chatting::select(['id', 'sender_id', 'message', 'created_at'])
+                ->where('receiver_id', $userId)
+                ->whereNull('seen_at')
+                ->with(['sender:id,name,userid']) // Only load necessary fields
+                ->orderBy('created_at', 'desc')
+                ->limit(10); // Limit to 10 messages to reduce load
 
-        // Get unread messages directly from the database
-        $query = Chatting::where('receiver_id', $userId)
-            ->whereNull('seen_at')
-            ->orderBy('created_at', 'desc')
-            ->with('sender.employee'); // Eager load sender
+            // If we're on a specific chat page, exclude messages from that user
+            if ($currentChatUserId) {
+                $query->where('sender_id', '!=', $currentChatUserId);
+            }
 
-        // If we're on a specific chat page, exclude messages from that user
-        if ($currentChatUserId) {
-            $query->where('sender_id', '!=', $currentChatUserId);
-        }
+            $unreadMessages = $query->get();
 
-        $unreadMessages = $query->get();
+            // Store in cache for future use (5 minutes)
+            Cache::put($cacheKey, $unreadMessages, now()->addMinutes(5));
 
-        // For debugging - add total count of all unread messages
-        $totalUnreadCount = Chatting::where('receiver_id', $userId)
-            ->whereNull('seen_at')
-            ->count();
-
-        // Store in cache for future use
-        Cache::put($cacheKey, $unreadMessages, now()->addMinutes(5));
-
-        // Add debug info to the response
-        $response = [
-            'messages' => $unreadMessages,
-            'debug' => [
-                'total_unread_count' => $totalUnreadCount,
-                'user_id' => $userId,
-                'current_chat_user_id' => $currentChatUserId,
-                'bypass_cache' => $bypassCache,
+            return response()->json([
+                'messages' => $unreadMessages,
+                'cached' => false,
                 'timestamp' => now()->toDateTimeString()
-            ]
-        ];
+            ]);
 
-        return response()->json($response);
+        } catch (\Exception $e) {
+            \Log::error('Error fetching unread messages for browser notification: ' . $e->getMessage());
+            return response()->json([
+                'messages' => [],
+                'error' => 'Failed to fetch messages',
+                'timestamp' => now()->toDateTimeString()
+            ], 500);
+        }
     }
 
 

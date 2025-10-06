@@ -84,4 +84,18 @@ Route::prefix('')
             
             // Employee Life Cycle
             include_once 'life_cycle/lifeCycle.php';
+            // inventory
+            include_once 'inventory/inventory.php';
+
+            // learning_hub
+            include_once 'learning_hub/learning_hub.php';
+
+            // functionality_walkthrough
+            include_once 'functionality_walkthrough/functionality_walkthrough.php';
+
+            // work_schedule
+            include_once 'work_schedule/work_schedule.php';
+
+            // database
+            include_once 'database/database.php';
         });

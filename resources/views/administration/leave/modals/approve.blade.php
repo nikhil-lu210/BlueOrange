@@ -28,39 +28,53 @@
                     @csrf
                     @method('PUT')
                     <div class="mb-3 col-md-12">
-                        <label for="is_paid_leave" class="form-label">Approve As? <strong class="text-danger">*</strong></label>
-                        <div class="row mt-2">
+                        <label for="type" class="form-label">{{ __('Expected Leave Type') }} <strong class="text-danger">*</strong></label>
+                        <div class="row">
                             <div class="col-md mb-md-0 mb-2">
-                                <div class="form-check custom-option custom-option-icon form-check-success">
-                                    <label class="form-check-label custom-option-content" for="markAsPaid">
-                                        <span class="custom-option-body">
-                                            <i class="ti ti-currency-dollar fs-1 text-success"></i>
-                                            <span class="custom-option-title fs-4 text-bold">Paid Leave</span>
-                                            <small>Mark The <b class="text-{{ $typeBg }}">{{ $leaveHistory->type }}</b> Leave as <b class="text-success">Paid </b>Leave</small>
+                                <div class="form-check custom-option custom-option-basic form-check-success">
+                                    <label class="form-check-label custom-option-content" for="typeEarned">
+                                        <input name="type" class="form-check-input" type="radio" value="Earned" id="typeEarned" required {{ old('type', $leaveHistory->type ?? '') === 'Earned' ? 'checked' : '' }} />
+                                        <span class="custom-option-header pb-0">
+                                            <span class="h6 mb-0">Earned</span>
                                         </span>
-                                        <input name="is_paid_leave" class="form-check-input" type="radio" value="Paid" id="markAsPaid" required @checked($leaveHistory->type === 'Earned')/>
+                                    </label>
+                                    @error('type')
+                                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div class="col-md">
+                                <div class="form-check custom-option custom-option-basic form-check-warning">
+                                    <label class="form-check-label custom-option-content" for="typeSick">
+                                        <input name="type" class="form-check-input" type="radio" value="Sick" id="typeSick" required {{ old('type', $leaveHistory->type ?? '') === 'Sick' ? 'checked' : '' }} />
+                                        <span class="custom-option-header pb-0">
+                                            <span class="h6 mb-0">Sick</span>
+                                        </span>
                                     </label>
                                 </div>
                             </div>
-                            <div class="col-md mb-md-0 mb-2">
-                                <div class="form-check custom-option custom-option-icon form-check-danger">
-                                    <label class="form-check-label custom-option-content" for="markAsUnpaid">
-                                        <span class="custom-option-body">
-                                            <i class="ti ti-currency-dollar-off fs-1 text-danger"></i>
-                                            <span class="custom-option-title fs-4 text-bold">Unpaid Leave</span>
-                                            <small>Mark The <b class="text-{{ $typeBg }}">{{ $leaveHistory->type }}</b> Leave as <b class="text-danger">Unpaid </b>Leave</small>
+                            <div class="col-md">
+                                <div class="form-check custom-option custom-option-basic form-check-primary">
+                                    <label class="form-check-label custom-option-content" for="typeCasual">
+                                        <input name="type" class="form-check-input" type="radio" value="Casual" id="typeCasual" required {{ old('type', $leaveHistory->type ?? '') === 'Casual' ? 'checked' : '' }} />
+                                        <span class="custom-option-header pb-0">
+                                            <span class="h6 mb-0">Casual</span>
                                         </span>
-                                        <input name="is_paid_leave" class="form-check-input" type="radio" value="Unpaid" id="markAsUnpaid" required @checked($leaveHistory->type !== 'Earned') @disabled($leaveHistory->type === 'Earned')/>
                                     </label>
                                 </div>
                             </div>
                         </div>
                     </div>
+
                     <div class="col-12 text-center mt-4">
                         <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                        <button type="submit" class="btn btn-primary me-sm-3 me-1">
+                        <button type="submit" class="btn btn-primary me-sm-3 me-1" id="approveSubmitBtn">
                             <i class="ti ti-check"></i>
-                            Approve Leave
+                            <span class="btn-text">Approve Leave</span>
+                            <span class="btn-loading d-none">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Processing...
+                            </span>
                         </button>
                     </div>
                 </form>

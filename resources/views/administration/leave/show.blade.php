@@ -40,21 +40,36 @@
 @section('content')
 
 <!-- Start row -->
+@if ($leaveHistory->status === 'Pending' && $leaveHistory->leave_allowed->is_active == false)
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="alert alert-danger text-center" role="alert">
+                <i class="ti ti-bell-ringing mr-3" style="margin-top: -3px;"></i>
+                {{ __('You need to reject this Leave Request as this is from an Old Allowed Leave. Ask the user to create a new Leave Request.') }}
+            </div>
+        </div>
+    </div>
+@endif
+
 <div class="row justify-content-center">
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0"><a href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $leaveHistory->user]) }}" target="_blank" class="text-bold">{{ $leaveHistory->user->alias_name }}</a> Leave History's Details</h5>
+                <h5 class="mb-0">
+                    <a href="{{ route('administration.settings.user.leave_allowed.index', ['user' => $leaveHistory->user]) }}" target="_blank" class="text-bold">{{ $leaveHistory->user->alias_name }}</a> Leave History's Details
+                </h5>
 
                 @canany(['Leave History Update', 'Leave History Delete'])
                     @if ($leaveHistory->status === 'Pending')
                         <div class="card-header-elements ms-auto">
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#approveLeaveModal" class="btn btn-sm btn-success">
-                                <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                                Approve
-                            </button>
+                            @if ($leaveHistory->leave_allowed->is_active == true)
+                                <button type="button" data-bs-toggle="modal" data-bs-target="#approveLeaveModal" class="btn btn-sm btn-success">
+                                    <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                                    Approve
+                                </button>
+                            @endif
                             <button type="button" data-bs-toggle="modal" data-bs-target="#rejectLeaveModal" class="btn btn-sm btn-danger">
-                                <span class="tf-icon ti ti-check ti-xs me-1"></span>
+                                <span class="tf-icon ti ti-x ti-xs me-1"></span>
                                 Reject
                             </button>
                         </div>
@@ -68,6 +83,18 @@
                         </div>
                     @endif
                 @endcanany
+
+                {{-- Cancel Leave button for users who can cancel their own pending leaves --}}
+                @can('cancel', $leaveHistory)
+                    @if ($leaveHistory->status === 'Pending' && auth()->id() === $leaveHistory->user_id)
+                        <div class="card-header-elements ms-auto">
+                            <button type="button" data-bs-toggle="modal" data-bs-target="#cancelLeaveModal" class="btn btn-sm btn-warning">
+                                <span class="tf-icon ti ti-ban ti-xs me-1"></span>
+                                {{ __('Cancel My Leave') }}
+                            </button>
+                        </div>
+                    @endif
+                @endcan
             </div>
             <div class="card-body">
                 <div class="row justify-content-left">
@@ -98,6 +125,12 @@
     @include('administration.leave.modals.approve')
     {{-- Reject Modal --}}
     @include('administration.leave.modals.reject')
+    {{-- Cancel Modal for users who can cancel their own pending leaves --}}
+    @can('cancel', $leaveHistory)
+        @if (auth()->id() === $leaveHistory->user_id)
+            @include('administration.leave.modals.cancel')
+        @endif
+    @endcan
 @endif
 
 @if ($leaveHistory->status === 'Approved')
@@ -132,6 +165,8 @@
                 enableTime: true,
                 noCalendar: true,
             });
+
+
         });
     </script>
 
@@ -163,6 +198,48 @@
 
             $('#rejectLeaveForm').on('submit', function() {
                 $('#leaveRejectNoteInput').val(leaveRejectNoteEditor.root.innerHTML);
+            });
+
+            // Prevent double submission for approve form
+            $('#approveLeaveModal form').on('submit', function(e) {
+                const submitBtn = $('#approveSubmitBtn');
+                if (submitBtn.prop('disabled')) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Disable submit button and show loading
+                submitBtn.prop('disabled', true);
+                submitBtn.find('.btn-text').addClass('d-none');
+                submitBtn.find('.btn-loading').removeClass('d-none');
+            });
+
+            // Prevent double submission for cancel form
+            $('#cancelLeaveModal form').on('submit', function(e) {
+                const submitBtn = $('#cancelSubmitBtn');
+                if (submitBtn.prop('disabled')) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Disable submit button and show loading
+                submitBtn.prop('disabled', true);
+                submitBtn.find('.btn-text').addClass('d-none');
+                submitBtn.find('.btn-loading').removeClass('d-none');
+            });
+
+            // Prevent double submission for reject form
+            $('#rejectLeaveModal form').on('submit', function(e) {
+                const submitBtn = $('#rejectSubmitBtn');
+                if (submitBtn.prop('disabled')) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Disable submit button and show loading
+                submitBtn.prop('disabled', true);
+                submitBtn.find('.btn-text').addClass('d-none');
+                submitBtn.find('.btn-loading').removeClass('d-none');
             });
         });
     </script>

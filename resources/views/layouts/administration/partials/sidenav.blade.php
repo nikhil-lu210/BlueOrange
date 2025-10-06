@@ -36,6 +36,10 @@
 
         @include('layouts.administration.partials.menus.announcement')
 
+        @include('layouts.administration.partials.menus.recognition')
+
+        @include('layouts.administration.partials.menus.learning_hub')
+
         @include('layouts.administration.partials.menus.it_ticket')
 
         @include('layouts.administration.partials.menus.booking')
@@ -45,6 +49,8 @@
             <span class="menu-header-text">{{ __('Administration') }}</span>
         </li>
 
+        @include('layouts.administration.partials.menus.functionality_walkthrough')
+
         @include('layouts.administration.partials.menus.certificate')
 
         @include('layouts.administration.partials.menus.penalty')
@@ -52,6 +58,10 @@
         @include('layouts.administration.partials.menus.quiz')
 
         @include('layouts.administration.partials.menus.vault')
+
+        @include('layouts.administration.partials.menus.inventory')
+
+        @include('layouts.administration.partials.menus.work_schedule')
 
         <!-- Settings -->
         <li class="menu-header small text-uppercase">

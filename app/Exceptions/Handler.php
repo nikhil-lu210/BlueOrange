@@ -3,33 +3,25 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Log;
 use Throwable;
+use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
+use Symfony\Component\HttpKernel\Exception\HttpException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class Handler extends ExceptionHandler
 {
     /**
      * A list of exception types with their corresponding custom log levels.
-     *
-     * @var array<class-string<\Throwable>, \Psr\Log\LogLevel::*>
      */
-    protected $levels = [
-        //
-    ];
+    protected $levels = [];
 
     /**
      * A list of the exception types that are not reported.
-     *
-     * @var array<int, class-string<\Throwable>>
      */
-    protected $dontReport = [
-        //
-    ];
+    protected $dontReport = [];
 
     /**
      * A list of the inputs that are never flashed to the session on validation exceptions.
-     *
-     * @var array<int, string>
      */
     protected $dontFlash = [
         'current_password',
@@ -42,17 +34,54 @@ class Handler extends ExceptionHandler
      */
     public function register(): void
     {
-        // $this->reportable(function (Throwable $e) {
-        //     Log::channel('slack')->error("🚨 *Exception Occurred!* 🚨", [
-        //         'message' => $e->getMessage(),
-        //         'file'    => $e->getFile(),
-        //         'line'    => $e->getLine(),
-        //         'code'    => $e->getCode(),
-        //         'trace'   => array_slice($e->getTrace(), 0, 3), // Include first 3 trace entries
-        //     ]);
-
-        //     return false; // Prevent Laravel from logging the error again
-        // });
+        $this->reportable(function (Throwable $e) {
+            ExceptionLogger::logIfNeeded($e);
+        });
     }
 
+    /**
+     * Render an exception into an HTTP response.
+     */
+    public function render($request, Throwable $exception)
+    {
+        $exception = $this->normalizeException($exception);
+
+        if ($exception instanceof HttpExceptionInterface) {
+            return $this->renderHttpException($exception);
+        }
+
+        return parent::render($request, $exception);
+    }
+
+    /**
+     * Render HTTP exceptions with custom error pages.
+     */
+    protected function renderHttpException(HttpExceptionInterface $exception)
+    {
+        $statusCode = $exception->getStatusCode();
+        $errorData = ErrorConfiguration::getErrorData($statusCode);
+
+        // Check if a specific view is defined for this status code
+        $view = $errorData['view'] ?? ErrorConfiguration::getErrorView();
+
+        return response()->view($view, [
+            'statusCode' => $statusCode,
+            'title' => $errorData['title'],
+            'message' => $errorData['message'],
+            'image' => $errorData['image'],
+            'exception' => $exception,
+        ], $statusCode);
+    }
+
+    /**
+     * Normalize exceptions for consistent handling.
+     */
+    private function normalizeException(Throwable $exception): Throwable
+    {
+        if ($exception instanceof AuthorizationException) {
+            return new HttpException(403, $exception->getMessage(), $exception);
+        }
+
+        return $exception;
+    }
 }

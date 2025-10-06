@@ -76,5 +76,6 @@ class Kernel extends HttpKernel
         'restrict.ip' => \App\Http\Middleware\RestrictIpRange::class,
         'unrestricted.users' => \App\Http\Middleware\UnrestrictedUser::class,
         'check.employee.info' => \App\Http\Middleware\CheckEmployeeInformation::class,
+        'handle.ajax' => \App\Http\Middleware\HandleAjaxRequests::class,
     ];
 }

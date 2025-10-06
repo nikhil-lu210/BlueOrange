@@ -20,9 +20,10 @@ A modern, feature-rich Laravel-based employee management system designed for eff
 ### 🏖️ Leave Management System
 - **Leave Types**: Earned, Sick, and Casual leave management
 - **Leave Applications**: Digital leave request and approval workflow
-- **Leave Balance**: Real-time leave balance tracking
+- **Leave Balance**: Real-time leave balance tracking with automatic synchronization
 - **Holiday Management**: System-wide holiday calendar management
 - **Leave History**: Complete leave history with approval status
+- **Process Workflow**: "Process Leave Request" button for balance synchronization before approval
 
 ### 💰 Salary & Financial Management
 - **Salary Structure**: Comprehensive salary management with benefits
@@ -581,6 +582,75 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ### Professional Support
 For enterprise support, custom development, or consulting services, please contact the development team.
+
+## 🏖️ Leave Module Workflow
+
+### **Overview**
+The Leave Module manages employee leave requests through a sophisticated workflow that ensures data consistency and proper balance tracking across three related tables:
+- **`leave_alloweds`**: Stores allowed leave limits (earned, casual, sick)
+- **`leave_availables`**: Stores current available leave balance
+- **`leave_histories`**: Stores leave applications and approvals
+
+### **Automatic Balance Synchronization**
+
+The system now automatically syncs leave balances whenever users access leave-related pages:
+
+#### **1. Apply For Leave Page**
+- **Automatic Sync**: When users visit the "Apply For Leave" page, the system automatically runs `leave:sync-balances --user-id={user_id} --year={current_year}`
+- **Updated Balances**: Users see their current accurate leave balances based on the latest active leave allowed record
+- **Real-time Accuracy**: Ensures users always see up-to-date information before applying for leave
+
+#### **2. My Leaves Page**
+- **Automatic Sync**: When users view their own leave history, balances are automatically synced
+- **Consistent Data**: Ensures the leave history shows accurate balance information
+
+#### **3. Leave Details Page**
+- **Automatic Sync**: When viewing any leave request details, balances are synced for the leave owner
+- **Accurate Information**: Managers see current balance information when reviewing leave requests
+
+### **How It Works**
+1. **User Access**: User visits any leave-related page
+2. **Background Sync**: System automatically runs sync command for the specific user and year
+3. **Balance Update**: `leave_availables` table is updated based on active `leave_alloweds` and approved `leave_histories` (filtered by `leave_allowed_id`)
+4. **Display**: Updated balances are shown to the user
+
+### **Calculation Logic**
+The sync command uses the following calculation:
+- **Available Leave = Allowed Leave - Approved Leaves (where leave_allowed_id matches AND year matches)**
+- This ensures accurate calculations by considering both:
+  - **Year**: Leave cycles reset each year, so year-based filtering is essential
+  - **Leave Allowed ID**: Ensures leaves are calculated against the correct allowance period
+- The `implemented_from` and `implemented_to` dates in `leave_alloweds` define the validity period for each allowance
+
+### **Sync Command Usage**
+```bash
+# Sync all users for current year
+php artisan leave:sync-balances
+
+# Sync specific user for specific year
+php artisan leave:sync-balances --user-id=28 --year=2025
+
+# Force sync (overwrite existing data)
+php artisan leave:sync-balances --force
+```
+
+### **When to Use Sync Command**
+- **Automatically**: System auto-syncs when users access leave pages
+- **During Development**: Run manually to ensure data consistency
+- **After Data Migration**: Recalculate balances after importing historical data
+- **Periodic Maintenance**: Run weekly/monthly to ensure accuracy
+
+### **Best Practices**
+- **Validate Only During Approval**: Balance validation occurs during approval, not during initial leave storage
+- **Automatic Syncing**: Balances are automatically synced when users access leave pages
+- **Data Integrity**: Sync command ensures consistency between all three leave tables
+- **Performance**: Process only specific users/years to avoid unnecessary processing
+
+### **Technical Implementation**
+- **Auto-Sync Methods**: `autoSyncLeaveBalances()` and `autoSyncLeaveBalancesForUser()`
+- **Controller Integration**: Automatically called in `create()`, `my()`, and `show()` methods
+- **Service Integration**: Uses `LeaveValidationService` for balance calculations
+- **Background Processing**: Sync runs in background without affecting page load performance
 
 ---
 

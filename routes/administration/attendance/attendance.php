@@ -42,7 +42,7 @@ Route::controller(AttendanceImportController::class)->prefix('attendance/create/
 });
 
 Route::controller(AttendanceIssueController::class)->prefix('attendance/issue')->name('attendance.issue.')->group(function () {
-    Route::get('/all', 'index')->name('index')->can('Attendance Read');
+    Route::get('/all', 'index')->name('index')->can('Attendance Everything');
     Route::get('/my', 'my')->name('my')->can('Attendance Read');
     Route::get('/create', 'create')->name('create')->can('Attendance Read');
 

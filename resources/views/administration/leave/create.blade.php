@@ -46,6 +46,44 @@
 @section('content')
 <!-- Start row -->
 <div class="row justify-content-center">
+    @if (auth()->user()->allowed_leave)
+        <div class="col-md-12">
+            <div class="card mb-4 border-0">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between flex-wrap gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="bg-label-success p-2 rounded">
+                                <i class="ti ti-calendar-pause ti-xl"></i>
+                            </span>
+                            <div class="content-right">
+                                <h5 class="text-success mb-0">{{ show_leave(auth()->user()->allowed_leave->earned_leave) }}</h5>
+                                <small class="mb-0 text-muted">Allowed <b class="text-dark">Earned Leave ({{ date('Y') }})</b></small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="bg-label-warning p-2 rounded">
+                                <i class="ti ti-calendar-pause ti-xl"></i>
+                            </span>
+                            <div class="content-right">
+                                <h5 class="text-warning mb-0">{{ show_leave(auth()->user()->allowed_leave->sick_leave) }}</h5>
+                                <small class="mb-0 text-muted">Allowed <b class="text-dark">Sick Leave ({{ date('Y') }})</b></small>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <span class="bg-label-primary p-2 rounded">
+                                <i class="ti ti-calendar-pause ti-xl"></i>
+                            </span>
+                            <div class="content-right">
+                                <h5 class="text-primary mb-0">{{ show_leave(auth()->user()->allowed_leave->casual_leave) }}</h5>
+                                <small class="mb-0 text-muted">Allowed <b class="text-dark">Casual Leave ({{ date('Y') }})</b></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     @if (auth()->user()->available_leaves())
         <div class="col-md-12">
             <div class="card mb-4 border-0">
@@ -172,10 +210,20 @@
                     </div>
                     <div class="mt-2 float-end">
                         <a href="{{ route('administration.leave.history.create') }}" class="btn btn-outline-danger me-2 confirm-danger">Reset Form</a>
-                        <button type="submit" class="btn btn-primary">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
                             <i class="ti ti-check me-2"></i>
-                            Apply Now
+                            <span class="btn-text">Apply Now</span>
+                            <span class="btn-loading d-none">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Processing...
+                            </span>
                         </button>
+                    </div>
+                    <div class="mt-2">
+                        <small class="text-muted">
+                            <i class="ti ti-info-circle me-1"></i>
+                            You can submit up to 15 leave requests per minute. Please avoid clicking the submit button multiple times.
+                        </small>
                     </div>
                 </form>
             </div>
@@ -239,6 +287,9 @@
                 fullEditor.root.innerHTML = {!! json_encode(old('reason')) !!};
             @endif
 
+            // Store editor reference globally for form validation
+            window.leaveReasonEditor = fullEditor;
+
             $('#postForm').on('submit', function() {
                 $('#reason-input').val(fullEditor.root.innerHTML);
             });
@@ -267,6 +318,159 @@
 
     <script>
         $(document).ready(function () {
+            // Available leave balances in seconds
+            let availableLeaves = {
+                'Earned': {{ auth()->user()->available_leaves() ? auth()->user()->available_leaves()->earned_leave->total('seconds') : 0 }},
+                'Casual': {{ auth()->user()->available_leaves() ? auth()->user()->available_leaves()->casual_leave->total('seconds') : 0 }},
+                'Sick': {{ auth()->user()->available_leaves() ? auth()->user()->available_leaves()->sick_leave->total('seconds') : 0 }}
+            };
+
+            // Function to format seconds to readable time
+            function formatTime(totalSeconds) {
+                if (totalSeconds <= 0) return '0h 0m';
+                let hours = Math.floor(totalSeconds / 3600);
+                let minutes = Math.floor((totalSeconds % 3600) / 60);
+                return hours + 'h ' + minutes + 'm';
+            }
+
+            // Function to validate leave balance
+            function validateLeaveBalance() {
+                let selectedType = $('input[name="type"]:checked').val();
+                if (!selectedType) {
+                    return { valid: true, message: '' };
+                }
+
+                let totalRequestedSeconds = 0;
+                $('.leave-day-row').each(function() {
+                    let hours = parseInt($(this).find('input[name^="total_leave[hour]"]').val()) || 0;
+                    let minutes = parseInt($(this).find('input[name^="total_leave[min]"]').val()) || 0;
+                    let seconds = parseInt($(this).find('input[name^="total_leave[sec]"]').val()) || 0;
+                    totalRequestedSeconds += (hours * 3600) + (minutes * 60) + seconds;
+                });
+
+                let availableSeconds = availableLeaves[selectedType];
+
+                if (totalRequestedSeconds > availableSeconds) {
+                    return {
+                        valid: false,
+                        message: `Insufficient ${selectedType} leave balance!\nAvailable: ${formatTime(availableSeconds)}\nRequested: ${formatTime(totalRequestedSeconds)}`
+                    };
+                }
+
+                if (totalRequestedSeconds === 0) {
+                    return {
+                        valid: false,
+                        message: 'Please specify leave duration for at least one day.'
+                    };
+                }
+
+                return { valid: true, message: '' };
+            }
+
+            // Function to update balance display
+            function updateBalanceDisplay() {
+                let selectedType = $('input[name="type"]:checked').val();
+                if (!selectedType) return;
+
+                let totalRequestedSeconds = 0;
+                $('.leave-day-row').each(function() {
+                    let hours = parseInt($(this).find('input[name^="total_leave[hour]"]').val()) || 0;
+                    let minutes = parseInt($(this).find('input[name^="total_leave[min]"]').val()) || 0;
+                    let seconds = parseInt($(this).find('input[name^="total_leave[sec]"]').val()) || 0;
+                    totalRequestedSeconds += (hours * 3600) + (minutes * 60) + seconds;
+                });
+
+                let availableSeconds = availableLeaves[selectedType];
+                let remainingSeconds = availableSeconds - totalRequestedSeconds;
+
+                // Update the balance display dynamically
+                let balanceElement = $('.balance-display-' + selectedType.toLowerCase());
+                if (balanceElement.length === 0) {
+                    // Create balance display if it doesn't exist
+                    let balanceHtml = `<div class="alert alert-primary balance-display-${selectedType.toLowerCase()} mt-2">
+                        <strong>Balance Check:</strong><br>
+                        Available: <span class="available-balance">${formatTime(availableSeconds)}</span><br>
+                        Requested: <span class="requested-balance">${formatTime(totalRequestedSeconds)}</span><br>
+                        Remaining: <span class="remaining-balance ${remainingSeconds < 0 ? 'text-danger' : 'text-success'}">${formatTime(Math.max(0, remainingSeconds))}</span>
+                    </div>`;
+                    $('.form-check:has(input[value="' + selectedType + '"])').closest('.col-md').append(balanceHtml);
+                } else {
+                    balanceElement.find('.available-balance').text(formatTime(availableSeconds));
+                    balanceElement.find('.requested-balance').text(formatTime(totalRequestedSeconds));
+                    balanceElement.find('.remaining-balance')
+                        .text(formatTime(Math.max(0, remainingSeconds)))
+                        .removeClass('text-danger text-success')
+                        .addClass(remainingSeconds < 0 ? 'text-danger' : 'text-success');
+                }
+            }
+
+                        // Function to validate dates
+            function validateDates() {
+                let dates = [];
+                let duplicateFound = false;
+                let hasValidationError = false;
+
+                let selectedType = $('input[name="type"]:checked').val();
+                let today = new Date();
+                today.setHours(0, 0, 0, 0); // Set time to midnight
+
+                // For Earned leave, min date is 3 days from today + 1
+                let minEarnedDate = new Date(today);
+                if (selectedType === 'Earned') {
+                    minEarnedDate.setDate(minEarnedDate.getDate() + 3 + 1); // leave allowed after 3 days
+                }
+
+                $('.leave-day-row input[name^="leave_days[date]"]').each(function() {
+                    let dateStr = $(this).val();
+                    if (dateStr) {
+                        let inputDate = new Date(dateStr);
+
+                        // Check for duplicates
+                        if (dates.includes(dateStr)) {
+                            duplicateFound = true;
+                            $(this).addClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+                            $(this).after('<div class="invalid-feedback">Duplicate leave date.</div>');
+                            hasValidationError = true;
+                            return false; // stop checking further
+                        }
+                        dates.push(dateStr);
+
+                        // Validation
+                        if (selectedType === 'Earned' && inputDate <= minEarnedDate) {
+                            $(this).addClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+
+                            $(this).after('<div class="invalid-feedback">For Earned leave, date must be after 3 days from today.</div>');
+
+                            hasValidationError = true;
+                        } else {
+                            $(this).removeClass('is-invalid');
+                            $(this).next('.invalid-feedback').remove();
+                        }
+                    }
+                });
+
+                if (duplicateFound) {
+                    Swal.fire({
+                        title: 'Duplicate Dates!',
+                        text: 'Duplicate dates are not allowed in the same leave request.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return false;
+                }
+
+                if (hasValidationError) {
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Note: Date conflict validation is handled server-side in LeaveHistoryStoreRequest
+            // The form request will validate and show appropriate error messages
+
             // Counter for dynamic rows
             let rowCount = $('.leave-day-row').length; // Start from the current number of rows
 
@@ -323,7 +527,100 @@
 
                     // Update row count
                     rowCount = $('.leave-day-row').length;
+
+                    // Update balance display after removing row
+                    updateBalanceDisplay();
                 }
+            });
+
+            // Event handlers for real-time validation
+            $('input[name="type"]').change(function() {
+                // Clear previous balance displays
+                $('.balance-display-earned, .balance-display-casual, .balance-display-sick').remove();
+                updateBalanceDisplay();
+            });
+
+            // Update balance on time input changes
+            $(document).on('input', 'input[name^="total_leave"]', function() {
+                updateBalanceDisplay();
+            });
+
+            // Validate dates on change
+            $(document).on('change', 'input[name^="leave_days[date]"]', function() {
+                validateDates();
+            });
+
+            // Form submission validation
+            $('#postForm').on('submit', function(e) {
+                // Prevent double submission
+                const submitBtn = $('#submitBtn');
+                if (submitBtn.prop('disabled')) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Validate dates first
+                if (!validateDates()) {
+                    e.preventDefault();
+                    return false;
+                }
+
+                // Validate leave balance
+                let balanceCheck = validateLeaveBalance();
+                if (!balanceCheck.valid) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Insufficient Leave Balance!',
+                        text: balanceCheck.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                    return false;
+                }
+
+                // Validate sick leave files
+                let selectedType = $('input[name="type"]:checked').val();
+                if (selectedType === 'Sick') {
+                    let hasFiles = $('#files\\[\\]')[0].files.length > 0;
+                    if (!hasFiles) {
+                        e.preventDefault();
+                        Swal.fire({
+                            title: 'Medical Certificate Required!',
+                            text: 'Sick leave requires prescription or medical certificate.',
+                            icon: 'warning',
+                            confirmButtonText: 'OK'
+                        });
+                        return false;
+                    }
+                }
+
+                // Validate reason length
+                let reasonContent = '';
+                if (window.leaveReasonEditor) {
+                    reasonContent = window.leaveReasonEditor.getText().trim();
+                }
+
+                if (reasonContent.length < 10) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Reason Required!',
+                        text: 'Please provide a detailed reason for your leave (minimum 10 characters).',
+                        icon: 'info',
+                        confirmButtonText: 'OK'
+                    });
+                    return false;
+                }
+
+                // All validations passed, disable submit button and show loading
+                submitBtn.prop('disabled', true);
+                submitBtn.find('.btn-text').addClass('d-none');
+                submitBtn.find('.btn-loading').removeClass('d-none');
+
+                // All validations passed, submit the form
+                if (window.leaveReasonEditor) {
+                    $('#reason-input').val(window.leaveReasonEditor.root.innerHTML);
+                }
+                return true;
             });
 
             // Initial reindexing to ensure first row is included
@@ -333,6 +630,26 @@
                 $(this).find('input[name^="total_leave[min]"]').attr('name', `total_leave[min][${index}]`);
                 $(this).find('input[name^="total_leave[sec]"]').attr('name', `total_leave[sec][${index}]`);
             });
+
+            // Show warning for users with zero balance
+            @if(auth()->user()->available_leaves())
+                @php
+                    $earnedSeconds = auth()->user()->available_leaves()->earned_leave->total('seconds');
+                    $casualSeconds = auth()->user()->available_leaves()->casual_leave->total('seconds');
+                    $sickSeconds = auth()->user()->available_leaves()->sick_leave->total('seconds');
+                @endphp
+
+                @if($earnedSeconds == 0 && $casualSeconds == 0 && $sickSeconds == 0)
+                    setTimeout(function() {
+                        Swal.fire({
+                            title: 'No Leave Balance!',
+                            text: 'You have no available leave balance. Please contact HR to check your leave policy.',
+                            icon: 'warning',
+                            confirmButtonText: 'Contact HR'
+                        });
+                    }, 1000);
+                @endif
+            @endif
         });
     </script>
 @endsection

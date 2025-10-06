@@ -62,20 +62,41 @@ class DashboardCalendarController extends Controller
             $events = [];
 
             // Get task deadlines (assigned by me or assigned to me)
-            $this->addTaskEvents($events, $start, $end);
+            try {
+                $this->addTaskEvents($events, $start, $end);
+            } catch (Exception $e) {
+                Log::error('Error adding task events: ' . $e->getMessage());
+            }
 
             // Get holidays
-            $this->addHolidayEvents($events, $start, $end);
+            try {
+                $this->addHolidayEvents($events, $start, $end);
+            } catch (Exception $e) {
+                Log::error('Error adding holiday events: ' . $e->getMessage());
+            }
 
             // Get approved leaves
-            $this->addLeaveEvents($events, $start, $end);
+            try {
+                $this->addLeaveEvents($events, $start, $end);
+            } catch (Exception $e) {
+                Log::error('Error adding leave events: ' . $e->getMessage());
+            }
 
             // Add weekends
-            $this->addWeekendEvents($events, $start, $end);
+            try {
+                $this->addWeekendEvents($events, $start, $end);
+            } catch (Exception $e) {
+                Log::error('Error adding weekend events: ' . $e->getMessage());
+            }
 
             return response()->json($events);
         } catch (Exception $e) {
-            Log::error('Calendar events error: ' . $e->getMessage());
+            Log::error('Calendar events error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+                'start' => $start,
+                'end' => $end,
+                'user_id' => Auth::id()
+            ]);
 
             // Return a friendly error message
             return response()->json(['error' => 'An error occurred while fetching calendar events'], 500);

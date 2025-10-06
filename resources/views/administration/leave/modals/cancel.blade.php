@@ -37,9 +37,13 @@
                     </div>
                     <div class="col-12 text-center mt-4">
                         <button type="reset" class="btn btn-label-secondary" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
-                        <button type="submit" class="btn btn-danger me-sm-3 me-1">
+                        <button type="submit" class="btn btn-danger me-sm-3 me-1" id="cancelSubmitBtn">
                             <i class="ti ti-ban me-1"></i>
-                            {{ __('Cancel Leave') }}
+                            <span class="btn-text">{{ __('Cancel Leave') }}</span>
+                            <span class="btn-loading d-none">
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                Processing...
+                            </span>
                         </button>
                     </div>
                 </form>

@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use App\Models\Recognition\Mutators\RecognitionMutators;
 use App\Models\Recognition\Accessors\RecognitionAccessors;
 use App\Models\Recognition\Relations\RecognitionRelations;
+use App\Models\Recognition\Scopes\RecognitionScopes;
 
 #[ObservedBy([RecognitionObserver::class])]
 class Recognition extends Model
@@ -24,6 +25,9 @@ class Recognition extends Model
 
     // Accessors & Mutators
     use RecognitionAccessors, RecognitionMutators;
+
+    // Scopes
+    use RecognitionScopes;
 
     protected $cascadeDeletes = [];
 

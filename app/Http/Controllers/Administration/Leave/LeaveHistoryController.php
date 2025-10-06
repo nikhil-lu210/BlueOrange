@@ -10,10 +10,12 @@ use Illuminate\Http\Request;
 use App\Models\Leave\LeaveHistory;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\Administration\Leave\LeaveExport;
 use App\Services\Administration\Leave\LeaveExportService;
 use App\Services\Administration\Leave\LeaveHistoryService;
+use App\Services\Administration\Leave\LeaveValidationService;
 use App\Mail\Administration\Leave\LeaveRequestStatusUpdateMail;
 use App\Http\Requests\Administration\Leave\LeaveApprovalRequest;
 use App\Http\Requests\Administration\Leave\LeaveHistoryStoreRequest;
@@ -22,10 +24,17 @@ use App\Notifications\Administration\Leave\LeaveRequestUpdateNotification;
 class LeaveHistoryController extends Controller
 {
     protected $leaveHistoryService;
+    protected $leaveValidationService;
 
-    public function __construct(LeaveHistoryService $leaveHistoryService)
+    public function __construct(LeaveHistoryService $leaveHistoryService, LeaveValidationService $leaveValidationService)
     {
         $this->leaveHistoryService = $leaveHistoryService;
+        $this->leaveValidationService = $leaveValidationService;
+
+        // Apply policy authorization to resource methods
+        $this->authorizeResource(LeaveHistory::class, 'leaveHistory', [
+            'except' => ['index', 'my', 'create', 'store', 'export']
+        ]);
     }
 
     /**
@@ -33,6 +42,8 @@ class LeaveHistoryController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', LeaveHistory::class);
+
         $userIds = auth()->user()->user_interactions->pluck('id');
 
         // Optimize team leaders query
@@ -48,17 +59,8 @@ class LeaveHistoryController extends Controller
             ->select(['id', 'name'])
             ->get();
 
-        // Optimize leaves query with necessary relationships
-        $leaves = $this->leaveHistoryService->getLeavesQuery($request)
-            ->with([
-                'user.employee',
-                'user.media',
-                'user.roles',
-                'files',
-                'reviewer',
-                'reviewer.employee',
-                'leave_allowed'
-            ])
+        // Get leave histories
+        $leaves = $this->leaveHistoryService->getLeaveHistories($request)
             ->whereIn('user_id', $userIds)
             ->get();
 
@@ -70,7 +72,10 @@ class LeaveHistoryController extends Controller
      */
     public function my(Request $request)
     {
-        $leaves = $this->leaveHistoryService->getLeavesQuery($request, auth()->user()->id)->get();
+        // Auto-sync leave balances for the current user and year
+        $this->autoSyncLeaveBalances();
+
+        $leaves = $this->leaveHistoryService->getLeaveHistories($request)->where('user_id', auth()->user()->id)->get();
 
         return view('administration.leave.my', compact(['leaves']));
     }
@@ -80,6 +85,11 @@ class LeaveHistoryController extends Controller
      */
     public function create()
     {
+        $this->authorize('create', LeaveHistory::class);
+
+        // Auto-sync leave balances for the current user and year
+        $this->autoSyncLeaveBalances();
+
         $oldLeaveDaysCount = count(old('leave_days.date', []));
         return view('administration.leave.create', compact('oldLeaveDaysCount'));
     }
@@ -89,15 +99,39 @@ class LeaveHistoryController extends Controller
      */
     public function store(LeaveHistoryStoreRequest $request)
     {
+        // Authorization is handled in the form request
+
         try {
             $user = Auth::user();
+
+            // Additional server-side validation
+            if (!$user->allowed_leave) {
+                return redirect()->back()->withErrors([
+                    'leave_policy' => 'No active leave policy found. Please contact HR.'
+                ]);
+            }
+
+            if (!$user->active_team_leader) {
+                return redirect()->back()->withErrors([
+                    'team_leader' => 'No active team leader found. Leave requests require a team leader for approval.'
+                ]);
+            }
+
             $this->leaveHistoryService->store($user, $request->validated());
 
             toast('Leave Application Submitted Successfully.', 'success');
             return redirect()->route('administration.leave.history.my');
         } catch (Exception $e) {
-            dd($e->getMessage());
-            return redirect()->back()->with('error', 'Failed to send leave request. Error: ' . $e->getMessage());
+            // Check if it's a rate limit error
+            if (str_contains($e->getMessage(), 'Too Many Attempts') || str_contains($e->getMessage(), '429')) {
+                return redirect()->back()->withErrors([
+                    'submission' => 'Too many requests. Please wait a moment before trying again.'
+                ]);
+            }
+
+            return redirect()->back()->withErrors([
+                'submission' => 'Failed to submit leave request: ' . $e->getMessage()
+            ]);
         }
     }
 
@@ -106,6 +140,9 @@ class LeaveHistoryController extends Controller
      */
     public function show(LeaveHistory $leaveHistory)
     {
+        // Auto-sync leave balances for the leave owner and year
+        $this->autoSyncLeaveBalances($leaveHistory->user_id, Carbon::parse($leaveHistory->date)->year);
+
         $leaveHistory->load([
             'user.employee',
             'user.media',
@@ -119,15 +156,32 @@ class LeaveHistoryController extends Controller
         return view('administration.leave.show', compact(['leaveHistory']));
     }
 
+
+
     /**
      * Update the specified resource in storage.
      */
     public function approve(LeaveApprovalRequest $request, LeaveHistory $leaveHistory)
     {
-        $this->leaveHistoryService->approve($request, $leaveHistory);
+        $this->authorize('approve', $leaveHistory);
 
-        toast('Leave request approved and leave balance updated successfully.', 'success');
-        return redirect()->back();
+        try {
+            $this->leaveHistoryService->approve($request, $leaveHistory);
+
+            toast('Leave request approved and leave balance updated successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            // Check if it's a rate limit error
+            if (str_contains($e->getMessage(), 'Too Many Attempts') || str_contains($e->getMessage(), '429')) {
+                return redirect()->back()->withErrors([
+                    'approval' => 'Too many requests. Please wait a moment before trying again.'
+                ]);
+            }
+
+            return redirect()->back()->withErrors([
+                'approval' => 'Failed to approve leave: ' . $e->getMessage()
+            ]);
+        }
     }
 
 
@@ -136,9 +190,10 @@ class LeaveHistoryController extends Controller
      */
     public function reject(Request $request, LeaveHistory $leaveHistory)
     {
-        // dd($request->all(), $leaveHistory->toArray());
+        $this->authorize('reject', $leaveHistory);
+
         $request->validate([
-            'reviewer_note' => ['required', 'string'],
+            'reviewer_note' => ['required', 'string', 'min:10', 'max:500'],
         ]);
 
         try {
@@ -158,7 +213,9 @@ class LeaveHistoryController extends Controller
             toast('Leave request rejected successfully.', 'success');
             return redirect()->back();
         } catch (Exception $e) {
-            throw new Exception('Failed to reject leave: ' . $e->getMessage());
+            return redirect()->back()->withErrors([
+                'rejection' => 'Failed to reject leave: ' . $e->getMessage()
+            ]);
         }
     }
 
@@ -167,16 +224,53 @@ class LeaveHistoryController extends Controller
      */
     public function cancel(Request $request, LeaveHistory $leaveHistory)
     {
-        $request->validate([
-            'reviewer_note' => ['required', 'string'],
-        ]);
-        // dd($leaveHistory->toArray(), $request->all());
-        $this->leaveHistoryService->cancel($request, $leaveHistory);
+        $this->authorize('cancel', $leaveHistory);
 
-        toast('Leave request has been Canceled Successfully.', 'success');
-        return redirect()->back();
+        $request->validate([
+            'reviewer_note' => ['required', 'string', 'min:10', 'max:500'],
+        ]);
+
+        try {
+            $this->leaveHistoryService->cancel($request, $leaveHistory);
+
+            toast('Leave request has been Canceled Successfully.', 'success');
+            return redirect()->back();
+        } catch (Exception $e) {
+            // Check if it's a rate limit error
+            if (str_contains($e->getMessage(), 'Too Many Attempts') || str_contains($e->getMessage(), '429')) {
+                return redirect()->back()->withErrors([
+                    'cancellation' => 'Too many requests. Please wait a moment before trying again.'
+                ]);
+            }
+
+            return redirect()->back()->withErrors([
+                'cancellation' => 'Failed to cancel leave: ' . $e->getMessage()
+            ]);
+        }
     }
 
+
+    /**
+     * Auto-sync leave balances for a user and year.
+     * If not provided, defaults to the authenticated user and current year.
+     */
+    private function autoSyncLeaveBalances(?int $userId = null, ?int $year = null): void
+    {
+        try {
+            $userId = $userId ?? auth()->id();
+            $year   = $year ?? now()->year;
+
+            \Artisan::call('leave:sync-balances', [
+                '--user-id' => $userId,
+                '--year'    => $year,
+            ]);
+
+            toast('Leave Balances Synced Successfully for the year ' . $year . ' for ' . show_employee_data($userId, 'alias_name'), 'success');
+        } catch (\Exception $e) {
+            // dd('Failed to auto-sync leave balances. Error: ' . $e->getMessage());
+            toast('Failed to auto-sync leave balances. Error: ' . $e->getMessage(), 'error');
+        }
+    }
 
 
     /**
@@ -184,6 +278,8 @@ class LeaveHistoryController extends Controller
      */
     public function export(Request $request, LeaveExportService $leaveExportService)
     {
+        $this->authorize('export', LeaveHistory::class);
+
         try {
             $exportData = $leaveExportService->export($request);
 

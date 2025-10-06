@@ -63,16 +63,21 @@
             const currentToken = metaToken ? metaToken.getAttribute('content') : null;
 
             // Make a request to get a fresh token
-            fetch('{{ route("csrf.refresh") }}', {
+            return fetch('{{ route("csrf.refresh") }}', {
                 method: 'GET',
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest',
-                    'X-CSRF-TOKEN': currentToken
+                    'X-CSRF-TOKEN': currentToken || ''
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
-                if (data.token) {
+                if (data.success && data.token) {
                     // Update all CSRF tokens on the page
                     document.querySelectorAll('input[name="_token"]').forEach(input => {
                         input.value = data.token;
@@ -83,19 +88,32 @@
                         metaToken.setAttribute('content', data.token);
                     }
 
-                    console.log('CSRF token refreshed');
+                    // Update Livewire's CSRF token
+                    if (window.Livewire) {
+                        window.Livewire.csrfToken = data.token;
+                    }
+
+                    console.log('CSRF token refreshed successfully at', data.timestamp);
+                    return true;
+                } else {
+                    throw new Error(data.message || 'Failed to refresh CSRF token');
                 }
             })
             .catch(error => {
                 console.error('Error refreshing CSRF token:', error);
-                // If there's an error, try to reload the page
-                if (confirm('Your session has expired. Click OK to refresh the page.')) {
-                    window.location.reload();
+                
+                // If it's a 419 error, try to reload the page
+                if (error.message.includes('419') || error.message.includes('Page Expired')) {
+                    console.warn('CSRF token expired, reloading page...');
+                    if (confirm('Your session has expired. Click OK to refresh the page.')) {
+                        window.location.reload();
+                    }
                 }
+                return false;
             });
         };
 
-        // Refresh CSRF token periodically (every 15 minutes)
+        // Refresh CSRF token less frequently (every 15 minutes) to reduce server load
         setInterval(refreshCsrfToken, 15 * 60 * 1000);
 
         // Also refresh when the user becomes active after being idle
@@ -155,12 +173,23 @@
             // Handle Livewire errors, especially for CSRF token issues
             document.addEventListener('livewire:error', function(event) {
                 const message = event.detail.message;
-                if (message.includes('419') || message.includes('CSRF') || message.includes('token')) {
+                if (message.includes('419') || message.includes('CSRF') || message.includes('token') || message.includes('Page Expired')) {
                     console.error('CSRF token error detected, refreshing token...');
-                    refreshCsrfToken();
-
-                    // Notify the user
-                    alert('Your session expired. We\'ve refreshed it for you. Please try sending your message again.');
+                    
+                    // Try to refresh the token first
+                    refreshCsrfToken().then(success => {
+                        if (success) {
+                            // Token refreshed successfully, notify user
+                            console.log('CSRF token refreshed, retrying operation...');
+                            // The user can try their action again
+                        } else {
+                            // Token refresh failed, reload page
+                            console.warn('CSRF token refresh failed, reloading page...');
+                            if (confirm('Your session has expired. Click OK to refresh the page.')) {
+                                window.location.reload();
+                            }
+                        }
+                    });
 
                     // Prevent the default error behavior
                     event.preventDefault();
@@ -178,3 +207,4 @@
         });
     });
 </script>
+

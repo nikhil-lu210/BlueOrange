@@ -22,7 +22,8 @@ class LeaveApprovalRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'is_paid_leave' => ['required', 'in:Paid,Unpaid'],
+            'type' => ['required', 'in:Earned,Casual,Sick'],
+            'is_paid_leave' => ['nullable', 'in:Paid,Unpaid'],
         ];
     }
 }

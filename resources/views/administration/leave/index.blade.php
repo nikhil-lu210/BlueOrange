@@ -12,11 +12,11 @@
     <!-- DataTables css -->
     <link href="{{ asset('assets/css/custom_css/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('assets/css/custom_css/datatables/datatable.css') }}" rel="stylesheet" type="text/css" />
-    
+
     {{-- Select 2 --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/select2/select2.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.css') }}" />
-    
+
     {{-- Bootstrap Datepicker --}}
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.css') }}" />
@@ -64,7 +64,7 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        
+
                         <div class="mb-3 col-md-3">
                             <label for="user_id" class="form-label">{{ __('Select Employee') }}</label>
                             <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true">
@@ -79,7 +79,7 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                        
+
                         <div class="mb-3 col-md-2">
                             <label class="form-label">{{ __('Leaves Of') }}</label>
                             <input type="text" name="leave_month_year" value="{{ request()->leave_month_year ?? old('leave_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
@@ -114,10 +114,10 @@
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
-                    </div> 
-                    
+                    </div>
+
                     <div class="col-md-12 text-end">
-                        @if (request()->user_id || request()->leave_month_year || request()->type) 
+                        @if (request()->team_leader_id || request()->user_id || request()->leave_month_year || request()->type || request()->status)
                             <a href="{{ route('administration.leave.history.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
@@ -130,7 +130,7 @@
                     </div>
                 </div>
             </div>
-        </form>        
+        </form>
     </div>
 </div>
 
@@ -139,19 +139,29 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">
-                    <span>{{ request()->type ?? request()->type }}</span>
+                    <span>{{ request()->type ? request()->type . ' ' : '' }}</span>
                     <span>Leaves</span>
                     <span>of</span>
-                    <span class="text-bold">{{ request()->user_id ? show_user_data(request()->user_id, 'name') : 'All Users' }}</span>
+                    <span class="text-bold">
+                        @if(request()->user_id)
+                            {{ show_user_data(request()->user_id, 'name') }}
+                        @elseif(request()->team_leader_id)
+                            {{ __('Team: ') . show_user_data(request()->team_leader_id, 'name') }}
+                        @else
+                            {{ __('All Users') }}
+                        @endif
+                    </span>
                     <sup>(<b>Month: </b> {{ request()->leave_month_year ? request()->leave_month_year : date('F Y') }})</sup>
                 </h5>
-        
+
                 <div class="card-header-elements ms-auto">
                     @if ($leaves->count() > 0)
                         <a href="{{ route('administration.leave.history.export', [
-                            'user_id' => request('user_id'), 
+                            'team_leader_id' => request('team_leader_id'),
+                            'user_id' => request('user_id'),
                             'leave_month_year' => request('leave_month_year'),
                             'type' => request('type'),
+                            'status' => request('status'),
                             'filter_leaves' => request('filter_leaves')
                         ]) }}" target="_blank" class="btn btn-sm btn-dark">
                             <span class="tf-icon ti ti-download me-1"></span>
@@ -174,7 +184,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($leaves as $key => $leave) 
+                            @foreach ($leaves as $key => $leave)
                                 <tr>
                                     <th>#{{ serial($leaves, $key) }}</th>
                                     <td>
@@ -186,11 +196,11 @@
                                                 case 'Earned':
                                                     $typeBg = 'success';
                                                     break;
-                                                
+
                                                 case 'Sick':
                                                     $typeBg = 'warning';
                                                     break;
-                                                
+
                                                 default:
                                                     $typeBg = 'danger';
                                                     break;
@@ -217,11 +227,11 @@
                                                 case 'Pending':
                                                     $statusBg = 'primary';
                                                     break;
-                                                
+
                                                 case 'Approved':
                                                     $statusBg = 'success';
                                                     break;
-                                                
+
                                                 default:
                                                     $statusBg = 'danger';
                                                     break;
@@ -246,7 +256,7 @@
                     </table>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>
 <!-- End row -->
@@ -265,7 +275,7 @@
 
     <script src="{{ asset('assets/vendor/libs/select2/select2.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-select/bootstrap-select.js') }}"></script>
-    
+
     <script src="{{ asset('assets/vendor/libs/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/bootstrap-daterangepicker/bootstrap-daterangepicker.js') }}"></script>
 @endsection

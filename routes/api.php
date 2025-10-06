@@ -19,6 +19,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
+include_once 'api/api_routes.php';
+
 Route::middleware(['api'])->group(function () {
     
     // Kanban Board Routes

@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\File;
 class MakeFullModel extends Command
 {
     protected $signature = 'make:full-model {name}';
-    protected $description = 'Create a model along with traits for relations, accessors, and mutators.';
+    protected $description = 'Create a model along with traits for relations, accessors, mutators, and scopes.';
 
     public function handle()
     {
@@ -22,6 +22,7 @@ class MakeFullModel extends Command
         File::ensureDirectoryExists("{$modelPath}/Relations");
         File::ensureDirectoryExists("{$modelPath}/Accessors");
         File::ensureDirectoryExists("{$modelPath}/Mutators");
+        File::ensureDirectoryExists("{$modelPath}/Scopes");
 
         // Create Model
         $this->createModel($name, $modelPath);
@@ -30,10 +31,17 @@ class MakeFullModel extends Command
         $this->createTrait($name, 'Relations', $traitsPath);
         $this->createTrait($name, 'Accessors', $traitsPath);
         $this->createTrait($name, 'Mutators', $traitsPath);
+        $this->createTrait($name, 'Scopes', $traitsPath);
 
-        // Create Migration if --m option is provided
-        $tableName = Str::plural(Str::snake($name)); // Converts "Ticket" to "tickets"
+        // Create Migration
+        $tableName = Str::plural(Str::snake($name)); // Converts "Ticket" -> "tickets"
         $this->call('make:migration', ['name' => "create_{$tableName}_table"]);
+
+        // Create Observer
+        $this->call('make:observer', [
+            'name' => "Administration/{$name}/{$name}Observer",
+            '--model' => "{$name}/{$name}",
+        ]);
 
         $this->info("Full model structure for {$name} created successfully!");
     }
@@ -50,8 +58,12 @@ class MakeFullModel extends Command
         use App\Models\\{$name}\Mutators\\{$name}Mutators;
         use App\Models\\{$name}\Accessors\\{$name}Accessors;
         use App\Models\\{$name}\Relations\\{$name}Relations;
+        use App\Models\\{$name}\Scopes\\{$name}Scopes;
         use Illuminate\Database\Eloquent\Factories\HasFactory;
+        use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+        use App\Observers\Administration\\{$name}\\{$name}Observer;
 
+        #[ObservedBy([{$name}Observer::class])]
         class {$name} extends Model
         {
             use HasFactory, SoftDeletes;
@@ -61,6 +73,9 @@ class MakeFullModel extends Command
 
             // Accessors & Mutators
             use {$name}Accessors, {$name}Mutators;
+
+            // Scopes
+            use {$name}Scopes;
 
             protected \$casts = [];
 

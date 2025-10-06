@@ -356,6 +356,9 @@ class UserService
                 'status' => 'Inactive'
             ]);
 
+            // Deactivate related work schedules
+            $shift->work_schedules()->update(['is_active' => 0]);
+
             // Reload the user with fresh relationships
             $user = User::with(['employee', 'employee_team_leaders'])->findOrFail($user->id);
 
