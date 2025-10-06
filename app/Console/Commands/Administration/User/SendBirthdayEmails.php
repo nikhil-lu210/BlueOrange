@@ -72,7 +72,10 @@ class SendBirthdayEmails extends Command
 
         // Check if any employee's birthday is in 3 days
         $hasUpcoming = false;
-        Employee::whereMonth('birth_date', $threeDaysFromNow->month)
+        Employee::whereHas('user', function ($q) {
+                $q->where('status', 'Active'); // only employees whose user is Active
+            })
+            ->whereMonth('birth_date', $threeDaysFromNow->month)
             ->whereDay('birth_date', $threeDaysFromNow->day)
             ->orderBy('id')
             ->chunkById(200, function ($employeesInThreeDays) use (&$hasUpcoming) {

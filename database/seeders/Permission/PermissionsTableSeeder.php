@@ -39,6 +39,7 @@ class PermissionsTableSeeder extends Seeder
             'Dining Room Booking',
             'Penalty',
             'Certificate',
+            'Event',
         ];
 
         foreach ($modules as $module) {

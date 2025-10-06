@@ -10,6 +10,8 @@ use App\Http\Controllers\Administration\Task\TaskHistoryController;
 ===============================================*/
 Route::controller(TaskController::class)->prefix('task')->name('task.')->group(function () {
     Route::get('/all', 'index')->name('index')->can('Task Read');
+    Route::get('/manage', 'kanban')->name('index.manage')->can('Task Read');
+    Route::get('/fetch', 'fetch')->name('fetch')->can('Task Read');
     Route::get('/my', 'my')->name('my')->can('Task Read');
     Route::get('/create/{parent_task_id?}', 'create')->name('create')->can('Task Create');
     Route::get('/create/chat_task/{message}', 'createChatTask')->name('create.chat.task')->can('Task Create');

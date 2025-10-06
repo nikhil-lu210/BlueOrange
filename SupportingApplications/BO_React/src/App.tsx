@@ -1,0 +1,202 @@
+import { useEffect, useState } from 'react';
+import './App.css';
+import './assets/css/app.css';
+import './assets/css/custom.css';
+import { NavBar } from './components/NavBar';
+import { StatusBar } from './components/StatusBar';
+import { DashboardStats } from './components/DashboardStats';
+import { BarcodeScanner } from './components/BarcodeScanner';
+import { AttendanceRecords } from './components/AttendanceRecords';
+import { ToastContainer } from './components/Toast';
+import { AuthorizationModal } from './components/AuthorizationModal';
+import { useAttendanceStore } from './stores/attendance';
+import { useUsersStore } from './stores/users';
+import { useAttendanceWorkflow } from './hooks/useAttendanceWorkflow';
+import { useAuthorization } from './hooks/useAuthorization';
+import { workflowService } from './services/workflowService';
+
+export default function App() {
+  // State for storing delete ID during authorization
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+
+  // Use proper Zustand selectors for reactive updates
+  const attendances = useAttendanceStore((state) => state.attendances);
+  const unsyncedCount = useAttendanceStore((state) => state.unsyncedCount || 0);
+  const totalCount = useAttendanceStore((state) => state.totalCount || 0);
+  const syncedCount = useAttendanceStore((state) => state.syncedCount || 0);
+  const users = useUsersStore((state) => state.users);
+
+  const {
+    isOnline,
+    loading,
+    status,
+    handleRecordEntry,
+    syncActiveUsers,
+    syncAttendances,
+  } = useAttendanceWorkflow();
+
+  const {
+    isModalOpen,
+    modalTitle,
+    modalMessage,
+    authorizedUser,
+    loading: authLoading,
+    authorizeUser,
+    requestAuthorization,
+    clearAuthorization,
+    closeModal,
+  } = useAuthorization();
+
+  const deleteAttendance = async (id: number) => {
+    try {
+      await useAttendanceStore.getState().deleteAttendance(id);
+      // Store state is already refreshed by deleteAttendance method
+      window.Toast?.show('Attendance record deleted', 'success');
+    } catch (e) {
+      console.error(e);
+      window.Toast?.show('Failed to delete attendance record', 'error');
+    }
+  };
+
+  // Authorized version of delete attendance
+  const handleDeleteAttendance = (id: number) => {
+    requestAuthorization(
+      'Delete Attendance Record',
+      'You need to authorize to delete this attendance record. This action cannot be undone and will permanently remove the record from your local database.'
+    );
+    // Store the ID to delete after authorization
+    setDeleteId(id);
+  };
+
+  const clearAllAttendances = async () => {
+    try {
+      await useAttendanceStore.getState().clearAll();
+      // Store state is already refreshed by clearAll method
+      window.Toast?.show('All attendance records cleared', 'success');
+    } catch (e) {
+      console.error(e);
+      window.Toast?.show('Failed to clear attendance records', 'error');
+    }
+  };
+
+  // Authorized versions of sensitive operations
+  const handleSyncActiveUsers = () => {
+    requestAuthorization(
+      'Sync Active Users',
+      'You need to authorize to sync active users from the server. This will download all active users to your local database.'
+    );
+  };
+
+  const handleSyncAttendances = () => {
+    requestAuthorization(
+      'Sync Attendance Records',
+      'You need to authorize to sync offline attendance records to the server. This will upload all pending attendance records.'
+    );
+  };
+
+  const handleClearAll = () => {
+    requestAuthorization(
+      'Clear All Records',
+      'You need to authorize to clear all attendance records. This action cannot be undone and will permanently delete all local attendance data.'
+    );
+  };
+
+  // Execute operations after authorization
+  useEffect(() => {
+    if (authorizedUser) {
+      // Check which operation was requested based on modal title
+      if (modalTitle === 'Sync Active Users') {
+        syncActiveUsers().finally(() => clearAuthorization());
+      } else if (modalTitle === 'Sync Attendance Records') {
+        syncAttendances().finally(() => clearAuthorization());
+      } else if (modalTitle === 'Clear All Records') {
+        clearAllAttendances().finally(() => clearAuthorization());
+      } else if (modalTitle === 'Delete Attendance Record' && deleteId !== null) {
+        deleteAttendance(deleteId).finally(() => {
+          clearAuthorization();
+          setDeleteId(null);
+        });
+      }
+    }
+  }, [authorizedUser, modalTitle, deleteId]); // Added deleteId to dependencies
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await workflowService.initializeApp();
+        await useAttendanceStore.getState().loadAttendances();
+        await useUsersStore.getState().loadUsers();
+
+        // Don't automatically sync users - let user do it manually with authorization
+        // if (navigator.onLine && !status.hasUsers) {
+        //   await syncActiveUsers();
+        // }
+      } catch (e) {
+        console.error('Failed to initialize app:', e);
+        window.Toast?.show('Failed to initialize app', 'error');
+      }
+    })();
+  }, []); // Remove syncActiveUsers dependency to prevent infinite loop
+
+  return (
+    <div id="app" className="min-vh-100 bg-light">
+      <NavBar
+        isOnline={isOnline}
+        loading={loading}
+        unsyncedCount={unsyncedCount}
+        totalCount={totalCount}
+        onSyncActiveUsers={handleSyncActiveUsers}
+        onSyncAttendances={handleSyncAttendances}
+        onClearAll={handleClearAll}
+      />
+
+      {/* Main Content Area */}
+      <div className="container-fluid px-4 py-3">
+        {/* Quick Entry Form - Prominent Position */}
+        <div className="row justify-content-center mb-4">
+          <div className="col-md-7">
+            <BarcodeScanner
+              loading={loading}
+              onRecordEntry={handleRecordEntry}
+              statusMessage={status.message}
+            />
+          </div>
+        </div>
+
+        {/* Dashboard Stats */}
+        <div className="row mb-4">
+          <div className="col-12">
+            <DashboardStats
+              total={totalCount}
+              pending={unsyncedCount}
+              synced={syncedCount}
+              users={users.length}
+            />
+          </div>
+        </div>
+
+        {/* Attendance Records Section */}
+        <div className="row">
+          <div className="col-12">
+            <AttendanceRecords
+              attendances={attendances}
+              loading={loading}
+              onDeleteAttendance={handleDeleteAttendance}
+            />
+          </div>
+        </div>
+      </div>
+
+      <ToastContainer />
+
+      <AuthorizationModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onAuthorize={authorizeUser}
+        title={modalTitle}
+        message={modalMessage}
+        loading={authLoading}
+      />
+    </div>
+  );
+}

@@ -35,6 +35,17 @@ class TaskController extends Controller
         return view('administration.task.index', compact(['tasks', 'roles', 'assignees']));
     }
 
+    public function kanban(Request $request)
+    {
+        return view('administration.task.kanban');
+    }
+
+    public function fetch()
+    {
+        $tasks =  $this->taskRepository->getTasksQuery()->get();
+        return response()->json($tasks);
+    }
+
     /**
      * Display a listing of the resource.
      */

@@ -1,0 +1,73 @@
+{
+  "name": "electron-react-app",
+  "version": "1.0.1",
+  "private": true,
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"vite\" \"npm run electron:dev\"",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron:dev": "cross-env NODE_ENV=development electron .",
+    "start": "electron .",
+    "dist": "vite build && electron-builder"
+  },
+  "dependencies": {
+    "datatables.net": "^2.3.4",
+    "datatables.net-bs5": "^2.3.4",
+    "datatables.net-responsive": "^3.0.6",
+    "jquery": "^3.7.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "zustand": "^5.0.8"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@types/datatables.net": "^1.10.28",
+    "@types/jquery": "^3.5.33",
+    "@types/react": "^19.1.13",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.2",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.0.0",
+    "electron": "^38.1.2",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.35.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.4.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.43.0",
+    "vite": "^7.1.6"
+  },
+  "build": {
+    "appId": "com.example.electronreactapp",
+    "productName": "SI-App",
+    "asar": true,
+    "compression": "maximum",
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "!**/node_modules/*/{CHANGELOG.md,README.md,readme.md,README,readme}",
+      "!**/node_modules/*/{test,__tests__,tests,powered-test}/**",
+      "!**/node_modules/*/example/**",
+      "!**/node_modules/*/demo/**",
+      "!**/*.map"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "public/assets/favicon.ico"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "deleteAppDataOnUninstall": true,
+      "artifactName": "${productName}-Setup-${version}.${ext}"
+    }
+  }
+}

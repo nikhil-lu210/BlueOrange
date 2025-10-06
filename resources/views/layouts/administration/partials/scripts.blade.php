@@ -21,16 +21,20 @@
 <script>
     var unreadNotificationsUrl = "{{ url('/notification/get-unread-notifications-for-browser') }}";
     var markNotificationReadUrl = "{{ url('/notification/mark-as-read-notifications-for-browser/') }}";
-
-    var unreadOneToOneMessagesNotificationUrl = "{{ url('/chatting/one-to-one/browser-unread-messages') }}";
-    var markOneToOneMessageReadUrl = "{{ url('/chatting/one-to-one/read-browser-notification-message') }}";
-
-    var unreadGroupMessagesNotificationUrl = "{{ url('/chatting/group/browser-unread-messages') }}";
-    var markGroupMessageReadUrl = "{{ url('/chatting/group/read-browser-notification-message/show') }}";
 </script>
 <script src="{{ asset('assets/js/custom_js/notification/browser_notification.js') }}"></script>
-<script src="{{ asset('assets/js/custom_js/notification/one_to_one_chat_notification.js') }}"></script>
-<script src="{{ asset('assets/js/custom_js/notification/group_chat_notification.js') }}"></script>
+
+@hasanyrole(['Developer', 'Super Admin'])
+    <script>
+            var unreadOneToOneMessagesNotificationUrl = "{{ url('/chatting/one-to-one/browser-unread-messages') }}";
+            var markOneToOneMessageReadUrl = "{{ url('/chatting/one-to-one/read-browser-notification-message') }}";
+        
+            var unreadGroupMessagesNotificationUrl = "{{ url('/chatting/group/browser-unread-messages') }}";
+            var markGroupMessageReadUrl = "{{ url('/chatting/group/read-browser-notification-message/show') }}";
+    </script>
+    <script src="{{ asset('assets/js/custom_js/notification/one_to_one_chat_notification.js') }}"></script>
+    <script src="{{ asset('assets/js/custom_js/notification/group_chat_notification.js') }}"></script>
+@endhasanyrole
 
 <!-- Main JS -->
 <script src="{{ asset('assets/js/main.js') }}"></script>

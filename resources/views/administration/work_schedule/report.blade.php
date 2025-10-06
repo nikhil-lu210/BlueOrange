@@ -112,9 +112,7 @@
         /* Legend */
         .legend {
             display: flex;
-            justify-content: center;
             gap: 20px;
-            margin-bottom: 20px;
         }
 
         .legend-item {
@@ -222,19 +220,32 @@
                                  role="tabpanel"
                                  aria-labelledby="{{ strtolower($weekday) }}-tab">
 
-                                <!-- Legend -->
-                                <div class="legend">
-                                    <div class="legend-item">
-                                        <div class="legend-color bg-success"></div>
-                                        <span>Client Work</span>
+                                <!-- Legend and Employee Count -->
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="legend">
+                                        <div class="legend-item">
+                                            <div class="legend-color bg-success"></div>
+                                            <span>Client Work</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color bg-primary"></div>
+                                            <span>Internal Work</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-color bg-warning"></div>
+                                            <span>Bench Work</span>
+                                        </div>
                                     </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color bg-primary"></div>
-                                        <span>Internal Work</span>
-                                    </div>
-                                    <div class="legend-item">
-                                        <div class="legend-color bg-warning"></div>
-                                        <span>Bench Work</span>
+                                    <div class="employee-count">
+                                        @php
+                                            $scheduledCount = count(collect($reportData)->map(function($userData) use ($weekday) {
+                                                return collect($userData['schedules'])->where('weekday', $weekday)->first();
+                                            })->filter());
+                                            $totalActiveCount = count(collect($users ?? [])->where('status', 'Active'));
+                                        @endphp
+                                        <span class="badge bg-label-primary fs-6">
+                                            Scheduled: {{ $scheduledCount }}/{{ $totalActiveCount }}
+                                        </span>
                                     </div>
                                 </div>
 
