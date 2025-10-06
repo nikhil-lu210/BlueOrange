@@ -222,25 +222,6 @@
   // -----------------------------
   // Render Helpers
   // -----------------------------
-  const renderBoardDropdown = () => `
-    <div class='dropdown'>
-      <i class='dropdown-toggle ti ti-dots-vertical cursor-pointer' id='board-dropdown' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'></i>
-      <div class='dropdown-menu dropdown-menu-end' aria-labelledby='board-dropdown'>
-        <a class='dropdown-item delete-board' href='javascript:void(0)'>
-          <i class='ti ti-trash ti-xs' me-1></i>
-          <span class='align-middle'>Delete</span>
-        </a>
-        <a class='dropdown-item' href='javascript:void(0)'>
-          <i class='ti ti-edit ti-xs' me-1></i>
-          <span class='align-middle'>Rename</span>
-        </a>
-        <a class='dropdown-item' href='javascript:void(0)'>
-          <i class='ti ti-archive ti-xs' me-1></i>
-          <span class='align-middle'>Archive</span>
-        </a>
-      </div>
-    </div>`;
-
   const renderDropdown = (taskEl) => {
     const historyUrl = safeAttr(taskEl, 'data-task-history-url', '#');
     const taskShowUrl = safeAttr(taskEl, 'data-task-show-url', '#');
@@ -250,7 +231,7 @@
         <div class='dropdown-menu dropdown-menu-end' aria-labelledby='kanban-tasks-item-dropdown'>
           <a class='dropdown-item' href='${historyUrl}'>Task History</a>
           <a class='dropdown-item' href='${taskShowUrl}'>Show Task</a>
-          <a class='dropdown-item delete-task' href='javascript:void(0)'>Delete Task</a>
+          <a class='dropdown-item bg-label-danger delete-task confirm-danger' href='javascript:void(0)'>Delete Task</a>
         </div>
       </div>`;
   };
@@ -677,7 +658,6 @@
   // -----------------------------
   qsa('.kanban-title-board').forEach((elem) => {
     elem.addEventListener('mouseenter', function () { this.contentEditable = 'true'; });
-    // elem.insertAdjacentHTML('afterend', renderBoardDropdown());
   });
 
   // -----------------------------
@@ -763,7 +743,6 @@
       if (lastBoard) {
         const header = lastBoard.querySelector('.kanban-title-board');
         if (header) {
-          // header.insertAdjacentHTML('afterend', renderBoardDropdown());
           header.addEventListener('mouseenter', function () { this.contentEditable = 'true'; });
         }
       }

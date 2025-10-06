@@ -53,13 +53,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All Tasks Board') }}</b>
+    <b class="text-uppercase">{{ __('Manage Created Tasks') }}</b>
 @endsection
 
 
 @section('breadcrumb')
     <li class="breadcrumb-item">{{ __('Task') }}</li>
-    <li class="breadcrumb-item active">{{ __('All Tasks Board') }}</li>
+    <li class="breadcrumb-item active">{{ __('Manage Created Tasks') }}</li>
 @endsection
 
 
@@ -323,8 +323,7 @@
 
 @section('script_links')
     {{--  External Javascript Links --}}
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>    
     
     <script src="{{asset('assets/vendor//libs/moment/moment.js')}}"></script>
     <script src="{{asset('assets/vendor//libs/flatpickr/flatpickr.js')}}"></script>
