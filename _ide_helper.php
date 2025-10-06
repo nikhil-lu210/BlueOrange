@@ -18656,6 +18656,54 @@ namespace Jenssegers\Agent\Facades {
             }
     }
 
+namespace Laravel\Mcp\Server\Facades {
+            /**
+     * @see \Laravel\Mcp\Server\Registrar
+     */        class Mcp {
+                    /**
+         * Register an web-based MCP server running over HTTP.
+         *
+         * @static
+         */        public static function web($handle, $serverClass)
+        {
+                        /** @var \Laravel\Mcp\Server\Registrar $instance */
+                        return $instance->web($handle, $serverClass);
+        }
+                    /**
+         * Register a local MCP server running over STDIO.
+         *
+         * @static
+         */        public static function local($handle, $serverClass)
+        {
+                        /** @var \Laravel\Mcp\Server\Registrar $instance */
+                        return $instance->local($handle, $serverClass);
+        }
+                    /**
+         * Get the server class for a local MCP.
+         *
+         * @static
+         */        public static function getLocalServer($handle)
+        {
+                        /** @var \Laravel\Mcp\Server\Registrar $instance */
+                        return $instance->getLocalServer($handle);
+        }
+                    /**
+         * @static
+         */        public static function getWebServer($handle)
+        {
+                        /** @var \Laravel\Mcp\Server\Registrar $instance */
+                        return $instance->getWebServer($handle);
+        }
+                    /**
+         * @static
+         */        public static function oauthRoutes($oauthPrefix = 'oauth')
+        {
+                        /** @var \Laravel\Mcp\Server\Registrar $instance */
+                        return $instance->oauthRoutes($oauthPrefix);
+        }
+            }
+    }
+
 namespace Livewire {
             /**
      * @see \Livewire\LivewireManager
@@ -23363,9 +23411,11 @@ namespace  {
             class Vite extends \Illuminate\Support\Facades\Vite {}
             class Alert extends \RealRashid\SweetAlert\Facades\Alert {}
             class Excel extends \Maatwebsite\Excel\Facades\Excel {}
+            class GoogleTranslate extends \Stichoza\GoogleTranslate\GoogleTranslate {}
             class Debugbar extends \Barryvdh\Debugbar\Facades\Debugbar {}
             class Image extends \Intervention\Image\Facades\Image {}
             class Agent extends \Jenssegers\Agent\Facades\Agent {}
+            class Mcp extends \Laravel\Mcp\Server\Facades\Mcp {}
             class Livewire extends \Livewire\Livewire {}
             class Flare extends \Spatie\LaravelIgnition\Facades\Flare {}
             class Signal extends \Spatie\SignalAwareCommand\Facades\Signal {}
