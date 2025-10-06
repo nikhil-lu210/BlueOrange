@@ -2,7 +2,7 @@
     <div class="col-md-12">
         <div class="card card-action card-border-shadow-primary mb-1">
             <div class="card-header collapsed">
-                <h5 class="card-action-title mb-0">{{ config('app.name') }} {{ __('Calendar') }}</h5>
+                <h5 class="card-action-title mb-0">{{ config('app.name') }} {{ ___('Calendar') }}</h5>
                 <div class="card-action-element">
                     <ul class="list-inline mb-0">
                         <li class="list-inline-item">
@@ -79,7 +79,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="eventDetailsTitle">Event Details</h5>
+                <h5 class="modal-title" id="eventDetailsTitle">{{ ___('Event Details') }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -88,8 +88,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Close</button>
-                <a href="#" id="eventDetailsLink" class="btn btn-primary d-none">View Details</a>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">{{ ___('Close') }}</button>
+                <a href="#" id="eventDetailsLink" class="btn btn-primary d-none">{{ ___('View Details') }}</a>
             </div>
         </div>
     </div>

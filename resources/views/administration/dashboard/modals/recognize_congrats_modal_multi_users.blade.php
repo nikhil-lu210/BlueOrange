@@ -27,9 +27,9 @@
                                 </div>
 
                                 <div class="text-center mb-4">
-                                    <h3 class="role-title mb-2">Congratulations to {{ $recognitionCongratulationData['employee_name'] }}</h3>
+                                    <h3 class="role-title mb-2">{{ ___('Congratulations to ')}} {{ $recognitionCongratulationData['employee_name'] }}</h3>
                                     <p class="recognized-by">
-                                        <span class="fw-normal">Recognised by:</span>
+                                        <span class="fw-normal">{{ ___('Recognised by')}}:</span>
                                         <span class="fw-semibold">{{ $recognitionCongratulationData['recognizer_name'] }}</span>
                                     </p>
                                 </div>
@@ -58,7 +58,7 @@
                                 </div>
                             </div>
                         @empty
-                            <p class="text-center">No recognitions available.</p>
+                            <p class="text-center">{{ ___('No recognitions available.')}}</p>
                         @endforelse
                     </div>
                 </div>

@@ -4,7 +4,7 @@
             <div class="col-md-12">
                 <div class="card card-action card-border-shadow-primary mb-4 border-0">
                     <div class="card-header collapsed">
-                        <h5 class="card-action-title mb-0">{{ __('Upcoming Birthdays') }}</h5>
+                        <h5 class="card-action-title mb-0">{{ ___('Upcoming Birthdays') }}</h5>
                         <div class="card-action-element">
                             <ul class="list-inline mb-0">
                                 <li class="list-inline-item">
@@ -55,7 +55,7 @@
                                 @endforeach
                             </div>
                         @else
-                            <small class="text-muted">No upcoming birthdays in the next 15 days.</small>
+                            <small class="text-muted">{{ ___('No upcoming birthdays in the next 15 days.')}}</small>
                         @endif
                     </div>
                 </div>

@@ -1,7 +1,7 @@
 <div class="col-md-4">
     <div class="card card-action card-border-shadow-danger mb-1">
         <div class="card-header collapsed">
-            <div class="card-action-title">{{ __('Absent Today') }}</div>
+            <div class="card-action-title">{{ ___('Absent Today') }}</div>
             <div class="card-action-element">
                 <ul class="list-inline mb-0">
                     <li class="list-inline-item">
@@ -25,7 +25,7 @@
                         </div>
                     @empty
                         <div class="text-center w-100 py-3">
-                            <p class="mb-0 text-muted">No absent users today</p>
+                            <p class="mb-0 text-muted">{{ ___('No absent users today') }}</p>
                         </div>
                     @endforelse
                 </div>

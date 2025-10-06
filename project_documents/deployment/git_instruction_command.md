@@ -1,16 +1,16 @@
 git checkout develop
 git pull origin develop
-git checkout -b release-v2.5.3
-git push origin release-v2.5.3
+git checkout -b release-v2.5.4
+git push origin release-v2.5.4
 git add .
-git commit -m "Kanban Board Implemented in Task by Scott in release v2.5.3"
-git push origin release-v2.5.3
+git commit -m "Translator Implemented By Scott in release v2.5.4"
+git push origin release-v2.5.4
 git checkout master
 git pull origin master
-git merge --no-ff release-v2.5.3 -m "Merge release v2.5.3 into master"
+git merge --no-ff release-v2.5.4 -m "Merge release v2.5.4 into master"
 git push origin master
 git checkout develop
-git merge --no-ff release-v2.5.3 -m "Merge release v2.5.3 into develop"
+git merge --no-ff release-v2.5.4 -m "Merge release v2.5.4 into develop"
 git push origin develop
-git branch -d release-v2.5.3
-git push origin --delete release-v2.5.3
+git branch -d release-v2.5.4
+git push origin --delete release-v2.5.4
