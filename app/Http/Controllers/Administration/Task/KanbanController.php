@@ -97,14 +97,14 @@ class KanbanController extends Controller
         $taskData = [
             'id' => strtolower($boardConfig['title']) . '-' . $task->id,
             'title' => $task->title,
-            'description' => strip_tags($task->description), // Remove HTML tags
+            'description' => show_content(strip_tags($task->description), 100), // Remove HTML tags
             'comments' => (string) $task->all_comments->count(),
             'badge-text' => $badgeInfo['text'],
             'badge' => $badgeInfo['color'],
             'deadline' => $deadline,
             'attachments' => (string) $task->files->count(),
             'progress' => (string) $progress,
-            'created-by' => $task->creator->name ?? 'Unknown',
+            'created-by' => $task->creator->alias_name ?? 'Unknown',
             'assigned' => $assignedData['avatars'],
             'members' => $assignedData['names'],
             'task-history-url' => route('administration.task.history.show', $task),
@@ -135,10 +135,6 @@ class KanbanController extends Controller
     {
         // Load pivot data if not already loaded
         $users = $task->users;
-
-        // if ($users->isEmpty()) {
-        //     return $task->status === 'Completed' ? 100 : 0;
-        // }
 
         // Sum progress from pivot
         $totalProgress = $users->sum(function ($user) {
