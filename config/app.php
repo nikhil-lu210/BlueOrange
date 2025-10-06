@@ -249,6 +249,7 @@ return [
 
         // Laravel Excel (https://laravel-excel.com)
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'GoogleTranslate' => Stichoza\GoogleTranslate\GoogleTranslate::class
     ])->toArray(),
 
 ];

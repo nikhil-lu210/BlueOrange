@@ -10,15 +10,15 @@
                         </div>
                         <div>
                             <h3 class="text-white fw-semibold fs-4 mb-1">
-                                You've not recognized anyone in the last 15 days.
+                                {{ ___('You`ve not recognized anyone in the last 15 days.') }}
                             </h3>
                             <p class="text-white fs-6 mb-0">
-                                Take a moment to appreciate your team's great work!
+                                {{ ___('Take a moment to appreciate your team`s great work!') }}
                             </p>
                         </div>
                     </div>
                     <button class="btn btn-label-primary" data-bs-toggle="modal" data-bs-target="#recognitionModal">
-                        Recognize Now!!
+                        {{ ___('Recognize Now!!') }}
                     </button>
                 </div>
             </div>
