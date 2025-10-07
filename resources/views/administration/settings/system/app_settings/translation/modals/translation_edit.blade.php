@@ -1,53 +1,15 @@
-@extends('layouts.administration.app')
-
-@section('meta_tags')
-    {{--  External META's  --}}
-@endsection
-
-@section('page_title', __('Create Translation'))
-
-@section('css_links')
-    {{--  External CSS  --}}
-@endsection
-
-@section('custom_css')
-    {{--  External CSS  --}}
-    <style>
-    /* Custom CSS Here */
-    </style>
-@endsection
-
-
-@section('page_name')
-    <b class="text-uppercase">{{ __('Create New Translation') }}</b>
-@endsection
-
-
-@section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('System Settings') }}</li>
-    <li class="breadcrumb-item">{{ __('App Settings') }}</li>
-    <li class="breadcrumb-item"><a href="{{ route('administration.settings.system.app_setting.translation.index') }}">{{ __('Translations') }}</a></li>
-    <li class="breadcrumb-item active">{{ __('Create') }}</li>
-@endsection
-
-
-@section('content')
-
-<!-- Start row -->
-<div class="row">
-    <div class="col-md-12">
-        <div class="card mb-4">
-            <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Create New Translation</h5>
-                <a href="{{ route('administration.settings.system.app_setting.translation.index') }}" class="btn btn-sm btn-secondary">
-                    <span class="tf-icon ti ti-arrow-left ti-xs me-1"></span>
-                    Back to List
-                </a>
+{{-- Translation Edit Modal --}}
+<div class="modal fade" id="editTranslationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Translation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="card-body">
-                <form action="{{ route('administration.settings.system.app_setting.translation.store') }}" method="POST">
-                    @csrf
-
+            <form action="" method="POST">
+                @csrf
+                @method('PUT')
+                <div class="modal-body">
                     <div class="row">
                         <!-- Locale -->
                         <div class="col-md-12 mb-3">
@@ -56,7 +18,7 @@
                                 <option value="">Select Locale</option>
                                 @foreach($localeDetails as $code => $locale)
                                     @if($code !== 'en' && $locale['will_use'])
-                                        <option value="{{ $code }}" {{ old('locale') == $code ? 'selected' : '' }}>
+                                        <option value="{{ $code }}">
                                             {{ $locale['name'] }} ({{ $locale['original'] }}) - {{ strtoupper($code) }}
                                         </option>
                                     @endif
@@ -76,7 +38,7 @@
                                 rows="4" 
                                 class="form-control @error('source_text') is-invalid @enderror" 
                                 placeholder="Enter the original English text..."
-                                required>{{ old('source_text') }}</textarea>
+                                required></textarea>
                             @error('source_text')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -92,41 +54,22 @@
                                 rows="4" 
                                 class="form-control @error('translated_text') is-invalid @enderror" 
                                 placeholder="Enter the translated text..."
-                                required>{{ old('translated_text') }}</textarea>
+                                required></textarea>
                             @error('translated_text')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                             <small class="text-muted">Maximum {{ config('translation.character_limits.translated_text', 10000) }} characters</small>
                         </div>
                     </div>
-
-                    <div class="mt-3">
-                        <button type="submit" class="btn btn-primary me-2">
-                            <span class="tf-icon ti ti-device-floppy ti-xs me-1"></span>
-                            Create Translation
-                        </button>
-                        <a href="{{ route('administration.settings.system.app_setting.translation.index') }}" class="btn btn-label-secondary">
-                            Cancel
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>        
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <span class="tf-icon ti ti-device-floppy ti-xs me-1"></span>
+                        Update Translation
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
-<!-- End row -->
-
-@endsection
-
-
-@section('script_links')
-    {{--  External Javascript Links --}}
-@endsection
-
-@section('custom_script')
-    {{--  External Custom Javascript  --}}
-    <script>
-        // Custom Script Here
-    </script>
-@endsection
-

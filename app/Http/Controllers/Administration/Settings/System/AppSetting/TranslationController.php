@@ -23,15 +23,13 @@ class TranslationController extends Controller
      */
     public function index()
     {
-        $translations = $this->translationService->getPaginatedTranslations(25);
-        $statistics = $this->translationService->getStatistics();
-        $supportedLocales = $this->translationService->getSupportedLocales();
+        $search = request()->get('search');
+        $locale = request()->get('locale');
+        $translations = $this->translationService->getPaginatedTranslations(10, $search, $locale);
         $localeDetails = $this->translationService->getAllLocaleDetails();
 
         return view('administration.settings.system.app_settings.translation.index', compact(
             'translations',
-            'statistics',
-            'supportedLocales',
             'localeDetails'
         ));
     }
@@ -92,7 +90,7 @@ class TranslationController extends Controller
 
             toast('Translation has been updated successfully.', 'success');
 
-            return redirect()->route('administration.settings.system.app_setting.translation.index');
+            return redirect()->back();
         } catch (Exception $e) {
             toast('Failed to update translation: ' . $e->getMessage(), 'error');
 
@@ -110,7 +108,7 @@ class TranslationController extends Controller
 
             toast('Translation has been deleted successfully.', 'success');
 
-            return redirect()->route('administration.settings.system.app_setting.translation.index');
+            return redirect()->back();
         } catch (Exception $e) {
             toast('Failed to delete translation: ' . $e->getMessage(), 'error');
 

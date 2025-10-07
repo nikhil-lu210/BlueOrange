@@ -13,10 +13,22 @@ class TranslationManagementService
     /**
      * Get paginated translations
      */
-    public function getPaginatedTranslations(int $perPage = 25): LengthAwarePaginator
+    public function getPaginatedTranslations(int $perPage = 25, ?string $search = null, ?string $locale = null): LengthAwarePaginator
     {
-        return Translation::orderBy('created_at', 'desc')
-            ->paginate($perPage);
+        $query = Translation::query();
+
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('source_text', 'LIKE', "%{$search}%")
+                  ->orWhere('translated_text', 'LIKE', "%{$search}%");
+            });
+        }
+
+        if ($locale) {
+            $query->where('locale', $locale);
+        }
+
+        return $query->orderBy('created_at', 'desc')->paginate($perPage);
     }
 
     /**
