@@ -19,6 +19,13 @@
                                 </a>
                             </li>
                         @endcan
+                        @can ('App Setting Update')
+                            <li class="menu-item {{ request()->is('settings/system/app_setting/translation*') ? 'active' : '' }}">
+                                <a href="{{ route('administration.settings.system.app_setting.translation.index') }}" class="menu-link">
+                                    <div data-i18n="Translations">{{ ___('Translations') }}</div>
+                                </a>
+                            </li>
+                        @endcan
                     </ul>
                 </li>
             @endcanany

@@ -97,21 +97,50 @@ class TranslatorService
     }
 
     /**
-     * Get supported locales (you can expand this based on your needs)
+     * Get supported locales from config
      */
     public static function getSupportedLocales(): array
     {
-        return [
-            'en' => 'English',
-            'bn' => 'Bengali',
-            'hi' => 'Hindi',
-            'ar' => 'Arabic',
-            'es' => 'Spanish',
-            'fr' => 'French',
-            'de' => 'German',
-            'ja' => 'Japanese',
-            'ko' => 'Korean',
-            'zh' => 'Chinese',
-        ];
+        $locales = config('translation.supported_locales', []);
+        $result = [];
+
+        foreach ($locales as $code => $locale) {
+            $result[$code] = $locale['name'];
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get active supported locales (only those with will_use = true)
+     */
+    public static function getActiveLocales(): array
+    {
+        $locales = config('translation.supported_locales', []);
+        $result = [];
+
+        foreach ($locales as $code => $locale) {
+            if ($locale['will_use']) {
+                $result[$code] = $locale['name'];
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * Get detailed locale information
+     */
+    public static function getLocaleDetails(string $code): ?array
+    {
+        return config("translation.supported_locales.{$code}");
+    }
+
+    /**
+     * Get all locale details (full information)
+     */
+    public static function getAllLocaleDetails(): array
+    {
+        return config('translation.supported_locales', []);
     }
 }

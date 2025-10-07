@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('locale');       // Target language (bn, hi, etc.)
             $table->text('translated_text');// Translated output
             $table->timestamps();
+            $table->softDeletes();
             $table->unique(['source_text', 'locale']);
         });
     }
@@ -27,5 +28,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('translations');
+        Schema::table("translations", function ($table) {
+            $table->dropSoftDeletes();
+        });
     }
 };
