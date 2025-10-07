@@ -46,12 +46,65 @@ if (!function_exists('pagination')) {
                                   </li>';
         }
 
-        // Page Number Links
-        for ($i = 1; $i <= $datas->lastPage(); $i++) {
-            $activeClass = ($datas->currentPage() == $i) ? 'active' : '';
-            $paginationHtml .= '<li class="page-item ' . $activeClass . '">
-                                    <a class="page-link" href="' . $datas->url($i) . '">' . $i . '</a>
-                                  </li>';
+        // Page Number Links with ellipsis
+        $currentPage = $datas->currentPage();
+        $lastPage = $datas->lastPage();
+        
+        // Always show first page
+        $activeClass = ($currentPage == 1) ? 'active' : '';
+        $paginationHtml .= '<li class="page-item ' . $activeClass . '">
+                                <a class="page-link" href="' . $datas->url(1) . '">1</a>
+                              </li>';
+        
+        if ($lastPage <= 7) {
+            // If total pages <= 7, show all pages
+            for ($i = 2; $i <= $lastPage; $i++) {
+                $activeClass = ($currentPage == $i) ? 'active' : '';
+                $paginationHtml .= '<li class="page-item ' . $activeClass . '">
+                                        <a class="page-link" href="' . $datas->url($i) . '">' . $i . '</a>
+                                      </li>';
+            }
+        } else {
+            // Show ellipsis and smart pagination
+            if ($currentPage <= 4) {
+                // Show pages 2-5, then ellipsis, then last page
+                for ($i = 2; $i <= 5; $i++) {
+                    $activeClass = ($currentPage == $i) ? 'active' : '';
+                    $paginationHtml .= '<li class="page-item ' . $activeClass . '">
+                                            <a class="page-link" href="' . $datas->url($i) . '">' . $i . '</a>
+                                          </li>';
+                }
+                $paginationHtml .= '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                $activeClass = ($currentPage == $lastPage) ? 'active' : '';
+                $paginationHtml .= '<li class="page-item ' . $activeClass . '">
+                                        <a class="page-link" href="' . $datas->url($lastPage) . '">' . $lastPage . '</a>
+                                      </li>';
+            } elseif ($currentPage >= $lastPage - 3) {
+                // Show first page, ellipsis, then last 4 pages
+                $paginationHtml .= '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                for ($i = $lastPage - 4; $i <= $lastPage; $i++) {
+                    $activeClass = ($currentPage == $i) ? 'active' : '';
+                    $paginationHtml .= '<li class="page-item ' . $activeClass . '">
+                                            <a class="page-link" href="' . $datas->url($i) . '">' . $i . '</a>
+                                          </li>';
+                }
+            } else {
+                // Show first page, ellipsis, current-1, current, current+1, ellipsis, last page
+                $paginationHtml .= '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                
+                for ($i = $currentPage - 1; $i <= $currentPage + 1; $i++) {
+                    $activeClass = ($currentPage == $i) ? 'active' : '';
+                    $paginationHtml .= '<li class="page-item ' . $activeClass . '">
+                                            <a class="page-link" href="' . $datas->url($i) . '">' . $i . '</a>
+                                          </li>';
+                }
+                
+                $paginationHtml .= '<li class="page-item disabled"><span class="page-link">...</span></li>';
+                $activeClass = ($currentPage == $lastPage) ? 'active' : '';
+                $paginationHtml .= '<li class="page-item ' . $activeClass . '">
+                                        <a class="page-link" href="' . $datas->url($lastPage) . '">' . $lastPage . '</a>
+                                      </li>';
+            }
         }
 
         // Next Page Link
