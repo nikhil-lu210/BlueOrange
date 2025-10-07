@@ -40,12 +40,16 @@
                     <i class="ti ti-language rounded-circle ti-md"></i>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-end">
-                    @foreach (config('localization.languages') as $lang)
-                        <li>
-                            <a class="dropdown-item" href="{{ route('administration.localization', ['lang' => $lang['key']]) }}" data-language="{{ $lang['key'] }}">
-                                <span class="align-middle">{{ $lang['value'] }}</span>
-                            </a>
-                        </li>
+                    @foreach (config('translation.supported_locales') as $code => $locale)
+                        @if($locale['will_use'])
+                            <li>
+                                <a class="dropdown-item {{ session('localization') == $code ? 'active' : '' }}" 
+                                   href="{{ route('administration.settings.system.app_setting.localization', ['lang' => $code]) }}" 
+                                   data-language="{{ $code }}">
+                                    <span class="align-middle">{{ $locale['original'] }}</span>
+                                </a>
+                            </li>
+                        @endif
                     @endforeach
                 </ul>
             </li>

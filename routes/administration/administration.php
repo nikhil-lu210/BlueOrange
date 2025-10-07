@@ -16,8 +16,7 @@ Route::prefix('')
             // certificate
             include_once 'certificate/certificate.php';
 
-            // localization
-            include_once 'localization/localization.php';
+            // localization (moved to translation routes)
 
             // file_media
             include_once 'file_media/file_media.php';
