@@ -6,7 +6,7 @@
         <div data-i18n="Task">{{ ___('Task') }}</div>
     </a>
     <ul class="menu-sub">
-        @canany(['Task Create', 'Task Read'])
+        @canany(['Task Create', 'Task Everything'])
             <li class="menu-item {{ request()->is('task/manage*') ? 'active' : '' }}">
                 <a href="{{ route('administration.task.index.manage') }}" class="menu-link">{{ ___('Manage Tasks') }}</a>
             </li>

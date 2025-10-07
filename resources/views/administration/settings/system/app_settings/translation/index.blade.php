@@ -130,12 +130,12 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="translation-source" title="{{ $translation->source_text }}">
+                                    <div class="translation-source">
                                         {{ $translation->source_text }}
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="translation-text" title="{{ $translation->translated_text }}">
+                                    <div class="translation-text">
                                         {{ $translation->translated_text }}
                                     </div>
                                 </td>
