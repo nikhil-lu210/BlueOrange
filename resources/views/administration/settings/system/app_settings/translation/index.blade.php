@@ -65,7 +65,7 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label class="form-label">Filter by Language</label>
-                            <select name="locale" class="form-select bootstrap-select w-100">
+                            <select name="locale" class="form-select bootstrap-select w-100" data-style="btn-default">
                                 <option value="">All Languages</option>
                                 @foreach($localeDetails as $code => $locale)
                                     @if($code !== 'en' && $locale['will_use'])
