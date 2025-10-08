@@ -9,7 +9,7 @@
                         </span>
                         <div class="content-right">
                             <h5 class="text-success mb-0">{{ $total['regularWorkedHours'] }}</h5>
-                            <small class="mb-0 text-muted">Total Worked (Regular)</small>
+                            <small class="mb-0 text-muted">{{ ___('Total Worked') }} ({{ ___('Regular') }})</small>
                         </div>
                     </div>
                     <div class="d-flex align-items-center gap-3">
@@ -18,7 +18,7 @@
                         </span>
                         <div class="content-right">
                             <h5 class="text-warning mb-0">{{ $total['overtimeWorkedHours'] }}</h5>
-                            <small class="mb-0 text-muted">Total Worked (Overtime)</small>
+                            <small class="mb-0 text-muted">{{ ___('Total Worked') }} ({{ ___('Overtime') }})</small>
                         </div>
                     </div>
                     <div class="d-flex align-items-center gap-3">
@@ -27,7 +27,7 @@
                         </span>
                         <div class="content-right">
                             <h5 class="text-primary mb-0">{{ $total['breakTime'] }}</h5>
-                            <small class="mb-0 text-muted">Total Break</small>
+                            <small class="mb-0 text-muted">{{ ___('Total Break') }}</small>
                         </div>
                     </div>
                     <div class="d-flex align-items-center gap-3">
@@ -36,11 +36,11 @@
                         </span>
                         <div class="content-right">
                             <h5 class="text-danger mb-0">{{ $total['overBreakTime'] }}</h5>
-                            <small class="mb-0 text-muted">Total Overbreak</small>
+                            <small class="mb-0 text-muted">{{ ___('Total Overbreak') }}</small>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>
     </div>
 </div>

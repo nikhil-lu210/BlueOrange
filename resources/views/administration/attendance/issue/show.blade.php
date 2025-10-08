@@ -4,7 +4,7 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('Attendance Issue Details'))
+@section('page_title', ___('Attendance Issue Details'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -32,21 +32,21 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Attendance Issue Details') }}</b>
+    <b class="text-uppercase">{{ ___('Attendance Issue Details') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance') }}</li>
-    <li class="breadcrumb-item">{{ __('Attendance Issue') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance Issue') }}</li>
     <li class="breadcrumb-item">
         @can ('Update Attenance Issue')
-            <a href="{{ route('administration.attendance.issue.index') }}">{{ __('All Issues') }}</a>
+            <a href="{{ route('administration.attendance.issue.index') }}">{{ ___('All Issues') }}</a>
         @else
-            <a href="{{ route('administration.attendance.issue.my') }}">{{ __('My Issues') }}</a>
+            <a href="{{ route('administration.attendance.issue.my') }}">{{ ___('My Issues') }}</a>
         @endcan
     </li>
-    <li class="breadcrumb-item active">{{ __('Attendance Issue Details') }}</li>
+    <li class="breadcrumb-item active">{{ ___('Attendance Issue Details') }}</li>
 @endsection
 
 
@@ -60,7 +60,7 @@
                 <div class="flex-grow-1 mt-4">
                     <div class="d-flex align-items-center justify-content-md-between justify-content-start mx-4 flex-md-row flex-column gap-4">
                         <div class="user-profile-info">
-                            <h4 class="mb-0">{{ $issue->title }}</h4>
+                            <h4 class="mb-0">{{ ___($issue->title) }}</h4>
                             <ul class="list-inline mb-0 d-flex align-items-center flex-wrap justify-content-sm-start justify-content-center gap-2">
                                 <li class="list-inline-item d-flex gap-1" data-bs-toggle="tooltip" title="Issue Created By" data-bs-placement="bottom">
                                     <i class="ti ti-crown"></i>
@@ -77,11 +77,11 @@
                                 <div class="card-header-elements ms-auto">
                                     <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#rejectAttendanceIssueModal">
                                         <span class="tf-icon ti ti-ban ti-xs me-1"></span>
-                                        {{ __('Reject') }}
+                                        {{ ___('Reject') }}
                                     </button>
                                     <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#approveAttendanceIssueModal">
                                         <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                                        {{ __('Approve') }}
+                                        {{ ___('Approve') }}
                                     </button>
                                 </div>
                             @endcan
@@ -98,20 +98,20 @@
             <div class="alert alert-danger" role="alert">
                 <h5 class="alert-heading">
                     <i class="ti ti-alert-triangle me-2"></i>
-                    Existing Regular Attendance Detected
+                    {{ ___('Existing Regular Attendance Detected') }}
                 </h5>
                 <p class="mb-2">
-                    <strong>Warning:</strong> A Regular attendance record already exists for {{ $issue->user->alias_name }} on {{ show_date($issue->clock_in_date) }}.
+                    <strong>{{ ___('Warning') }}:</strong> {{ ___('A Regular attendance record already exists for') }} {{ $issue->user->alias_name }} {{ ___('on') }} {{ show_date($issue->clock_in_date) }}.
                 </p>
                 <p class="mb-2">
-                    <strong>Existing Record:</strong>
-                    Clock-in: {{ show_time($existingRegularAttendance->clock_in) }} |
-                    Clock-out: {{ $existingRegularAttendance->clock_out ? show_time($existingRegularAttendance->clock_out) : 'Not clocked out' }}
+                    <strong>{{ ___('Existing Record') }}:</strong>
+                    {{ ___('Clock-in:') }} {{ show_time($existingRegularAttendance->clock_in) }} {{ ___('|') }}
+                    {{ ___('Clock-out:') }} {{ $existingRegularAttendance->clock_out ? show_time($existingRegularAttendance->clock_out) : ___('Not clocked out') }}
                 </p>
                 <hr>
                 <p class="mb-0">
-                    <strong>Recommendation:</strong> If you approve this Regular attendance issue, it will fail because a Regular attendance already exists.
-                    Consider asking the employee to request an update to the existing attendance record instead.
+                    <strong>{{ ___('Recommendation') }}:</strong> {{ ___('If you approve this Regular attendance issue, it will fail because a Regular attendance already exists.') }}
+                    {{ ___('Consider asking the employee to request an update to the existing attendance record instead.') }}
                 </p>
             </div>
         </div>

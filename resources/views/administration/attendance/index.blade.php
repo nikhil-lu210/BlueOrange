@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Attendance'))
+@section('page_title', ___('Attendance'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -38,13 +38,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All Attendances') }}</b>
+    <b class="text-uppercase">{{ ___('All Attendances') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance') }}</li>
-    <li class="breadcrumb-item active">{{ __('All Attendances') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance') }}</li>
+    <li class="breadcrumb-item active">{{ ___('All Attendances') }}</li>
 @endsection
 
 
@@ -58,9 +58,9 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="mb-3 col-md-6">
-                            <label for="user_id" class="form-label">{{ __('Select Employee') }}</label>
+                            <label for="user_id" class="form-label">{{ ___('Select Employee') }}</label>
                             <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true">
-                                <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>{{ __('Select Employee') }}</option>
+                                <option value="" {{ is_null(request()->user_id) ? 'selected' : '' }}>{{ ___('Select Employee') }}</option>
                                 @foreach ($users as $user)
                                     <option value="{{ $user->id }}" {{ $user->id == request()->user_id ? 'selected' : '' }}>
                                         {{ get_employee_name($user) }}
@@ -73,7 +73,7 @@
                         </div>
 
                         <div class="mb-3 col-md-3">
-                            <label class="form-label">{{ __('Attendances Of') }}</label>
+                            <label class="form-label">{{ ___('Attendances Of') }}</label>
                             <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                             @error('created_month_year')
                                 <span class="text-danger">{{ $message }}</span>
@@ -81,11 +81,11 @@
                         </div>
 
                         <div class="mb-3 col-md-3">
-                            <label for="type" class="form-label">{{ __('Select Clockin Type') }}</label>
+                            <label for="type" class="form-label">{{ ___('Select Clockin Type') }}</label>
                             <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default">
-                                <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ __('Select Type') }}</option>
-                                <option value="Regular" {{ request()->type == 'Regular' ? 'selected' : '' }}>{{ __('Regular') }}</option>
-                                <option value="Overtime" {{ request()->type == 'Overtime' ? 'selected' : '' }}>{{ __('Overtime') }}</option>
+                                <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ ___('Select Type') }}</option>
+                                <option value="Regular" {{ request()->type == 'Regular' ? 'selected' : '' }}>{{ ___('Regular') }}</option>
+                                <option value="Overtime" {{ request()->type == 'Overtime' ? 'selected' : '' }}>{{ ___('Overtime') }}</option>
                             </select>
                             @error('announcer_id')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -97,12 +97,12 @@
                         @if (request()->user_id || request()->created_month_year || request()->type)
                             <a href="{{ route('administration.attendance.index') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
-                                {{ __('Reset Filters') }}
+                                {{ ___('Reset Filters') }}
                             </a>
                         @endif
                         <button type="submit" name="filter_attendance" value="true" class="btn btn-primary">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                            {{ __('Filter Attendances') }}
+                            {{ ___('Filter Attendances') }}
                         </button>
                     </div>
                 </div>
@@ -121,13 +121,12 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                {{-- $clockinType . 'attendances_backup' . $userName . $monthYear --}}
                 <h5 class="mb-0">
                     <span>{{ request()->type ?? request()->type }}</span>
-                    <span>Attendances</span>
-                    <span>of</span>
-                    <span class="text-bold">{{ request()->user_id ? show_user_data(request()->user_id, 'name') : 'All Users' }}</span>
-                    <sup>(<b>Month: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
+                    <span>{{ ___('Attendances') }}</span>
+                    <span>{{ ___('of') }}</span>
+                    <span class="text-bold">{{ request()->user_id ? show_user_data(request()->user_id, 'name') : ___('All Users') }}</span>
+                    <sup>(<b>{{ ___('Month') }}: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
                 </h5>
 
                 <div class="card-header-elements ms-auto">
@@ -139,7 +138,7 @@
                             'filter_attendance' => request('filter_attendance')
                         ]) }}" target="_blank" class="btn btn-sm btn-dark">
                             <span class="tf-icon ti ti-download me-1"></span>
-                            {{ __('Download') }}
+                            {{ ___('Download') }}
                         </a>
                     @endif
                 </div>
@@ -149,14 +148,14 @@
                     <table class="table data-table table-bordered">
                         <thead>
                             <tr>
-                                <th>Sl.</th>
-                                <th>Date</th>
-                                <th>Name</th>
-                                <th>Clocked IN</th>
-                                <th>Clock Out</th>
-                                <th class="text-center">Breaks</th>
-                                <th>Total</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ ___('Sl.') }}</th>
+                                <th>{{ ___('Date') }}</th>
+                                <th>{{ ___('Name') }}</th>
+                                <th>{{ ___('Clocked IN') }}</th>
+                                <th>{{ ___('Clock Out') }}</th>
+                                <th class="text-center">{{ ___('Breaks') }}</th>
+                                <th>{{ ___('Total') }}</th>
+                                <th class="text-center">{{ ___('Action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -183,7 +182,7 @@
                                                 }
                                             @endphp
                                             <span class="text-truncate text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
-                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="Shift Start Time">{{ show_time($attendance->employee_shift->start_time) }}</small>
+                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="{{ ___('Shift Start Time') }}">{{ show_time($attendance->employee_shift->start_time) }}</small>
                                         </div>
                                     </td>
                                     <td>
@@ -198,16 +197,16 @@
                                                 @endphp
                                                 <span class="text-truncate text-bold {{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
                                             @else
-                                                <b class="text-success text-uppercase">Running</b>
+                                                <b class="text-success text-uppercase">{{ ___('Running') }}</b>
                                             @endisset
-                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
+                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ ___('Shift End Time') }}">{{ show_time($attendance->employee_shift->end_time) }}</small>
                                         </div>
                                     </td>
                                     <td class="text-center {{ $attendance->type == 'Overtime' ? 'not-allowed' : '' }}">
                                         @if ($attendance->type == 'Regular')
                                             <div class="d-grid">
                                                 <b class="text-truncate">
-                                                    <span class="text-warning" title="Total Break Time">
+                                                    <span class="text-warning" title="{{ ___('Total Break Time') }}">
                                                         {{ total_time($attendance->total_break_time) }}
                                                     </span>
                                                     @isset ($attendance->total_over_break)
@@ -217,11 +216,11 @@
                                                     @endisset
                                                 </b>
                                                 <small class="text-truncate text-muted">
-                                                    Breaks Taken: {{ $attendance->total_breaks_taken }}
+                                                    {{ ___('Breaks Taken') }}: {{ $attendance->total_breaks_taken }}
                                                 </small>
                                             </div>
                                         @else
-                                            <b class="text-muted">No Break</b>
+                                            <b class="text-muted">{{ ___('No Break') }}</b>
                                         @endif
                                     </td>
                                     <td>
@@ -243,12 +242,12 @@
                                                     {{ total_time($attendance->total_time) }}
                                                 </small>
                                             @else
-                                                <b class="text-success text-uppercase">Running</b>
+                                                <b class="text-success text-uppercase">{{ ___('Running') }}</b>
                                             @endisset
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('administration.attendance.destroy', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="Destroy Details">
+                                        <a href="{{ route('administration.attendance.destroy', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon btn-danger confirm-danger" data-bs-toggle="tooltip" title="{{ ___('Destroy Details') }}">
                                             <i class="ti ti-info-hexagon"></i>
                                         </a>
                                         <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">

@@ -4,7 +4,7 @@
     {{--  External META's  --}}
 @endsection
 
-@section('page_title', __('Attendance Details'))
+@section('page_title', ___('Attendance Details'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -29,16 +29,16 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Attendance Details') }}</b>
+    <b class="text-uppercase">{{ ___('Attendance Details') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance') }}</li>
     <li class="breadcrumb-item">
-        <a href="{{ route('administration.attendance.index') }}">{{ __('All Attendances') }}</a>
+        <a href="{{ route('administration.attendance.index') }}">{{ ___('All Attendances') }}</a>
     </li>
-    <li class="breadcrumb-item">{{ __('Attendance Details') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance Details') }}</li>
     <li class="breadcrumb-item active">{{ get_date_only($attendance->clock_in_date) }} ({{ $attendance->type }})</li>
 @endsection
 
@@ -50,13 +50,13 @@
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0"><strong>{{ $attendance->user->alias_name }}'s</strong> {{ $attendance->type }} Attendance Details of {{ show_date($attendance->clock_in_date) }}</h5>
+                <h5 class="mb-0"><strong>{{ $attendance->user->alias_name }}'s</strong> {{ $attendance->type }} {{ ___('Attendance Details of') }} {{ show_date($attendance->clock_in_date) }}</h5>
 
                 @canany(['Attendance Update', 'Attendance Delete'])
                     <div class="card-header-elements ms-auto">
                         <button type="button" data-bs-toggle="modal" data-bs-target="#editAttendance" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-edit ti-xs me-1"></span>
-                            Edit Attendance
+                            {{ ___('Edit Attendance') }}
                         </button>
                     </div>
                 @endcanany
