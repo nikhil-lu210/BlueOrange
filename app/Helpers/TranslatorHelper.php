@@ -7,6 +7,11 @@ if (! function_exists('___')) {
     /**
      * Translate the given sentence using Google Translate
      *
+     * NOTE: As of the custom translator integration, you can now use the standard
+     * Laravel __() helper instead of ___() for translations. The __() helper will
+     * automatically fall back to Google Translate when translations are missing.
+     * This helper is kept for backward compatibility.
+     *
      * @param  string  $sentence  The text to translate
      * @param  string|null  $target  The target language code (optional)
      * @return string The translated text or original text if translation fails
