@@ -230,6 +230,7 @@ return [
         // App\Providers\BroadcastServiceProvider::class, // Removed WebSocket/Pusher service provider
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TranslatorServiceProvider::class,
     ],
 
     /*

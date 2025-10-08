@@ -1,15 +1,15 @@
 <div class="card">
     <div class="card-body">
         <div class="d-flex">
-            <small class="card-text text-uppercase">Daily Break's Details</small>
+            <small class="card-text text-uppercase">{{ ___('Daily Break\'s Details') }}</small>
             <div class="ms-auto" style="margin-top: -5px;">
                 @isset ($attendance->total_break_time)
-                    <small class="badge bg-dark" title="Total Break Taken">
+                    <small class="badge bg-dark" title="{{ ___('Total Break Taken') }}">
                         {{ total_time($attendance->total_break_time) }}
                     </small>
                 @endisset
                 @isset ($attendance->total_over_break)
-                    <small class="badge bg-danger" title="Total Over Break">
+                    <small class="badge bg-danger" title="{{ ___('Total Over Break') }}">
                         {{ total_time($attendance->total_over_break) }}
                     </small>
                 @endisset
@@ -23,7 +23,7 @@
                     </span>
                     <div class="timeline-event px-0 pb-0">
                         <div class="timeline-header">
-                            <small class="text-uppercase fw-medium" title="Click To See Details">
+                            <small class="text-uppercase fw-medium" title="{{ ___('Click To See Details') }}">
                                 <a href="{{ route('administration.daily_break.show', ['break' => $break]) }}" class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ $break->type }} Break</a>
                             </small>
                         </div>
@@ -34,23 +34,23 @@
                                 <span>{{ show_time($break->break_out_at) }}</span>
                             @else
                                 -
-                                <span class="text-danger">Break Running</span>
+                                <span class="text-danger">{{ ___('Break Running') }}</span>
                             @endif
                         </small>
                         <h6 class="mb-1">
                             @if (is_null($break->total_time))
-                                <span class="text-danger">Break Running</span>
+                                <span class="text-danger">{{ ___('Break Running') }}</span>
                             @else
                                 <span class="text-{{ $break->type == 'Short' ? 'primary' : 'warning' }}">{{ total_time($break->total_time) }}</span>
                                 @isset($break->over_break)
-                                    <small class="text-danger text-bold mt-1" title="Over Break">({{ total_time($break->over_break) }})</small>
+                                    <small class="text-danger text-bold mt-1" title="{{ ___('Over Break') }}">({{ total_time($break->over_break) }})</small>
                                 @endisset
                             @endif
                         </h6>
                     </div>
                 </li>
             @empty
-                <div class="text-center text-bold text-muted fs-2">No Breaks</div>
+                <div class="text-center text-bold text-muted fs-2">{{ ___('No Breaks') }}</div>
             @endforelse
         </ul>
     </div>

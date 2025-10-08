@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Create Attendance Issue'))
+@section('page_title', ___('Create Attendance Issue'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -36,13 +36,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Create Attendance Issue') }}</b>
+    <b class="text-uppercase">{{ ___('Create Attendance Issue') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance Issues') }}</li>
-    <li class="breadcrumb-item active">{{ __('Create Attendance Issue') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance Issues') }}</li>
+    <li class="breadcrumb-item active">{{ ___('Create Attendance Issue') }}</li>
 @endsection
 
 
@@ -55,12 +55,12 @@
             @csrf
             <div class="card mb-4">
                 <div class="card-header header-elements">
-                    <h5 class="mb-0">{{ __('Assign Attendance Issue') }}</h5>
+                    <h5 class="mb-0">{{ ___('Assign Attendance Issue') }}</h5>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="mb-3 col-md-12">
-                            <label for="title" class="form-label">{{ __('Issue Title') }} <strong class="text-danger">*</strong></label>
+                            <label for="title" class="form-label">{{ ___('Issue Title') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="title" name="title" value="{{ old('title') }}" placeholder="Forgot To Clockin" class="form-control @error('title') is-invalid @enderror" required/>
                             @error('title')
                                 <b class="text-danger">
@@ -70,30 +70,30 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-12">
-                            <label for="attendance_issue_type" class="form-label">{{ __('Issue For') }} <strong class="text-danger">*</strong></label>
+                            <label for="attendance_issue_type" class="form-label">{{ ___('Issue For') }} <strong class="text-danger">*</strong></label>
                             <div class="row">
-                                <div class="col-md mb-md-0 mb-2" title="{{ __('যদি আপনি ইতিমধ্যেই ক্লক-ইন করে থাকেন, সেই এটেন্ডেন্সের কিছু সমস্যা আছে, এবং তা আপনি ঠিক/আপডেট করাতে চান, তাহলে এই অপশনটি সিলেক্ট করুন।') }}">
+                                <div class="col-md mb-md-0 mb-2" title="{{ ___('যদি আপনি ইতিমধ্যেই ক্লক-ইন করে থাকেন, সেই এটেন্ডেন্সের কিছু সমস্যা আছে, এবং তা আপনি ঠিক/আপডেট করাতে চান, তাহলে এই অপশনটি সিলেক্ট করুন।') }}">
                                     <div class="form-check custom-option custom-option-basic">
                                         <label class="form-check-label custom-option-content" for="attendanceOld">
                                             <input name="attendance_issue_type" class="form-check-input" type="radio" value="Old" id="attendanceOld" required @checked(old('attendance_issue_type') == 'Old')/>
                                             <span class="custom-option-header pb-0">
-                                                <span class="h6 mb-0">{{ __('Update Existing Attendance') }}</span>
+                                                <span class="h6 mb-0">{{ ___('Update Existing Attendance') }}</span>
                                             </span>
                                             <span class="custom-option-body">
-                                                <small class="text-muted text-capitalize">{{ __('If you have clock in/Out data but any of them are incorrect, use this option.') }}</small>
+                                                <small class="text-muted text-capitalize">{{ ___('If you have clock in/Out data but any of them are incorrect, use this option.') }}</small>
                                             </span>
                                         </label>
                                     </div>
                                 </div>
                                 <div class="col-md">
-                                    <div class="form-check custom-option custom-option-basic" title="{{ __('যদি আপনি ক্লক-ইন করে না থাকেন, এবং সম্পূর্ণ নতুন করে এটেন্ডেন্স রেকর্ড করাতে চান, তাহলে এই অপশনটি সিলেক্ট করুন।') }}">
+                                    <div class="form-check custom-option custom-option-basic" title="{{ ___('যদি আপনি ক্লক-ইন করে না থাকেন, এবং সম্পূর্ণ নতুন করে এটেন্ডেন্স রেকর্ড করাতে চান, তাহলে এই অপশনটি সিলেক্ট করুন।') }}">
                                         <label class="form-check-label custom-option-content" for="attendanceNew">
                                             <input name="attendance_issue_type" class="form-check-input" type="radio" value="New" id="attendanceNew" required @checked(old('attendance_issue_type') == 'New')/>
                                             <span class="custom-option-header pb-0">
-                                                <span class="h6 mb-0">{{ __('Create New Attendance') }}</span>
+                                                <span class="h6 mb-0">{{ ___('Create New Attendance') }}</span>
                                             </span>
                                             <span class="custom-option-body">
-                                                <small>{{ __('If you have no clock in/out data at all, use this option to request a new attendance') }}</small>
+                                                <small>{{ ___('If you have no clock in/out data at all, use this option to request a new attendance') }}</small>
                                             </span>
                                         </label>
                                     </div>
@@ -105,9 +105,9 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-12" id="newClockInDate">
-                            <label for="clock_in_date" class="form-label">{{ __('Select Clock-In Date') }} <strong class="text-danger">*</strong></label>
+                            <label for="clock_in_date" class="form-label">{{ ___('Select Clock-In Date') }} <strong class="text-danger">*</strong></label>
                             <select name="clock_in_date" id="clock_in_date" class="select2 form-select @error('clock_in_date') is-invalid @enderror" data-allow-clear="true" required>
-                                <option value="" selected>{{ __('Select Clock-In Date') }}</option>
+                                <option value="" selected>{{ ___('Select Clock-In Date') }}</option>
                                 @foreach ($dates as $date)
                                     <option value="{{ $date }}" {{ old('clock_in_date') == $date ? 'selected' : '' }}>
                                         {{ show_date($date) }}
@@ -119,9 +119,9 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-12" id="oldClockInDate">
-                            <label for="attendance_id" class="form-label">{{ __('Select Attendance') }} <strong class="text-danger">*</strong></label>
+                            <label for="attendance_id" class="form-label">{{ ___('Select Attendance') }} <strong class="text-danger">*</strong></label>
                             <select name="attendance_id" id="attendance_id" class="select2 form-select @error('attendance_id') is-invalid @enderror" data-allow-clear="true" required>
-                                <option value="" selected>{{ __('Select Attendance') }}</option>
+                                <option value="" selected>{{ ___('Select Attendance') }}</option>
                                 @foreach ($attendances as $attendance)
                                     <option value="{{ $attendance->id }}" {{ old('attendance_id') == $attendance->id ? 'selected' : '' }}>
                                         {{ show_date_time($attendance->clock_in) }} | {{ $attendance->type }}
@@ -133,32 +133,32 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="clock_in" class="form-label">{{ __('Expected Clockin Time') }} <strong class="text-danger">*</strong></label>
+                            <label for="clock_in" class="form-label">{{ ___('Expected Clockin Time') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="clock_in" name="clock_in" value="{{ old('clock_in') }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_in') is-invalid @enderror" required/>
                             @error('clock_in')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="clock_out" class="form-label">{{ __('Expected Clockout Time') }} <strong class="text-danger">*</strong></label>
+                            <label for="clock_out" class="form-label">{{ ___('Expected Clockout Time') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="clock_out" name="clock_out" value="{{ old('clock_out') }}" placeholder="YYYY-MM-DD HH:MM" class="form-control date-time-picker @error('clock_out') is-invalid @enderror" required/>
                             @error('clock_out')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="type" class="form-label">{{ __('Select Clockin Type') }} <strong class="text-danger">*</strong></label>
+                            <label for="type" class="form-label">{{ ___('Select Clockin Type') }} <strong class="text-danger">*</strong></label>
                             <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default" required>
-                                <option value="" selected disabled>{{ __('Select Type') }}</option>
-                                <option value="Regular" {{ old('type') == 'Regular' ? 'selected' : '' }}>{{ __('Regular') }}</option>
-                                <option value="Overtime" {{ old('type') == 'Overtime' ? 'selected' : '' }}>{{ __('Overtime') }}</option>
+                                <option value="" selected disabled>{{ ___('Select Type') }}</option>
+                                <option value="Regular" {{ old('type') == 'Regular' ? 'selected' : '' }}>{{ ___('Regular') }}</option>
+                                <option value="Overtime" {{ old('type') == 'Overtime' ? 'selected' : '' }}>{{ ___('Overtime') }}</option>
                             </select>
                             @error('type')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-12">
-                            <label class="form-label">{{ __('Explain Issue Reason') }} <strong class="text-danger">*</strong></label>
+                            <label class="form-label">{{ ___('Explain Issue Reason') }} <strong class="text-danger">*</strong></label>
                             <div name="reason" id="full-editor">{!! old('reason') !!}</div>
                             <textarea class="d-none" name="reason" id="reason-input">{{ old('reason') }}</textarea>
                             @error('reason')
@@ -170,7 +170,7 @@
                     <div class="col-md-12 text-end">
                         <button type="submit" class="btn btn-primary">
                             <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                            {{ __('Create Issue') }}
+                            {{ ___('Create Issue') }}
                         </button>
                     </div>
                 </div>

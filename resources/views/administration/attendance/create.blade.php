@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Attendance'))
+@section('page_title', ___('Attendance'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -33,13 +33,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Assign Attendance') }}</b>
+    <b class="text-uppercase">{{ ___('Assign Attendance') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance') }}</li>
-    <li class="breadcrumb-item active">{{ __('Assign Attendance') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance') }}</li>
+    <li class="breadcrumb-item active">{{ ___('Assign Attendance') }}</li>
 @endsection
 
 
@@ -52,19 +52,19 @@
             @csrf
             <div class="card mb-4">
                 <div class="card-header header-elements">
-                    <h5 class="mb-0">Assign Attendance</h5>
+                    <h5 class="mb-0">{{ ___('Assign Attendance') }}</h5>
 
                     <div class="card-header-elements ms-auto">
                         <a href="{{ route('administration.attendance.import.index') }}" class="btn btn-sm btn-primary">
                             <span class="tf-icon ti ti-upload ti-xs me-1"></span>
-                            Import Attendances
+                            {{ ___('Import Attendances') }}
                         </a>
                     </div>
                 </div>
                 <div class="card-body">
                     <div class="row">
                         <div class="mb-3 col-md-6">
-                            <label for="user_id" class="form-label">Select Employee <strong class="text-danger">*</strong></label>
+                            <label for="user_id" class="form-label">{{ ___('Select Employee') }} <strong class="text-danger">*</strong></label>
                             <select name="user_id" id="user_id" class="select2 form-select @error('user_id') is-invalid @enderror" data-allow-clear="true" required>
                                 <option value="" selected>Select Employee</option>
                                 @foreach ($users as $user)
@@ -78,28 +78,28 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-6">
-                            <label class="form-label">Clockin Date <strong class="text-danger">*</strong></label>
+                            <label class="form-label">{{ ___('Clockin Date') }} <strong class="text-danger">*</strong></label>
                             <input type="text" name="clock_in_date" value="{{ old('clock_in_date') }}" class="form-control  date-picker" placeholder="YYYY-MM-DD" required/>
                             @error('clock_in_date')
                                 <span class="text-danger">{{ $message }}</span>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="clock_in" class="form-label">{{ __('Clockin Time') }} <strong class="text-danger">*</strong></label>
+                            <label for="clock_in" class="form-label">{{ ___('Clockin Time') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="clock_in" name="clock_in" value="{{ old('clock_in') }}" placeholder="HH:MM" class="form-control time-picker @error('clock_in') is-invalid @enderror" required/>
                             @error('clock_in')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="clock_out" class="form-label">{{ __('Clockout Time') }} <strong class="text-danger">*</strong></label>
+                            <label for="clock_out" class="form-label">{{ ___('Clockout Time') }} <strong class="text-danger">*</strong></label>
                             <input type="text" id="clock_out" name="clock_out" value="{{ old('clock_out') }}" placeholder="HH:MM" class="form-control time-picker @error('clock_out') is-invalid @enderror" required/>
                             @error('clock_out')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
                             @enderror
                         </div>
                         <div class="mb-3 col-md-4">
-                            <label for="type" class="form-label">Select Clockin Type <strong class="text-danger">*</strong></label>
+                            <label for="type" class="form-label">{{ ___('Select Clockin Type') }} <strong class="text-danger">*</strong></label>
                             <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default" required>
                                 <option value="" selected disabled>Select Type</option>
                                 <option value="Regular" {{ old('type') == 'Regular' ? 'selected' : '' }}>Regular</option>
@@ -114,7 +114,7 @@
                     <div class="col-md-12 text-end">
                         <button type="submit" class="btn btn-success">
                             <span class="tf-icon ti ti-check ti-xs me-1"></span>
-                            Create Attendance
+                            {{ ___('Create Attendance') }}
                         </button>
                     </div>
                 </div>

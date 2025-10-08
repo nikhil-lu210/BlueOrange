@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Attendance'))
+@section('page_title', ___('Attendance'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -38,13 +38,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('My Attendances') }}</b>
+    <b class="text-uppercase">{{ ___('My Attendances') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance') }}</li>
-    <li class="breadcrumb-item active">{{ __('My Attendances') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance') }}</li>
+    <li class="breadcrumb-item active">{{ ___('My Attendances') }}</li>
 @endsection
 
 
@@ -58,7 +58,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="mb-3 col-md-5">
-                            <label class="form-label">{{ __('Attendances Of') }}</label>
+                            <label class="form-label">{{ ___('Attendances Of') }}</label>
                             <input type="text" name="created_month_year" value="{{ request()->created_month_year ?? old('created_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                             @error('created_month_year')
                                 <span class="text-danger">{{ $message }}</span>
@@ -66,11 +66,11 @@
                         </div>
 
                         <div class="mb-3 col-md-7">
-                            <label for="type" class="form-label">{{ __('Select Clockin Type') }}</label>
+                            <label for="type" class="form-label">{{ ___('Select Clockin Type') }}</label>
                             <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default">
-                                <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ __('Select Type') }}</option>
-                                <option value="Regular" {{ request()->type == 'Regular' ? 'selected' : '' }}>{{ __('Regular') }}</option>
-                                <option value="Overtime" {{ request()->type == 'Overtime' ? 'selected' : '' }}>{{ __('Overtime') }}</option>
+                                <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ ___('Select Type') }}</option>
+                                <option value="Regular" {{ request()->type == 'Regular' ? 'selected' : '' }}>{{ ___('Regular') }}</option>
+                                <option value="Overtime" {{ request()->type == 'Overtime' ? 'selected' : '' }}>{{ ___('Overtime') }}</option>
                             </select>
                             @error('announcer_id')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -82,12 +82,12 @@
                         @if (request()->created_month_year || request()->type)
                             <a href="{{ route('administration.attendance.my') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
-                                {{ __('Reset Filters') }}
+                                {{ ___('Reset Filters') }}
                             </a>
                         @endif
                         <button type="submit" name="filter_attendance" value="true" class="btn btn-primary">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                            {{ __('Filter Attendances') }}
+                            {{ ___('Filter Attendances') }}
                         </button>
                     </div>
                 </div>
@@ -104,10 +104,10 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">
-                    <span>My</span>
+                    <span>{{ ___('My') }}</span>
                     <span>{{ request()->type ?? request()->type }}</span>
-                    <span>Attendances</span>
-                    <sup>(<b>Month: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
+                    <span>{{ ___('Attendances') }}</span>
+                    <sup>(<b>{{ ___('Month') }}: </b> {{ request()->created_month_year ? request()->created_month_year : date('F Y') }})</sup>
                 </h5>
 
                 <div class="card-header-elements ms-auto">
@@ -119,7 +119,7 @@
                             'filter_attendance' => request('filter_attendance')
                         ]) }}" target="_blank" class="btn btn-sm btn-dark">
                             <span class="tf-icon ti ti-download me-1"></span>
-                            {{ __('Download') }}
+                            {{ ___('Download') }}
                         </a>
                     @endif
                 </div>
@@ -129,13 +129,13 @@
                     <table class="table data-table table-bordered">
                         <thead class="bg-label-primary">
                             <tr>
-                                <th>Sl.</th>
-                                <th>Date</th>
-                                <th>Clocked IN</th>
-                                <th>Clock Out</th>
-                                <th class="text-center">Breaks</th>
-                                <th>Total</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ ___('Sl.') }}</th>
+                                <th>{{ ___('Date') }}</th>
+                                <th>{{ ___('Clocked IN') }}</th>
+                                <th>{{ ___('Clock Out') }}</th>
+                                <th class="text-center">{{ ___('Breaks') }}</th>
+                                <th>{{ ___('Total') }}</th>
+                                <th class="text-center">{{ ___('Action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -157,7 +157,7 @@
                                                 }
                                             @endphp
                                             <span class="text-truncate text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
-                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="Shift Start Time">{{ show_time($attendance->employee_shift->start_time) }}</small>
+                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="{{ ___('Shift Start Time') }}">{{ show_time($attendance->employee_shift->start_time) }}</small>
                                         </div>
                                     </td>
                                     <td>
@@ -174,29 +174,29 @@
                                             @else
                                                 <b class="text-success text-uppercase">Running</b>
                                             @endisset
-                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
+                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ ___('Shift End Time') }}">{{ show_time($attendance->employee_shift->end_time) }}</small>
                                         </div>
                                     </td>
                                     <td class="text-center {{ $attendance->type == 'Overtime' ? 'not-allowed' : '' }}">
                                         @if ($attendance->type == 'Regular')
                                             <div class="d-grid">
                                                 <b class="text-truncate">
-                                                    <span class="text-warning" title="Total Break Time">
+                                                    <span class="text-warning" title="{{ ___('Total Break Time') }}">
                                                         {{ total_time($attendance->total_break_time) }}
                                                     </span>
                                                     @isset ($attendance->total_over_break)
                                                         <br>
-                                                        <small class="text-danger" title="Total Over Break">
+                                                        <small class="text-danger" title="{{ ___('Total Over Break') }}">
                                                             ({{ total_time($attendance->total_over_break) }})
                                                         </small>
                                                     @endisset
                                                 </b>
                                                 <small class="text-truncate text-muted">
-                                                    Breaks Taken: {{ $attendance->total_breaks_taken }}
+                                                    {{ ___('Breaks Taken') }}: {{ $attendance->total_breaks_taken }}
                                                 </small>
                                             </div>
                                         @else
-                                            <b class="text-muted">No Break</b>
+                                            <b class="text-muted">{{ ___('No Break') }}</b>
                                         @endif
                                     </td>
                                     <td>
@@ -205,7 +205,7 @@
                                                 @php
                                                     $totalWorkingHour = get_total_hour($attendance->employee_shift->start_time, $attendance->employee_shift->end_time);
                                                 @endphp
-                                                <b title="Adjusted Total Time">
+                                                <b title="{{ ___('Adjusted Total Time') }}">
                                                     @if ($attendance->type == 'Regular')
                                                         {!! total_time_with_min_hour($attendance->total_adjusted_time, $totalWorkingHour) !!}
                                                     @else
@@ -214,16 +214,16 @@
                                                         </b>
                                                     @endif
                                                 </b>
-                                                <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Total Working Time">
+                                                <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="bottom" title="{{ ___('Total Working Time') }}">
                                                     {{ total_time($attendance->total_time) }}
                                                 </small>
                                             @else
-                                                <b class="text-success text-uppercase">Running</b>
+                                                <b class="text-success text-uppercase">{{ ___('Running') }}</b>
                                             @endisset
                                         </div>
                                     </td>
                                     <td class="text-center">
-                                        <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
+                                        <a href="{{ route('administration.attendance.show', ['attendance' => $attendance]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="{{ ___('Show Details') }}">
                                             <i class="ti ti-info-hexagon"></i>
                                         </a>
                                     </td>

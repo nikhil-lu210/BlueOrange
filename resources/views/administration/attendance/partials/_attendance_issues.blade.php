@@ -1,7 +1,7 @@
 <div class="card mt-3">
     <div class="card-body">
         <div class="d-flex">
-            <small class="card-text text-uppercase">Attendance Issues</small>
+            <small class="card-text text-uppercase">{{ ___('Attendance Issues') }}</small>
         </div>
         <ul class="timeline mb-0 pb-1 mt-4">
             @forelse ($attendance->issues as $key => $issue)
@@ -26,7 +26,7 @@
                     </span>
                     <div class="timeline-event px-0 pb-0">
                         <div class="timeline-header">
-                            <small class="text-capitalize fw-bold" title="Click To See Details">
+                            <small class="text-capitalize fw-bold" title="{{ ___('Click To See Details') }}">
                                 <a href="{{ route('administration.attendance.issue.show', ['issue' => $issue]) }}" target="_blank" class="text-{{ $color }}">{{ $issue->title }}</a>
                             </small>
                         </div>
@@ -39,7 +39,7 @@
                     </div>
                 </li>
             @empty
-                <div class="text-center text-bold text-muted fs-2">No Issues</div>
+                <div class="text-center text-bold text-muted fs-2">{{ ___('No Issues') }}</div>
             @endforelse
         </ul>
     </div>

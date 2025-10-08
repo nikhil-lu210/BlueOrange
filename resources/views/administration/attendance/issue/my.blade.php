@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Attendance Issues'))
+@section('page_title', ___('Attendance Issues'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -38,13 +38,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('All Attendance Issues') }}</b>
+    <b class="text-uppercase">{{ ___('All Attendance Issues') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance Issues') }}</li>
-    <li class="breadcrumb-item active">{{ __('All Attendance Issues') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance Issues') }}</li>
+    <li class="breadcrumb-item active">{{ ___('All Attendance Issues') }}</li>
 @endsection
 
 
@@ -58,7 +58,7 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="mb-3 col-md-3">
-                            <label class="form-label">{{ __('Attendance Issues Of') }}</label>
+                            <label class="form-label">{{ ___('Attendance Issues Of') }}</label>
                             <input type="text" name="issue_month_year" value="{{ request()->issue_month_year ?? old('issue_month_year') }}" class="form-control month-year-picker" placeholder="MM yyyy" tabindex="-1"/>
                             @error('issue_month_year')
                                 <span class="text-danger">{{ $message }}</span>
@@ -66,11 +66,11 @@
                         </div>
 
                         <div class="mb-3 col-md-5">
-                            <label for="type" class="form-label">{{ __('Select Attendance Type') }}</label>
+                            <label for="type" class="form-label">{{ ___('Select Attendance Type') }}</label>
                             <select name="type" id="type" class="form-select bootstrap-select w-100 @error('type') is-invalid @enderror"  data-style="btn-default">
-                                <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ __('Select Type') }}</option>
-                                <option value="Regular" {{ request()->type == 'Regular' ? 'selected' : '' }}>{{ __('Regular') }}</option>
-                                <option value="Overtime" {{ request()->type == 'Overtime' ? 'selected' : '' }}>{{ __('Overtime') }}</option>
+                                <option value="" {{ is_null(request()->type) ? 'selected' : '' }}>{{ ___('Select Type') }}</option>
+                                <option value="Regular" {{ request()->type == 'Regular' ? 'selected' : '' }}>{{ ___('Regular') }}</option>
+                                <option value="Overtime" {{ request()->type == 'Overtime' ? 'selected' : '' }}>{{ ___('Overtime') }}</option>
                             </select>
                             @error('type')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -78,12 +78,12 @@
                         </div>
 
                         <div class="mb-3 col-md-4">
-                            <label for="status" class="form-label">{{ __('Select Status') }}</label>
+                            <label for="status" class="form-label">{{ ___('Select Status') }}</label>
                             <select name="status" id="status" class="form-select bootstrap-select w-100 @error('status') is-invalid @enderror"  data-style="btn-default">
-                                <option value="" {{ is_null(request()->status) ? 'selected' : '' }}>{{ __('Select status') }}</option>
-                                <option value="Pending" {{ request()->status == 'Pending' ? 'selected' : '' }}>{{ __('Pending') }}</option>
-                                <option value="Approved" {{ request()->status == 'Approved' ? 'selected' : '' }}>{{ __('Approved') }}</option>
-                                <option value="Rejected" {{ request()->status == 'Rejected' ? 'selected' : '' }}>{{ __('Rejected') }}</option>
+                                <option value="" {{ is_null(request()->status) ? 'selected' : '' }}>{{ ___('Select status') }}</option>
+                                <option value="Pending" {{ request()->status == 'Pending' ? 'selected' : '' }}>{{ ___('Pending') }}</option>
+                                <option value="Approved" {{ request()->status == 'Approved' ? 'selected' : '' }}>{{ ___('Approved') }}</option>
+                                <option value="Rejected" {{ request()->status == 'Rejected' ? 'selected' : '' }}>{{ ___('Rejected') }}</option>
                             </select>
                             @error('status')
                                 <b class="text-danger"><i class="feather icon-info mr-1"></i>{{ $message }}</b>
@@ -95,12 +95,12 @@
                         @if (request()->issue_month_year || request()->type || request()->status)
                             <a href="{{ route('administration.attendance.issue.my') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
-                                {{ __('Reset Filters') }}
+                                {{ ___('Reset Filters') }}
                             </a>
                         @endif
                         <button type="submit" name="filter_issues" value="true" class="btn btn-primary">
                             <span class="tf-icon ti ti-filter ti-xs me-1"></span>
-                            {{ __('Filter Issues') }}
+                            {{ ___('Filter Issues') }}
                         </button>
                     </div>
                 </div>
@@ -115,7 +115,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">
-                    <span>Attendance Issues Of</span>
+                    <span>{{ ___('Attendance Issues Of') }}</span>
                     <span>of</span>
                     <b>{{ request()->issue_month_year ? request()->issue_month_year : date('F Y') }}</b>
                     @if(request()->type || request()->status)
@@ -132,11 +132,11 @@
                     <table class="table data-table table-bordered">
                         <thead>
                             <tr>
-                                <th>Sl.</th>
-                                <th>Name</th>
-                                <th>Title</th>
-                                <th>Issue Date For</th>
-                                <th class="text-center">Action</th>
+                                <th>{{ ___('Sl.') }}</th>
+                                <th>{{ ___('Name') }}</th>
+                                <th>{{ ___('Title') }}</th>
+                                <th>{{ ___('Issue Date For') }}</th>
+                                <th class="text-center">{{ ___('Action') }}</th>
                             </tr>
                         </thead>
                         <tbody>
