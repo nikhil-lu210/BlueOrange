@@ -151,7 +151,8 @@ class AnnouncementController extends Controller
         }
 
         // Fetch current read_by_at value and convert it to array
-        $readBy = $announcement->read_by_at ? json_decode($announcement->read_by_at, true) : [];
+        $readBy = $announcement->read_by_at ? json_decode((string)$announcement->read_by_at, true) : [];
+        $readBy = $readBy ?: [];
 
         // Get current user ID
         $userId = Auth::id();
@@ -185,7 +186,39 @@ class AnnouncementController extends Controller
             ->whereId($announcement->id)
             ->firstOrFail();
 
-        return view('administration.announcement.show', compact('announcement'));
+        // Calculate announcement statistics
+        $announcementStats = $this->calculateAnnouncementStats($announcement);
+
+        return view('administration.announcement.show', compact('announcement', 'announcementStats'));
+    }
+
+    /**
+     * Calculate announcement statistics
+     */
+    private function calculateAnnouncementStats(Announcement $announcement): array
+    {
+        $readByData = $announcement->read_by_at ? json_decode((string)$announcement->read_by_at, true) : [];
+        $readByData = $readByData ?: [];
+
+        $totalRecipients = is_null($announcement->recipients)
+            ? User::where('status', 'Active')->count()
+            : count($announcement->recipients);
+
+        $readCount = count($readByData);
+        $unreadCount = $totalRecipients - $readCount;
+        $isAnnouncer = $announcement->announcer_id == auth()->id();
+        $userHasRead = collect($readByData)->contains('read_by', auth()->id());
+        $isRecipient = is_null($announcement->recipients) || in_array(auth()->id(), $announcement->recipients);
+
+        return [
+            'readByData' => $readByData,
+            'totalRecipients' => $totalRecipients,
+            'readCount' => $readCount,
+            'unreadCount' => $unreadCount,
+            'isAnnouncer' => $isAnnouncer,
+            'userHasRead' => $userHasRead,
+            'isRecipient' => $isRecipient,
+        ];
     }
 
     /**
