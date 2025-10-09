@@ -189,7 +189,7 @@
                         <div class="mb-2">
                             <span class="badge bg-label-primary text-bold p-2">
                                 <i class="ti ti-calendar ti-sm me-1"></i>
-                                {{ show_date($dailyWorkUpdate->date) }}
+                                    {{ show_date($dailyWorkUpdate->date) }}
                             </span>
                         </div>
                         <div>
@@ -223,7 +223,7 @@
                                     <span class="avatar-initial rounded-circle bg-label-success">
                                         {{ profile_name_pic($dailyWorkUpdate->team_leader) }}
                                     </span>
-                                @endif
+                            @endif
                             </div>
                         </div>
                     </div>
@@ -313,7 +313,7 @@
                 <small class="text-muted">{{ $dailyWorkUpdate->created_at->diffForHumans() }}</small>
             </div>
         </div>
-    </div>
+            </div>
 
     {{-- Main Content Area --}}
     <div class="col-lg-8 col-md-12">
@@ -338,7 +338,7 @@
                     {!! $dailyWorkUpdate->work_update !!}
                 </div>
             </div>
-        </div>
+                </div>
 
         {{-- Attached Files --}}
         @if ($dailyWorkUpdate->files->count() > 0)
@@ -407,13 +407,13 @@
     {{-- Sidebar --}}
     <div class="col-lg-4 col-md-12">
         {{-- Notes/Issues Card --}}
-        <div class="card mb-4">
+                <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
                     <i class="ti ti-alert-circle me-2"></i>Notes / Issues
                 </h5>
-            </div>
-            <div class="card-body">
+                    </div>
+                    <div class="card-body">
                 @if($dailyWorkUpdate->note)
                     <div class="alert alert-warning" role="alert">
                         {!! $dailyWorkUpdate->note !!}
@@ -448,7 +448,7 @@
         @endif
 
         {{-- Activity Timeline --}}
-        <div class="card mb-4">
+                    <div class="card mb-4">
             <div class="card-header">
                 <h5 class="mb-0">
                     <i class="ti ti-timeline me-2"></i>Activity Timeline
@@ -507,7 +507,7 @@
                             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#markAsReadModal">
                                 <i class="ti ti-star me-1"></i>Rate This Update
                             </button>
-                        @endif
+            @endif
                     @endcan
 
                     <button type="button" class="btn btn-outline-secondary" onclick="window.print()">
@@ -576,12 +576,12 @@
                                         </div>
                                     </div>
                                 </div>
-                                @error('rating')
+                                    @error('rating')
                                     <div class="text-danger mt-2">
                                         <small><i class="ti ti-alert-circle me-1"></i>{{ $message }}</small>
                                     </div>
-                                @enderror
-                            </div>
+                                    @enderror
+                                </div>
 
                             {{-- Rating Guide --}}
                             <div class="card bg-label-secondary mb-4">
@@ -602,13 +602,13 @@
                                 <label class="form-label fw-bold">Feedback & Comments</label>
                                 <small class="text-muted d-block mb-2">Provide constructive feedback to help improve future work</small>
                                 <div name="comment" id="commentEditor" style="min-height: 150px;">{!! old('comment') !!}</div>
-                                <textarea class="d-none" name="comment" id="commentEditorInput">{{ old('comment') }}</textarea>
-                                @error('comment')
+                                    <textarea class="d-none" name="comment" id="commentEditorInput">{{ old('comment') }}</textarea>
+                                    @error('comment')
                                     <div class="text-danger mt-2">
                                         <small><i class="ti ti-alert-circle me-1"></i>{{ $message }}</small>
                                     </div>
-                                @enderror
-                            </div>
+                                    @enderror
+                                </div>
 
                             {{-- Form Actions --}}
                             <div class="d-flex justify-content-end gap-2 mt-4">
@@ -617,7 +617,7 @@
                                 </button>
                                 <button type="submit" class="btn btn-primary">
                                     <i class="ti ti-check me-1"></i>Submit Rating & Feedback
-                                </button>
+                                    </button>
                             </div>
                         </form>
                     </div>
@@ -661,20 +661,20 @@
 
             // Initialize comment editor only if modal exists
             @if (!$dailyWorkUpdate->rating && auth()->id() === $dailyWorkUpdate->team_leader_id)
-                var commentEditor = new Quill("#commentEditor", {
-                    bounds: "#commentEditor",
+            var commentEditor = new Quill("#commentEditor", {
+                bounds: "#commentEditor",
                     placeholder: "Provide detailed feedback to help the employee understand their performance and areas for improvement...",
-                    modules: {
-                        formula: true,
-                        toolbar: fullToolbar,
-                    },
-                    theme: "snow",
-                });
+                modules: {
+                    formula: true,
+                    toolbar: fullToolbar,
+                },
+                theme: "snow",
+            });
 
-                // Set the editor content to the old comment if validation fails
-                @if(old('comment'))
-                    commentEditor.root.innerHTML = {!! json_encode(old('comment')) !!};
-                @endif
+            // Set the editor content to the old comment if validation fails
+            @if(old('comment'))
+                commentEditor.root.innerHTML = {!! json_encode(old('comment')) !!};
+            @endif
 
                 // On form submit, transfer Quill content to hidden textarea
                 $('#workUpdateStatusForm').on('submit', function(e) {
