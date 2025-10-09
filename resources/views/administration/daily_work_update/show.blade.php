@@ -170,15 +170,13 @@
                                 @endif
                             </div>
                             <div class="flex-grow-1">
+                                <small class="text-muted d-block mb-1">Reporting By</small>
                                 <h6 class="mb-0">
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyWorkUpdate->user]) }}" target="_blank" class="text-dark">
-                                        {{ $dailyWorkUpdate->user->name }}
+                                    <i class="ti ti-user ti-xs me-1"></i>
+                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyWorkUpdate->user]) }}" target="_blank" class="text-primary">
+                                        {{ $dailyWorkUpdate->user->alias_name }}
                                     </a>
                                 </h6>
-                                <small class="text-muted">
-                                    <i class="ti ti-user ti-xs me-1"></i>{{ $dailyWorkUpdate->user->alias_name }}
-                                </small>
-                                <br>
                                 <small class="text-muted">
                                     <i class="ti ti-briefcase ti-xs me-1"></i>{{ $dailyWorkUpdate->user->role->name ?? 'N/A' }}
                                 </small>
@@ -189,13 +187,13 @@
                     {{-- Work Update Date & Status --}}
                     <div class="col-lg-4 col-md-6 mb-3 mb-lg-0 text-center">
                         <div class="mb-2">
-                            <span class="badge bg-label-primary p-2">
+                            <span class="badge bg-label-primary text-bold p-2">
                                 <i class="ti ti-calendar ti-sm me-1"></i>
                                 {{ show_date($dailyWorkUpdate->date) }}
                             </span>
                         </div>
                         <div>
-                            <span class="badge bg-label-{{ $ratingColor }} p-2">
+                            <span class="badge bg-label-{{ $ratingColor }} text-bold p-2">
                                 <i class="ti {{ $ratingIcon }} ti-sm me-1"></i>
                                 {{ $ratingText }}
                             </span>
@@ -206,14 +204,16 @@
                     <div class="col-lg-4 col-md-12">
                         <div class="d-flex align-items-center justify-content-lg-end">
                             <div class="flex-grow-1 text-lg-end me-3">
-                                <small class="text-muted d-block">Reporting To</small>
+                                <small class="text-muted d-block mb-1">Reporting To</small>
                                 <h6 class="mb-0">
-                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyWorkUpdate->team_leader]) }}" target="_blank" class="text-dark">
-                                        {{ $dailyWorkUpdate->team_leader->name }}
+                                    <a href="{{ route('administration.settings.user.show.profile', ['user' => $dailyWorkUpdate->team_leader]) }}" target="_blank" class="text-primary">
+                                        {{ $dailyWorkUpdate->team_leader->alias_name }}
+                                        <i class="ti ti-crown ti-xs me-1"></i>
                                     </a>
                                 </h6>
-                                <small class="text-primary">
-                                    <i class="ti ti-crown ti-xs me-1"></i>{{ $dailyWorkUpdate->team_leader->alias_name }}
+                                <small class="text-muted">
+                                    {{ $dailyWorkUpdate->team_leader->role->name ?? 'N/A' }}
+                                    <i class="ti ti-briefcase ti-xs me-1"></i>
                                 </small>
                             </div>
                             <div class="avatar avatar-lg">
