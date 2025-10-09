@@ -85,7 +85,7 @@
                                     <span class="avatar-initial rounded-circle bg-label-primary">
                                         {{ profile_name_pic($announcement->announcer) }}
                                     </span>
-                                @endif
+                            @endif
                             </div>
                             <div class="flex-grow-1">
                                 <small class="text-muted d-block mb-1">Announced By</small>
@@ -116,8 +116,8 @@
                             @can('Announcement Update')
                                 <a href="{{ route('administration.announcement.edit', ['announcement' => $announcement]) }}" class="btn btn-sm btn-info" data-bs-toggle="tooltip" title="Edit Announcement">
                                     <i class="ti ti-pencil me-1"></i>Edit
-                                </a>
-                            @endcan
+                            </a>
+                        @endcan
                             <button type="button" class="btn btn-sm btn-primary" title="View Statistics" data-bs-toggle="modal" data-bs-target="#announcementStatsModal">
                                 <i class="ti ti-chart-bar me-1"></i>Stats
                             </button>
@@ -189,19 +189,19 @@
             </div>
             <div class="card-body">
                 <div class="announcement-content">
-                    {!! $announcement->description !!}
+                {!! $announcement->description !!}
                 </div>
             </div>
         </div>
 
         {{-- Attached Files --}}
         @if ($announcement->files->count() > 0)
-            <div class="card mb-4">
+        <div class="card mb-4">
                 <div class="card-header">
                     <h5 class="mb-0">
                         <i class="ti ti-paperclip me-2"></i>Attached Files ({{ $announcement->files->count() }})
                     </h5>
-                </div>
+            </div>
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-bordered">
@@ -237,10 +237,10 @@
                                         <td>{{ date_time_ago($file->created_at) }}</td>
                                         <td class="text-center">
                                         @if ($announcementStats['isAnnouncer'])
-                                            <a href="{{ file_media_destroy($file) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" title="Delete {{ $file->original_name }}">
-                                                <i class="ti ti-trash"></i>
-                                            </a>
-                                        @endif
+                                                <a href="{{ file_media_destroy($file) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" title="Delete {{ $file->original_name }}">
+                                                    <i class="ti ti-trash"></i>
+                                                </a>
+                                            @endif
                                             <a href="{{ file_media_download($file) }}" target="_blank" class="btn btn-icon btn-primary btn-sm waves-effect" title="Download {{ $file->original_name }}">
                                                 <i class="ti ti-download"></i>
                                             </a>
@@ -277,10 +277,10 @@
                                 {{ show_employee_data($recipient, 'alias_name') }}
                             </span>
                         @endforeach
-                    </div>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
+    </div>
 
         {{-- Comments Section --}}
         <div class="card mb-4">
@@ -290,23 +290,23 @@
                 </h5>
                 <button type="button" class="btn btn-sm btn-primary" title="Add Comment" data-bs-toggle="collapse" data-bs-target="#commentForm" aria-expanded="false">
                     <i class="ti ti-plus me-1"></i>Add
-                </button>
+                    </button>
             </div>
             <div class="card-body">
                 {{-- Comment Form --}}
                 <div class="collapse" id="commentForm">
                     <form action="{{ route('administration.announcement.comment.store', ['announcement' => $announcement]) }}" method="post" class="mb-4">
-                        @csrf
+                            @csrf
                         <div class="mb-3">
                             <textarea class="form-control" name="comment" rows="3" placeholder="Write your comment here..." required>{{ old('comment') }}</textarea>
-                            @error('comment')
+                                        @error('comment')
                                 <span class="text-danger small">{{ $message }}</span>
-                            @enderror
-                        </div>
+                                        @enderror
+                                    </div>
                         <button type="submit" class="btn btn-primary btn-sm">
                             <i class="ti ti-send me-1"></i>
                             Post Comment
-                        </button>
+                                        </button>
                     </form>
                     <hr>
                 </div>
@@ -323,7 +323,7 @@
                                         {{ profile_name_pic($comment->commenter) }}
                                     </span>
                                 @endif
-                            </div>
+                                    </div>
                             <div class="flex-grow-1">
                                 <div class="d-flex justify-content-between align-items-start mb-1">
                                     <h6 class="mb-0">{{ $comment->commenter->alias_name ?? $comment->commenter->name }}</h6>
@@ -331,12 +331,12 @@
                                 </div>
                                 <p class="mb-0 text-muted">{{ $comment->comment }}</p>
                             </div>
-                        </div>
+                    </div>
                     @empty
                         <div class="text-center text-muted py-4">
                             <i class="ti ti-message-circle-off fs-1 mb-3"></i>
                             <p>No comments yet. Be the first to comment!</p>
-                        </div>
+                </div>
                     @endforelse
                 </div>
             </div>
