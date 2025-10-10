@@ -5,7 +5,7 @@
             <div class="modal-header">
                 <h5 class="modal-title">
                     <i class="ti ti-eye me-2"></i>
-                    Announcement Readers
+                    {{ __('Announcement Readers') }}
                 </h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -22,9 +22,9 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th>Reader</th>
-                                    <th>Read At</th>
-                                    <th>Time Ago</th>
+                                    <th>{{ __('Reader') }}</th>
+                                    <th>{{ __('Read At') }}</th>
+                                    <th>{{ __('Time Ago') }}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -54,8 +54,8 @@
                 @else
                     <div class="text-center py-5">
                         <i class="ti ti-eye-off fs-1 text-muted mb-3"></i>
-                        <h5 class="text-muted">No readers yet</h5>
-                        <p class="text-muted">This announcement hasn't been read by anyone yet.</p>
+                        <h5 class="text-muted">{{ __('No readers yet') }}</h5>
+                        <p class="text-muted">{{ __('This announcement hasn\'t been read by anyone yet') }}</p>
                     </div>
                 @endif
             </div>
