@@ -7398,6 +7398,34 @@ namespace Illuminate\Support\Facades {
      * @see \Illuminate\Translation\Translator
      */        class Lang {
                     /**
+         * Get the translation for a given key with Google Translate fallback.
+         *
+         * @param string $key
+         * @param array $replace
+         * @param string|null $locale
+         * @param bool $fallback
+         * @return string|array
+         * @static
+         */        public static function get($key, $replace = [], $locale = null, $fallback = true)
+        {
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
+                        return $instance->get($key, $replace, $locale, $fallback);
+        }
+                    /**
+         * Get a translation according to an integer value.
+         *
+         * @param string $key
+         * @param \Countable|int|array $number
+         * @param array $replace
+         * @param string|null $locale
+         * @return string
+         * @static
+         */        public static function choice($key, $number, $replace = [], $locale = null)
+        {
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
+                        return $instance->choice($key, $number, $replace, $locale);
+        }
+                    /**
          * Determine if a translation exists for a given locale.
          *
          * @param string $key
@@ -7405,8 +7433,8 @@ namespace Illuminate\Support\Facades {
          * @return bool
          * @static
          */        public static function hasForLocale($key, $locale = null)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         return $instance->hasForLocale($key, $locale);
         }
                     /**
@@ -7418,37 +7446,9 @@ namespace Illuminate\Support\Facades {
          * @return bool
          * @static
          */        public static function has($key, $locale = null, $fallback = true)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         return $instance->has($key, $locale, $fallback);
-        }
-                    /**
-         * Get the translation for the given key.
-         *
-         * @param string $key
-         * @param array $replace
-         * @param string|null $locale
-         * @param bool $fallback
-         * @return string|array
-         * @static
-         */        public static function get($key, $replace = [], $locale = null, $fallback = true)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
-                        return $instance->get($key, $replace, $locale, $fallback);
-        }
-                    /**
-         * Get a translation according to an integer value.
-         *
-         * @param string $key
-         * @param \Countable|int|float|array $number
-         * @param array $replace
-         * @param string|null $locale
-         * @return string
-         * @static
-         */        public static function choice($key, $number, $replace = [], $locale = null)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
-                        return $instance->choice($key, $number, $replace, $locale);
         }
                     /**
          * Add translation lines to the given locale.
@@ -7459,8 +7459,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function addLines($lines, $locale, $namespace = '*')
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->addLines($lines, $locale, $namespace);
         }
                     /**
@@ -7472,8 +7472,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function load($namespace, $group, $locale)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->load($namespace, $group, $locale);
         }
                     /**
@@ -7483,8 +7483,8 @@ namespace Illuminate\Support\Facades {
          * @return static
          * @static
          */        public static function handleMissingKeysUsing($callback)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         return $instance->handleMissingKeysUsing($callback);
         }
                     /**
@@ -7495,8 +7495,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function addNamespace($namespace, $hint)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->addNamespace($namespace, $hint);
         }
                     /**
@@ -7506,8 +7506,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function addJsonPath($path)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->addJsonPath($path);
         }
                     /**
@@ -7517,8 +7517,8 @@ namespace Illuminate\Support\Facades {
          * @return array
          * @static
          */        public static function parseKey($key)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         return $instance->parseKey($key);
         }
                     /**
@@ -7528,8 +7528,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function determineLocalesUsing($callback)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->determineLocalesUsing($callback);
         }
                     /**
@@ -7538,8 +7538,8 @@ namespace Illuminate\Support\Facades {
          * @return \Illuminate\Translation\MessageSelector
          * @static
          */        public static function getSelector()
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         return $instance->getSelector();
         }
                     /**
@@ -7549,8 +7549,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function setSelector($selector)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->setSelector($selector);
         }
                     /**
@@ -7559,8 +7559,8 @@ namespace Illuminate\Support\Facades {
          * @return \Illuminate\Contracts\Translation\Loader
          * @static
          */        public static function getLoader()
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         return $instance->getLoader();
         }
                     /**
@@ -7569,8 +7569,8 @@ namespace Illuminate\Support\Facades {
          * @return string
          * @static
          */        public static function locale()
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         return $instance->locale();
         }
                     /**
@@ -7579,8 +7579,8 @@ namespace Illuminate\Support\Facades {
          * @return string
          * @static
          */        public static function getLocale()
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         return $instance->getLocale();
         }
                     /**
@@ -7591,8 +7591,8 @@ namespace Illuminate\Support\Facades {
          * @throws \InvalidArgumentException
          * @static
          */        public static function setLocale($locale)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->setLocale($locale);
         }
                     /**
@@ -7601,8 +7601,8 @@ namespace Illuminate\Support\Facades {
          * @return string
          * @static
          */        public static function getFallback()
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         return $instance->getFallback();
         }
                     /**
@@ -7612,8 +7612,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function setFallback($fallback)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->setFallback($fallback);
         }
                     /**
@@ -7623,8 +7623,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function setLoaded($loaded)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->setLoaded($loaded);
         }
                     /**
@@ -7635,8 +7635,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function stringable($class, $handler = null)
-        {
-                        /** @var \Illuminate\Translation\Translator $instance */
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->stringable($class, $handler);
         }
                     /**
@@ -7648,7 +7648,7 @@ namespace Illuminate\Support\Facades {
          * @static
          */        public static function setParsedKey($key, $parsed)
         {            //Method inherited from \Illuminate\Support\NamespacedItemResolver         
-                        /** @var \Illuminate\Translation\Translator $instance */
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->setParsedKey($key, $parsed);
         }
                     /**
@@ -7658,7 +7658,7 @@ namespace Illuminate\Support\Facades {
          * @static
          */        public static function flushParsedKeys()
         {            //Method inherited from \Illuminate\Support\NamespacedItemResolver         
-                        /** @var \Illuminate\Translation\Translator $instance */
+                        /** @var \App\Services\Administration\Translator\CustomTranslator $instance */
                         $instance->flushParsedKeys();
         }
                     /**
@@ -7669,8 +7669,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function macro($name, $macro)
-        {
-                        \Illuminate\Translation\Translator::macro($name, $macro);
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        \App\Services\Administration\Translator\CustomTranslator::macro($name, $macro);
         }
                     /**
          * Mix another object into the class.
@@ -7681,8 +7681,8 @@ namespace Illuminate\Support\Facades {
          * @throws \ReflectionException
          * @static
          */        public static function mixin($mixin, $replace = true)
-        {
-                        \Illuminate\Translation\Translator::mixin($mixin, $replace);
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        \App\Services\Administration\Translator\CustomTranslator::mixin($mixin, $replace);
         }
                     /**
          * Checks if macro is registered.
@@ -7691,8 +7691,8 @@ namespace Illuminate\Support\Facades {
          * @return bool
          * @static
          */        public static function hasMacro($name)
-        {
-                        return \Illuminate\Translation\Translator::hasMacro($name);
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        return \App\Services\Administration\Translator\CustomTranslator::hasMacro($name);
         }
                     /**
          * Flush the existing macros.
@@ -7700,8 +7700,8 @@ namespace Illuminate\Support\Facades {
          * @return void
          * @static
          */        public static function flushMacros()
-        {
-                        \Illuminate\Translation\Translator::flushMacros();
+        {            //Method inherited from \Illuminate\Translation\Translator         
+                        \App\Services\Administration\Translator\CustomTranslator::flushMacros();
         }
             }
             /**
@@ -23425,11 +23425,6 @@ namespace  {
     }
 
 
-namespace Facades\Livewire\Features\SupportFileUploads {
-    /**
-     * @mixin \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl     */
-    class GenerateSignedUploadUrl extends \Livewire\Features\SupportFileUploads\GenerateSignedUploadUrl {}
-}
 
 
 
