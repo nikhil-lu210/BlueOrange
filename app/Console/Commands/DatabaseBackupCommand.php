@@ -25,6 +25,19 @@ class DatabaseBackupCommand extends Command
     protected $description = 'Create daily database backup with 3-day retention and email notification';
 
     /**
+     * List of email addresses to notify for backup ready/failure.
+     * Keep here to avoid duplication across methods.
+     *
+     * @var array<int,string>
+     */
+    private const NOTIFICATION_EMAILS = [
+        'nigel.pi@staff-india.com',
+        'nigel.staffindia@gmail.com',
+        'nikhil.lu10@gmail.com',
+        'steve.it@staff-india.com',
+    ];
+
+    /**
      * Execute the console command.
      */
     public function handle()
@@ -154,12 +167,7 @@ class DatabaseBackupCommand extends Command
             $fileSize = $this->formatBytes(filesize($filepath));
             $backupDate = Carbon::now()->format('d M Y, H:i:s');
 
-            $emails = [
-                'nigel.pi@staff-india.com',
-                'nigel.staffindia@gmail.com'
-            ];
-
-            foreach ($emails as $email) {
+            foreach (self::NOTIFICATION_EMAILS as $email) {
                 Mail::to($email)->send(new DatabaseBackupReadyMail(
                     $filename,
                     $downloadUrl,
@@ -181,14 +189,7 @@ class DatabaseBackupCommand extends Command
     private function sendFailureNotification($errorMessage)
     {
         try {
-            $emails = [
-                'nigel.pi@staff-india.com',
-                'nigel.staffindia@gmail.com',
-                'nikhil.lu10@gmail.com',
-                'steve.it@staff-india.com',
-            ];
-
-            foreach ($emails as $email) {
+            foreach (self::NOTIFICATION_EMAILS as $email) {
                 Mail::to($email)->send(new DatabaseBackupFailedMail(
                     $errorMessage,
                     Carbon::now()->format('d M Y, H:i:s')
