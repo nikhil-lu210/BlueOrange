@@ -73,7 +73,7 @@
                     
                     <div class="col-md-12 text-end">
                         @if (request()->created_month_year || request()->type) 
-                            <a href="{{ route('administration.daily_break.index') }}" class="btn btn-danger confirm-warning">
+                            <a href="{{ route('administration.daily_break.my') }}" class="btn btn-danger confirm-warning">
                                 <span class="tf-icon ti ti-refresh ti-xs me-1"></span>
                                 {{ __('Reset Filters') }}
                             </a>
