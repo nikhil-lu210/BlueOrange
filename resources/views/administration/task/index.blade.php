@@ -98,7 +98,7 @@
                         </div>
                         <div class="mb-3 col-md-4">
                             <label for="status" class="form-label">Select Task Status</label>
-                            <select name="status" id="status" class="form-select bootstrap-select w-100 @error('status') is-invalid @enderror"  data-style="btn-default">
+                            <select name="status" id="status" class="form-select bootstrap-select w-100 @error('status') is-invalid @enderror" data-style="btn-default">
                                 <option value="" {{ is_null(request()->status) ? 'selected' : '' }}>Select Status</option>
                                 <option value="Active" {{ request()->status == 'Active' ? 'selected' : '' }}>Active</option>
                                 <option value="Running" {{ request()->status == 'Running' ? 'selected' : '' }}>Running</option>

@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('QR Code Attendance'))
+@section('page_title', ___('QR Code Attendance'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -23,13 +23,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('QR Code Attendance') }}</b>
+    <b class="text-uppercase">{{ ___('QR Code Attendance') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance') }}</li>
-    <li class="breadcrumb-item active">{{ __('QR Code Attendance') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance') }}</li>
+    <li class="breadcrumb-item active">{{ ___('QR Code Attendance') }}</li>
 @endsection
 
 
@@ -40,16 +40,16 @@
     <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">QR Code Attendance</h5>
+                <h5 class="mb-0">{{ ___('QR Code Attendance') }}</h5>
 
                 <div class="card-header-elements ms-auto">
                     <button id="scanQrBtn" class="btn btn-sm btn-primary">
                         <span class="tf-icon ti ti-qrcode ti-xs me-1"></span>
-                        Scan QR Code
+                        {{ ___('Scan QR Code') }}
                     </button>
                     <button id="scanQrBtnOvertime" class="btn btn-sm btn-warning">
                         <span class="tf-icon ti ti-qrcode ti-xs me-1"></span>
-                        Overtime
+                        {{ ___('Overtime') }}
                     </button>
                 </div>
             </div>
@@ -73,7 +73,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">
-                    <span>Attendances of </span>
+                    <span>{{ ___('Attendances of') }}</span>
                     <span class="text-bold">{{ date('d M Y') }}</span>
                 </h5>
             </div>
@@ -82,12 +82,12 @@
                     <table class="table data-table table-bordered">
                         <thead>
                             <tr>
-                                <th>Sl.</th>
-                                <th>Name</th>
-                                <th>Clocked IN</th>
-                                <th>Clock Out</th>
-                                <th>Total</th>
-                                <th>Scanned By</th>
+                                <th>{{ ___('Sl.') }}</th>
+                                <th>{{ ___('Name') }}</th>
+                                <th>{{ ___('Clocked IN') }}</th>
+                                <th>{{ ___('Clock Out') }}</th>
+                                <th>{{ ___('Total') }}</th>
+                                <th>{{ ___('Scanned By') }}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -109,7 +109,7 @@
                                                 }
                                             @endphp
                                             <span class="text-bold {{ $clockInColor }}">{{ show_time($attendance->clock_in) }}</span>
-                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="Shift Start Time">{{ show_time($attendance->employee_shift->start_time) }}</small>
+                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="left" title="{{ ___('Shift Start Time') }}">{{ show_time($attendance->employee_shift->start_time) }}</small>
                                         </div>
                                     </td>
                                     <td>
@@ -124,9 +124,9 @@
                                                 @endphp
                                                 <span class="text-bold {{ $clockOutColor }}">{{ show_time($attendance->clock_out) }}</span>
                                             @else
-                                                <b class="text-success text-uppercase">Running</b>
+                                                <b class="text-success text-uppercase">{{ ___('Running') }}</b>
                                             @endisset
-                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="Shift End Time">{{ show_time($attendance->employee_shift->end_time) }}</small>
+                                            <small class="text-truncate text-muted" data-bs-toggle="tooltip" data-bs-placement="right" title="{{ ___('Shift End Time') }}">{{ show_time($attendance->employee_shift->end_time) }}</small>
                                         </div>
                                     </td>
                                     <td>
@@ -139,7 +139,7 @@
                                                     {!! total_time_with_min_hour($attendance->total_time, $totalWorkingHour) !!}
                                                 </b>
                                             @else
-                                                <b class="text-success text-uppercase">Running</b>
+                                                <b class="text-success text-uppercase">{{ ___('Running') }}</b>
                                             @endisset
                                             @if ($attendance->type == 'Regular')
                                                 @php
@@ -153,12 +153,12 @@
                                     </td>
                                     <td>
                                         <span class="text-dark text-truncate">
-                                            <b>Clock-In:</b>
+                                            <b>{{ ___('Clock-In') }}:</b>
                                             <span>{{ optional($attendance->clockin_scanner)->name }}</span>
                                         </span>
                                         <br>
                                         <span class="text-dark text-truncate">
-                                            <b>Clock-Out:</b>
+                                            <b>{{ ___('Clock-Out') }}:</b>
                                             <span>{{ optional($attendance->clockout_scanner)->name }}</span>
                                         </span>
                                     </td>

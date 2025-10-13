@@ -5,7 +5,7 @@
 
 @endsection
 
-@section('page_title', __('Barcode Attendance'))
+@section('page_title', ___('Barcode Attendance'))
 
 @section('css_links')
     {{--  External CSS  --}}
@@ -27,13 +27,13 @@
 
 
 @section('page_name')
-    <b class="text-uppercase">{{ __('Barcode Attendance') }}</b>
+    <b class="text-uppercase">{{ ___('Barcode Attendance') }}</b>
 @endsection
 
 
 @section('breadcrumb')
-    <li class="breadcrumb-item">{{ __('Attendance') }}</li>
-    <li class="breadcrumb-item active">{{ __('Barcode Attendance') }}</li>
+    <li class="breadcrumb-item">{{ ___('Attendance') }}</li>
+    <li class="breadcrumb-item active">{{ ___('Barcode Attendance') }}</li>
 @endsection
 
 
@@ -44,12 +44,12 @@
     <div class="col-md-4">
         <div class="card mb-4">
             <div class="card-header header-elements">
-                <h5 class="mb-0">Barcode Attendance</h5>
+                <h5 class="mb-0">{{ ___('Barcode Attendance') }}</h5>
 
                 <div class="card-header-elements ms-auto">
                     <a href="{{ route('administration.attendance.barcode.scanner') }}" class="btn btn-sm btn-dark" title="Reload Page?">
                         <span class="tf-icon ti ti-reload ti-xs me-1"></span>
-                        Reload
+                        {{ ___('Reload') }}
                     </a>
                 </div>
             </div>
@@ -64,7 +64,7 @@
                                         <label class="form-check-label custom-option-content" for="typeRegular">
                                             <input name="type" class="form-check-input" type="radio" value="Regular" id="typeRegular" checked />
                                             <span class="custom-option-header pb-0">
-                                                <span class="h6 mb-0 text-primary text-bold">{{ __('Regular') }}</span>
+                                                <span class="h6 mb-0 text-primary text-bold">{{ ___('Regular') }}</span>
                                             </span>
                                         </label>
                                     </div>
@@ -74,7 +74,7 @@
                                         <label class="form-check-label custom-option-content" for="typeOvertime">
                                             <input name="type" class="form-check-input" type="radio" value="Overtime" id="typeOvertime" />
                                             <span class="custom-option-header pb-0">
-                                                <span class="h6 mb-0 text-warning text-bold">{{ __('Overtime') }}</span>
+                                                <span class="h6 mb-0 text-warning text-bold">{{ ___('Overtime') }}</span>
                                             </span>
                                         </label>
                                     </div>
@@ -85,7 +85,7 @@
                             @enderror
                         </div>
                         <div class="mb-3 col-md-12">
-                            <label class="form-label text-bold text-dark">{{ __('User ID') }} <strong class="text-danger">*</strong></label>
+                            <label class="form-label text-bold text-dark">{{ ___('User ID') }} <strong class="text-danger">*</strong></label>
                             <div class="input-group input-group-merge">
                                 <span class="input-group-text" style="padding-right: 2px;">UID</span>
                                 <input type="text" id="userid" name="userid" class="form-control @error('userid') is-invalid @enderror" placeholder="20010101" autofocus required/>
@@ -106,7 +106,7 @@
         <div class="card mb-4">
             <div class="card-header header-elements">
                 <h5 class="mb-0">
-                    <span>Attendances of last </span>
+                    <span>{{ ___('Attendances of last') }}</span>
                     <span class="text-bold text-primary">{{ $hours }} Hours</span>
                 </h5>
             </div>
@@ -115,13 +115,13 @@
                     <table class="table data-table table-bordered">
                         <thead>
                             <tr>
-                                <th>Sl.</th>
-                                <th>Name</th>
-                                <th>Clocked IN</th>
-                                <th>Clock Out</th>
-                                <th class="text-center">Breaks</th>
-                                <th>Total</th>
-                                <th>Scanned By</th>
+                                <th>{{ ___('Sl.') }}</th>
+                                <th>{{ ___('Name') }}</th>
+                                <th>{{ ___('Clocked IN') }}</th>
+                                <th>{{ ___('Clock Out') }}</th>
+                                <th class="text-center">{{ ___('Breaks') }}</th>
+                                <th>{{ ___('Total') }}</th>
+                                <th>{{ ___('Scanned By') }}</th>
                             </tr>
                         </thead>
                         <tbody>

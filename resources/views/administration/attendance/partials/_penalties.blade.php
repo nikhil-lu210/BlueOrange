@@ -1,10 +1,10 @@
 <div class="card mt-3">
     <div class="card-body">
         <div class="d-flex">
-            <small class="card-text text-uppercase">Penalties</small>
+            <small class="card-text text-uppercase">{{ ___('Penalties') }}</small>
             <div class="ms-auto" style="margin-top: -5px;">
                 @if ($attendance->penalties->count() > 0 && $attendance->total_penalty_time_formatted)
-                    <small class="badge bg-danger" title="Total Penalty Time">
+                    <small class="badge bg-danger" title="{{ ___('Total Penalty Time') }}">
                         {{ total_time($attendance->total_penalty_time_formatted) }}
                     </small>
                 @endif
@@ -18,7 +18,7 @@
                     </span>
                     <div class="timeline-event px-0 pb-0">
                         <div class="timeline-header">
-                            <small class="text-capitalize fw-bold" title="Click To See Details">
+                            <small class="text-capitalize fw-bold" title="{{ ___('Click To See Details') }}">
                                 <a href="{{ route('administration.penalty.show', ['penalty' => $penalty]) }}" target="_blank" class="text-danger">{{ $penalty->type }}</a>
                             </small>
                         </div>
@@ -31,7 +31,7 @@
                     </div>
                 </li>
             @empty
-                <div class="text-center text-bold text-muted fs-2">No Penalties</div>
+                <div class="text-center text-bold text-muted fs-2">{{ ___('No Penalties') }}</div>
             @endforelse
         </ul>
     </div>

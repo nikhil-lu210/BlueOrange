@@ -11,4 +11,6 @@ Route::prefix('app_setting')
         ->group(function () {
             // restriction
             include_once 'restriction/restriction.php';
+            // translation
+            include_once 'translation/translation.php';
         });

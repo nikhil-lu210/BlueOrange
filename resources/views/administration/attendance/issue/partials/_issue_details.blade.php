@@ -1,13 +1,13 @@
 <div class="card mb-4">
     <div class="card-header header-elements">
-        <h5 class="mb-0">{{ __('Attendance Issue Details') }}</h5>
+        <h5 class="mb-0">{{ ___('Attendance Issue Details') }}</h5>
     </div>
-    
+
     <div class="card-body">
         <dl class="row mt-3 mb-1">
             <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                 <i class="ti ti-user-edit text-heading"></i>
-                <span class="fw-medium mx-2 text-heading">Creator:</span>
+                <span class="fw-medium mx-2 text-heading">{{ ___('Creator') }}:</span>
             </dt>
             <dd class="col-sm-8">
                 {!! show_user_name_and_avatar($issue->user, role: null) !!}
@@ -16,7 +16,7 @@
         <dl class="row mt-2 mb-1">
             <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                 <i class="ti ti-clock-plus text-heading"></i>
-                <span class="fw-medium mx-2 text-heading">Expected Clock-In At:</span>
+                <span class="fw-medium mx-2 text-heading">{{ ___('Expected Clock-In At') }}:</span>
             </dt>
             <dd class="col-sm-8">
                 <span class="text-bold">{{ show_date_time($issue->clock_in) }}</span>
@@ -25,7 +25,7 @@
         <dl class="row mb-1">
             <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                 <i class="ti ti-clock-minus text-heading"></i>
-                <span class="fw-medium mx-2 text-heading">Expected Clock-Out At:</span>
+                <span class="fw-medium mx-2 text-heading">{{ ___('Expected Clock-Out At') }}:</span>
             </dt>
             <dd class="col-sm-8">
                 <span class="text-bold">{{ show_date_time($issue->clock_out) }}</span>
@@ -34,7 +34,7 @@
         <dl class="row mb-1">
             <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                 <i class="ti ti-hash text-heading"></i>
-                <span class="fw-medium mx-2 text-heading">Expected Type:</span>
+                <span class="fw-medium mx-2 text-heading">{{ ___('Expected Type') }}:</span>
             </dt>
             <dd class="col-sm-8">
                 <small class="text-bold badge bg-{{ $issue->type === 'Regular' ? 'success' : 'warning' }}">
@@ -45,14 +45,14 @@
         <dl class="row mb-1">
             <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                 <i class="ti ti-bell-check text-heading"></i>
-                <span class="fw-medium mx-2 text-heading">Issue Status:</span>
+                <span class="fw-medium mx-2 text-heading">{{ ___('Issue Status') }}:</span>
             </dt>
             <dd class="col-sm-8">
                 {!! show_status($issue->status) !!}
             </dd>
         </dl>
         <hr>
-        <small class="card-text text-uppercase text-bold text-dark">{{ __('Issue Reason') }}</small>
+        <small class="card-text text-uppercase text-bold text-dark">{{ ___('Issue Reason') }}</small>
         <dl class="row mt-2 mb-0">
             <dd class="col-12">
                 <span>
@@ -60,13 +60,13 @@
                 </span>
             </dd>
         </dl>
-        @if ($issue->status !== 'Pending') 
+        @if ($issue->status !== 'Pending')
             <hr>
-            <small class="card-text text-uppercase text-bold text-dark">{{ __('Issue Status') }}</small>
+            <small class="card-text text-uppercase text-bold text-dark">{{ ___('Issue Status') }}</small>
             <dl class="row mt-3 mb-1">
                 <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                     <i class="ti ti-user-check text-heading"></i>
-                    <span class="fw-medium mx-2 text-heading">{{ $issue->status }} By:</span>
+                    <span class="fw-medium mx-2 text-heading">{{ $issue->status }} {{ ___('By') }}:</span>
                 </dt>
                 <dd class="col-sm-8">
                     {!! show_user_name_and_avatar($issue->updater, name: null) !!}
@@ -75,17 +75,17 @@
             <dl class="row mt-2 mb-1">
                 <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                     <i class="ti ti-clock-check text-heading"></i>
-                    <span class="fw-medium mx-2 text-heading">{{ $issue->status }} At:</span>
+                    <span class="fw-medium mx-2 text-heading">{{ $issue->status }} {{ ___('At') }}:</span>
                 </dt>
                 <dd class="col-sm-8">
                     <span class="text-bold">{{ show_date_time($issue->updated_at) }}</span>
                 </dd>
             </dl>
-            @if ($issue->note) 
+            @if ($issue->note)
                 <dl class="row mb-1">
                     <dt class="col-sm-4 mb-2 fw-medium text-nowrap">
                         <i class="ti ti-note text-heading"></i>
-                        <span class="fw-medium mx-2 text-heading">Note:</span>
+                        <span class="fw-medium mx-2 text-heading">{{ ___('Note') }}:</span>
                     </dt>
                     <dd class="col-sm-8">
                         <small class="text-dark">{!! $issue->note !!}</small>
