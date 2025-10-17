@@ -258,7 +258,7 @@ class OfflineAttendanceService
         $openAttendance = $this->getUserOpenAttendance($user);
 
         if ($openAttendance) {
-            return $this->processClockOut($openAttendance, $entryDateTime, $activeShift);
+            return $this->processClockOut($openAttendance, $user, $type, $entryDateTime, $activeShift);
         } else {
             return $this->processClockIn($user, $type, $entryDateTime, $activeShift);
         }
@@ -360,7 +360,7 @@ class OfflineAttendanceService
     /**
      * Process clock-out
      */
-    private function processClockOut(Attendance $openAttendance, Carbon $entryDateTime, $activeShift): Attendance
+    private function processClockOut(Attendance $openAttendance, User $user, string $type, Carbon $entryDateTime, $activeShift): Attendance
     {
         // Ensure minimum time between clock-in and clock-out
         $minClockOutTime = $openAttendance->clock_in->copy()->addMinutes(2);
@@ -368,10 +368,35 @@ class OfflineAttendanceService
             $entryDateTime = $minClockOutTime;
         }
 
+        // Calculate total time worked
         $totalSeconds = $entryDateTime->diffInSeconds($openAttendance->clock_in);
         $formattedTotalTime = gmdate('H:i:s', $totalSeconds);
         $formattedAdjustedTotalTime = $this->calculateAdjustedTime($openAttendance, $activeShift, $totalSeconds);
 
+        // Check if the clock-out is happening on a different date
+        $clockInDate = $openAttendance->clock_in->toDateString();
+        $clockOutDate = $entryDateTime->toDateString();
+
+        if ($clockInDate !== $clockOutDate) {
+            // Previous-day clockout detected
+
+            // Close the old attendance at 23:59:59 of clock-in day
+            $endOfClockInDay = $openAttendance->clock_in->copy()->endOfDay();
+
+            $openAttendance->update([
+                'clock_out' => $endOfClockInDay,
+                'total_time' => gmdate('H:i:s', $endOfClockInDay->diffInSeconds($openAttendance->clock_in)),
+                'total_adjusted_time' => $this->calculateAdjustedTime($openAttendance, $activeShift, $endOfClockInDay->diffInSeconds($openAttendance->clock_in)),
+                'clockout_medium' => 'Offline-Sync',
+                'updated_at' => now()
+            ]);
+            // Create a new attendance record for the new day clock-out
+            $this->processClockIn($user, $type, $entryDateTime, $activeShift);
+
+            return $openAttendance; // old one returned for logging if needed
+        }
+
+        // Normal same-day clock-out
         $openAttendance->update([
             'clock_out' => $entryDateTime,
             'total_time' => $formattedTotalTime,
