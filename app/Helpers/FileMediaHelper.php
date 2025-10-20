@@ -8,7 +8,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 if (!function_exists('store_file_media')) {
     /**
-     * Store a file and associate it with a model.
+     * Store and optionally compress an image before associating it with a model.
      *
      * @param UploadedFile $file
      * @param Model $model
@@ -18,22 +18,98 @@ if (!function_exists('store_file_media')) {
      */
     function store_file_media(UploadedFile $file, Model $model, string $directory, string $note = null): FileMedia
     {
-        $path = $file->store($directory);
+        $mime = $file->getMimeType();
+
+        // Check if file is an image
+        if (str_starts_with($mime, 'image/')) {
+            // Compress & optimize the image
+            $optimizedImage = optimize_image_before_save($file, $directory);
+            $path = $optimizedImage['path'];
+            $finalFileName = $optimizedImage['name'];
+            $fileSize = filesize(storage_path('app/' . $path));
+        } else {
+            // Non-image files stored normally
+            $path = $file->store($directory);
+            $finalFileName = $file->getClientOriginalName();
+            $fileSize = $file->getSize();
+        }
+
+        // Save FileMedia record
         $fileMedia = new FileMedia([
-            'file_name' => $file->getClientOriginalName(),
+            'file_name' => $finalFileName,
             'file_path' => $path,
             'mime_type' => $file->getMimeType(),
-            'file_size' => $file->getSize(),
+            'file_size' => $fileSize,
             'original_name' => $file->getClientOriginalName(),
             'note' => $note,
         ]);
+
         $model->files()->save($fileMedia);
 
         return $fileMedia;
     }
 }
 
+/**
+ * Optimize an image using GD before saving.
+ *
+ * @param UploadedFile $file
+ * @param string $directory
+ * @return array
+ */
+if (!function_exists('optimize_image_before_save')) {
+    function optimize_image_before_save(UploadedFile $file, string $directory): array
+    {
+        $mime = $file->getMimeType();
+        $sourcePath = $file->getPathname();
 
+        switch ($mime) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                $image = imagecreatefromjpeg($sourcePath);
+                break;
+            case 'image/png':
+                $image = imagecreatefrompng($sourcePath);
+                break;
+            case 'image/webp':
+                $image = imagecreatefromwebp($sourcePath);
+                break;
+            default:
+                // fallback to normal store if unsupported type
+                return ['path' => $file->store($directory), 'name' => $file->getClientOriginalName()];
+        }
+
+        // Resize if too large (optional)
+        $maxWidth = 1600;
+        $width = imagesx($image);
+        $height = imagesy($image);
+
+        if ($width > $maxWidth) {
+            $ratio = $maxWidth / $width;
+            $newWidth = $maxWidth;
+            $newHeight = (int)($height * $ratio);
+
+            $resized = imagecreatetruecolor($newWidth, $newHeight);
+            imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $width, $height);
+            imagedestroy($image);
+            $image = $resized;
+        }
+
+        // Save optimized image (JPEG format for smaller size)
+        $filename = uniqid('img_') . '.jpg';
+        $savePath = storage_path('app/' . $directory . '/' . $filename);
+
+        // Ensure directory exists
+        if (!file_exists(dirname($savePath))) {
+            mkdir(dirname($savePath), 0775, true);
+        }
+
+        imagejpeg($image, $savePath, 75); // 75 = compression level
+        imagedestroy($image);
+
+        return ['path' => $directory . '/' . $filename, 'name' => $filename];
+    }
+}
 
 if (!function_exists('get_file_media_url')) {
     /**
