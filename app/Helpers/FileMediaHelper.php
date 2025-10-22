@@ -18,32 +18,42 @@ if (!function_exists('store_file_media')) {
      */
     function store_file_media(UploadedFile $file, Model $model, string $directory, string $note = null): FileMedia
     {
-        $mime = $file->getMimeType();
+        // $mime = $file->getMimeType();
 
-        // Check if file is an image
-        if (str_starts_with($mime, 'image/')) {
-            // Compress & optimize the image
-            $optimizedImage = optimize_image_before_save($file, $directory);
-            $path = $optimizedImage['path'];
-            $finalFileName = $optimizedImage['name'];
-            $fileSize = filesize(storage_path('app/' . $path));
-        } else {
-            // Non-image files stored normally
-            $path = $file->store($directory);
-            $finalFileName = $file->getClientOriginalName();
-            $fileSize = $file->getSize();
-        }
+        // // Check if file is an image
+        // if (str_starts_with($mime, 'image/')) {
+        //     // Compress & optimize the image
+        //     $optimizedImage = optimize_image_before_save($file, $directory);
+        //     $path = $optimizedImage['path'];
+        //     $finalFileName = $optimizedImage['name'];
+        //     $fileSize = filesize(storage_path('app/' . $path));
+        // } else {
+        //     // Non-image files stored normally
+        //     $path = $file->store($directory);
+        //     $finalFileName = $file->getClientOriginalName();
+        //     $fileSize = $file->getSize();
+        // }
 
-        // Save FileMedia record
+        // // Save FileMedia record
+        // $fileMedia = new FileMedia([
+        //     'file_name' => $finalFileName,
+        //     'file_path' => $path,
+        //     'mime_type' => $file->getMimeType(),
+        //     'file_size' => $fileSize,
+        //     'original_name' => $file->getClientOriginalName(),
+        //     'note' => $note,
+        // ]);
+
+        $path = $file->store($directory);
         $fileMedia = new FileMedia([
-            'file_name' => $finalFileName,
+            'file_name' => $file->getClientOriginalName(),
             'file_path' => $path,
             'mime_type' => $file->getMimeType(),
-            'file_size' => $fileSize,
+            'file_size' => $file->getSize(),
             'original_name' => $file->getClientOriginalName(),
             'note' => $note,
         ]);
-
+        
         $model->files()->save($fileMedia);
 
         return $fileMedia;
