@@ -1,5 +1,5 @@
+@can('Suggestion Create')
 <div>
-    
     <!-- Floating Button -->
     <div class="buy-now">
         <button id="suggestionBtn" class="btn btn-primary gap-2 btn-buy-now waves-effect waves-light shadow-lg" aria-label="Open suggestion popup">
@@ -114,3 +114,4 @@
         </form>
     </div>
 </div>
+@endcan
