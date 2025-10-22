@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (openBtnIcon) {
             openBtnIcon.className = 'ti ti-x';
+            openBtnIcon.style.marginLeft = '-2px';
         }
         // lock to circular close icon appearance
         openBtn.style.width = '3.2rem';
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         if (openBtnIcon) {
             openBtnIcon.className = 'ti ti-message-plus';
+            openBtnIcon.style.marginLeft = '5px';
         }
         openBtn.style.width = '';
         openBtn.style.borderRadius = '';
