@@ -45,6 +45,7 @@
 <!-- SweetAlert2 for Toast Notifications -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<script src="{{ asset('assets/js/custom_js/suggestion/suggestion.js') }}"></script>
 <!-- Page JS -->
 @yield('script_links')
 

@@ -91,11 +91,16 @@
         </div>
         <!-- / Layout wrapper -->
 
+        <!-- suggestion popup -->
+        @include('layouts.administration.partials.suggestion-popup')
+
         <!-- Start js -->
         @include('layouts.administration.partials.scripts')
         <!-- End js -->
 
         {{-- Sweetalert --}}
         @include('sweetalert::alert')
+
+        
     </body>
 </html>
