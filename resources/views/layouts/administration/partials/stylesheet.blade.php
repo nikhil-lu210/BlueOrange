@@ -18,6 +18,7 @@
 
 <link rel="stylesheet" href="{{ asset('assets/css/custom_css/jquery-confirm/jquery-confirm.min.css') }}">
 
+<link rel="stylesheet" href="{{ asset('assets/css/custom_css/suggestion/suggestion.css')}}">
 {{-- custom css --}}
 <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}" />
 
