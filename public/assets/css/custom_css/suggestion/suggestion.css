@@ -33,7 +33,9 @@
 #cancelSuggestion:hover {
     background-color: #e9ecef;
 }
-
+.buy-now .btn-buy-now{
+    border-radius: 100%;
+}
 /* Floating Button Animation (icon expand effect) */
 .btn-buy-now {
     position: relative;
@@ -71,7 +73,6 @@
 /* Reveal text smoothly */
 .btn-buy-now:hover:not(.is-open) .btn-text {
     opacity: 1;
-    margin-left: 0.5rem;
     max-width: 100px;
 }
 
@@ -85,6 +86,7 @@
 
 /* Icon adjustment */
 .btn-buy-now i {
+    margin-left: 7px;
     font-size: 1.3rem;
     color: white;
     transition: transform 0.3s ease;
@@ -101,4 +103,36 @@
     bottom: 1.5rem;
     right: 1.5rem;
     z-index: 2147483600;
+}
+
+/* --- Attention animations --- */
+
+/* Subtle horizontal shake */
+@keyframes shakeButton {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+/* Gentle expand / pulse effect */
+@keyframes pulseExpand {
+    0%, 100% {
+        width: 3.2rem;
+        border-radius: 50%;
+        box-shadow: none;
+    }
+    50% {
+        width: 9.5rem;
+        border-radius: 50px;
+        box-shadow: 0 0 15px rgba(102, 126, 234, 0.4);
+    }
+}
+
+/* Utility classes (triggered dynamically) */
+.btn-buy-now.shake {
+    animation: shakeButton 0.6s ease-in-out;
+}
+
+.btn-buy-now.expand-notify {
+    animation: pulseExpand 1.5s ease-in-out;
 }

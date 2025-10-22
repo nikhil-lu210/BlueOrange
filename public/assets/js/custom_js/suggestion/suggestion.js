@@ -118,4 +118,28 @@ document.addEventListener('DOMContentLoaded', () => {
     //         }
     //     });
     // }
+
+    // --- Auto attention trigger after 5 minutes ---
+    // const notifyDelay = 1 * 60 * 1000; // 5 minutes (in milliseconds)
+    // let userInteracted = false;
+
+    // // If user interacts (clicks or hovers), cancel auto animation
+    // const resetTimer = () => { userInteracted = true; };
+    // openBtn.addEventListener('mouseenter', resetTimer);
+    // openBtn.addEventListener('click', resetTimer);
+    // document.addEventListener('mousemove', resetTimer, { once: true });
+    // document.addEventListener('keydown', resetTimer, { once: true });
+
+    // // Timer to auto-shake or expand button
+    // setTimeout(() => {
+    //     if (!userInteracted && openBtn && !openBtn.classList.contains('is-open')) {
+    //         // Choose one effect (shake or expand)
+    //         openBtn.classList.add('shake');
+    //         // After animation ends, remove the class to allow re-trigger later
+    //         openBtn.addEventListener('animationend', () => {
+    //             openBtn.classList.remove('shake');
+    //         }, { once: true });
+    //     }
+    // }, notifyDelay);
+
 });
