@@ -84,6 +84,9 @@ Route::prefix('')
             // learning_hub
             include_once 'learning_hub/learning_hub.php';
 
+            // suggestion
+            include_once 'suggestion/suggestion.php';
+
             // functionality_walkthrough
             include_once 'functionality_walkthrough/functionality_walkthrough.php';
 

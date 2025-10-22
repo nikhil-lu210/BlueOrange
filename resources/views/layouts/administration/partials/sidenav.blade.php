@@ -36,6 +36,8 @@
 
         @include('layouts.administration.partials.menus.learning_hub')
 
+        @include('layouts.administration.partials.menus.suggestion')
+
         @include('layouts.administration.partials.menus.it_ticket')
 
         @include('layouts.administration.partials.menus.booking')
