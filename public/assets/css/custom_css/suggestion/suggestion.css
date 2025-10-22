@@ -1,0 +1,104 @@
+/* Enhanced hover and focus states */
+#suggestionPopup .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.25rem rgba(102, 126, 234, 0.15);
+}
+
+#suggestionPopup .form-control:hover {
+    border-color: #667eea;
+}
+
+#closeSuggestion:hover {
+    opacity: 1 !important;
+    transform: scale(1.1);
+}
+
+/* Smooth show animation */
+#suggestionPopup.show {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+#suggestionOverlay.show {
+    opacity: 1;
+}
+
+/* Button hover effects */
+#suggestionForm button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4) !important;
+    transition: all 0.2s;
+}
+
+#cancelSuggestion:hover {
+    background-color: #e9ecef;
+}
+
+/* Floating Button Animation (icon expand effect) */
+.btn-buy-now {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    width: 3.2rem; /* initial width - just icon */
+    height: 3.2rem;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    border: none;
+}
+
+/* Hide text initially */
+.btn-buy-now .btn-text {
+    text-align: center;
+    align-items: center;
+    opacity: 0;
+    max-width: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+/* Hover: expand the button and show text */
+.btn-buy-now:hover:not(.is-open) {
+    width: 10rem; /* expand width */
+    border-radius: 50px;
+    justify-content: start;
+    padding-left: 1rem;
+}
+
+/* Reveal text smoothly */
+.btn-buy-now:hover:not(.is-open) .btn-text {
+    opacity: 1;
+    margin-left: 0.5rem;
+    max-width: 100px;
+}
+
+/* When popup is open, keep it circular close icon */
+.btn-buy-now.is-open {
+    width: 3.2rem !important;
+    height: 3.2rem !important;
+    border-radius: 50% !important;
+}
+.btn-buy-now.is-open .btn-text { display: none !important; }
+
+/* Icon adjustment */
+.btn-buy-now i {
+    font-size: 1.3rem;
+    color: white;
+    transition: transform 0.3s ease;
+}
+
+/* Slight icon hover motion */
+.btn-buy-now:hover i {
+    transform: scale(1.1);
+}
+
+/* Position the floating button */
+.buy-now {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    z-index: 2147483600;
+}
