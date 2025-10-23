@@ -80,7 +80,7 @@ trait SuggestionAccessors
             'learning_hub'  => ['light' => 'bg-label-indigo',      'dark' => 'bg-indigo'],
             'it_ticket'     => ['light' => 'bg-label-teal',        'dark' => 'bg-teal'],
             'booking'       => ['light' => 'bg-label-cyan',        'dark' => 'bg-cyan'],
-            'other'         => ['light' => 'bg-label-muted',       'dark' => 'bg-muted'],
+            'other'         => ['light' => 'bg-label-primary',       'dark' => 'bg-primary'],
         ];
     }
 
