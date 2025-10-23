@@ -47,6 +47,25 @@ class TaskController extends Controller
     }
 
     /**
+     * Fetch parent task users
+     */
+    public function fetchParentTaskUsers($id)
+    {
+        $task = Task::findOrFail($id);
+        $users = $task->users()->with(['employee'])->get()->map(function ($user) {
+            return [
+                'id' => $user->id,
+                'name' => get_employee_name($user),
+            ];
+        });
+
+        return response()->json([
+            'success' => true,
+            'users' => $users,
+        ]);
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function my(Request $request)
