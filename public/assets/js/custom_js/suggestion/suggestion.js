@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
         openBtn.style.width = '3.2rem';
         openBtn.style.borderRadius = '50%';
         openBtn.style.justifyContent = 'center';
-        openBtn.style.paddingLeft = '';
+        openBtn.style.backgroundColor = 'red';
     };
 
     const resetOpenButton = () => {
@@ -47,6 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
         openBtn.style.borderRadius = '';
         openBtn.style.justifyContent = '';
         openBtn.style.paddingLeft = '';
+        openBtn.style.backgroundColor = '';
     };
 
     const openPopup = () => {
