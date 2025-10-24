@@ -40,9 +40,9 @@ class TaskController extends Controller
         return view('administration.task.kanban');
     }
 
-    public function fetch()
+    public function fetch(Request $request)
     {
-        $tasks =  $this->taskRepository->getTasksQuery()->get();
+        $tasks =  $this->taskRepository->getTasksQuery($request)->get();
         return response()->json($tasks);
     }
 
