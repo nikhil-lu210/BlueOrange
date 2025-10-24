@@ -161,7 +161,21 @@
                         </div>
                         <div class="mb-3 col-md-12" id="commonFilesSection"> {{-- This Will be hidden if common files is unchecked --}}
                             <label for="common_files_input" class="form-label">{{ __('Common Inventory Files') }}</label>
-                            <input type="file" accept="image/*" id="common_files_input" name="common_files[]" value="{{ old('common_files[]') }}" placeholder="{{ __('Inventory Files') }}" class="form-control @error('common_files[]') is-invalid @enderror" multiple/>
+
+                            <div id="commonFilePreviewContainer" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;"></div>
+                            
+                            <div id="commonFileDropZone" class="file-drop-zone" style="border: 2px dashed #ccc; padding: 20px; text-align: center; margin-top: 10px; cursor: pointer; transition: all 0.3s ease;">
+                                <div style="margin-bottom: 10px;">
+                                    <i class="ti ti-cloud-upload" style="font-size: 2rem; color: #7367f0;"></i>
+                                </div>
+                                <div style="font-weight: 500; margin-bottom: 5px;">Drag & Drop or Paste Files Here</div>
+                                <small style="color: #999;">Or click to browse</small>
+                                <br>
+                                <span id="commonFileStatus" style="font-weight: bold; color: green; display: block; margin-top: 10px;"></span>
+                            </div>
+
+                            <input type="file" accept="image/*" id="common_files_input" name="common_files[]" value="{{ old('common_files[]') }}" placeholder="{{ __('Inventory Files') }}" class="form-control @error('common_files[]') is-invalid @enderror" style="display: none;" multiple/>
+
                             <small class="text-muted">These files will be applied to all inventory items. Upload <b>Image Files</b> only.</small>
                             @error('common_files[]')
                                 <b class="text-danger"><i class="ti ti-info-circle mr-1"></i>{{ $message }}</b>
@@ -352,8 +366,16 @@
                                 <input type="number" min="0" step="0.01" id="price_${itemNumber}" name="items[${itemNumber}][price]" placeholder="Ex: 12500" class="form-control" required/>
                             </div>
                             <div class="col-md-12 mb-3 individual-files-section" style="display: none;">
-                                <label for="files_${itemNumber}" class="form-label">{{ __('Individual Inventory Files') }}</label>
-                                <input type="file" accept="image/*" id="files_${itemNumber}" name="items[${itemNumber}][files][]" class="form-control" multiple/>
+                                <label class="form-label">{{ __('Individual Inventory Files') }}</label>
+                                <div id="item_${itemNumber}_preview" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;"></div>
+                                <div id="item_${itemNumber}_dropzone" class="file-drop-zone" style="border:2px dashed #ccc;padding:16px;text-align:center;cursor:pointer;transition:all .3s ease;">
+                                    <div style="margin-bottom:8px;"><i class="ti ti-cloud-upload" style="font-size:1.6rem;color:#7367f0;"></i></div>
+                                    <div style="font-weight:500;margin-bottom:4px;">Drag & Drop or Paste Files Here</div>
+                                    <small style="color:#999;">Or click to browse</small>
+                                    <br>
+                                    <span id="item_${itemNumber}_status" style="font-weight:bold;color:green;display:block;margin-top:8px;"></span>
+                                </div>
+                                <input type="file" accept="image/*" id="item_${itemNumber}_input" name="items[${itemNumber}][files][]" class="form-control" style="display:none;" multiple/>
                                 <small class="text-muted">Individual <b>Image Files</b> for this inventory item</small>
                             </div>
                             <div class="col-md-12 mb-3 individual-description-section" style="display: none;">
@@ -454,8 +476,16 @@
                             <input type="number" min="0" step="0.01" id="price_${itemNumber}" name="items[${itemNumber}][price]" value="${priceValue}" placeholder="Ex: 12500" class="form-control" />
                         </div>
                         <div class="col-md-12 mb-3 individual-files-section" style="display: none;">
-                            <label for="files_${itemNumber}" class="form-label">{{ __('Individual Inventory Files') }}</label>
-                            <input type="file" accept="image/*" id="files_${itemNumber}" name="items[${itemNumber}][files][]" class="form-control" multiple/>
+                            <label class="form-label">{{ __('Individual Inventory Files') }}</label>
+                            <div id="item_${itemNumber}_preview" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:10px;"></div>
+                            <div id="item_${itemNumber}_dropzone" class="file-drop-zone" style="border:2px dashed #ccc;padding:16px;text-align:center;cursor:pointer;transition:all .3s ease;">
+                                <div style="margin-bottom:8px;"><i class="ti ti-cloud-upload" style="font-size:1.6rem;color:#7367f0;"></i></div>
+                                <div style="font-weight:500;margin-bottom:4px;">Drag & Drop or Paste Files Here</div>
+                                <small style="color:#999;">Or click to browse</small>
+                                <br>
+                                <span id="item_${itemNumber}_status" style="font-weight:bold;color:green;display:block;margin-top:8px;"></span>
+                            </div>
+                            <input type="file" accept="image/*" id="item_${itemNumber}_input" name="items[${itemNumber}][files][]" class="form-control" style="display:none;" multiple/>
                             <small class="text-muted">Upload individual <b>Image Files</b> for this inventory item</small>
                         </div>
                         <div class="col-md-12 mb-3 individual-description-section" style="display: none;">
@@ -468,5 +498,261 @@
             `;
             return itemHtml;
         }
+    </script>
+
+    <script>
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit
+        const initializedDropZones = new Set(); // Track initialized drop zones
+
+        // Helper function to generate image previews
+        function generateImagePreviews(previewContainer, files, fileInput) {
+            previewContainer.innerHTML = '';
+            
+            if (!files || files.length === 0) {
+                return;
+            }
+
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileIndex = i;
+                
+                // Check if file is an image
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const previewDiv = document.createElement('div');
+                        previewDiv.style.cssText = 'position: relative; display: inline-block; margin: 5px;';
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        img.style.cssText = 'width: 100px; height: 100px; object-fit: cover; border-radius: 6px; border: 2px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1);';
+                        img.title = file.name;
+                        
+                        const removeBtn = document.createElement('button');
+                        removeBtn.type = 'button';
+                        removeBtn.innerHTML = '<i class="ti ti-x" style="font-size: 1rem;"></i>';
+                        removeBtn.style.cssText = 'position: absolute; top: -10px; right: -10px; background: #dc3545; color: white; border: none; border-radius: 50%; width: 28px; height: 28px; padding: 0; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: all 0.2s ease;';
+                        removeBtn.title = 'Remove image';
+                        
+                        removeBtn.addEventListener('mouseover', () => {
+                            removeBtn.style.background = '#c82333';
+                            removeBtn.style.transform = 'scale(1.1)';
+                        });
+                        
+                        removeBtn.addEventListener('mouseout', () => {
+                            removeBtn.style.background = '#dc3545';
+                            removeBtn.style.transform = 'scale(1)';
+                        });
+                        
+                        removeBtn.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            
+                            // Remove file from input
+                            const dataTransfer = new DataTransfer();
+                            for (let j = 0; j < fileInput.files.length; j++) {
+                                if (j !== fileIndex) {
+                                    dataTransfer.items.add(fileInput.files[j]);
+                                }
+                            }
+                            fileInput.files = dataTransfer.files;
+                            
+                            // Regenerate previews
+                            // Derive correct status element from the preview container id
+                            let statusElement = null;
+                            if (previewContainer && previewContainer.id) {
+                                const prefix = previewContainer.id.replace('_preview','');
+                                statusElement = document.getElementById(prefix + '_status');
+                            }
+                            if (!statusElement) {
+                                statusElement = document.getElementById('commonFileStatus');
+                            }
+                            updateFileStatus(statusElement, fileInput.files);
+                            generateImagePreviews(previewContainer, fileInput.files, fileInput);
+                        });
+                        
+                        previewDiv.appendChild(img);
+                        previewDiv.appendChild(removeBtn);
+                        previewContainer.appendChild(previewDiv);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            }
+        }
+
+        // Helper function to update file status display
+        function updateFileStatus(statusElement, files) {
+            if (!files || files.length === 0) {
+                statusElement.innerHTML = '';
+                return;
+            }
+
+            let html = `<i class="ti ti-check-circle" style="color: green;"></i> ${files.length} file(s) selected:<br>`;
+            for (let i = 0; i < files.length; i++) {
+                const size = (files[i].size / 1024 / 1024).toFixed(2);
+                html += `<small>${files[i].name} (${size} MB)</small><br>`;
+            }
+            statusElement.innerHTML = html;
+        }
+
+        // Helper function to validate file
+        function validateFile(file) {
+            if (file.size > MAX_FILE_SIZE) {
+                alert(`File "${file.name}" is too large (max 5MB).`);
+                return false;
+            }
+            return true;
+        }
+
+        // Helper function to add files to file input
+        function addFilesToInput(fileInput, newFiles) {
+            const dataTransfer = new DataTransfer();
+            
+            // Add existing files first
+            for (let i = 0; i < fileInput.files.length; i++) {
+                dataTransfer.items.add(fileInput.files[i]);
+            }
+            
+            // Add new files
+            for (let i = 0; i < newFiles.length; i++) {
+                if (validateFile(newFiles[i])) {
+                    dataTransfer.items.add(newFiles[i]);
+                }
+            }
+            
+            fileInput.files = dataTransfer.files;
+        }
+
+        // Setup file drop zone
+        function setupFileDropZone(dropZone, fileInput, statusElement, previewContainer) {
+            // Check if already initialized
+            if (initializedDropZones.has(dropZone)) {
+                return;
+            }
+            initializedDropZones.add(dropZone);
+
+            // Click to browse
+            const clickHandler = () => {
+                fileInput.click();
+            };
+            dropZone.addEventListener('click', clickHandler);
+
+            // File input change
+            const changeHandler = () => {
+                updateFileStatus(statusElement, fileInput.files);
+                if (previewContainer) {
+                    generateImagePreviews(previewContainer, fileInput.files, fileInput);
+                }
+            };
+            fileInput.addEventListener('change', changeHandler);
+
+            // Drag over
+            const dragoverHandler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.style.backgroundColor = '#e8e4f3';
+                dropZone.style.borderColor = '#7367f0';
+            };
+            dropZone.addEventListener('dragover', dragoverHandler);
+
+            // Drag leave
+            const dragleaveHandler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.style.backgroundColor = 'transparent';
+                dropZone.style.borderColor = '#ccc';
+            };
+            dropZone.addEventListener('dragleave', dragleaveHandler);
+
+            // Drop
+            const dropHandler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                dropZone.style.backgroundColor = 'transparent';
+                dropZone.style.borderColor = '#ccc';
+                
+                if (e.dataTransfer.files.length) {
+                    addFilesToInput(fileInput, e.dataTransfer.files);
+                    updateFileStatus(statusElement, fileInput.files);
+                    if (previewContainer) {
+                        generateImagePreviews(previewContainer, fileInput.files, fileInput);
+                    }
+                }
+            };
+            dropZone.addEventListener('drop', dropHandler);
+        }
+
+        // Setup paste functionality for a specific form
+        function setupPasteForForm(form) {
+            const pasteHandler = (e) => {
+                const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+                const files = [];
+                for (let i = 0; i < items.length; i++) {
+                    if (items[i].kind === 'file') {
+                        const f = items[i].getAsFile();
+                        if (f) files.push(f);
+                    }
+                }
+                if (files.length > 0) {
+                    e.preventDefault();
+                    // Try to detect the nearest dropzone under focus; fallback to common section
+                    const active = document.activeElement;
+                    let targetInput = document.getElementById('common_files_input');
+                    let targetStatus = document.getElementById('commonFileStatus');
+                    let targetPreview = document.getElementById('commonFilePreviewContainer');
+
+                    if (active && active.closest) {
+                        const dz = active.closest('.file-drop-zone');
+                        if (dz && dz.id && dz.id.endsWith('_dropzone')) {
+                            const prefix = dz.id.replace('_dropzone','');
+                            const maybeInput = document.getElementById(prefix + '_input');
+                            const maybeStatus = document.getElementById(prefix + '_status');
+                            const maybePreview = document.getElementById(prefix + '_preview');
+                            if (maybeInput && maybeStatus && maybePreview) {
+                                targetInput = maybeInput;
+                                targetStatus = maybeStatus;
+                                targetPreview = maybePreview;
+                            }
+                        }
+                    }
+
+                    if (targetInput) {
+                        addFilesToInput(targetInput, files);
+                        updateFileStatus(targetStatus, targetInput.files);
+                        if (targetPreview) generateImagePreviews(targetPreview, targetInput.files, targetInput);
+                    }
+                }
+            };
+            form.addEventListener('paste', pasteHandler);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Setup common files drop zone on Inventory Create
+            const mainDropZone = document.getElementById('commonFileDropZone');
+            const mainFileInput = document.getElementById('common_files_input');
+            const mainStatusElement = document.getElementById('commonFileStatus');
+            const mainPreviewContainer = document.getElementById('commonFilePreviewContainer');
+            
+            if (mainDropZone && mainFileInput) {
+                setupFileDropZone(mainDropZone, mainFileInput, mainStatusElement, mainPreviewContainer);
+            }
+            // Enable paste on the whole form for both common and individual sections
+            setupPasteForForm(document.getElementById('inventoryForm'));
+
+            // Delegate setup for dynamically created individual item sections
+            const container = document.getElementById('inventoryItemsContainer');
+            const observer = new MutationObserver(() => {
+                document.querySelectorAll('[id$="_dropzone"]').forEach(dz => {
+                    const idPrefix = dz.id.replace('_dropzone','');
+                    const input = document.getElementById(idPrefix + '_input');
+                    const status = document.getElementById(idPrefix + '_status');
+                    const preview = document.getElementById(idPrefix + '_preview');
+                    if (dz && input && status && preview) {
+                        setupFileDropZone(dz, input, status, preview);
+                    }
+                });
+            });
+            observer.observe(container, { childList: true, subtree: true });
+        });
     </script>
 @endsection
