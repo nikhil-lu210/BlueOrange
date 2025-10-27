@@ -38,6 +38,69 @@
         color: #333333;
         font-weight: bold;
     }
+    
+    /* Fix table responsiveness and dropdown visibility */
+    .table-responsive-md,
+    .table-responsive-sm {
+        overflow: initial !important;
+    }
+    
+    .card-body {
+        overflow: auto;
+    }
+    
+    /* Style dropdown menu */
+    .dropdown-menu {
+        position: absolute !important;
+        right: 0 !important;
+        left: auto !important;
+        z-index: 1000 !important;
+        min-width: 120px !important;
+        margin-top: 0.125rem !important;
+        background-color: #fff !important;
+        box-shadow: 0 0.25rem 1rem rgba(161, 172, 184, 0.45) !important;
+        background-clip: padding-box !important;
+        border-radius: 0.375rem !important;
+        transform: none !important;
+    }
+    
+    /* Style dropdown toggle button */
+    .dropdown-toggle {
+        padding: 0.5rem !important;
+        border-radius: 0.375rem;
+        transition: background-color 0.2s ease-in-out;
+    }
+    
+    .dropdown-toggle:hover {
+        background-color: rgba(67, 89, 113, 0.04) !important;
+    }
+    
+    /* Ensure action column doesn't wrap */
+    .table td:last-child {
+        white-space: nowrap;
+        width: 1%;
+        position: relative;
+    }
+    
+    /* Fix dropdown item styling */
+    .dropdown-item {
+        padding: 0.532rem 1.25rem;
+        clear: both;
+        text-align: inherit;
+        white-space: nowrap;
+        background-color: transparent;
+        border: 0;
+    }
+    
+    .dropdown-item:hover {
+        background-color: rgba(67, 89, 113, 0.04);
+    }
+    
+    /* Ensure table doesn't overflow container */
+    .table {
+        margin-bottom: 0;
+        white-space: nowrap;
+    }
     </style>
 @endsection
 
@@ -216,24 +279,31 @@
                                         <small>Created: <span class="text-muted">{{ show_date($task->created_at) }}</span></small>
                                     </td>
                                     <td>{!! show_status($task->status) !!}</td>
-                                    <td class="text-center">
-                                        @if ($task->creator_id == auth()->user()->id)
-                                            @can ('Task Delete')
-                                                <a href="{{ route('administration.task.destroy', ['task' => $task]) }}" class="btn btn-icon btn-label-danger btn-sm waves-effect confirm-danger" data-bs-toggle="tooltip" title="Delete Task?">
-                                                    <i class="ti ti-trash"></i>
-                                                </a>
-                                            @endcan
-                                            @can ('Task Update')
-                                                <a href="{{ route('administration.task.edit', ['task' => $task]) }}" class="btn btn-sm btn-icon btn-info" data-bs-toggle="tooltip" title="Edit Task?">
-                                                    <i class="ti ti-pencil"></i>
-                                                </a>
-                                            @endcan
-                                        @endif
-                                        @can ('Task Read')
-                                            <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="btn btn-sm btn-icon btn-primary" data-bs-toggle="tooltip" title="Show Details">
-                                                <i class="ti ti-info-hexagon"></i>
-                                            </a>
-                                        @endcan
+                                    <td>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn p-0 dropdown-toggle hide-arrow" data-bs-toggle="dropdown">
+                                                <i class="ti ti-dots-vertical"></i>
+                                            </button>
+                                            <div class="dropdown-menu">
+                                                @if ($task->creator_id == auth()->user()->id)
+                                                    @can ('Task Update')
+                                                        <a class="dropdown-item waves-effect" href="{{ route('administration.task.edit', ['task' => $task]) }}" title="Edit Task?">
+                                                            <i class="ti ti-pencil me-1"></i> Edit
+                                                        </a>
+                                                    @endcan
+                                                    @can ('Task Delete')
+                                                        <a class="dropdown-item waves-effect confirm-danger" href="{{ route('administration.task.destroy', ['task' => $task]) }}" title="Delete Task?">
+                                                            <i class="ti ti-trash me-1"></i> Delete
+                                                        </a>
+                                                    @endcan
+                                                @endif
+                                                @can ('Task Read')
+                                                    <a href="{{ route('administration.task.show', ['task' => $task, 'taskid' => $task->taskid]) }}" class="dropdown-item waves-effect" title="Show Details">
+                                                        <i class="ti ti-info-hexagon"></i> View
+                                                    </a>
+                                                @endcan
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
