@@ -35,7 +35,7 @@ class NewCommentOnTaskMail extends Mailable implements ShouldQueue
     {
         return new Envelope(
             from: new Address(config('mail.from.address'), config('mail.from.name')),
-            subject: 'New Comment For Task ('. $this->data->taskid .') by '. $this->data->creator->alias_name,
+            subject: 'Task Comment: ('. $this->data->title .') created by '. $this->data->creator->alias_name,
         );
     }
 
