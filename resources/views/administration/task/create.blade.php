@@ -241,39 +241,58 @@
                         success: function(response) {
                             if (response.success && response.users.length > 0) {
                                 parentTaskUsers = response.users.map(user => user.id.toString());
-                                
+
                                 // Select parent task users
                                 usersSelect.val(parentTaskUsers).trigger('change');
-                                
+
                                 // Disable the select field
                                 usersSelect.prop('disabled', true);
-                                
+
+                                // Remove any previous hidden clones
+                                $('#taskForm').find('input[name="users[]"].hidden-clone').remove();
+
+                                // Dynamically create hidden inputs for submission
+                                parentTaskUsers.forEach(id => {
+                                    $('<input>')
+                                        .attr('type', 'hidden')
+                                        .attr('name', 'users[]')
+                                        .attr('value', id)
+                                        .addClass('hidden-clone')
+                                        .appendTo('#taskForm');
+                                });
+
                                 // Show note
                                 isParentTaskSelected = true;
-                                const userNames = response.users.map(user => user.name).join(', ');
                                 usersNoteText.text('Users are automatically selected from the parent task and cannot be changed.');
                                 usersNote.show();
                             } else {
                                 // No users in parent task
-                                usersSelect.val(null).trigger('change');
-                                usersSelect.prop('disabled', false);
-                                isParentTaskSelected = false;
-                                usersNote.hide();
+                                resetUsersField();
                             }
                         },
                         error: function() {
-                            usersSelect.val(null).trigger('change');
-                            usersSelect.prop('disabled', false);
-                            isParentTaskSelected = false;
-                            usersNote.hide();
+                            resetUsersField();
                         }
                     });
                 } else {
                     // No parent task selected
-                    usersSelect.val(null).trigger('change');
-                    usersSelect.prop('disabled', false);
+                    resetUsersField();
+                }
+
+                // Helper function to reset users field
+                function resetUsersField() {
                     isParentTaskSelected = false;
-                    parentTaskUsers = [];
+
+                    // Enable select
+                    usersSelect.prop('disabled', false);
+
+                    // Clear select values
+                    usersSelect.val(null).trigger('change');
+
+                    // Remove hidden clones
+                    $('#taskForm').find('input[name="users[]"].hidden-clone').remove();
+
+                    // Hide note
                     usersNote.hide();
                 }
             });
