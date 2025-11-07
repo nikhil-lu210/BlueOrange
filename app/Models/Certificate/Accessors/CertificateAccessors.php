@@ -17,7 +17,7 @@ trait CertificateAccessors
      */
     public function getFormattedIssueDateAttribute()
     {
-        return $this->issue_date ? $this->issue_date->format('M j, Y') : null;
+        return $this->issue_date ? $this->issue_date->format('F j, Y') : null;
     }
 
     /**
