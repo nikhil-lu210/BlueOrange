@@ -97,13 +97,13 @@ class CertificateRequest extends FormRequest
                 }
                 break;
 
-            case 'release_date':
-                if ($this->has('resignation_approval_date')) {
-                    $rule .= '|after_or_equal:resignation_approval_date';
-                } elseif ($this->has('resignation_date')) {
-                    $rule .= '|after_or_equal:resignation_date';
-                }
-                break;
+            // case 'release_date':
+            //     if ($this->has('resignation_approval_date')) {
+            //         $rule .= '|after_or_equal:resignation_approval_date';
+            //     } elseif ($this->has('resignation_date')) {
+            //         $rule .= '|after_or_equal:resignation_date';
+            //     }
+            //     break;
 
             case 'leave_ends_on':
                 if ($this->has('leave_starts_from')) {
