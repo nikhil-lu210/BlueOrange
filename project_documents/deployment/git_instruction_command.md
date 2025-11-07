@@ -3,7 +3,7 @@ git pull origin develop
 git checkout -b release-v2.6.0
 git push origin release-v2.6.0
 git add .
-git commit -m "Impement drag and drop file at Task comment Updated in release v2.6.0"
+git commit -m "Set the position of certificate issue date and Updated in release v2.6.0"
 git push origin release-v2.6.0
 git checkout master
 git pull origin master
